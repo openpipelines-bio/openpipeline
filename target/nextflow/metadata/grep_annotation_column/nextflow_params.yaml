@@ -1,21 +1,26 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 input: # please fill in - example: "input.h5mu"
-# input_column: "foo"
-# input_layer: "foo"
+# input_column: "value"
+# input_layer: "value"
 modality: # please fill in - example: "rna"
 # matrix: "var"
+# ---
 
 # Outputs
 # output: "$id.$key.output.h5mu"
-output_match_column: # please fill in - example: "foo"
-# output_fraction_column: "foo"
+output_match_column: # please fill in - example: "value"
+# output_fraction_column: "value"
 # output_compression: "gzip"
+# ---
 
-# Query options
+# Query Options
 regex_pattern: # please fill in - example: "^[mM][tT]-"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

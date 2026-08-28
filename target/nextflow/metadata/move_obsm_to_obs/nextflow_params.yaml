@@ -1,14 +1,18 @@
-# MuData Input
+# Dataset Input
+param_list: ""
+# ---
+
+# Mudata Input
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-obsm_key: # please fill in - example: "foo"
+obsm_key: # please fill in - example: "value"
+# ---
 
-# MuData Output
-# output: "$id.$key.output.h5mu"
+# Mudata Output
+output: # please fill in - example: "$id.$key.output.h5mu"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

@@ -1,3 +1,7 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Input
 # sam_file: "input.bam"
 # sam_index_file: "input.bai"
@@ -6,27 +10,27 @@
 # targets_vcf: "targets.vcf"
 # barcode_file: "barcodes.tsv"
 # sample_list: "samples.txt"
-# sample_ids: "foo"
+# sample_ids: "value"
 genotype: false
 gzip: false
 print_skip_snps: false
-# chrom: "foo"
+# chrom: "value"
 cell_tag: "CB"
 umi_tag: "Auto"
 min_count: 20
 min_maf: 0.0
 doublet_gl: false
-# incl_flag: "foo"
-# excl_flag: "foo"
+# incl_flag: "value"
+# excl_flag: "value"
 count_orphan: false
 min_mapq: 20
 min_len: 30
+# ---
 
 # Output
-# output: "$id.$key.output"
+# output: "$id.$key.cellsnp_out"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

@@ -1,11 +1,16 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 genome_fasta: # please fill in - example: "genome_fasta.fa.gz"
 transcriptome_gtf: # please fill in - example: "transcriptome.gtf.gz"
 # ercc: "ercc.zip"
 # subset_regex: "(ERCC-00002|chr1)"
-# output_fasta: "$id.$key.output_fasta.gz"
-# output_gtf: "$id.$key.output_gtf.gz"
+output_fasta: # please fill in - example: "$id.$key.genome_sequence.fa.gz"
+output_gtf: # please fill in - example: "$id.$key.transcriptome_annotation.gtf.gz"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

@@ -1,13 +1,18 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# input_layer: "foo"
-# output: "output.h5mu"
-# output_layer: "foo"
-# target_sum: 123
+# input_layer: "value"
+output: "output.h5mu"
+# output_layer: "value"
+# target_sum: 0
 exclude_highly_expressed: false
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

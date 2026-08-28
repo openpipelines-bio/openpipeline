@@ -4,21 +4,6 @@
   "description": "Convert a velocyto loom file to a h5mu file.\n\nIf an input h5mu file is also provided, the velocity\nh5ad object will get added to that h5mu instead.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,20 +14,18 @@
           "description": "Path to the input loom file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.loom']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.loom`"
         },
         "input_h5mu": {
           "type": "string",
           "description": "If a MuData file is provided, the velocity h5ad object will be added to this file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna_velocity"
-          ],
+          "default": "rna_velocity",
           "description": "The name of the modality to operate on.",
           "help_text": "type: `string`, multiple: False, default: `rna_velocity`"
         }
@@ -61,29 +44,23 @@
           "description": "Path to the output MuData file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         },
         "layer_spliced": {
           "type": "string",
-          "default": [
-            "velo_spliced"
-          ],
+          "default": "velo_spliced",
           "description": "Output layer for the spliced reads.",
           "help_text": "type: `string`, multiple: False, default: `velo_spliced`"
         },
         "layer_unspliced": {
           "type": "string",
-          "default": [
-            "velo_unspliced"
-          ],
+          "default": "velo_unspliced",
           "description": "Output layer for the unspliced reads.",
           "help_text": "type: `string`, multiple: False, default: `velo_unspliced`"
         },
         "layer_ambiguous": {
           "type": "string",
-          "default": [
-            "velo_ambiguous"
-          ],
+          "default": "velo_ambiguous",
           "description": "Output layer for the ambiguous reads.",
           "help_text": "type: `string`, multiple: False, default: `velo_ambiguous`"
         },
@@ -94,7 +71,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       }
     },
@@ -116,9 +93,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

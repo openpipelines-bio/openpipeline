@@ -4,21 +4,6 @@
   "description": "Demultiplex raw sequencing data for ATAC experiments",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,14 +14,14 @@
           "description": "Path of Illumina BCL run folder.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['/path/to/bcl']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `/path/to/bcl`"
         },
         "csv": {
           "type": "string",
           "description": "The path to the simple layout sample sheet.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['SampleSheet.csv']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `SampleSheet.csv`"
         },
         "lanes": {
           "type": "array",
@@ -44,7 +29,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['1,3']`"
+          "help_text": "type: `array`, multiple: True, example: `1,3`"
         },
         "use_bases_mask": {
           "type": "array",
@@ -52,7 +37,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['y50n,I6n,Y50n']`"
+          "help_text": "type: `array`, multiple: True, example: `y50n,I6n,Y50n`"
         },
         "delete_undetermined": {
           "type": "boolean",
@@ -62,28 +47,24 @@
         },
         "barcode_mismatches": {
           "type": "integer",
-          "default": [
-            1
-          ],
+          "default": 1,
           "description": "bcl2fastq option. Use this option to change the number of allowed mismatches per index adapter (0, 1, 2).",
           "help_text": "type: `integer`, multiple: False, default: `1`"
         },
         "output": {
           "type": "string",
-          "default": [
-            "fastqs"
-          ],
+          "default": "fastqs",
           "description": "The folder to store the demux results",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, default: `fastqs`, direction: `output`, example: `['/path/to/output']`"
+          "help_text": "type: `string`, multiple: False, required, default: `fastqs`, direction: `output`, example: `/path/to/output`"
         },
         "reports": {
           "type": "string",
           "description": "Reports directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['reports_dir']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `reports_dir`"
         }
       },
       "required": [
@@ -110,9 +91,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

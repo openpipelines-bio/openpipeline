@@ -4,21 +4,6 @@
   "description": "Freebayes is a Bayesian genetic variant detector designed to\nfind small polymorphisms, specifically SNPs.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,14 +14,14 @@
           "description": "Add FILE to the set of BAM files to be analyzed.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.bam']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.bam`"
         },
         "bam_list": {
           "type": "string",
           "description": "A file containing a list of BAM files to be analyzed.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['bam_list.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `bam_list.txt`"
         },
         "stdin": {
           "type": "boolean",
@@ -49,21 +34,21 @@
           "description": "Use FILE as the reference sequence for analysis. An index file (FILE.fai) will be created if none exists. If neither --targets nor --region are specified, FreeBayes will analyze every position in this reference.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['reference.fasta']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `reference.fasta`"
         },
         "fasta_reference_index": {
           "type": "string",
           "description": "Use FILE.fai as the index of reference sequence for analysis.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['file.fai']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `file.fai`"
         },
         "targets": {
           "type": "string",
           "description": "Limit analysis to targets listed in the BED-format FILE.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['targets.bed']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `targets.bed`"
         },
         "region": {
           "type": "string",
@@ -75,14 +60,14 @@
           "description": "Limit analysis to samples listed (one per line) in the FILE. By default FreeBayes will analyze all samples in its input BAM files.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['samples.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `samples.txt`"
         },
         "populations": {
           "type": "string",
           "description": "Each line of FILE should list a sample and a population which it is part of. The population-based bayesian inference model will then be partitioned on the basis of the populations.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['populations.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `populations.txt`"
         },
         "cnv_map": {
           "type": "string",
@@ -107,7 +92,7 @@
           "description": "Use variants reported in VCF file as input to the algorithm. Variants in this file will included in the output even if there is not enough support in the data to pass input filters.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['variant_input.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `variant_input.vcf`"
         },
         "only_use_input_alleles": {
           "type": "boolean",
@@ -136,9 +121,7 @@
         },
         "pvar": {
           "type": "number",
-          "default": [
-            0.0
-          ],
+          "default": 0.0,
           "description": "Report sites if the probability that there is a polymorphism at the site is greater than N. Note that post-filtering is generally recommended over the use of this parameter.",
           "help_text": "type: `number`, multiple: False, default: `0.0`"
         },
@@ -150,17 +133,13 @@
         },
         "theta": {
           "type": "number",
-          "default": [
-            0.001
-          ],
+          "default": 0.001,
           "description": "The expected mutation rate or pairwise nucleotide diversity among the population under analysis. This serves as the single parameter to the Ewens Sampling Formula prior model.",
           "help_text": "type: `number`, multiple: False, default: `0.001`"
         },
         "ploidy": {
           "type": "integer",
-          "default": [
-            2
-          ],
+          "default": 2,
           "description": "Sets the default ploidy for the analysis to N.",
           "help_text": "type: `integer`, multiple: False, default: `2`"
         },
@@ -184,9 +163,7 @@
         },
         "reference_quality": {
           "type": "string",
-          "default": [
-            "100,60"
-          ],
+          "default": "100,60",
           "description": "Assign mapping quality of MQ to the reference allele at each site and base quality of BQ.",
           "help_text": "type: `string`, multiple: False, default: `100,60`"
         },
@@ -216,33 +193,25 @@
         },
         "use_best_n_alleles": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Evaluate only the best N SNP alleles, ranked by sum of supporting quality scores.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "max_complex_gap": {
           "type": "integer",
-          "default": [
-            3
-          ],
+          "default": 3,
           "description": "Allow haplotype calls with contiguous embedded matches of up to this length.",
           "help_text": "type: `integer`, multiple: False, default: `3`"
         },
         "min_repeat_size": {
           "type": "integer",
-          "default": [
-            5
-          ],
+          "default": 5,
           "description": "When assembling observations across repeats, require the total repeat length at least this many bp.",
           "help_text": "type: `integer`, multiple: False, default: `5`"
         },
         "min_repeat_entropy": {
           "type": "integer",
-          "default": [
-            1
-          ],
+          "default": 1,
           "description": "To detect interrupted repeats, build across sequence until it has entropy > N bits per bp. Set to 0 to turn off.",
           "help_text": "type: `integer`, multiple: False, default: `1`"
         },
@@ -266,49 +235,37 @@
         },
         "min_mapping_quality": {
           "type": "integer",
-          "default": [
-            1
-          ],
+          "default": 1,
           "description": "Exclude alignments from analysis if they have a mapping quality less than Q.",
           "help_text": "type: `integer`, multiple: False, default: `1`"
         },
         "min_base_quality": {
           "type": "integer",
-          "default": [
-            1
-          ],
+          "default": 1,
           "description": "Exclude alleles from analysis if their supporting base quality is less than Q. Default value is changed according to the instruction of scSplit.",
           "help_text": "type: `integer`, multiple: False, default: `1`"
         },
         "min_supporting_allele_qsum": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Consider any allele in which the sum of qualities of supporting observations is at least Q.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_supporting_mapping_qsum": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Consider any allele in which and the sum of mapping qualities of supporting reads is at least.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "mismatch_base_quality_threshold": {
           "type": "integer",
-          "default": [
-            10
-          ],
+          "default": 10,
           "description": "Count mismatches toward --read-mismatch-limit if the base quality of the mismatch is >= Q.",
           "help_text": "type: `integer`, multiple: False, default: `10`"
         },
         "read_max_mismatch_fraction": {
           "type": "number",
-          "default": [
-            1.0
-          ],
+          "default": 1.0,
           "description": "Exclude reads with more than N mismatches where each mismatch has base quality >= mismatch-base-quality-threshold.",
           "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
@@ -335,41 +292,31 @@
         },
         "min_alternate_fraction": {
           "type": "number",
-          "default": [
-            0.05
-          ],
+          "default": 0.05,
           "description": "Require at least this fraction of observations supporting an alternate allele within a single individual in order to evaluate the position.",
           "help_text": "type: `number`, multiple: False, default: `0.05`"
         },
         "min_alternate_count": {
           "type": "integer",
-          "default": [
-            2
-          ],
+          "default": 2,
           "description": "Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position.",
           "help_text": "type: `integer`, multiple: False, default: `2`"
         },
         "min_alternate_qsum": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Require at least this sum of quality of observations supporting an alternate allele within a single individual in order to evaluate the position.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_alternate_total": {
           "type": "integer",
-          "default": [
-            1
-          ],
+          "default": 1,
           "description": "Require at least this count of observations supporting an alternate allele within the total population in order to use the allele in analysis.",
           "help_text": "type: `integer`, multiple: False, default: `1`"
         },
         "min_coverage": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Require at least this coverage to process a site.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
@@ -407,7 +354,7 @@
           "description": "Read length-dependent allele observation biases from FILE. The format is [length] [alignment efficiency relative to reference] where the efficiency is 1 if there is no relative observation bias.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['observation_bias.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `observation_bias.txt`"
         },
         "base_quality_cap": {
           "type": "integer",
@@ -416,9 +363,7 @@
         },
         "prob_contamination": {
           "type": "number",
-          "default": [
-            1e-8
-          ],
+          "default": 1e-8,
           "description": "An estimate of contamination to use for all samples.",
           "help_text": "type: `number`, multiple: False, default: `1e-08`"
         },
@@ -433,7 +378,7 @@
           "description": "A file containing per-sample estimates of contamination, such as those generated by VerifyBamID.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['contamination_estimates.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `contamination_estimates.txt`"
         },
         "report_genotype_likelihood_max": {
           "type": "boolean",
@@ -443,25 +388,19 @@
         },
         "genotyping_max_iterations": {
           "type": "integer",
-          "default": [
-            1000
-          ],
+          "default": 1000,
           "description": "Iterate no more than N times during genotyping step.",
           "help_text": "type: `integer`, multiple: False, default: `1000`"
         },
         "genotyping_max_banddepth": {
           "type": "integer",
-          "default": [
-            6
-          ],
+          "default": 6,
           "description": "Integrate no deeper than the Nth best genotype by likelihood when genotyping.",
           "help_text": "type: `integer`, multiple: False, default: `6`"
         },
         "posterior_integration_limits": {
           "type": "string",
-          "default": [
-            "1,3"
-          ],
+          "default": "1,3",
           "description": "Integrate all genotype combinations in our posterior space which include no more than N samples with their Mth best data likelihood.",
           "help_text": "type: `string`, multiple: False, default: `1,3`"
         },
@@ -490,9 +429,7 @@
         },
         "read_dependence_factor": {
           "type": "number",
-          "default": [
-            0.9
-          ],
+          "default": 0.9,
           "description": "Incorporate non-independence of reads by scaling successive observations by this factor during data likelihood calculations.",
           "help_text": "type: `number`, multiple: False, default: `0.9`"
         },
@@ -526,12 +463,12 @@
           "description": "Output directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['freebayes_out']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `freebayes_out`"
         },
         "vcf": {
           "type": "string",
           "description": "Output VCF-format results to FILE.",
-          "help_text": "type: `string`, multiple: False, example: `['snp.vcf']`"
+          "help_text": "type: `string`, multiple: False, example: `snp.vcf`"
         }
       }
     },
@@ -553,9 +490,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

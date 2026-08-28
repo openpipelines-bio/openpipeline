@@ -4,21 +4,6 @@
   "description": "Combines cell type predictions from multiple annotation methods into a single consensus prediction using a weighted majority vote. \nFor each cell, each method votes for its predicted cell type, optionally weighted by the probability score and/or a per-method weight.\nThe consensus prediction is the cell type with the highest total weighted vote.\nNote that this method does not leverage pre-existing ontology or perform any reconciliation of cell type labels across methods, so the same cell type may be represented by different labels in different methods and will be treated as distinct cell types in the vote.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,13 +14,11 @@
           "description": "Input h5mu file containing cell type predictions in .obs.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality to process.",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -45,7 +28,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, example: `['scanvi_pred', 'celltypist_pred']`"
+          "help_text": "type: `array`, multiple: True, required, example: `scanvi_pred;celltypist_pred`"
         },
         "input_obs_probabilities": {
           "type": "array",
@@ -53,12 +36,12 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['scanvi_prob', 'celltypist_prob', 'singler_prob']`"
+          "help_text": "type: `array`, multiple: True, example: `scanvi_prob;celltypist_prob;singler_prob`"
         },
         "tie_label": {
           "type": "string",
           "description": "Label to assign when two or more cell types receive equal votes.\nIf not provided, tied cells are assigned None (missing value).\n",
-          "help_text": "type: `string`, multiple: False, example: `['Unknown']`"
+          "help_text": "type: `string`, multiple: False, example: `Unknown`"
         },
         "weights": {
           "type": "array",
@@ -66,7 +49,7 @@
           "items": {
             "type": "number"
           },
-          "help_text": "type: `array`, multiple: True, example: `[1.0, 2.0]`"
+          "help_text": "type: `array`, multiple: True, example: `1.0;2.0`"
         }
       },
       "required": [
@@ -84,21 +67,17 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         },
         "output_obs_predictions": {
           "type": "string",
-          "default": [
-            "consensus_pred"
-          ],
+          "default": "consensus_pred",
           "description": "In which `.obs` slot to store the consensus predicted cell type.\n",
           "help_text": "type: `string`, multiple: False, default: `consensus_pred`"
         },
         "output_obs_score": {
           "type": "string",
-          "default": [
-            "consensus_score"
-          ],
+          "default": "consensus_score",
           "description": "In which `.obs` slot to store the consensus score, defined as the fraction\nof total weight assigned to the winning cell type.\n",
           "help_text": "type: `string`, multiple: False, default: `consensus_score`"
         },
@@ -109,7 +88,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       }
     },
@@ -131,9 +110,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

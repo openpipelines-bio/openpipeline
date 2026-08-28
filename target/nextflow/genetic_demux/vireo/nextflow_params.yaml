@@ -1,25 +1,29 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Input
 # cell_data: "cell_data.vcf"
 n_donor: 2
 # vartrix_data: "path/to/vatrix_outputs"
-# donor_file: "path/to/file"
+# donor_file: "input.txt"
 geno_tag: "PL"
 no_doublet: false
 n_init: 50
 extra_donor: 0
-# extra_donorMode: "foo"
+# extra_donorMode: "value"
 force_learn_gt: false
 ase_mode: false
 no_plot: false
-# rand_seed: 123
-# cell_range: "foo"
+# rand_seed: 0
+# cell_range: "value"
 call_ambient_rnas: false
+# ---
 
 # Output
-# output: "$id.$key.output"
+# output: "$id.$key.vireo"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

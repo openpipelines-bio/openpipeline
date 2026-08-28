@@ -1,20 +1,26 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
+# ---
 
 # Outputs
-# output: "$id.$key.output"
+# output: "$id.$key.output.txt"
+# ---
 
-# Correction arguments
+# Correction Arguments
 perform_correction: false
 cellbender_epochs: 150
+# ---
 
-# Filtering arguments
+# Filtering Arguments
 # min_genes: 100
 # min_counts: 1000
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

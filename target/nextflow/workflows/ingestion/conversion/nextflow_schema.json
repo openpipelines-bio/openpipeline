@@ -4,21 +4,6 @@
   "description": "A pipeline to convert .mtx, .h5 or .h5ad file formats to .h5mu.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -27,14 +12,14 @@
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
+          "help_text": "type: `string`, multiple: False, required, example: `foo`"
         },
         "input": {
           "type": "string",
           "description": "Path to the sample to be converted.\nPossible format options include:\n  - .h5ad\n  - .h5\n  - .mtx\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5ad']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5ad`"
         },
         "input_type": {
           "type": "string",
@@ -63,7 +48,7 @@
           "description": "Name or template for the output files.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         }
       }
     },
@@ -100,9 +85,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

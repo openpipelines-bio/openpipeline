@@ -1,103 +1,119 @@
-# Input/Output
-input: # please fill in - example: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# Dataset Input
+param_list: ""
+# ---
+
+# Input_Output
+input: # please fill in - example: "mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz"
 reference: # please fill in - example: "/path/to/reference"
-# output: "$id.$key.output"
+output: # please fill in - example: "$id.$key./path/to/foo"
+# ---
 
 # Run Parameters
 # runRNGseed: 777
+# ---
 
 # Genome Parameters
 # genomeLoad: "NoSharedMemory"
-# genomeFastaFiles: ["genome.fasta"]
-# genomeFileSizes: [0]
-# genomeTransformOutput: ["foo"]
-# genomeChrSetMitochondrial: ["chrM", "M", "MT"]
+# genomeFastaFiles: "genome.fasta"
+# genomeFileSizes: "0"
+# genomeTransformOutput: "value"
+# genomeChrSetMitochondrial: "chrM;M;MT"
+# ---
 
 # Splice Junctions Database
-# sjdbFileChrStartEnd: ["foo"]
+# sjdbFileChrStartEnd: "value"
 # sjdbGTFfile: "annotation.gtf"
-# sjdbGTFchrPrefix: "foo"
+# sjdbGTFchrPrefix: "value"
 # sjdbGTFfeatureExon: "exon"
 # sjdbGTFtagExonParentTranscript: "transcript_id"
 # sjdbGTFtagExonParentGene: "gene_id"
-# sjdbGTFtagExonParentGeneName: ["gene_name"]
-# sjdbGTFtagExonParentGeneType: ["gene_type", "gene_biotype"]
+# sjdbGTFtagExonParentGeneName: "gene_name"
+# sjdbGTFtagExonParentGeneType: "gene_type;gene_biotype"
 # sjdbOverhang: 100
 # sjdbScore: 2
 # sjdbInsertSave: "Basic"
+# ---
 
-# Variation parameters
-# varVCFfile: "foo"
+# Variation Parameters
+# varVCFfile: "value"
+# ---
 
 # Read Parameters
 # readFilesType: "Fastx"
-# readFilesSAMattrKeep: ["All"]
+# readFilesSAMattrKeep: "All"
 # readFilesManifest: "manifest.txt"
-# readFilesPrefix: "foo"
-# readFilesCommand: ["foo"]
+# readFilesPrefix: "value"
+# readFilesCommand: "value"
 # readMapNumber: -1
 # readMatesLengthsIn: "NotEqual"
-# readNameSeparator: ["/"]
+# readNameSeparator: "/"
 # readQualityScoreBase: 33
+# ---
 
 # Read Clipping
 # clipAdapterType: "Hamming"
-# clip3pNbases: [0]
-# clip3pAdapterSeq: ["foo"]
-# clip3pAdapterMMp: [0.1]
-# clip3pAfterAdapterNbases: [0]
-# clip5pNbases: [0]
+# clip3pNbases: "0"
+# clip3pAdapterSeq: "value"
+# clip3pAdapterMMp: "0.1"
+# clip3pAfterAdapterNbases: "0"
+# clip5pNbases: "0"
+# ---
 
 # Limits
 # limitGenomeGenerateRAM: 31000000000
-# limitIObufferSize: [30000000, 50000000]
+# limitIObufferSize: "30000000;50000000"
 # limitOutSAMoneReadBytes: 100000
 # limitOutSJoneRead: 1000
 # limitOutSJcollapsed: 1000000
 # limitBAMsortRAM: 0
 # limitSjdbInsertNsj: 1000000
 # limitNreadsSoft: -1
+# ---
 
-# Output: general
-# outTmpKeep: "foo"
+# Output: General
+# outTmpKeep: "value"
 # outStd: "Log"
-# outReadsUnmapped: "foo"
+# outReadsUnmapped: "value"
 # outQSconversionAdd: 0
 # outMultimapperOrder: "Old_2.4"
+# ---
 
-# Output: SAM and BAM
-# outSAMtype: ["SAM"]
+# Output: Sam And Bam
+# outSAMtype: "SAM"
 # outSAMmode: "Full"
-# outSAMstrandField: "foo"
-# outSAMattributes: ["Standard"]
+# outSAMstrandField: "value"
+# outSAMattributes: "Standard"
 # outSAMattrIHstart: 1
-# outSAMunmapped: ["foo"]
+# outSAMunmapped: "value"
 # outSAMorder: "Paired"
 # outSAMprimaryFlag: "OneBestScore"
 # outSAMreadID: "Standard"
 # outSAMmapqUnique: 255
 # outSAMflagOR: 0
 # outSAMflagAND: 65535
-# outSAMattrRGline: ["foo"]
-# outSAMheaderHD: ["foo"]
-# outSAMheaderPG: ["foo"]
-# outSAMheaderCommentFile: "foo"
-# outSAMfilter: ["foo"]
+# outSAMattrRGline: "value"
+# outSAMheaderHD: "value"
+# outSAMheaderPG: "value"
+# outSAMheaderCommentFile: "value"
+# outSAMfilter: "value"
 # outSAMmultNmax: -1
 # outSAMtlen: 1
 # outBAMcompression: 1
 # outBAMsortingThreadN: 0
 # outBAMsortingBinsN: 50
+# ---
 
-# BAM processing
-# bamRemoveDuplicatesType: "foo"
+# Bam Processing
+# bamRemoveDuplicatesType: "value"
 # bamRemoveDuplicatesMate2basesN: 0
+# ---
 
 # Output Wiggle
-# outWigType: ["foo"]
+# outWigType: "value"
 # outWigStrand: "Stranded"
-# outWigReferencesPrefix: "foo"
+# outWigReferencesPrefix: "value"
 # outWigNorm: "RPM"
+# ---
 
 # Output Filtering
 # outFilterType: "Normal"
@@ -110,19 +126,22 @@ reference: # please fill in - example: "/path/to/reference"
 # outFilterScoreMinOverLread: 0.66
 # outFilterMatchNmin: 0
 # outFilterMatchNminOverLread: 0.66
-# outFilterIntronMotifs: "foo"
+# outFilterIntronMotifs: "value"
 # outFilterIntronStrands: "RemoveInconsistentStrands"
+# ---
 
-# Output splice junctions (SJ.out.tab)
+# Output Splice Junctions (Sj.Out.Tab)
 # outSJtype: "Standard"
+# ---
 
 # Output Filtering: Splice Junctions
 # outSJfilterReads: "All"
-# outSJfilterOverhangMin: [30, 12, 12, 12]
-# outSJfilterCountUniqueMin: [3, 1, 1, 1]
-# outSJfilterCountTotalMin: [3, 1, 1, 1]
-# outSJfilterDistToOtherSJmin: [10, 0, 5, 10]
-# outSJfilterIntronMaxVsReadN: [50000, 100000, 200000]
+# outSJfilterOverhangMin: "30;12;12;12"
+# outSJfilterCountUniqueMin: "3;1;1;1"
+# outSJfilterCountTotalMin: "3;1;1;1"
+# outSJfilterDistToOtherSJmin: "10;0;5;10"
+# outSJfilterIntronMaxVsReadN: "50000;100000;200000"
+# ---
 
 # Scoring
 # scoreGap: 0
@@ -135,8 +154,9 @@ reference: # please fill in - example: "/path/to/reference"
 # scoreInsOpen: -2
 # scoreInsBase: -2
 # scoreStitchSJshift: 1
+# ---
 
-# Alignments and Seeding
+# Alignments And Seeding
 # seedSearchStartLmax: 50
 # seedSearchStartLmaxOverLread: 1.0
 # seedSearchLmax: 0
@@ -150,7 +170,7 @@ reference: # please fill in - example: "/path/to/reference"
 # alignIntronMax: 0
 # alignMatesGapMax: 0
 # alignSJoverhangMin: 5
-# alignSJstitchMismatchNmax: [0, -1, 0, 0]
+# alignSJstitchMismatchNmax: "0;-1;0;0"
 # alignSJDBoverhangMin: 3
 # alignSplicedMateMapLmin: 0
 # alignSplicedMateMapLminOverLmate: 0.66
@@ -160,11 +180,13 @@ reference: # please fill in - example: "/path/to/reference"
 # alignEndsType: "Local"
 # alignEndsProtrude: "0    ConcordantPair"
 # alignSoftClipAtReferenceEnds: "Yes"
-# alignInsertionFlush: "foo"
+# alignInsertionFlush: "value"
+# ---
 
-# Paired-End reads
+# Paired-End Reads
 # peOverlapNbasesMin: 0
 # peOverlapMMp: 0.01
+# ---
 
 # Windows, Anchors, Binning
 # winAnchorMultimapNmax: 50
@@ -173,9 +195,10 @@ reference: # please fill in - example: "/path/to/reference"
 # winFlankNbins: 4
 # winReadCoverageRelativeMin: 0.5
 # winReadCoverageBasesMin: 0
+# ---
 
 # Chimeric Alignments
-# chimOutType: ["Junctions"]
+# chimOutType: "Junctions"
 # chimSegmentMin: 0
 # chimScoreMin: 0
 # chimScoreDropMax: 20
@@ -183,53 +206,56 @@ reference: # please fill in - example: "/path/to/reference"
 # chimScoreJunctionNonGTAG: -1
 # chimJunctionOverhangMin: 20
 # chimSegmentReadGapMax: 0
-# chimFilter: ["banGenomicN"]
+# chimFilter: "banGenomicN"
 # chimMainSegmentMultNmax: 10
 # chimMultimapNmax: 0
 # chimMultimapScoreRange: 1
 # chimNonchimScoreDropMin: 20
 # chimOutJunctionFormat: 0
+# ---
 
-# Quantification of Annotations
-# quantMode: ["foo"]
+# Quantification Of Annotations
+# quantMode: "value"
 # quantTranscriptomeBAMcompression: 1
 # quantTranscriptomeBan: "IndelSoftclipSingleend"
+# ---
 
-# 2-pass Mapping
-# twopassMode: "foo"
+# 2-Pass Mapping
+# twopassMode: "value"
 # twopass1readsN: -1
+# ---
 
-# WASP parameters
-# waspOutputMode: "foo"
+# Wasp Parameters
+# waspOutputMode: "value"
+# ---
 
-# STARsolo (single cell RNA-seq) parameters
-# soloType: ["foo"]
-# soloCBwhitelist: ["foo"]
+# Starsolo (Single Cell Rna-Seq) Parameters
+# soloType: "value"
+# soloCBwhitelist: "value"
 # soloCBstart: 1
 # soloCBlen: 16
 # soloUMIstart: 17
 # soloUMIlen: 10
 # soloBarcodeReadLength: 1
 # soloBarcodeMate: 0
-# soloCBposition: ["foo"]
-# soloUMIposition: "foo"
-# soloAdapterSequence: "foo"
+# soloCBposition: "value"
+# soloUMIposition: "value"
+# soloAdapterSequence: "value"
 # soloAdapterMismatchesNmax: 1
 # soloCBmatchWLtype: "1MM_multi"
-# soloInputSAMattrBarcodeSeq: ["foo"]
-# soloInputSAMattrBarcodeQual: ["foo"]
+# soloInputSAMattrBarcodeSeq: "value"
+# soloInputSAMattrBarcodeQual: "value"
 # soloStrand: "Forward"
-# soloFeatures: ["Gene"]
-# soloMultiMappers: ["Unique"]
-# soloUMIdedup: ["1MM_All"]
-# soloUMIfiltering: ["foo"]
-# soloOutFileNames: ["Solo.out/", "features.tsv", "barcodes.tsv", "matrix.mtx"]
-# soloCellFilter: ["CellRanger2.2", "3000", "0.99", "10"]
-# soloOutFormatFeaturesGeneField3: ["Gene Expression"]
-# soloCellReadStats: "foo"
+# soloFeatures: "Gene"
+# soloMultiMappers: "Unique"
+# soloUMIdedup: "1MM_All"
+# soloUMIfiltering: "value"
+# soloOutFileNames: "Solo.out/;features.tsv;barcodes.tsv;matrix.mtx"
+# soloCellFilter: "CellRanger2.2;3000;0.99;10"
+# soloOutFormatFeaturesGeneField3: "Gene Expression"
+# soloCellReadStats: "value"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

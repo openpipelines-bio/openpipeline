@@ -1,25 +1,29 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Input
 # fasta: "reference.fasta"
 # bam: "input.bam"
 # bam_index: "input.bam.bai"
 # barcodes: "barcodes.tsv"
-# clusters: 123
+# clusters: 0
 ploidy: 2
 min_alt: 10
 min_ref: 10
 max_loci: 2048
-# restarts: 123
+# restarts: 0
 # common_variants: "common_variants.vcf"
 # known_genotypes: "known_variants.vcf"
-# known_genotypes_sample_names: "foo"
+# known_genotypes_sample_names: "value"
 skip_remap: false
 ignore: false
+# ---
 
 # Output
-# output: "$id.$key.output"
+# output: "$id.$key.souporcell_out"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

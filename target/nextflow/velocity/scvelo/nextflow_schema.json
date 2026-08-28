@@ -4,21 +4,6 @@
   "description": "No description",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,7 +14,7 @@
           "description": "Input MuData file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "counts_layer": {
           "type": "string",
@@ -43,25 +28,19 @@
         },
         "layer_spliced": {
           "type": "string",
-          "default": [
-            "spliced"
-          ],
+          "default": "spliced",
           "description": "Name of the layer to store the spliced abundances in. Will be used as key in the .layer attribute of the\noutput MuData object.\n",
           "help_text": "type: `string`, multiple: False, default: `spliced`"
         },
         "layer_unspliced": {
           "type": "string",
-          "default": [
-            "unspliced"
-          ],
+          "default": "unspliced",
           "description": "Name of the layer to store the unspliced abundances in.\nWill be used as key in the .layer attribute of the output MuData object.\n",
           "help_text": "type: `string`, multiple: False, default: `unspliced`"
         },
         "layer_ambiguous": {
           "type": "string",
-          "default": [
-            "ambiguous"
-          ],
+          "default": "ambiguous",
           "description": "Name of the layer to store the abundances in for which no fate was determined.\nWill be used as key in the .layer attribute of the output MuData object.\n",
           "help_text": "type: `string`, multiple: False, default: `ambiguous`"
         }
@@ -81,14 +60,14 @@
           "description": "Output directory. If it does not exist, will be created.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['path/to/output']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `path/to/output`"
         },
         "output_h5mu": {
           "type": "string",
           "description": "Output mudata file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "output_compression": {
           "type": "string",
@@ -97,7 +76,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -147,9 +126,7 @@
         },
         "log_transform": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Do not log transform counts.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
@@ -167,9 +144,7 @@
         },
         "n_neighbors": {
           "type": "integer",
-          "default": [
-            30
-          ],
+          "default": 30,
           "description": "Number of neighbors to use. First/second-order moments are computed for each\ncell across its nearest neighbors, where the neighbor graph is obtained from\neuclidean distances in PCA space.\n",
           "help_text": "type: `integer`, multiple: False, default: `30`"
         }
@@ -193,9 +168,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

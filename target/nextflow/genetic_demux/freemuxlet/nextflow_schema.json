@@ -4,21 +4,6 @@
   "description": "Freemuxlet is a software tool to deconvolute sample identity and identify multiplets when\nmultiple samples are pooled by barcoded single cell sequencing. If external genotyping\ndata is not available, the genotyping-free version demuxlet, freemuxlet, would be recommended.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -34,13 +19,11 @@
           "description": "Input file containing the initial cluster information.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['init_cluster.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `init_cluster.txt`"
         },
         "nsample": {
           "type": "integer",
-          "default": [
-            2
-          ],
+          "default": 2,
           "description": "Number of samples multiplexed together",
           "help_text": "type: `integer`, multiple: False, default: `2`"
         },
@@ -52,49 +35,37 @@
         },
         "verbose": {
           "type": "integer",
-          "default": [
-            100
-          ],
+          "default": 100,
           "description": "Turn on verbose mode with specific verbosity threshold. 0: fully verbose, 100 : no verbose messages.",
           "help_text": "type: `integer`, multiple: False, default: `100`"
         },
         "doublet_prior": {
           "type": "number",
-          "default": [
-            0.5
-          ],
+          "default": 0.5,
           "description": "Prior of doublet.",
           "help_text": "type: `number`, multiple: False, default: `0.5`"
         },
         "geno_error": {
           "type": "number",
-          "default": [
-            0.1
-          ],
+          "default": 0.1,
           "description": "Genotype error parameter per cluster.",
           "help_text": "type: `number`, multiple: False, default: `0.1`"
         },
         "bf_thres": {
           "type": "number",
-          "default": [
-            5.41
-          ],
+          "default": 5.41,
           "description": "Bayes Factor Threshold used in the initial clustering.",
           "help_text": "type: `number`, multiple: False, default: `5.41`"
         },
         "frac_init_clust": {
           "type": "number",
-          "default": [
-            1.0
-          ],
+          "default": 1.0,
           "description": "Fraction of droplets to be clustered in the very first round of initial clustering procedure.",
           "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
         "iter_init": {
           "type": "integer",
-          "default": [
-            10
-          ],
+          "default": 10,
           "description": "Iteration for initial cluster assignment (set to zero to skip the iterations).",
           "help_text": "type: `integer`, multiple: False, default: `10`"
         },
@@ -112,25 +83,19 @@
         },
         "seed": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Seed for random number (use clocks if not set).",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "cap_bq": {
           "type": "integer",
-          "default": [
-            20
-          ],
+          "default": 20,
           "description": "Maximum base quality (higher BQ will be capped).",
           "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "min_bq": {
           "type": "integer",
-          "default": [
-            13
-          ],
+          "default": 13,
           "description": "Minimum base quality to consider (lower BQ will be skipped).",
           "help_text": "type: `integer`, multiple: False, default: `13`"
         },
@@ -141,25 +106,19 @@
         },
         "min_total": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of total reads for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_umi": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of UMIs for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_snp": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of SNPs with coverage for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         }
@@ -175,12 +134,12 @@
           "description": "Output directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['freemux']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `freemux`"
         },
         "out": {
           "type": "string",
           "description": "freemuxlet Output file prefix",
-          "help_text": "type: `string`, multiple: False, example: `['freemuxlet']`"
+          "help_text": "type: `string`, multiple: False, example: `freemuxlet`"
         }
       }
     },
@@ -202,9 +161,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

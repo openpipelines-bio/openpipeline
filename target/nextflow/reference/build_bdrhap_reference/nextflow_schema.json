@@ -4,21 +4,6 @@
   "description": "The Reference Files Generator creates an archive containing Genome Index\nand Transcriptome annotation files needed for the BD Rhapsody Sequencing\nAnalysis Pipeline. The app takes as input one or more FASTA and GTF files\nand produces a compressed archive in the form of a tar.gz file. The \narchive contains:\n  \n- STAR index\n- Filtered GTF file\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -32,7 +17,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['genome_sequence.fa.gz']`"
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `genome_sequence.fa.gz`"
         },
         "gtf": {
           "type": "array",
@@ -42,7 +27,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['transcriptome_annotation.gtf.gz']`"
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `transcriptome_annotation.gtf.gz`"
         },
         "extra_sequences": {
           "type": "array",
@@ -52,7 +37,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['extra_sequence_1.fa.gz', 'extra_sequence_2.fa.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `extra_sequence_1.fa.gz;extra_sequence_2.fa.gz`"
         }
       },
       "required": [
@@ -70,7 +55,7 @@
           "description": "A Compressed archive containing the Reference Genome Index and annotation GTF files. This archive is meant to be used as an\ninput in the BD Rhapsody Sequencing Analysis Pipeline.\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['reference.tar.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `reference.tar.gz`"
         }
       },
       "required": [
@@ -111,7 +96,7 @@
         "extra_star_params": {
           "type": "string",
           "description": "Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.",
-          "help_text": "type: `string`, multiple: False, example: `['--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11']`"
+          "help_text": "type: `string`, multiple: False, example: `--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11`"
         }
       }
     },
@@ -133,9 +118,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

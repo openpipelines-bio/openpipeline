@@ -4,21 +4,6 @@
   "description": "This workflow serves as an entrypoint into the 'full_pipeline' in order to\nre-run the multisample processing and the integration setup. An input .h5mu file will \nfirst be split in order to run the multisample processing per modality. Next, the modalities\nare merged again and the integration setup pipeline is executed. Please note that this workflow\nassumes that samples from multiple pipelines are already concatenated. \n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -27,7 +12,7 @@
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
+          "help_text": "type: `string`, multiple: False, required, example: `foo`"
         },
         "input": {
           "type": "array",
@@ -37,7 +22,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `input.h5mu`"
         },
         "rna_layer": {
           "type": "string",
@@ -65,7 +50,7 @@
           "description": "Destination path to the output.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         }
       },
       "required": [
@@ -92,17 +77,13 @@
       "properties": {
         "highly_variable_features_var_output": {
           "type": "string",
-          "default": [
-            "filter_with_hvg"
-          ],
+          "default": "filter_with_hvg",
           "description": "In which .var slot to store a boolean array corresponding to the highly variable genes.",
           "help_text": "type: `string`, multiple: False, default: `filter_with_hvg`"
         },
         "highly_variable_features_obs_batch_key": {
           "type": "string",
-          "default": [
-            "sample_id"
-          ],
+          "default": "sample_id",
           "description": "If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n",
           "help_text": "type: `string`, multiple: False, default: `sample_id`"
         },
@@ -112,7 +93,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['MT-CO1', 'MT-CO2', 'MT-ND1']`"
+          "help_text": "type: `array`, multiple: True, example: `MT-CO1;MT-CO2;MT-ND1`"
         }
       }
     },
@@ -130,7 +111,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, default: `filter_with_hvg`, example: `['ercc,highly_variable']`"
+          "help_text": "type: `array`, multiple: True, default: `filter_with_hvg`, example: `ercc,highly_variable`"
         },
         "top_n_vars": {
           "type": "array",
@@ -148,9 +129,7 @@
         },
         "log1p_transform": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Compute log1p-transformed versions of the calculated QC metrics. For each emitted\nmetric column `<col>`, an additional column `log1p_<col>` is added containing\n`log1p(<col>)`. Mirrors scanpy's `log1p` flag.\n",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
@@ -176,9 +155,7 @@
       "properties": {
         "clr_axis": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Axis to perform the CLR transformation on.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         }
@@ -197,41 +174,31 @@
         },
         "rna_scaling_output_layer": {
           "type": "string",
-          "default": [
-            "scaled"
-          ],
+          "default": "scaled",
           "description": "Output layer where the scaled log-normalized data will be stored.",
           "help_text": "type: `string`, multiple: False, default: `scaled`"
         },
         "rna_scaling_pca_obsm_output": {
           "type": "string",
-          "default": [
-            "scaled_pca"
-          ],
+          "default": "scaled_pca",
           "description": "Name of the .obsm key where the PCA representation of the log-normalized\nand scaled data is stored.\n",
           "help_text": "type: `string`, multiple: False, default: `scaled_pca`"
         },
         "rna_scaling_pca_loadings_varm_output": {
           "type": "string",
-          "default": [
-            "scaled_pca_loadings"
-          ],
+          "default": "scaled_pca_loadings",
           "description": "Name of the .varm key where the PCA loadings of the log-normalized and scaled\ndata is stored.\n",
           "help_text": "type: `string`, multiple: False, default: `scaled_pca_loadings`"
         },
         "rna_scaling_pca_variance_uns_output": {
           "type": "string",
-          "default": [
-            "scaled_pca_variance"
-          ],
+          "default": "scaled_pca_variance",
           "description": "Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n",
           "help_text": "type: `string`, multiple: False, default: `scaled_pca_variance`"
         },
         "rna_scaling_umap_obsm_output": {
           "type": "string",
-          "default": [
-            "scaled_umap"
-          ],
+          "default": "scaled_umap",
           "description": "Name of the .obsm key where the UMAP representation of the log-normalized and scaled data is stored.",
           "help_text": "type: `string`, multiple: False, default: `scaled_umap`"
         },
@@ -242,9 +209,7 @@
         },
         "rna_scaling_zero_center": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "If true, center the data to zero mean before scaling. Set to false to omit zero-centering, which allows sparse input to be handled efficiently.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
@@ -268,9 +233,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

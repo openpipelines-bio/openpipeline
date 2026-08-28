@@ -4,21 +4,6 @@
   "description": "souporcell is a method for clustering mixed-genotype scRNAseq experiments by individual.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,28 +14,28 @@
           "description": "reference fasta file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['reference.fasta']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `reference.fasta`"
         },
         "bam": {
           "type": "string",
           "description": "cellranger bam",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.bam']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.bam`"
         },
         "bam_index": {
           "type": "string",
           "description": "cellranger bam index",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.bam.bai']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.bam.bai`"
         },
         "barcodes": {
           "type": "string",
           "description": "barcodes.tsv from cellranger",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['barcodes.tsv']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `barcodes.tsv`"
         },
         "clusters": {
           "type": "integer",
@@ -59,33 +44,25 @@
         },
         "ploidy": {
           "type": "integer",
-          "default": [
-            2
-          ],
+          "default": 2,
           "description": "ploidy, must be 1 or 2",
           "help_text": "type: `integer`, multiple: False, default: `2`"
         },
         "min_alt": {
           "type": "integer",
-          "default": [
-            10
-          ],
+          "default": 10,
           "description": "min alt to use locus",
           "help_text": "type: `integer`, multiple: False, default: `10`"
         },
         "min_ref": {
           "type": "integer",
-          "default": [
-            10
-          ],
+          "default": 10,
           "description": "min ref to use locus",
           "help_text": "type: `integer`, multiple: False, default: `10`"
         },
         "max_loci": {
           "type": "integer",
-          "default": [
-            2048
-          ],
+          "default": 2048,
           "description": "max loci per cell, affects speed",
           "help_text": "type: `integer`, multiple: False, default: `2048`"
         },
@@ -99,14 +76,14 @@
           "description": "common variant loci or known variant loci vcf, must be vs same reference fasta",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['common_variants.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `common_variants.vcf`"
         },
         "known_genotypes": {
           "type": "string",
           "description": "known variants per clone in population vcf mode",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['known_variants.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `known_variants.vcf`"
         },
         "known_genotypes_sample_names": {
           "type": "string",
@@ -137,7 +114,7 @@
           "description": "name of directory to place souporcell files",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['souporcell_out']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `souporcell_out`"
         }
       }
     },
@@ -159,9 +136,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

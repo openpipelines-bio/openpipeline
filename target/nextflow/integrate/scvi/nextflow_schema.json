@@ -4,21 +4,6 @@
   "description": "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,13 +14,11 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -46,9 +29,7 @@
         },
         "obs_batch": {
           "type": "string",
-          "default": [
-            "sample_id"
-          ],
+          "default": "sample_id",
           "description": "Column name discriminating between your batches.",
           "help_text": "type: `string`, multiple: False, default: `sample_id`"
         },
@@ -90,9 +71,7 @@
         },
         "sanitize_ensembl_ids": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to sanitize ensembl ids by removing version numbers.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
@@ -111,7 +90,7 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "output_model": {
           "type": "string",
@@ -122,9 +101,7 @@
         },
         "obsm_output": {
           "type": "string",
-          "default": [
-            "X_scvi_integrated"
-          ],
+          "default": "X_scvi_integrated",
           "description": "In which .obsm slot to store the resulting integrated embedding.",
           "help_text": "type: `string`, multiple: False, default: `X_scvi_integrated`"
         },
@@ -135,7 +112,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -149,41 +126,31 @@
       "properties": {
         "n_hidden_nodes": {
           "type": "integer",
-          "default": [
-            128
-          ],
+          "default": 128,
           "description": "Number of nodes per hidden layer.",
           "help_text": "type: `integer`, multiple: False, default: `128`"
         },
         "n_dimensions_latent_space": {
           "type": "integer",
-          "default": [
-            30
-          ],
+          "default": 30,
           "description": "Dimensionality of the latent space.",
           "help_text": "type: `integer`, multiple: False, default: `30`"
         },
         "n_hidden_layers": {
           "type": "integer",
-          "default": [
-            2
-          ],
+          "default": 2,
           "description": "Number of hidden layers used for encoder and decoder neural-networks.",
           "help_text": "type: `integer`, multiple: False, default: `2`"
         },
         "dropout_rate": {
           "type": "number",
-          "default": [
-            0.1
-          ],
+          "default": 0.1,
           "description": "Dropout rate for the neural networks.",
           "help_text": "type: `number`, multiple: False, default: `0.1`"
         },
         "dispersion": {
           "type": "string",
-          "default": [
-            "gene"
-          ],
+          "default": "gene",
           "description": "Set the behavior for the dispersion for negative binomial distributions:\n- gene: dispersion parameter of negative binomial is constant per gene across cells\n- gene-batch: dispersion can differ between different batches\n- gene-label: dispersion can differ between different labels\n- gene-cell:  dispersion can differ for every gene in every cell\n",
           "enum": [
             "gene",
@@ -195,9 +162,7 @@
         },
         "gene_likelihood": {
           "type": "string",
-          "default": [
-            "nb"
-          ],
+          "default": "nb",
           "description": "Model used to generate the expression data from a count-based likelihood distribution.\n- nb: Negative binomial distribution\n- zinb: Zero-inflated negative binomial distribution\n- poisson: Poisson distribution\n",
           "enum": [
             "nb",
@@ -215,9 +180,7 @@
       "properties": {
         "use_layer_normalization": {
           "type": "string",
-          "default": [
-            "both"
-          ],
+          "default": "both",
           "description": "Neural networks for which to enable layer normalization. \n",
           "enum": [
             "encoder",
@@ -229,9 +192,7 @@
         },
         "use_batch_normalization": {
           "type": "string",
-          "default": [
-            "none"
-          ],
+          "default": "none",
           "description": "Neural networks for which to enable batch normalization. \n",
           "enum": [
             "encoder",
@@ -273,9 +234,7 @@
         },
         "early_stopping_monitor": {
           "type": "string",
-          "default": [
-            "elbo_validation"
-          ],
+          "default": "elbo_validation",
           "description": "Metric logged during validation set epoch.",
           "enum": [
             "elbo_validation",
@@ -286,17 +245,13 @@
         },
         "early_stopping_patience": {
           "type": "integer",
-          "default": [
-            45
-          ],
+          "default": 45,
           "description": "Number of validation epochs with no improvement after which training will be stopped.",
           "help_text": "type: `integer`, multiple: False, default: `45`"
         },
         "early_stopping_min_delta": {
           "type": "number",
-          "default": [
-            0.0
-          ],
+          "default": 0.0,
           "description": "Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement.",
           "help_text": "type: `number`, multiple: False, default: `0.0`"
         }
@@ -314,25 +269,19 @@
         },
         "reduce_lr_on_plateau": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "lr_factor": {
           "type": "number",
-          "default": [
-            0.6
-          ],
+          "default": 0.6,
           "description": "Factor to reduce learning rate.",
           "help_text": "type: `number`, multiple: False, default: `0.6`"
         },
         "lr_patience": {
           "type": "number",
-          "default": [
-            30.0
-          ],
+          "default": 30.0,
           "description": "Number of epochs with no improvement after which learning rate will be reduced.",
           "help_text": "type: `number`, multiple: False, default: `30.0`"
         }
@@ -345,17 +294,13 @@
       "properties": {
         "n_obs_min_count": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "n_var_min_count": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         }
@@ -379,9 +324,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

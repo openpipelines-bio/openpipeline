@@ -4,21 +4,6 @@
   "description": "BBKNN network generation\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,29 +14,23 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "obsm_input": {
           "type": "string",
-          "default": [
-            "X_pca"
-          ],
+          "default": "X_pca",
           "description": "The dimensionality reduction in `.obsm` to use for neighbour detection. Defaults to X_pca.",
           "help_text": "type: `string`, multiple: False, default: `X_pca`"
         },
         "obs_batch": {
           "type": "string",
-          "default": [
-            "batch"
-          ],
+          "default": "batch",
           "description": ".obs column name discriminating between your batches.",
           "help_text": "type: `string`, multiple: False, default: `batch`"
         },
@@ -60,45 +39,35 @@
           "description": "Output .h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "uns_output": {
           "type": "string",
-          "default": [
-            "neighbors"
-          ],
+          "default": "neighbors",
           "description": "Mandatory .uns slot to store various neighbor output objects.",
           "help_text": "type: `string`, multiple: False, default: `neighbors`"
         },
         "obsp_distances": {
           "type": "string",
-          "default": [
-            "distances"
-          ],
+          "default": "distances",
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
           "help_text": "type: `string`, multiple: False, default: `distances`"
         },
         "obsp_connectivities": {
           "type": "string",
-          "default": [
-            "connectivities"
-          ],
+          "default": "connectivities",
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
           "help_text": "type: `string`, multiple: False, default: `connectivities`"
         },
         "n_neighbors_within_batch": {
           "type": "integer",
-          "default": [
-            3
-          ],
+          "default": 3,
           "description": "How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches.",
           "help_text": "type: `integer`, multiple: False, default: `3`"
         },
         "n_pcs": {
           "type": "integer",
-          "default": [
-            50
-          ],
+          "default": 50,
           "description": "How many dimensions (in case of PCA, principal components) to use in the analysis.",
           "help_text": "type: `integer`, multiple: False, default: `50`"
         },
@@ -114,7 +83,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -140,9 +109,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

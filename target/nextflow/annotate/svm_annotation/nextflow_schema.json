@@ -4,21 +4,6 @@
   "description": "Automated cell type annotation tool for scRNA-seq datasets on the basis of SVMs.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,13 +14,11 @@
           "description": "The input (query) data to be labeled. Should be a .h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality to process.",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -51,17 +34,13 @@
         },
         "input_reference_gene_overlap": {
           "type": "integer",
-          "default": [
-            100
-          ],
+          "default": 100,
           "description": "The minimum number of genes present in both the reference and query datasets.\n",
           "help_text": "type: `integer`, multiple: False, default: `100`"
         },
         "sanitize_ensembl_ids": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to sanitize ensembl ids by removing version numbers.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
@@ -80,7 +59,7 @@
           "description": "The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['reference.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `reference.h5mu`"
         },
         "reference_layer": {
           "type": "string",
@@ -117,21 +96,17 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         },
         "output_obs_prediction": {
           "type": "string",
-          "default": [
-            "svm_pred"
-          ],
+          "default": "svm_pred",
           "description": "In which `.obs` slots to store the predicted information.\n",
           "help_text": "type: `string`, multiple: False, default: `svm_pred`"
         },
         "output_obs_probability": {
           "type": "string",
-          "default": [
-            "svm_probability"
-          ],
+          "default": "svm_probability",
           "description": "In which `.obs` slots to store the probability of the predictions.\n",
           "help_text": "type: `string`, multiple: False, default: `svm_probability`"
         },
@@ -142,7 +117,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       }
     },
@@ -156,37 +131,29 @@
           "description": "Pretrained model in pkl format. If not provided, the model will be trained on the reference data and --reference should be provided.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['pretrained_model.pkl']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `pretrained_model.pkl`"
         },
         "feature_selection": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to perform feature selection.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "max_iter": {
           "type": "integer",
-          "default": [
-            5000
-          ],
+          "default": 5000,
           "description": "Maximum number of iterations for the SVM.",
           "help_text": "type: `integer`, multiple: False, default: `5000`"
         },
         "c_reg": {
           "type": "number",
-          "default": [
-            1.0
-          ],
+          "default": 1.0,
           "description": "Regularization parameter for the SVM.",
           "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
         "class_weight": {
           "type": "string",
-          "default": [
-            "balanced"
-          ],
+          "default": "balanced",
           "description": "\"Class weights for the SVM.  The `uniform` mode gives all classes a weight  of one. \nThe `balanced` mode (default) uses the values of y to automatically adjust weights inversely \nproportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))\"\n",
           "enum": [
             "balanced",
@@ -214,9 +181,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

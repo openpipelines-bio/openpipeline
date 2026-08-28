@@ -1,13 +1,18 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
-input: # please fill in - example: ["sample_paths"]
-# modality: ["foo"]
-# input_id: ["foo"]
+input: # please fill in - example: "sample_paths"
+# modality: "value"
+# input_id: "value"
 # output: "$id.$key.output.h5mu"
 other_axis_mode: "move"
 uns_merge_mode: "make_unique"
-# obsp_keys: ["foo"]
+# obsp_keys: "value"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

@@ -1,8 +1,13 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 input: # please fill in - example: "input.rds"
 assay: "RNA"
+# ---
 
-# Conversion parameters
+# Conversion Parameters
 layers_mapping: "True"
 obs_mapping: "True"
 var_mapping: "True"
@@ -11,15 +16,15 @@ obsm_mapping: "True"
 varm_mapping: "True"
 obsp_mapping: "True"
 varp_mapping: "True"
-# x_mapping: "foo"
+# x_mapping: "value"
+# ---
 
 # Outputs
 modality: "rna"
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

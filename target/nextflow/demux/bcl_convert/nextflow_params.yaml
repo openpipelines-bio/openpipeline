@@ -1,14 +1,19 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 input: # please fill in - example: "bcl_dir"
 sample_sheet: # please fill in - example: "bcl_dir"
-# output: "$id.$key.output"
-# reports: "$id.$key.reports"
+output: # please fill in - example: "$id.$key.fastq_dir"
+# reports: "$id.$key.reports_dir"
 test_mode: false
 strict_mode: false
-# tiles: "foo"
-# exclude_tiles: "foo"
+# tiles: "value"
+# exclude_tiles: "value"
 # no_lane_splitting: true
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

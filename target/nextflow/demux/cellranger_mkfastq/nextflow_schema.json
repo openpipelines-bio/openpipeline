@@ -4,21 +4,6 @@
   "description": "Demultiplex raw sequencing data",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,31 +14,29 @@
           "description": "Path to the (untarred) BCL files. Expects 'RunParameters.xml' at './'.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['/path/to/bcl']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `/path/to/bcl`"
         },
         "sample_sheet": {
           "type": "string",
           "description": "The path to the sample sheet.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['SampleSheet.csv']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `SampleSheet.csv`"
         },
         "output": {
           "type": "string",
-          "default": [
-            "fastqs"
-          ],
+          "default": "fastqs",
           "description": "The folder to store the demux results",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, default: `fastqs`, direction: `output`, example: `['/path/to/output']`"
+          "help_text": "type: `string`, multiple: False, required, default: `fastqs`, direction: `output`, example: `/path/to/output`"
         },
         "reports": {
           "type": "string",
           "description": "Reports directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['reports_dir']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `reports_dir`"
         }
       },
       "required": [
@@ -80,9 +63,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

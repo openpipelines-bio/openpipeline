@@ -4,21 +4,6 @@
   "description": "Filter a 10x h5 dataset.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,28 +14,24 @@
           "description": "An h5 file from the 10x genomics website.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['pbmc_1k_protein_v3_raw_feature_bc_matrix.h5']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix.h5`"
         },
         "output": {
           "type": "string",
           "description": "Output h5 file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5`"
         },
         "min_library_size": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum library size.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_cells_per_gene": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of cells per gene.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
@@ -60,7 +41,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['Antibody Capture']`"
+          "help_text": "type: `array`, multiple: True, example: `Antibody Capture`"
         },
         "verbose": {
           "type": "boolean",
@@ -92,9 +73,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

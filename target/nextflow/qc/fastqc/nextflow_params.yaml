@@ -1,9 +1,14 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 mode: "files"
 input: # please fill in - example: "fastq_dir"
-# output: "$id.$key.output"
-# threads: 123
+output: # please fill in - example: "$id.$key.qc"
+# threads: 0
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

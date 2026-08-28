@@ -4,21 +4,6 @@
   "description": "\"Cell type annotation workflow that performs scVI integration of reference and query dataset followed by KNN label transfer. \nThe query and reference datasets are expected to be pre-processed in the same way, for example with the `process_samples` workflow of OpenPipeline.\nNote that this workflow will integrate the reference dataset from scratch and integrate the query dataset in the same embedding space. \nThe workflow does not currently output the trained SCVI reference model.\"\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "query input": {
       "type": "object",
       "title": "Query Input",
@@ -27,37 +12,35 @@
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
+          "help_text": "type: `string`, multiple: False, required, example: `foo`"
         },
         "input": {
           "type": "string",
           "description": "Input dataset consisting of the (unlabeled) query observations.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality to process. Should match the modality of the --reference dataset.",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "input_layer": {
           "type": "string",
           "description": "The layer of the input dataset containing the raw counts if .X is not to be used.",
-          "help_text": "type: `string`, multiple: False, example: `['counts']`"
+          "help_text": "type: `string`, multiple: False, example: `counts`"
         },
         "input_layer_lognormalized": {
           "type": "string",
           "description": "The layer of the input dataset containing the lognormalized counts if .X is not to be used.",
-          "help_text": "type: `string`, multiple: False, example: `['log_normalized']`"
+          "help_text": "type: `string`, multiple: False, example: `log_normalized`"
         },
         "input_obs_batch_label": {
           "type": "string",
           "description": "The .obs field in the input (query) dataset containing the batch labels.",
-          "help_text": "type: `string`, multiple: False, required, example: `['sample']`"
+          "help_text": "type: `string`, multiple: False, required, example: `sample`"
         },
         "input_var_gene_names": {
           "type": "string",
@@ -66,9 +49,7 @@
         },
         "input_reference_gene_overlap": {
           "type": "integer",
-          "default": [
-            100
-          ],
+          "default": 100,
           "description": "The minimum number of genes present in both the reference and query datasets.\n",
           "help_text": "type: `integer`, multiple: False, default: `100`"
         },
@@ -80,9 +61,7 @@
         },
         "sanitize_ensembl_ids": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to sanitize ensembl ids by removing version numbers.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
@@ -103,22 +82,22 @@
           "description": "Reference dataset consisting of the labeled observations.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['reference.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `reference.h5mu`"
         },
         "reference_layer": {
           "type": "string",
           "description": "The layer of the reference dataset containing the raw counts if .X is not to be used.",
-          "help_text": "type: `string`, multiple: False, example: `['counts']`"
+          "help_text": "type: `string`, multiple: False, example: `counts`"
         },
         "reference_layer_lognormalized": {
           "type": "string",
           "description": "The layer of the reference dataset containing the lognormalized counts if .X is not to be used.",
-          "help_text": "type: `string`, multiple: False, example: `['log_normalized']`"
+          "help_text": "type: `string`, multiple: False, example: `log_normalized`"
         },
         "reference_obs_target": {
           "type": "string",
           "description": "The `.obs` key(s) of the target labels to transfer.",
-          "help_text": "type: `string`, multiple: False, required, example: `['cell_type']`"
+          "help_text": "type: `string`, multiple: False, required, example: `cell_type`"
         },
         "reference_var_gene_names": {
           "type": "string",
@@ -128,7 +107,7 @@
         "reference_obs_batch_label": {
           "type": "string",
           "description": "The .obs field in the reference dataset containing the batch labels.",
-          "help_text": "type: `string`, multiple: False, required, example: `['sample']`"
+          "help_text": "type: `string`, multiple: False, required, example: `sample`"
         }
       },
       "required": [
@@ -144,9 +123,7 @@
       "properties": {
         "n_hvg": {
           "type": "integer",
-          "default": [
-            2000
-          ],
+          "default": 2000,
           "description": "Number of highly variable genes to subset for.\n",
           "help_text": "type: `integer`, multiple: False, default: `2000`"
         }
@@ -164,9 +141,7 @@
         },
         "scvi_early_stopping_monitor": {
           "type": "string",
-          "default": [
-            "elbo_validation"
-          ],
+          "default": "elbo_validation",
           "description": "Metric logged during validation set epoch.",
           "enum": [
             "elbo_validation",
@@ -177,17 +152,13 @@
         },
         "scvi_early_stopping_patience": {
           "type": "integer",
-          "default": [
-            45
-          ],
+          "default": 45,
           "description": "Number of validation epochs with no improvement after which training will be stopped.",
           "help_text": "type: `integer`, multiple: False, default: `45`"
         },
         "scvi_early_stopping_min_delta": {
           "type": "number",
-          "default": [
-            0.0
-          ],
+          "default": 0.0,
           "description": "Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement.",
           "help_text": "type: `number`, multiple: False, default: `0.0`"
         },
@@ -198,25 +169,19 @@
         },
         "scvi_reduce_lr_on_plateau": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "scvi_lr_factor": {
           "type": "number",
-          "default": [
-            0.6
-          ],
+          "default": 0.6,
           "description": "Factor to reduce learning rate.",
           "help_text": "type: `number`, multiple: False, default: `0.6`"
         },
         "scvi_lr_patience": {
           "type": "number",
-          "default": [
-            30.0
-          ],
+          "default": 30.0,
           "description": "Number of epochs with no improvement after which learning rate will be reduced.",
           "help_text": "type: `number`, multiple: False, default: `30.0`"
         }
@@ -247,9 +212,7 @@
       "properties": {
         "knn_weights": {
           "type": "string",
-          "default": [
-            "uniform"
-          ],
+          "default": "uniform",
           "description": "Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
           "enum": [
             "uniform",
@@ -259,9 +222,7 @@
         },
         "knn_n_neighbors": {
           "type": "integer",
-          "default": [
-            15
-          ],
+          "default": 15,
           "description": "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n",
           "help_text": "type: `integer`, multiple: False, default: `15`"
         }
@@ -277,7 +238,7 @@
           "description": "The annotated output .h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "output_obs_predictions": {
           "type": "array",
@@ -297,9 +258,7 @@
         },
         "output_obsm_integrated": {
           "type": "string",
-          "default": [
-            "X_integrated_scvi"
-          ],
+          "default": "X_integrated_scvi",
           "description": "In which .obsm slot to store the integrated embedding.",
           "help_text": "type: `string`, multiple: False, default: `X_integrated_scvi`"
         }
@@ -326,9 +285,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/query input"
     },

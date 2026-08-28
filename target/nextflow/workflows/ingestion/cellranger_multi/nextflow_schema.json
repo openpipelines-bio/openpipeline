@@ -4,21 +4,6 @@
   "description": "A pipeline for running Cell Ranger multi.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input files": {
       "type": "object",
       "title": "Input files",
@@ -32,7 +17,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         }
       }
     },
@@ -49,7 +34,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         },
         "abc_input": {
           "type": "array",
@@ -59,7 +44,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         },
         "cgc_input": {
           "type": "array",
@@ -69,7 +54,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         },
         "mux_input": {
           "type": "array",
@@ -79,7 +64,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         },
         "vdj_input": {
           "type": "array",
@@ -89,7 +74,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         },
         "vdj_t_input": {
           "type": "array",
@@ -99,7 +84,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         },
         "vdj_t_gd_input": {
           "type": "array",
@@ -109,7 +94,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         },
         "vdj_b_input": {
           "type": "array",
@@ -119,7 +104,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         },
         "agc_input": {
           "type": "array",
@@ -129,7 +114,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `input`, example: `['mysample_S1_L001_R1_001.fastq.gz', 'mysample_S1_L001_R2_001.fastq.gz']`"
+          "help_text": "type: `array`, multiple: True, direction: `input`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`"
         }
       }
     },
@@ -144,7 +129,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['mysample1']`"
+          "help_text": "type: `array`, multiple: True, example: `mysample1`"
         },
         "library_type": {
           "type": "array",
@@ -164,7 +149,7 @@
               "Custom"
             ]
           },
-          "help_text": "type: `array`, multiple: True, example: `['Gene Expression']`, choices: `Gene Expression`|`VDJ`|`VDJ-T`|`VDJ-B`|`VDJ-T-GD`|`Antibody Capture`|`CRISPR Guide Capture`|`Multiplexing Capture`|`Antigen Capture`|`Custom`"
+          "help_text": "type: `array`, multiple: True, example: `Gene Expression`, choices: `Gene Expression`|`VDJ`|`VDJ-T`|`VDJ-B`|`VDJ-T-GD`|`Antibody Capture`|`CRISPR Guide Capture`|`Multiplexing Capture`|`Antigen Capture`|`Custom`"
         },
         "library_subsample": {
           "type": "array",
@@ -172,7 +157,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['0.5']`"
+          "help_text": "type: `array`, multiple: True, example: `0.5`"
         },
         "library_lanes": {
           "type": "array",
@@ -180,7 +165,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['1-4']`"
+          "help_text": "type: `array`, multiple: True, example: `1-4`"
         },
         "library_chemistry": {
           "type": "string",
@@ -216,7 +201,7 @@
           "items": {
             "type": "integer"
           },
-          "help_text": "type: `array`, multiple: True, example: `[3000]`"
+          "help_text": "type: `array`, multiple: True, example: `3000`"
         },
         "sample_force_cells": {
           "type": "array",
@@ -224,7 +209,7 @@
           "items": {
             "type": "integer"
           },
-          "help_text": "type: `array`, multiple: True, example: `[3000]`"
+          "help_text": "type: `array`, multiple: True, example: `3000`"
         }
       }
     },
@@ -238,7 +223,7 @@
           "description": "Path to the Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes.\nRequired only for Antibody Capture or CRISPR Guide Capture libraries.\nSee https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref for more information.\"\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['feature_reference.csv']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `feature_reference.csv`"
         },
         "feature_r1_length": {
           "type": "integer",
@@ -267,21 +252,17 @@
           "description": "Genome refence index built by Cell Ranger mkref.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['reference_genome.tar.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `reference_genome.tar.gz`"
         },
         "gex_secondary_analysis": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "Whether or not to run the secondary analysis e.g. clustering.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "gex_generate_bam": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "Whether to generate a BAM file.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
@@ -305,18 +286,16 @@
         "gex_expect_cells": {
           "type": "integer",
           "description": "Expected number of recovered cells, used as input to cell calling algorithm.\n",
-          "help_text": "type: `integer`, multiple: False, example: `[3000]`"
+          "help_text": "type: `integer`, multiple: False, example: `3000`"
         },
         "gex_force_cells": {
           "type": "integer",
           "description": "Force pipeline to use this number of cells, bypassing cell detection.\n",
-          "help_text": "type: `integer`, multiple: False, example: `[3000]`"
+          "help_text": "type: `integer`, multiple: False, example: `3000`"
         },
         "gex_include_introns": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether or not to include intronic reads in counts.\nThis option does not apply to Fixed RNA Profiling analysis.\n",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
@@ -332,9 +311,7 @@
         },
         "gex_chemistry": {
           "type": "string",
-          "default": [
-            "auto"
-          ],
+          "default": "auto",
           "description": "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-PE-v3: Paired-end Single Cell 5' v3\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
           "enum": [
             "auto",
@@ -383,14 +360,14 @@
           "description": "VDJ refence index built by Cell Ranger mkref.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['reference_vdj.tar.gz']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `reference_vdj.tar.gz`"
         },
         "vdj_inner_enrichment_primers": {
           "type": "string",
           "description": "V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided \nin the 10x Genomics kits are used, they need to be specified here as a\ntext file with one primer per line.\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['enrichment_primers.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `enrichment_primers.txt`"
         },
         "vdj_r1_length": {
           "type": "integer",
@@ -535,9 +512,7 @@
       "properties": {
         "check_library_compatibility": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.\n",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
@@ -553,20 +528,18 @@
           "description": "The raw output folder.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output_dir']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output_dir`"
         },
         "output_h5mu": {
           "type": "string",
           "description": "Locations for the output files. Must contain a wildcard (*) character,\nwhich will be replaced with the sample name.\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['*.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `*.h5mu`"
         },
         "uns_metrics": {
           "type": "string",
-          "default": [
-            "metrics_cellranger"
-          ],
+          "default": "metrics_cellranger",
           "description": "Name of the .uns slot under which to QC metrics (if any).",
           "help_text": "type: `string`, multiple: False, default: `metrics_cellranger`"
         },
@@ -600,9 +573,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input files"
     },

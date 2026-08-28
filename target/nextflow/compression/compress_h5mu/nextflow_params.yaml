@@ -1,8 +1,13 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 input: # please fill in - example: "input.h5mu"
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

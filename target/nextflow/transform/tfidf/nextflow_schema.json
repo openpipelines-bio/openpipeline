@@ -4,21 +4,6 @@
   "description": "Perform TF-IDF normalization of the data (typically, ATAC).\n\nTF-IDF stands for \"term frequency - inverse document frequency\". It is a technique from natural language processing analysis.\nIn the context of ATAC data, \"terms\" are the features (genes) and \"documents\" are the observations (cells). \nTF-IDF normalization is applied to single-cell ATAC-seq data to highlight the importance of specific genomic regions (typically peaks)\nacross different cells while down-weighting regions that are commonly accessible across many cells. \n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,13 +14,11 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "atac"
-          ],
+          "default": "atac",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `atac`"
         },
@@ -49,45 +32,35 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "output_layer": {
           "type": "string",
-          "default": [
-            "tfidf"
-          ],
+          "default": "tfidf",
           "description": "Output layer to use.",
           "help_text": "type: `string`, multiple: False, default: `tfidf`"
         },
         "scale_factor": {
           "type": "integer",
-          "default": [
-            10000
-          ],
+          "default": 10000,
           "description": "Scale factor to multiply the TF-IDF matrix by.",
           "help_text": "type: `integer`, multiple: False, default: `10000`"
         },
         "log_idf": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to log-transform IDF term.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "log_tf": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to log-transform TF term.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "log_tfidf": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "Whether to log-transform TF*IDF term (False by default). Can only be used when log_tf and log_idf are False.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
@@ -98,7 +71,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -124,9 +97,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

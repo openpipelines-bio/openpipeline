@@ -4,21 +4,6 @@
   "description": "Combine one or more single-modality .h5mu files together into one .h5mu file.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -35,13 +20,11 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, default: `sample_paths`, direction: `input`, example: `['/path/to/modality_1.h5mu', '/path/to/modality_2.h5mu']`"
+          "help_text": "type: `array`, multiple: True, required, default: `sample_paths`, direction: `input`, example: `/path/to/modality_1.h5mu;/path/to/modality_2.h5mu`"
         },
         "output": {
           "type": "string",
-          "default": [
-            "output.h5mu"
-          ],
+          "default": "output.h5mu",
           "description": "Path to the output file.",
           "format": "path",
           "exists": true,
@@ -54,7 +37,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -79,9 +62,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

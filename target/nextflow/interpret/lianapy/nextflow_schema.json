@@ -4,21 +4,6 @@
   "description": "Performs LIANA integration based as described in https://github.com/saezlab/liana-py",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,20 +14,18 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "output": {
           "type": "string",
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -53,9 +36,7 @@
         },
         "de_method": {
           "type": "string",
-          "default": [
-            "t-test"
-          ],
+          "default": "t-test",
           "description": "Differential expression method. `scanpy.tl.rank_genes_groups` is used to rank genes according to 1vsRest.",
           "enum": [
             "logreg",
@@ -72,9 +53,7 @@
         },
         "resource_name": {
           "type": "string",
-          "default": [
-            "consensus"
-          ],
+          "default": "consensus",
           "description": "Name of the resource to be loaded and use for ligand-receptor inference.",
           "enum": [
             "baccin2019",
@@ -99,33 +78,25 @@
         },
         "gene_symbol": {
           "type": "string",
-          "default": [
-            "gene_symbol"
-          ],
+          "default": "gene_symbol",
           "description": "Column name in var DataFrame in which gene symbol are stored.",
           "help_text": "type: `string`, multiple: False, default: `gene_symbol`"
         },
         "expr_prop": {
           "type": "number",
-          "default": [
-            0.1
-          ],
+          "default": 0.1,
           "description": "Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities. Set to '0', to return unfiltered results.",
           "help_text": "type: `number`, multiple: False, default: `0.1`"
         },
         "min_cells": {
           "type": "integer",
-          "default": [
-            5
-          ],
+          "default": 5,
           "description": "Minimum cells per cell identity ('groupby') to be considered for downstream analysis.",
           "help_text": "type: `integer`, multiple: False, default: `5`"
         },
         "aggregate_method": {
           "type": "string",
-          "default": [
-            "rra"
-          ],
+          "default": "rra",
           "description": "Method aggregation approach, one of ['mean', 'rra'], where 'mean' represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et al., 2014) of the interactions.",
           "enum": [
             "mean",
@@ -143,17 +114,13 @@
         },
         "return_all_lrs": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "Bool whether to return all LRs, or only those that surpass the 'expr_prop' threshold. Those interactions that do not pass the 'expr_prop' threshold will be assigned to the *worst* score of the ones that do. 'False' by default.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "n_perms": {
           "type": "integer",
-          "default": [
-            100
-          ],
+          "default": 100,
           "description": "Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. 'CellPhoneDB",
           "help_text": "type: `integer`, multiple: False, default: `100`"
         },
@@ -164,7 +131,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -191,9 +158,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

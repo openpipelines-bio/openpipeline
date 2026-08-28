@@ -4,21 +4,6 @@
   "description": "Extract files from a tar archive",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,24 +14,24 @@
           "description": "Input file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.tar.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.tar.gz`"
         },
         "output": {
           "type": "string",
           "description": "Folder to restore file(s) to.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output_folder']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output_folder`"
         },
         "strip_components": {
           "type": "integer",
           "description": "Strip this amount of leading components from file names on extraction. For example, to extract only 'myfile.txt' from an archive containing the structure `this/goes/deep/myfile.txt', use 3 to strip 'this/goes/deep/'.",
-          "help_text": "type: `integer`, multiple: False, example: `[1]`"
+          "help_text": "type: `integer`, multiple: False, example: `1`"
         },
         "exclude": {
           "type": "string",
           "description": "Prevents any file or member whose name matches the shell wildcard (pattern) from being extracted.",
-          "help_text": "type: `string`, multiple: False, example: `['docs/figures']`"
+          "help_text": "type: `string`, multiple: False, example: `docs/figures`"
         }
       },
       "required": [
@@ -72,9 +57,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

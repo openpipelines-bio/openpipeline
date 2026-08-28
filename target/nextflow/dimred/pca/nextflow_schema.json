@@ -4,21 +4,6 @@
   "description": "Computes PCA coordinates, loadings and variance decomposition.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -31,7 +16,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       }
     },
@@ -45,13 +30,11 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -63,7 +46,7 @@
         "var_input": {
           "type": "string",
           "description": "Column name in .var matrix that will be used to select which genes to run the PCA on.",
-          "help_text": "type: `string`, multiple: False, example: `['filter_with_hvg']`"
+          "help_text": "type: `string`, multiple: False, example: `filter_with_hvg`"
         }
       },
       "required": [
@@ -78,7 +61,7 @@
         "num_components": {
           "type": "integer",
           "description": "Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.",
-          "help_text": "type: `integer`, multiple: False, example: `[25]`"
+          "help_text": "type: `integer`, multiple: False, example: `25`"
         },
         "chunked": {
           "type": "boolean",
@@ -108,29 +91,23 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "obsm_output": {
           "type": "string",
-          "default": [
-            "X_pca"
-          ],
+          "default": "X_pca",
           "description": "In which .obsm slot to store the resulting embedding.",
           "help_text": "type: `string`, multiple: False, default: `X_pca`"
         },
         "varm_output": {
           "type": "string",
-          "default": [
-            "pca_loadings"
-          ],
+          "default": "pca_loadings",
           "description": "In which .varm slot to store the resulting loadings matrix.",
           "help_text": "type: `string`, multiple: False, default: `pca_loadings`"
         },
         "uns_output": {
           "type": "string",
-          "default": [
-            "pca_variance"
-          ],
+          "default": "pca_variance",
           "description": "In which .uns slot to store the resulting variance objects.",
           "help_text": "type: `string`, multiple: False, default: `pca_variance`"
         },
@@ -163,9 +140,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

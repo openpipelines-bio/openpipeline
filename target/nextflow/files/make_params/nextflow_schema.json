@@ -4,21 +4,6 @@
   "description": "Looks for files in a directory and turn it in a params file.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,56 +14,48 @@
           "description": "Base directory to search recursively",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['/path/to/dir']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `/path/to/dir`"
         },
         "pattern": {
           "type": "string",
           "description": "An optional regular expression. Only file names which match the regular expression will be matched.",
-          "help_text": "type: `string`, multiple: False, required, example: `['*.fastq.gz']`"
+          "help_text": "type: `string`, multiple: False, required, example: `*.fastq.gz`"
         },
         "n_dirname_drop": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "For every matched file, the parent directory will be traversed N times.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "n_basename_id": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "The unique identifiers will consist of at least N dirnames.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "id_name": {
           "type": "string",
-          "default": [
-            "id"
-          ],
+          "default": "id",
           "description": "The name for storing the identifier field in the yaml.",
           "help_text": "type: `string`, multiple: False, default: `id`"
         },
         "path_name": {
           "type": "string",
-          "default": [
-            "path"
-          ],
+          "default": "path",
           "description": "The name for storing the path field in the yaml.",
           "help_text": "type: `string`, multiple: False, default: `path`"
         },
         "group_name": {
           "type": "string",
           "description": "Top level name for the group of entries.",
-          "help_text": "type: `string`, multiple: False, example: `['param_list']`"
+          "help_text": "type: `string`, multiple: False, example: `param_list`"
         },
         "output": {
           "type": "string",
           "description": "Output YAML file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['params.yaml']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `params.yaml`"
         }
       },
       "required": [
@@ -105,9 +82,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

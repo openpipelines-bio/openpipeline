@@ -1,24 +1,28 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Input
 # vcf: "input.vcf"
 # bam: "input.bam"
 # bar: "barcodes.txt"
 tag: "CB"
 # com: "common_snvs.txt"
-# num: 123
+# num: 0
 sub: 10
 ems: 30
-# dbl: 123.0
+# dbl: 0.0
 # vcf_known: "known_variants.vcf"
 geno: false
+# ---
 
 # Output
-# output: "$id.$key.output"
-# ref: "foo"
-# alt: "foo"
-# psc: "foo"
+# output: "$id.$key.scSplit_out"
+# ref: "value"
+# alt: "value"
+# psc: "value"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

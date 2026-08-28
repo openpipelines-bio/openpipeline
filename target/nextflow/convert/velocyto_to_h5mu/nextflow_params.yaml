@@ -1,7 +1,12 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 input_loom: # please fill in - example: "input.loom"
 # input_h5mu: "input.h5mu"
 modality: "rna_velocity"
+# ---
 
 # Outputs
 # output: "$id.$key.output.h5mu"
@@ -9,9 +14,8 @@ layer_spliced: "velo_spliced"
 layer_unspliced: "velo_unspliced"
 layer_ambiguous: "velo_ambiguous"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

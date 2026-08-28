@@ -1,10 +1,15 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-slots: # please fill in - example: ["foo"]
-# output: "output.h5mu"
+slots: # please fill in - example: "obsm"
+output: "output.h5mu"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

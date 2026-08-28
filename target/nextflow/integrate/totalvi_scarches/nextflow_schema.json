@@ -4,21 +4,6 @@
   "description": "Performs totalVI integration by mapping the query dataset to a reference dataset or model. \n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -46,9 +31,7 @@
         },
         "query_modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "No description",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -59,17 +42,13 @@
         },
         "reference_modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "No description",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "reference_proteins_modality": {
           "type": "string",
-          "default": [
-            "prot"
-          ],
+          "default": "prot",
           "description": "Name of the modality containing proteins in the reference",
           "help_text": "type: `string`, multiple: False, default: `prot`"
         },
@@ -80,9 +59,7 @@
         },
         "obs_batch": {
           "type": "string",
-          "default": [
-            "sample_id"
-          ],
+          "default": "sample_id",
           "description": "Column name discriminating between your batches.",
           "help_text": "type: `string`, multiple: False, default: `sample_id`"
         },
@@ -132,33 +109,25 @@
         },
         "obsm_output": {
           "type": "string",
-          "default": [
-            "X_integrated_totalvi"
-          ],
+          "default": "X_integrated_totalvi",
           "description": "In which .obsm slot to store the resulting integrated embedding.",
           "help_text": "type: `string`, multiple: False, default: `X_integrated_totalvi`"
         },
         "obsm_normalized_rna_output": {
           "type": "string",
-          "default": [
-            "X_totalvi_normalized_rna"
-          ],
+          "default": "X_totalvi_normalized_rna",
           "description": "In which .obsm slot to store the normalized RNA from TOTALVI.",
           "help_text": "type: `string`, multiple: False, default: `X_totalvi_normalized_rna`"
         },
         "obsm_normalized_protein_output": {
           "type": "string",
-          "default": [
-            "X_totalvi_normalized_protein"
-          ],
+          "default": "X_totalvi_normalized_protein",
           "description": "In which .obsm slot to store the normalized protein data from TOTALVI.",
           "help_text": "type: `string`, multiple: False, default: `X_totalvi_normalized_protein`"
         },
         "reference_model_path": {
           "type": "string",
-          "default": [
-            "totalvi_model_reference"
-          ],
+          "default": "totalvi_model_reference",
           "description": "Directory with the reference model. If not exists, trained model will be saved there",
           "format": "path",
           "exists": true,
@@ -166,9 +135,7 @@
         },
         "query_model_path": {
           "type": "string",
-          "default": [
-            "totalvi_model_query"
-          ],
+          "default": "totalvi_model_query",
           "description": "Directory, where the query model will be saved",
           "format": "path",
           "exists": true,
@@ -186,25 +153,19 @@
       "properties": {
         "max_epochs": {
           "type": "integer",
-          "default": [
-            400
-          ],
+          "default": 400,
           "description": "Number of passes through the dataset",
           "help_text": "type: `integer`, multiple: False, default: `400`"
         },
         "max_query_epochs": {
           "type": "integer",
-          "default": [
-            200
-          ],
+          "default": 200,
           "description": "Number of passes through the dataset, when fine-tuning model for query",
           "help_text": "type: `integer`, multiple: False, default: `200`"
         },
         "weight_decay": {
           "type": "number",
-          "default": [
-            0.0
-          ],
+          "default": 0.0,
           "description": "Weight decay, when fine-tuning model for query",
           "help_text": "type: `number`, multiple: False, default: `0.0`"
         }
@@ -228,9 +189,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

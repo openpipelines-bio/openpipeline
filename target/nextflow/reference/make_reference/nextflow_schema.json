@@ -4,21 +4,6 @@
   "description": "Preprocess and build a transcriptome reference.\n\nExample input files are:\n  - `genome_fasta`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz\n  - `transcriptome_gtf`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz\n  - `ercc`: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,40 +14,40 @@
           "description": "Reference genome fasta. Example: ",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['genome_fasta.fa.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `genome_fasta.fa.gz`"
         },
         "transcriptome_gtf": {
           "type": "string",
           "description": "Reference transcriptome annotation.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['transcriptome.gtf.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `transcriptome.gtf.gz`"
         },
         "ercc": {
           "type": "string",
           "description": "ERCC sequence and annotation file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['ercc.zip']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `ercc.zip`"
         },
         "subset_regex": {
           "type": "string",
           "description": "Will subset the reference chromosomes using the given regex.",
-          "help_text": "type: `string`, multiple: False, example: `['(ERCC-00002|chr1)']`"
+          "help_text": "type: `string`, multiple: False, example: `(ERCC-00002|chr1)`"
         },
         "output_fasta": {
           "type": "string",
           "description": "Output genome sequence fasta.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['genome_sequence.fa.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `genome_sequence.fa.gz`"
         },
         "output_gtf": {
           "type": "string",
           "description": "Output transcriptome annotation gtf.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['transcriptome_annotation.gtf.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `transcriptome_annotation.gtf.gz`"
         }
       },
       "required": [
@@ -90,9 +75,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

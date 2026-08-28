@@ -1,27 +1,34 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Input
-input: # please fill in - example: ["mysample1.BAM", "mysample2.BAM"]
+input: # please fill in - example: "mysample1.BAM;mysample2.BAM"
 reference: # please fill in - example: "reference.gtf"
+# ---
 
 # Output
-# output: "$id.$key.output.tsv"
+output: # please fill in - example: "$id.$key.htseq-count.tsv"
 # output_delimiter: "	"
-# output_sam: ["$id.$key.output_sam_*.SAM"]
-# output_sam_format: "foo"
+# output_sam: "$id.$key.mysample1_out.SAM;$id.$key.mysample2_out.SAM"
+# output_sam_format: "sam"
+# ---
 
 # Arguments
 order: "name"
 stranded: "yes"
 minimum_alignment_quality: 10
 # type: "exon"
-# id_attribute: ["gene_id"]
-# additional_attributes: ["gene_name"]
+# id_attribute: "gene_id"
+# additional_attributes: "gene_name"
 add_chromosome_info: false
 mode: "union"
 non_unique: "none"
-# secondary_alignments: "foo"
-# supplementary_alignments: "foo"
+# secondary_alignments: "score"
+# supplementary_alignments: "score"
 counts_output_sparse: false
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

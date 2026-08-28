@@ -1,17 +1,22 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 obsm_input: "X_pca"
 obs_batch: "batch"
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
 uns_output: "neighbors"
 obsp_distances: "distances"
 obsp_connectivities: "connectivities"
 n_neighbors_within_batch: 3
 n_pcs: 50
-# n_trim: 123
+# n_trim: 0
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

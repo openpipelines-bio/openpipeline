@@ -4,21 +4,6 @@
   "description": "Converts the output from cellranger multi to a single .h5mu file.\nBy default, will map the following library type names to modality names:\n  - Gene Expression: rna\n  - Peaks: atac\n  - Antibody Capture: prot\n  - VDJ: vdj\n  - VDJ-T: vdj_t\n  - VDJ-B: vdj_b\n  - CRISPR Guide Capture: crispr\n  - Multiplexing Capture: hashing\n  \nOther library types have their whitepace removed and dashes replaced by\nunderscores to generate the modality name.\n\nCurrently does not allow parsing the output from cell barcode demultiplexing.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,7 +14,7 @@
           "description": "Input folder. Must contain the output from a cellranger multi run.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input_dir_containing_modalities']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input_dir_containing_modalities`"
         },
         "output": {
           "type": "array",
@@ -39,20 +24,18 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `output`, example: `['*.h5mu']`"
+          "help_text": "type: `array`, multiple: True, direction: `output`, example: `*.h5mu`"
         },
         "sample_csv": {
           "type": "string",
           "description": "CSV file describing the sample name per output file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['samples.csv']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `samples.csv`"
         },
         "uns_metrics": {
           "type": "string",
-          "default": [
-            "metrics_cellranger"
-          ],
+          "default": "metrics_cellranger",
           "description": "Name of the .uns slot under which to QC metrics (if any).",
           "help_text": "type: `string`, multiple: False, default: `metrics_cellranger`"
         },
@@ -69,7 +52,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -94,9 +77,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

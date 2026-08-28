@@ -1,13 +1,17 @@
-# Input/Output
-genome_fasta: # please fill in - example: ["chr1.fasta", "chr2.fasta"]
+# Dataset Input
+param_list: ""
+# ---
+
+# Input_Output
+genome_fasta: # please fill in - example: "chr1.fasta;chr2.fasta"
 # transcriptome_gtf: "transcriptome.gtf"
-# output: "$id.$key.output"
+output: # please fill in - example: "$id.$key./path/to/foo"
+# ---
 
-# Genome indexing arguments
+# Genome Indexing Arguments
 genomeSAindexNbases: 14
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

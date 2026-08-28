@@ -1,27 +1,35 @@
-# Input dataset (query) arguments
+# Dataset Input
+param_list: ""
+# ---
+
+# Input Dataset (Query) Arguments
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # input_obsm_features: "X_scvi"
+# ---
 
-# Reference dataset arguments
+# Reference Dataset Arguments
 # reference: "reference.h5mu"
 # reference_obsm_features: "X_scvi"
-reference_obs_targets: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
+reference_obs_targets: "ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
+# ---
 
 # Outputs
-# output: "$id.$key.output"
-# output_obs_predictions: ["foo"]
-# output_obs_probability: ["foo"]
+output: # please fill in - example: "$id.$key.output.txt"
+# output_obs_predictions: "value"
+# output_obs_probability: "value"
 # output_compression: "gzip"
+# ---
 
-# Execution arguments
+# Execution Arguments
 force_retrain: false
 use_gpu: false
 verbosity: 1
-# model_output: "model"
+model_output: "model"
 output_uns_parameters: "xgboost_parameters"
+# ---
 
-# Learning parameters
+# Learning Parameters
 learning_rate: 0.3
 min_split_loss: 0.0
 max_depth: 6
@@ -35,9 +43,8 @@ colsample_bynode: 1.0
 reg_lambda: 1.0
 reg_alpha: 0.0
 scale_pos_weight: 1.0
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

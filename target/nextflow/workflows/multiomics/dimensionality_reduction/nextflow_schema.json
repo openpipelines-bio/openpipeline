@@ -4,21 +4,6 @@
   "description": "Run calculations that output information required for most integration methods: PCA, nearest neighbour and UMAP.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -27,28 +12,24 @@
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
+          "help_text": "type: `string`, multiple: False, required, example: `foo`"
         },
         "input": {
           "type": "string",
           "description": "Path to the sample.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['dataset.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `dataset.h5mu`"
         },
         "layer": {
           "type": "string",
-          "default": [
-            "log_normalized"
-          ],
+          "default": "log_normalized",
           "description": "use specified layer for expression values instead of the .X object from the modality.",
           "help_text": "type: `string`, multiple: False, default: `log_normalized`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality to process.",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         }
@@ -68,7 +49,7 @@
           "description": "Destination path to the output.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         }
       },
       "required": [
@@ -82,9 +63,7 @@
       "properties": {
         "obsm_pca": {
           "type": "string",
-          "default": [
-            "X_pca"
-          ],
+          "default": "X_pca",
           "description": "In which .obsm slot to store the resulting PCA embedding.",
           "help_text": "type: `string`, multiple: False, default: `X_pca`"
         },
@@ -118,25 +97,19 @@
       "properties": {
         "uns_neighbors": {
           "type": "string",
-          "default": [
-            "neighbors"
-          ],
+          "default": "neighbors",
           "description": "In which .uns slot to store various neighbor output objects.",
           "help_text": "type: `string`, multiple: False, default: `neighbors`"
         },
         "obsp_neighbor_distances": {
           "type": "string",
-          "default": [
-            "distances"
-          ],
+          "default": "distances",
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
           "help_text": "type: `string`, multiple: False, default: `distances`"
         },
         "obsp_neighbor_connectivities": {
           "type": "string",
-          "default": [
-            "connectivities"
-          ],
+          "default": "connectivities",
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
           "help_text": "type: `string`, multiple: False, default: `connectivities`"
         }
@@ -149,9 +122,7 @@
       "properties": {
         "obsm_umap": {
           "type": "string",
-          "default": [
-            "X_umap"
-          ],
+          "default": "X_umap",
           "description": "In which .obsm slot to store the resulting UMAP embedding.",
           "help_text": "type: `string`, multiple: False, default: `X_umap`"
         }
@@ -175,9 +146,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

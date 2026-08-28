@@ -1,16 +1,21 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5ad"
-input_type: # please fill in - example: "foo"
+input_type: # please fill in - example: "10xmtx"
+# ---
 
 # Outputs
 # output: "$id.$key.output.h5mu"
+# ---
 
-# Conversion from h5ad
-# modality: ["foo"]
+# Conversion From H5Ad
+# modality: "value"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

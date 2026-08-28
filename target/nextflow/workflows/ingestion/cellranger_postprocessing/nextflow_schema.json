@@ -4,21 +4,6 @@
   "description": "Post-processing Cell Ranger datasets.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -27,14 +12,14 @@
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
+          "help_text": "type: `string`, multiple: False, required, example: `foo`"
         },
         "input": {
           "type": "string",
           "description": "Input h5mu file created by running Cell Ranger and converting its output to h5mu.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         }
       },
       "required": [
@@ -69,9 +54,7 @@
         },
         "cellbender_epochs": {
           "type": "integer",
-          "default": [
-            150
-          ],
+          "default": 150,
           "description": "Number of epochs to run CellBender for.",
           "help_text": "type: `integer`, multiple: False, default: `150`"
         }
@@ -85,12 +68,12 @@
         "min_genes": {
           "type": "integer",
           "description": "Minimum number of counts required for a cell to pass filtering.",
-          "help_text": "type: `integer`, multiple: False, example: `[100]`"
+          "help_text": "type: `integer`, multiple: False, example: `100`"
         },
         "min_counts": {
           "type": "integer",
           "description": "Minimum number of genes expressed required for a cell to pass filtering.",
-          "help_text": "type: `integer`, multiple: False, example: `[1000]`"
+          "help_text": "type: `integer`, multiple: False, example: `1000`"
         }
       }
     },
@@ -112,9 +95,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

@@ -4,21 +4,6 @@
   "description": "UMAP (Uniform Manifold Approximation and Projection) is a manifold learning technique suitable for visualizing high-dimensional data. Besides tending to be faster than tSNE, it optimizes the embedding such that it best reflects the topology of the data, which we represent throughout Scanpy using a neighborhood graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances in the embedding such that these best match the distribution of distances in the high-dimensional space. We use the implementation of umap-learn [McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,21 +14,17 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "uns_neighbors": {
           "type": "string",
-          "default": [
-            "neighbors"
-          ],
+          "default": "neighbors",
           "description": "The `.uns` neighbors slot as output by the `find_neighbors` component.",
           "help_text": "type: `string`, multiple: False, default: `neighbors`"
         }
@@ -62,13 +43,11 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "obsm_output": {
           "type": "string",
-          "default": [
-            "umap"
-          ],
+          "default": "umap",
           "description": "The pre/postfix under which to store the UMAP results.",
           "help_text": "type: `string`, multiple: False, default: `umap`"
         },
@@ -79,7 +58,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -93,25 +72,19 @@
       "properties": {
         "min_dist": {
           "type": "number",
-          "default": [
-            0.5
-          ],
+          "default": 0.5,
           "description": "The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out.",
           "help_text": "type: `number`, multiple: False, default: `0.5`"
         },
         "spread": {
           "type": "number",
-          "default": [
-            1.0
-          ],
+          "default": 1.0,
           "description": "The effective scale of embedded points. In combination with `min_dist` this determines how clustered/clumped the embedded points are.",
           "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
         "num_components": {
           "type": "integer",
-          "default": [
-            2
-          ],
+          "default": 2,
           "description": "The number of dimensions of the embedding.",
           "help_text": "type: `integer`, multiple: False, default: `2`"
         },
@@ -122,33 +95,25 @@
         },
         "alpha": {
           "type": "number",
-          "default": [
-            1.0
-          ],
+          "default": 1.0,
           "description": "The initial learning rate for the embedding optimization.",
           "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
         "gamma": {
           "type": "number",
-          "default": [
-            1.0
-          ],
+          "default": 1.0,
           "description": "Weighting applied to negative samples in low dimensional embedding optimization. Values higher than one will result in greater weight being given to negative samples.",
           "help_text": "type: `number`, multiple: False, default: `1.0`"
         },
         "negative_sample_rate": {
           "type": "integer",
-          "default": [
-            5
-          ],
+          "default": 5,
           "description": "The number of negative edge/1-simplex samples to use per positive edge/1-simplex sample in optimizing the low dimensional embedding.",
           "help_text": "type: `integer`, multiple: False, default: `5`"
         },
         "init_pos": {
           "type": "string",
-          "default": [
-            "spectral"
-          ],
+          "default": "spectral",
           "description": "How to initialize the low dimensional embedding. Called `init` in the original UMAP. Options are:\n  \n* Any key from `.obsm`\n* `'paga'`: positions from `paga()`\n* `'spectral'`: use a spectral embedding of the graph\n* `'random'`: assign initial embedding positions at random.\n",
           "help_text": "type: `string`, multiple: False, default: `spectral`"
         }
@@ -172,9 +137,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

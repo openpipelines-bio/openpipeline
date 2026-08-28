@@ -1,17 +1,21 @@
-# Input & specifications
+# Dataset Input
+param_list: ""
+# ---
+
+# Input & Specifications
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 obs_feature: # please fill in - example: "celltype"
 drop_obs_nan: false
 ensure_unique_filenames: false
+# ---
 
 # Outputs
-# output: "$id.$key.output"
-# output_files: "$id.$key.output_files.csv"
+output: # please fill in - example: "$id.$key./path/to/output"
+output_files: # please fill in - example: "$id.$key.sample_files.csv"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

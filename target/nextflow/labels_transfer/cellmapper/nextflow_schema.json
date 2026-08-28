@@ -4,21 +4,6 @@
   "description": "Transfer labels from a reference to a query using CellMapper in a shared\nembedding space.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input dataset (query) arguments": {
       "type": "object",
       "title": "Input dataset (query) arguments",
@@ -29,20 +14,18 @@
           "description": "The query data to transfer the labels to. Should be a .h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality to use.",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "input_obsm_features": {
           "type": "string",
           "description": "The `.obsm` key of the embedding to use for the classifier's inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n",
-          "help_text": "type: `string`, multiple: False, example: `['X_scvi']`"
+          "help_text": "type: `string`, multiple: False, example: `X_scvi`"
         }
       },
       "required": [
@@ -59,12 +42,12 @@
           "description": "The reference data to train classifiers on.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['reference.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `reference.h5mu`"
         },
         "reference_obsm_features": {
           "type": "string",
           "description": "The `.obsm` key of the embedding to use for the classifier's training. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
-          "help_text": "type: `string`, multiple: False, example: `['X_scvi']`"
+          "help_text": "type: `string`, multiple: False, example: `X_scvi`"
         },
         "reference_obs_targets": {
           "type": "array",
@@ -119,7 +102,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -133,9 +116,7 @@
       "properties": {
         "n_neighbors": {
           "type": "integer",
-          "default": [
-            15
-          ],
+          "default": 15,
           "description": "Number of neighbors used by CellMapper.\n",
           "help_text": "type: `integer`, multiple: False, default: `15`"
         },
@@ -174,9 +155,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input dataset (query) arguments"
     },

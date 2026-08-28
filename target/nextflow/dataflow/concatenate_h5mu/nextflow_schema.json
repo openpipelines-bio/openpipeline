@@ -4,21 +4,6 @@
   "description": "Concatenate observations from samples in several (uni- and/or multi-modal) MuData files into a single file.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -32,7 +17,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['sample_paths']`"
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `sample_paths`"
         },
         "modality": {
           "type": "array",
@@ -55,13 +40,11 @@
           "description": "Output location for the concatenated MuData object file.\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         },
         "other_axis_mode": {
           "type": "string",
-          "default": [
-            "move"
-          ],
+          "default": "move",
           "description": "How to handle the merging of other axis (var, obs, ...).\n\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - move: identical to 'same', but moving the conflicting values to .varm or .obsm\n",
           "enum": [
             "same",
@@ -75,9 +58,7 @@
         },
         "uns_merge_mode": {
           "type": "string",
-          "default": [
-            "make_unique"
-          ],
+          "default": "make_unique",
           "description": "How to handle the merging of .uns across modalities\n  - None: keep no data\n  - same: only keep elements of the matrices which are the same in each of the samples\n  - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n  - first: keep the annotation from the first sample\n  - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n  - make_unique: identical to 'unique', but keys which are not unique are made unique by prefixing them with the sample id.\n",
           "enum": [
             "same",
@@ -103,7 +84,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -128,9 +109,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

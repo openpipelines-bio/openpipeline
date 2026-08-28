@@ -1,9 +1,14 @@
-# Arguments
-input: # please fill in - example: "sample_path"
-# output: "$id.$key.output"
-# output_types: "$id.$key.output_types.csv"
-# output_compression: "gzip"
+# Dataset Input
+param_list: ""
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Arguments
+input: "sample_path"
+output: # please fill in - example: "$id.$key./path/to/output"
+output_types: # please fill in - example: "$id.$key.types.csv"
+# output_compression: "gzip"
+# ---
+
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

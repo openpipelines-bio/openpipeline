@@ -4,21 +4,6 @@
   "description": "Build a Cell Ranger-arc and -atac compatible reference folder from user-supplied genome FASTA and gene GTF files. Creates a new folder named after the genome.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,21 +14,21 @@
           "description": "Reference genome fasta.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['genome_sequence.fa.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `genome_sequence.fa.gz`"
         },
         "annotation_gtf": {
           "type": "string",
           "description": "Reference annotation.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['annotation.gtf.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `annotation.gtf.gz`"
         },
         "motifs_file": {
           "type": "string",
           "description": "Transcription factor motifs in JASPAR format. See https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/advanced/references",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['motifs.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `motifs.txt`"
         },
         "non_nuclear_contigs": {
           "type": "array",
@@ -54,22 +39,20 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, default: `chrM`, example: `['chrM']`"
+          "help_text": "type: `array`, multiple: True, default: `chrM`, example: `chrM`"
         },
         "output": {
           "type": "string",
           "description": "Output folder",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['cellranger_reference']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `cellranger_reference`"
         },
         "genome": {
           "type": "string",
-          "default": [
-            "output"
-          ],
+          "default": "output",
           "description": "Name of the genome. This will be the name of the intermediate output folder",
-          "help_text": "type: `string`, multiple: False, required, default: `output`, example: `['GRCh38']`"
+          "help_text": "type: `string`, multiple: False, required, default: `output`, example: `GRCh38`"
         },
         "organism": {
           "type": "string",
@@ -79,7 +62,7 @@
         "subset_regex": {
           "type": "string",
           "description": "Will subset the reference chromosomes using the given regex.",
-          "help_text": "type: `string`, multiple: False, example: `['(ERCC-00002|chr1)']`"
+          "help_text": "type: `string`, multiple: False, example: `(ERCC-00002|chr1)`"
         }
       },
       "required": [
@@ -107,9 +90,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

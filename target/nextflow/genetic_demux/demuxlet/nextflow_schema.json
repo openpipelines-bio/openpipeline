@@ -4,21 +4,6 @@
   "description": "Demuxlet is a software tool to deconvolute sample identity and identify multiplets when\nmultiple samples are pooled by barcoded single cell sequencing. If external genotyping data\nfor each sample is available (e.g. from SNP arrays), demuxlet would be recommended. Be careful\nthat the parameters on the github is not in line with the newest help version.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,21 +14,17 @@
           "description": "Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.bam']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.bam`"
         },
         "tag_group": {
           "type": "string",
-          "default": [
-            "CB"
-          ],
+          "default": "CB",
           "description": "Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups. For 10x genomics, use CB.",
           "help_text": "type: `string`, multiple: False, default: `CB`"
         },
         "tag_umi": {
           "type": "string",
-          "default": [
-            "UB"
-          ],
+          "default": "UB",
           "description": "Tag representing UMIs. For 10x genomiucs, use UB.",
           "help_text": "type: `string`, multiple: False, default: `UB`"
         },
@@ -57,69 +38,53 @@
           "description": "Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL).",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.vcf`"
         },
         "field": {
           "type": "string",
-          "default": [
-            "GT"
-          ],
+          "default": "GT",
           "description": "FORMAT field to extract the genotype, likelihood, or posterior from",
           "help_text": "type: `string`, multiple: False, default: `GT`"
         },
         "geno_error_offset": {
           "type": "number",
-          "default": [
-            0.1
-          ],
+          "default": 0.1,
           "description": "Offset of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]",
           "help_text": "type: `number`, multiple: False, default: `0.1`"
         },
         "geno_error_coeff": {
           "type": "number",
-          "default": [
-            0.0
-          ],
+          "default": 0.0,
           "description": "Slope of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]",
           "help_text": "type: `number`, multiple: False, default: `0.0`"
         },
         "r2_info": {
           "type": "string",
-          "default": [
-            "R2"
-          ],
+          "default": "R2",
           "description": "INFO field name representing R2 value. Used for representing imputation quality.",
           "help_text": "type: `string`, multiple: False, default: `R2`"
         },
         "min_mac": {
           "type": "integer",
-          "default": [
-            1
-          ],
+          "default": 1,
           "description": "Minimum minor allele frequency.",
           "help_text": "type: `integer`, multiple: False, default: `1`"
         },
         "min_call_rate": {
           "type": "number",
-          "default": [
-            0.5
-          ],
+          "default": 0.5,
           "description": "Minimum call rate.",
           "help_text": "type: `number`, multiple: False, default: `0.5`"
         },
         "alpha": {
           "type": "string",
-          "default": [
-            "0.5"
-          ],
+          "default": "0.5",
           "description": "Grid of alpha to search for (default is 0.1, 0.2, 0.3, 0.4, 0.5)",
           "help_text": "type: `string`, multiple: False, default: `0.5`"
         },
         "doublet_prior": {
           "type": "number",
-          "default": [
-            0.5
-          ],
+          "default": 0.5,
           "description": "Prior of doublet",
           "help_text": "type: `number`, multiple: False, default: `0.5`"
         },
@@ -135,57 +100,43 @@
         },
         "sam_verbose": {
           "type": "integer",
-          "default": [
-            1000000
-          ],
+          "default": 1000000,
           "description": "Verbose message frequency for SAM/BAM/CRAM.",
           "help_text": "type: `integer`, multiple: False, default: `1000000`"
         },
         "vcf_verbose": {
           "type": "integer",
-          "default": [
-            1000
-          ],
+          "default": 1000,
           "description": "Verbose message frequency for VCF/BCF.",
           "help_text": "type: `integer`, multiple: False, default: `1000`"
         },
         "cap_bq": {
           "type": "integer",
-          "default": [
-            20
-          ],
+          "default": 20,
           "description": "Maximum base quality (higher BQ will be capped).",
           "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "min_bq": {
           "type": "integer",
-          "default": [
-            13
-          ],
+          "default": 13,
           "description": "Minimum base quality to consider (lower BQ will be skipped).",
           "help_text": "type: `integer`, multiple: False, default: `13`"
         },
         "min_mq": {
           "type": "integer",
-          "default": [
-            20
-          ],
+          "default": 20,
           "description": "Minimum mapping quality to consider (lower MQ will be ignored).",
           "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "min_td": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum distance to the tail (lower will be ignored).",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "excl_flag": {
           "type": "integer",
-          "default": [
-            3844
-          ],
+          "default": 3844,
           "description": "SAM/BAM FLAGs to be excluded.",
           "help_text": "type: `integer`, multiple: False, default: `3844`"
         },
@@ -196,25 +147,19 @@
         },
         "min_total": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of total reads for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_snp": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of SNPs with coverage for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_umi": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of UMIs for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         }
@@ -230,12 +175,12 @@
           "description": "Output directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['demux']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `demux`"
         },
         "out": {
           "type": "string",
           "description": "demuxlet output file prefix",
-          "help_text": "type: `string`, multiple: False, example: `['demuxlet']`"
+          "help_text": "type: `string`, multiple: False, example: `demuxlet`"
         }
       }
     },
@@ -257,9 +202,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

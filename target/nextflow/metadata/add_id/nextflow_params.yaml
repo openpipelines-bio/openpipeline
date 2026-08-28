@@ -1,11 +1,16 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 input: # please fill in - example: "input.h5mu"
-input_id: # please fill in - example: "foo"
+input_id: # please fill in - example: "value"
 obs_output: "sample_id"
 # output: "$id.$key.output.h5mu"
 make_observation_keys_unique: false
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

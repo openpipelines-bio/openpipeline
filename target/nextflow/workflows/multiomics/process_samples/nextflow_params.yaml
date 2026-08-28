@@ -1,19 +1,26 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
-# rna_layer: "foo"
-# prot_layer: "foo"
-# gdo_layer: "foo"
+# rna_layer: "value"
+# prot_layer: "value"
+# gdo_layer: "value"
+# ---
 
 # Outputs
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
+# ---
 
-# Sample ID options
+# Sample Id Options
 add_id_to_obs: true
 add_id_obs_output: "sample_id"
 add_id_make_observation_keys_unique: true
+# ---
 
-# RNA filtering options
+# Rna Filtering Options
 # rna_min_counts: 200
 # rna_max_counts: 5000000
 # rna_min_genes_per_cell: 200
@@ -24,61 +31,69 @@ add_id_make_observation_keys_unique: true
 # rna_min_fraction_ribo: 0.0
 # rna_max_fraction_ribo: 0.2
 skip_scrublet_doublet_detection: false
-# scrublet_score_threshold: 123.0
+# scrublet_score_threshold: 0.0
+# ---
 
-# CITE-seq filtering options
+# Cite-Seq Filtering Options
 # prot_min_counts: 3
 # prot_max_counts: 5000000
 # prot_min_proteins_per_cell: 200
 # prot_max_proteins_per_cell: 100000000
 # prot_min_cells_per_protein: 3
+# ---
 
-# GDO filtering options
+# Gdo Filtering Options
 # gdo_min_counts: 3
 # gdo_max_counts: 5000000
 # gdo_min_guides_per_cell: 200
 # gdo_max_guides_per_cell: 100000000
 # gdo_min_cells_per_guide: 3
+# ---
 
-# Cross-modality filtering
+# Cross-Modality Filtering
 intersect_obs: false
+# ---
 
-# Highly variable features detection
+# Highly Variable Features Detection
 highly_variable_features_var_output: "filter_with_hvg"
 highly_variable_features_obs_batch_key: "sample_id"
+# ---
 
 # Mitochondrial & Ribosomal Gene Detection
 # var_gene_names: "gene_symbol"
-# var_name_mitochondrial_genes: "foo"
-# obs_name_mitochondrial_fraction: "foo"
+# var_name_mitochondrial_genes: "value"
+# obs_name_mitochondrial_fraction: "value"
 mitochondrial_gene_regex: "^[mM][tT]-"
-# var_name_ribosomal_genes: "foo"
-# obs_name_ribosomal_fraction: "foo"
+# var_name_ribosomal_genes: "value"
+# obs_name_ribosomal_fraction: "value"
 ribosomal_gene_regex: "^[Mm]?[Rr][Pp][LlSs]"
+# ---
 
-# QC metrics calculation options
-# var_qc_metrics: ["ercc,highly_variable"]
-top_n_vars: [50, 100, 200, 500]
+# Qc Metrics Calculation Options
+# var_qc_metrics: "ercc,highly_variable"
+top_n_vars: "50,100,200,500"
 log1p_transform: true
+# ---
 
-# PCA options
+# Pca Options
 pca_overwrite: false
+# ---
 
-# CLR options
+# Clr Options
 clr_axis: 0
+# ---
 
-# RNA Scaling options
+# Rna Scaling Options
 rna_enable_scaling: false
 rna_scaling_output_layer: "scaled"
 rna_scaling_pca_obsm_output: "scaled_pca"
 rna_scaling_pca_loadings_varm_output: "scaled_pca_loadings"
 rna_scaling_pca_variance_uns_output: "scaled_pca_variance"
 rna_scaling_umap_obsm_output: "scaled_umap"
-# rna_scaling_max_value: 123.0
+# rna_scaling_max_value: 0.0
 rna_scaling_zero_center: true
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

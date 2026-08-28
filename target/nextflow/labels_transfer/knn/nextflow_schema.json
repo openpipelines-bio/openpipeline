@@ -4,21 +4,6 @@
   "description": "This component performs label transfer from reference to query using a K-Neirest Neighbors classifier.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input dataset (query) arguments": {
       "type": "object",
       "title": "Input dataset (query) arguments",
@@ -27,7 +12,7 @@
         "input_obsm_distances": {
           "type": "string",
           "description": "The `.obsm` key of the input (query) dataset containing pre-calculated distances. \nIf not provided, the distances will be calculated using PyNNDescent.\nMake sure the distance matrix contains distances relative to the reference dataset and were obtained in the same way as the reference embedding.\n",
-          "help_text": "type: `string`, multiple: False, example: `['bbknn_distances']`"
+          "help_text": "type: `string`, multiple: False, example: `bbknn_distances`"
         }
       }
     },
@@ -39,7 +24,7 @@
         "reference_obsm_distances": {
           "type": "string",
           "description": "The `.obsm` key of the reference dataset containing pre-calculated distances. \nIf not provided, the distances will be calculated using PyNNDescent.\n",
-          "help_text": "type: `string`, multiple: False, example: `['bbknn_distances']`"
+          "help_text": "type: `string`, multiple: False, example: `bbknn_distances`"
         }
       }
     },
@@ -78,7 +63,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -92,9 +77,7 @@
       "properties": {
         "weights": {
           "type": "string",
-          "default": [
-            "uniform"
-          ],
+          "default": "uniform",
           "description": "Weight function used in prediction. Possible values are:\n- `uniform` - all points in each neighborhood are weighted equally \n- `distance` - weight points by the inverse of their distance\n- `gaussian` - weight points by the sum of their Gaussian kernel similarities to each sample\n",
           "enum": [
             "uniform",
@@ -105,9 +88,7 @@
         },
         "n_neighbors": {
           "type": "integer",
-          "default": [
-            15
-          ],
+          "default": 15,
           "description": "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n",
           "help_text": "type: `integer`, multiple: False, default: `15`"
         }
@@ -131,9 +112,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input dataset (query) arguments"
     },

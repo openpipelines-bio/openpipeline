@@ -4,21 +4,6 @@
   "description": "Build a transcriptomics reference into one of many formats.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -27,28 +12,28 @@
         "id": {
           "type": "string",
           "description": "ID of the reference.",
-          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
+          "help_text": "type: `string`, multiple: False, required, example: `foo`"
         },
         "genome_fasta": {
           "type": "string",
           "description": "Reference genome fasta.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz`"
         },
         "transcriptome_gtf": {
           "type": "string",
           "description": "Reference transcriptome annotation.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz`"
         },
         "ercc": {
           "type": "string",
           "description": "ERCC sequence and annotation file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip`"
         }
       },
       "required": [
@@ -64,9 +49,7 @@
       "properties": {
         "star_genome_sa_index_nbases": {
           "type": "integer",
-          "default": [
-            14
-          ],
+          "default": 14,
           "description": "Length (bases) of the SA pre-indexing string. Typically between 10 and 15.\nLonger strings will use much more memory, but allow faster searches. For small\ngenomes, the parameter {genomeSAindexNbases must be scaled down to\nmin(14, log2(GenomeLength)/2 - 1).\n",
           "help_text": "type: `integer`, multiple: False, default: `14`"
         }
@@ -106,7 +89,7 @@
         "bdrhap_extra_star_params": {
           "type": "string",
           "description": "Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.",
-          "help_text": "type: `string`, multiple: False, example: `['--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11']`"
+          "help_text": "type: `string`, multiple: False, example: `--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11`"
         }
       }
     },
@@ -120,7 +103,7 @@
           "description": "Path to file containing transcription factor motifs in JASPAR format.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['motifs.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `motifs.txt`"
         },
         "non_nuclear_contigs": {
           "type": "array",
@@ -159,42 +142,42 @@
           "description": "Output genome sequence fasta.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['genome_sequence.fa.gz']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `genome_sequence.fa.gz`"
         },
         "output_gtf": {
           "type": "string",
           "description": "Output transcriptome annotation gtf.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['transcriptome_annotation.gtf.gz']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `transcriptome_annotation.gtf.gz`"
         },
         "output_cellranger": {
           "type": "string",
           "description": "Output index",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['cellranger_index.tar.gz']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `cellranger_index.tar.gz`"
         },
         "output_cellranger_arc": {
           "type": "string",
           "description": "Output index",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['cellranger_index_arc.tar.gz']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `cellranger_index_arc.tar.gz`"
         },
         "output_bd_rhapsody": {
           "type": "string",
           "description": "Output index",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['bdrhap_index.tar.gz']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `bdrhap_index.tar.gz`"
         },
         "output_star": {
           "type": "string",
           "description": "Output index",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['star_index.tar.gz']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `star_index.tar.gz`"
         }
       }
     },
@@ -206,7 +189,7 @@
         "subset_regex": {
           "type": "string",
           "description": "Will subset the reference chromosomes using the given regex.",
-          "help_text": "type: `string`, multiple: False, example: `['(ERCC-00002|chr1)']`"
+          "help_text": "type: `string`, multiple: False, example: `(ERCC-00002|chr1)`"
         }
       }
     },
@@ -228,9 +211,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

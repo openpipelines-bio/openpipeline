@@ -4,21 +4,6 @@
   "description": "Performs pseudobulk generation and subsequent differential expression analysis using DESeq2.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,13 +14,11 @@
           "description": "Input h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['/path/to/input_file.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `/path/to/input_file.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -47,7 +30,7 @@
         "obs_cell_group": {
           "type": "string",
           "description": ".obs field containing the variable to group on. Typically this field contains cell groups such as annotated cell types or clusters.\nIf provided, will generate DESeq2 analysis per cell group.\n",
-          "help_text": "type: `string`, multiple: False, required, example: `['cell_type']`"
+          "help_text": "type: `string`, multiple: False, required, example: `cell_type`"
         },
         "obs_groups": {
           "type": "array",
@@ -55,12 +38,12 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['treatment', 'disease']`"
+          "help_text": "type: `array`, multiple: True, example: `treatment;disease`"
         },
         "var_gene_names": {
           "type": "string",
           "description": "Name of the .var field that contains gene symbols. If not provided, .var.index will be used.\n",
-          "help_text": "type: `string`, multiple: False, example: `['gene_symbol']`"
+          "help_text": "type: `string`, multiple: False, example: `gene_symbol`"
         }
       },
       "required": [
@@ -75,9 +58,7 @@
       "properties": {
         "aggregation_method": {
           "type": "string",
-          "default": [
-            "sum"
-          ],
+          "default": "sum",
           "description": "Method to aggregate the raw counts for pseudoreplicates. Either sum or mean.",
           "enum": [
             "sum",
@@ -87,9 +68,7 @@
         },
         "random_state": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "The random seed for sampling.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         }
@@ -102,9 +81,7 @@
       "properties": {
         "min_obs_per_sample": {
           "type": "integer",
-          "default": [
-            30
-          ],
+          "default": 30,
           "description": "Minimum number of observations per pseudobulk sample.",
           "help_text": "type: `integer`, multiple: False, default: `30`"
         },
@@ -119,7 +96,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['MIR\\\\d+', 'AL\\\\d+', 'LINC\\\\d+', 'AC\\\\d+', 'AP\\\\d+']`"
+          "help_text": "type: `array`, multiple: True, example: `MIR\\d+;AL\\d+;LINC\\d+;AC\\d+;AP\\d+`"
         }
       }
     },
@@ -131,12 +108,12 @@
         "design_formula": {
           "type": "string",
           "description": "Design formula for DESeq2 analysis in R-style format.\nSpecifies the statistical model to account for various factors.\n",
-          "help_text": "type: `string`, multiple: False, required, example: `['~ cell_type + disease + treatment']`"
+          "help_text": "type: `string`, multiple: False, required, example: `~ cell_type + disease + treatment`"
         },
         "contrast_column": {
           "type": "string",
           "description": "Column in the metadata to use for the contrast.\nThis column should contain the conditions to compare.\n",
-          "help_text": "type: `string`, multiple: False, required, example: `['treatment']`"
+          "help_text": "type: `string`, multiple: False, required, example: `treatment`"
         },
         "contrast_values": {
           "type": "array",
@@ -144,21 +121,17 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, example: `['ctrl', 'stim']`"
+          "help_text": "type: `array`, multiple: True, required, example: `ctrl;stim`"
         },
         "p_adj_threshold": {
           "type": "number",
-          "default": [
-            0.05
-          ],
+          "default": 0.05,
           "description": "Adjusted p-value threshold for significance.\nGenes with adjusted p-values below this threshold will be considered significant.\n",
           "help_text": "type: `number`, multiple: False, default: `0.05`"
         },
         "log2fc_threshold": {
           "type": "number",
-          "default": [
-            0.0
-          ],
+          "default": 0.0,
           "description": "Log2 fold change threshold for significance.\nGenes with absolute log2 fold change above this threshold will be considered significant.\n",
           "help_text": "type: `number`, multiple: False, default: `0.0`"
         }
@@ -183,9 +156,7 @@
         },
         "output_prefix": {
           "type": "string",
-          "default": [
-            "deseq2_analysis"
-          ],
+          "default": "deseq2_analysis",
           "description": "Prefix for output CSV files: files will be named \"{prefix}_{cell_group}.csv\"\n",
           "help_text": "type: `string`, multiple: False, default: `deseq2_analysis`"
         }
@@ -212,9 +183,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

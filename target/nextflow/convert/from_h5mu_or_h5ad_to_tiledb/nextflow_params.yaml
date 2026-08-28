@@ -1,18 +1,25 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Input
 input: # please fill in - example: "input.h5mu"
+# ---
 
-# RNA modality
+# Rna Modality
 rna_modality: "rna"
 rna_raw_layer_input: # please fill in - example: "X"
 rna_normalized_layer_input: # please fill in - example: "log_normalized"
 # rna_var_gene_names_input: "gene_symbol"
+# ---
 
-# Protein modality
+# Protein Modality
 # prot_modality: "prot"
 # prot_raw_layer_input: "X"
 # prot_normalized_layer_input: "clr"
+# ---
 
-# Output slots
+# Output Slots
 rna_modality_output: "rna"
 prot_modality_output: "prot"
 obs_index_name_output: "cell_id"
@@ -23,12 +30,12 @@ rna_var_gene_names_output: "gene_symbol"
 prot_var_index_name_output: "prot_index"
 prot_raw_layer_output: "X"
 prot_normalized_layer_output: "log_normalized"
+# ---
 
-# Output arguments
-# tiledb_dir: "$id.$key.tiledb_dir"
+# Output Arguments
+# tiledb_dir: "$id.$key.path/to/tiledb_dir"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

@@ -1,15 +1,21 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 uns_neighbors: "neighbors"
-obsm_pca: # please fill in - example: "foo"
+obsm_pca: # please fill in - example: "value"
+# ---
 
 # Outputs
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
 obsm_output: "X_densmap"
 # output_compression: "gzip"
+# ---
 
-# Arguments UMAP
+# Arguments Umap
 min_dist: 0.5
 spread: 1.0
 num_components: 2
@@ -18,14 +24,14 @@ alpha: 1.0
 gamma: 1.0
 negative_sample_rate: 5
 init_pos: "spectral"
+# ---
 
-# Arguments densMAP
+# Arguments Densmap
 lambda: 2.0
 fraction: 0.3
 var_shift: 0.1
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

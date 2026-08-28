@@ -1,9 +1,12 @@
-# Input database
+# Dataset Input
+param_list: ""
+# ---
+
+# Input Database
 input_uri: # please fill in - example: "s3://bucket/path"
-s3_region: # please fill in - example: "foo"
+s3_region: # please fill in - example: "value"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

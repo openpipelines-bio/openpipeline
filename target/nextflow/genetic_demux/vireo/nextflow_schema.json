@@ -4,21 +4,6 @@
   "description": "Vireo is primarily designed for demultiplexing cells into donors by modelling of expressed alleles.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,13 +14,11 @@
           "description": "The cell genotype file in VCF format or cellSNP folder with sparse matrices.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['cell_data.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `cell_data.vcf`"
         },
         "n_donor": {
           "type": "integer",
-          "default": [
-            2
-          ],
+          "default": 2,
           "description": "Number of donors to demultiplex; can be larger than provided in donor_file.",
           "help_text": "type: `integer`, multiple: False, default: `2`"
         },
@@ -44,7 +27,7 @@
           "description": "The cell genotype files in vartrix outputs.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['path/to/vatrix_outputs']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `path/to/vatrix_outputs`"
         },
         "donor_file": {
           "type": "string",
@@ -55,9 +38,7 @@
         },
         "geno_tag": {
           "type": "string",
-          "default": [
-            "PL"
-          ],
+          "default": "PL",
           "description": "The tag for donor genotype.",
           "enum": [
             "GT",
@@ -68,25 +49,19 @@
         },
         "no_doublet": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "If use, not checking doublets.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "n_init": {
           "type": "integer",
-          "default": [
-            50
-          ],
+          "default": 50,
           "description": "Number of random initializations, when GT needs to learn.",
           "help_text": "type: `integer`, multiple: False, default: `50`"
         },
         "extra_donor": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Number of extra donor in pre-cluster, when GT needs to learn.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
@@ -97,25 +72,19 @@
         },
         "force_learn_gt": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "If use, treat donor GT as prior only.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "ase_mode": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "If use, turn on SNP specific allelic ratio.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "no_plot": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "If use, turn off plotting GT distance.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
@@ -131,9 +100,7 @@
         },
         "call_ambient_rnas": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "If use, detect ambient RNAs in each cell.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         }
@@ -149,7 +116,7 @@
           "description": "Output directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['vireo']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `vireo`"
         }
       }
     },
@@ -171,9 +138,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

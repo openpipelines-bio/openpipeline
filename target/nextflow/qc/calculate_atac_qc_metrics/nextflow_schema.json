@@ -4,21 +4,6 @@
   "description": "Add basic ATAC quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nObs metrics (name in this component -> name in scanpy):\n  - n_features_per_cell -> n_genes_by_counts\n  - total_fragment_counts -> total_counts\n    \n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,57 +14,47 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "fragments_path": {
           "type": "string",
           "description": "Path to the fragments file. If not provided and not present in the input h5mu file,\nthe nucleosome signal and TSS enrichment score will not be calculated.\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['fragments.tsv.gz']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `fragments.tsv.gz`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "atac"
-          ],
+          "default": "atac",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `atac`"
         },
         "layer": {
           "type": "string",
           "description": "Layer at `.layers` to use for the calculation. If not provided, `.X` is used.\n",
-          "help_text": "type: `string`, multiple: False, example: `['raw_counts']`"
+          "help_text": "type: `string`, multiple: False, example: `raw_counts`"
         },
         "n_fragments_for_nucleosome_signal": {
           "type": "integer",
-          "default": [
-            100000
-          ],
+          "default": 100000,
           "description": "Number of fragments to use per cell for nucleosome signal calculation.\nTakes very long to calculate, for a test run lower value (e.g. 10e3) is recommended.\nSee https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#nucleosome-signal\nfor more information\n",
           "help_text": "type: `integer`, multiple: False, default: `100000`"
         },
         "nuc_signal_threshold": {
           "type": "number",
-          "default": [
-            2.0
-          ],
+          "default": 2.0,
           "description": "Threshold for nucleosome signal. Cells with nucleosome signal above this threshold\nwill be marked as low quality (\"NS_FAIL\"), otherwise they will be marked \"NS_PASS\".\n",
           "help_text": "type: `number`, multiple: False, default: `2.0`"
         },
         "n_tss": {
           "type": "integer",
-          "default": [
-            3000
-          ],
+          "default": 3000,
           "description": "Number of the transcription start sites to calculate TSS enrichment score.\nSee https://www.sc-best-practices.org/chromatin_accessibility/quality_control.html#tss-enrichment\nfor more information\n",
           "help_text": "type: `integer`, multiple: False, default: `3000`"
         },
         "tss_threshold": {
           "type": "number",
-          "default": [
-            1.5
-          ],
+          "default": 1.5,
           "description": "Threshold for TSS enrichment score. Cells with TSS enrichment score below this threshold\nwill be marked as low quality (\"TSS_FAIL\") otherwise they will be marked as \"TSS_PASS\".\n",
           "help_text": "type: `number`, multiple: False, default: `1.5`"
         }
@@ -98,7 +73,7 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         },
         "output_compression": {
           "type": "string",
@@ -107,7 +82,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       }
     },
@@ -129,9 +104,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

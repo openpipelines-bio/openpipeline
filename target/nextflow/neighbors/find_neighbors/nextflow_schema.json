@@ -4,21 +4,6 @@
   "description": "Compute a neighborhood graph of observations [McInnes18].\n\nThe neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method=='umap'). If method=='gauss', connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16].\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,21 +14,17 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "obsm_input": {
           "type": "string",
-          "default": [
-            "X_pca"
-          ],
+          "default": "X_pca",
           "description": "Which .obsm slot to use as a starting PCA embedding.",
           "help_text": "type: `string`, multiple: False, default: `X_pca`"
         },
@@ -52,37 +33,29 @@
           "description": "Output h5mu file containing the found neighbors.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         },
         "uns_output": {
           "type": "string",
-          "default": [
-            "neighbors"
-          ],
+          "default": "neighbors",
           "description": "Mandatory .uns slot to store various neighbor output objects.",
           "help_text": "type: `string`, multiple: False, default: `neighbors`"
         },
         "obsp_distances": {
           "type": "string",
-          "default": [
-            "distances"
-          ],
+          "default": "distances",
           "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
           "help_text": "type: `string`, multiple: False, default: `distances`"
         },
         "obsp_connectivities": {
           "type": "string",
-          "default": [
-            "connectivities"
-          ],
+          "default": "connectivities",
           "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
           "help_text": "type: `string`, multiple: False, default: `connectivities`"
         },
         "metric": {
           "type": "string",
-          "default": [
-            "euclidean"
-          ],
+          "default": "euclidean",
           "description": "The distance metric to be used in the generation of the nearest neighborhood network.",
           "enum": [
             "cityblock",
@@ -113,17 +86,13 @@
         },
         "num_neighbors": {
           "type": "integer",
-          "default": [
-            15
-          ],
+          "default": 15,
           "description": "The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor.",
           "help_text": "type: `integer`, multiple: False, default: `15`"
         },
         "seed": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "A random seed.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
@@ -134,7 +103,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -159,9 +128,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

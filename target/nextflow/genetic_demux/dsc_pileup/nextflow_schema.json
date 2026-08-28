@@ -4,21 +4,6 @@
   "description": "Dsc-pileup is a software tool to pileup reads and corresponding base quality \nfor each overlapping SNPs and each barcode. By using pileup files,\nit would allow us to run demuxlet/freemuxlet pretty fast multiple times\nwithout going over the BAM file again.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,29 +14,23 @@
           "description": "Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.sam']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.sam`"
         },
         "tag_group": {
           "type": "string",
-          "default": [
-            "CB"
-          ],
+          "default": "CB",
           "description": "Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups. For 10x genomics, use CB.",
           "help_text": "type: `string`, multiple: False, default: `CB`"
         },
         "tag_umi": {
           "type": "string",
-          "default": [
-            "UB"
-          ],
+          "default": "UB",
           "description": "Tag representing UMIs. For 10x genomiucs, use UB.",
           "help_text": "type: `string`, multiple: False, default: `UB`"
         },
         "exclude_flag": {
           "type": "integer",
-          "default": [
-            1796
-          ],
+          "default": 1796,
           "description": "SAM/BAM FLAGs to be excluded.",
           "help_text": "type: `integer`, multiple: False, default: `1796`"
         },
@@ -60,7 +39,7 @@
           "description": "Input VCF/BCF file for dsc-pileup, containing the AC and AN field.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.vcf`"
         },
         "sm": {
           "type": "string",
@@ -74,17 +53,13 @@
         },
         "sam_verbose": {
           "type": "integer",
-          "default": [
-            1000000
-          ],
+          "default": 1000000,
           "description": "Verbose message frequency for SAM/BAM/CRAM.",
           "help_text": "type: `integer`, multiple: False, default: `1000000`"
         },
         "vcf_verbose": {
           "type": "integer",
-          "default": [
-            1000
-          ],
+          "default": 1000,
           "description": "Verbose message frequency for VCF/BCF.",
           "help_text": "type: `integer`, multiple: False, default: `1000`"
         },
@@ -96,41 +71,31 @@
         },
         "cap_bq": {
           "type": "integer",
-          "default": [
-            40
-          ],
+          "default": 40,
           "description": "Maximum base quality (higher BQ will be capped).",
           "help_text": "type: `integer`, multiple: False, default: `40`"
         },
         "min_bq": {
           "type": "integer",
-          "default": [
-            13
-          ],
+          "default": 13,
           "description": "Minimum base quality to consider (lower BQ will be skipped).",
           "help_text": "type: `integer`, multiple: False, default: `13`"
         },
         "min_mq": {
           "type": "integer",
-          "default": [
-            20
-          ],
+          "default": 20,
           "description": "Minimum mapping quality to consider (lower MQ will be ignored).",
           "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "min_td": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum distance to the tail (lower will be ignored).",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "excl_flag": {
           "type": "integer",
-          "default": [
-            3844
-          ],
+          "default": 3844,
           "description": "SAM/BAM FLAGs to be excluded for SNP overlapping Read filtering Options.",
           "help_text": "type: `integer`, multiple: False, default: `3844`"
         },
@@ -141,25 +106,19 @@
         },
         "min_total": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of total reads for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_uniq": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of unique reads (determined by UMI/SNP pair) for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "min_snp": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Minimum number of SNPs with coverage for a droplet/cell to be considered.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         }
@@ -175,12 +134,12 @@
           "description": "Output directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['demux']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `demux`"
         },
         "out": {
           "type": "string",
           "description": "dsc-pileup output file prefix",
-          "help_text": "type: `string`, multiple: False, example: `['demuxlet_dsc']`"
+          "help_text": "type: `string`, multiple: False, example: `demuxlet_dsc`"
         }
       }
     },
@@ -202,9 +161,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

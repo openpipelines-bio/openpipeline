@@ -4,21 +4,6 @@
   "description": "Convert bcl files to fastq files using bcl-convert.\nInformation about upgrading from bcl2fastq via\nhttps://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html\nand https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,42 +14,38 @@
           "description": "Input run directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['bcl_dir']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `bcl_dir`"
         },
         "sample_sheet": {
           "type": "string",
           "description": "Pointer to the sample sheet",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['bcl_dir']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `bcl_dir`"
         },
         "output": {
           "type": "string",
           "description": "Output directory containig fastq files",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['fastq_dir']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `fastq_dir`"
         },
         "reports": {
           "type": "string",
           "description": "Reports directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['reports_dir']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `reports_dir`"
         },
         "test_mode": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "Should bcl-convert be run in test mode (using --first-tile-only)?",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
         "strict_mode": {
           "type": "boolean",
-          "default": [
-            false
-          ],
+          "default": false,
           "description": "Abort if any files are missing.",
           "help_text": "type: `boolean`, multiple: False, default: `False`"
         },
@@ -108,9 +89,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

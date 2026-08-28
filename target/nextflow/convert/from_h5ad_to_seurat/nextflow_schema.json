@@ -4,21 +4,6 @@
   "description": "Converts an h5ad file into a Seurat file.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,21 +14,17 @@
           "description": "Input h5ad file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5ad']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5ad`"
         },
         "assay": {
           "type": "string",
-          "default": [
-            "RNA"
-          ],
+          "default": "RNA",
           "description": "Name of the assay to be created.",
           "help_text": "type: `string`, multiple: False, default: `RNA`"
         },
         "x_mapping": {
           "type": "string",
-          "default": [
-            "counts"
-          ],
+          "default": "counts",
           "description": "Name of the Seurat layer in which the AnnData .X matrix is stored.\n",
           "help_text": "type: `string`, multiple: False, default: `counts`"
         },
@@ -52,7 +33,7 @@
           "description": "Output Seurat file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.rds']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.rds`"
         }
       },
       "required": [
@@ -78,9 +59,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

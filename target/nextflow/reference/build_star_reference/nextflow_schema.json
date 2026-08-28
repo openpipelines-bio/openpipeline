@@ -4,22 +4,7 @@
   "description": "Create a reference for STAR from a set of fasta files.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
-    "input/output": {
+    "input_output": {
       "type": "object",
       "title": "Input/Output",
       "description": "No description",
@@ -32,21 +17,21 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['chr1.fasta', 'chr2.fasta']`"
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `chr1.fasta;chr2.fasta`"
         },
         "transcriptome_gtf": {
           "type": "string",
           "description": "Specifies the path to the file with annotated transcripts in the standard GTF\nformat. STAR will extract splice junctions from this file and use them to greatly improve\naccuracy of the mapping. Corresponds to the --sjdbGTFfile argument in the STAR command.\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['transcriptome.gtf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `transcriptome.gtf`"
         },
         "output": {
           "type": "string",
           "description": "Path to output directory. Corresponds to the --genomeDir argument in the STAR command.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['/path/to/foo']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `/path/to/foo`"
         }
       },
       "required": [
@@ -61,9 +46,7 @@
       "properties": {
         "genomeSAindexNbases": {
           "type": "integer",
-          "default": [
-            14
-          ],
+          "default": 14,
           "description": "Length (bases) of the SA pre-indexing string. Typically between 10 and 15.\nLonger strings will use much more memory, but allow faster searches. For small\ngenomes, the parameter {genomeSAindexNbases must be scaled down to\nmin(14, log2(GenomeLength)/2 - 1).\n",
           "help_text": "type: `integer`, multiple: False, default: `14`"
         }
@@ -88,10 +71,7 @@
   },
   "allOf": [
     {
-      "$ref": "#/$defs/dataset input"
-    },
-    {
-      "$ref": "#/$defs/input/output"
+      "$ref": "#/$defs/input_output"
     },
     {
       "$ref": "#/$defs/genome indexing arguments"

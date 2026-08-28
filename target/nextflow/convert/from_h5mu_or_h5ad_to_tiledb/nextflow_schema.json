@@ -4,21 +4,6 @@
   "description": "Convert a MuData or AnnData object to tiledb. Currently, transcriptome and protein modalities are supported.\n\nNOTE: The functionality provided by this component is experimental and may be subject to change. \n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,7 +14,7 @@
           "description": "Input AnnData or MuData file. When an AnnData file is provided, it is automatically assumed to \ncontain transcriptome counts.\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         }
       },
       "required": [
@@ -43,26 +28,24 @@
       "properties": {
         "rna_modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "The name used for the RNA modality. Used when input file is a MuData object.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "rna_raw_layer_input": {
           "type": "string",
           "description": "Location of the layer containing the raw transcriptome counts. Layers are looked for in .layers,\nexcept when using the value 'X'; in which case .X is used.\n",
-          "help_text": "type: `string`, multiple: False, required, example: `['X']`"
+          "help_text": "type: `string`, multiple: False, required, example: `X`"
         },
         "rna_normalized_layer_input": {
           "type": "string",
           "description": "Location of the layer containing the normalized counts. Layers are looked for in .layers,\nexcept when using the value 'X'; in which case .X is used.\n",
-          "help_text": "type: `string`, multiple: False, required, example: `['log_normalized']`"
+          "help_text": "type: `string`, multiple: False, required, example: `log_normalized`"
         },
         "rna_var_gene_names_input": {
           "type": "string",
           "description": "Column in .var that provides the gene names. If not specified, the index from the input is used.\n",
-          "help_text": "type: `string`, multiple: False, example: `['gene_symbol']`"
+          "help_text": "type: `string`, multiple: False, example: `gene_symbol`"
         }
       },
       "required": [
@@ -78,17 +61,17 @@
         "prot_modality": {
           "type": "string",
           "description": "The name used for the protein modality. Used when input file is a MuData object.\nWhen not specified, the protein modality will not be processed.\n",
-          "help_text": "type: `string`, multiple: False, example: `['prot']`"
+          "help_text": "type: `string`, multiple: False, example: `prot`"
         },
         "prot_raw_layer_input": {
           "type": "string",
           "description": "Location of the layer containing the raw protein counts. Layers are looked for in .layers,\nexcept when using the value 'X'; in which case .X is used.\n",
-          "help_text": "type: `string`, multiple: False, example: `['X']`"
+          "help_text": "type: `string`, multiple: False, example: `X`"
         },
         "prot_normalized_layer_input": {
           "type": "string",
           "description": "Location of the layer containing the normalized counts. Layers are looked for in .layers,\nexcept when using the value 'X'; in which case .X is used.\n",
-          "help_text": "type: `string`, multiple: False, example: `['clr']`"
+          "help_text": "type: `string`, multiple: False, example: `clr`"
         }
       }
     },
@@ -99,81 +82,61 @@
       "properties": {
         "rna_modality_output": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "TileDB Measurement name where the RNA modality will be stored.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "prot_modality_output": {
           "type": "string",
-          "default": [
-            "prot"
-          ],
+          "default": "prot",
           "description": "Name of the TileDB Measurement where the protein modality will be stored.\n",
           "help_text": "type: `string`, multiple: False, default: `prot`"
         },
         "obs_index_name_output": {
           "type": "string",
-          "default": [
-            "cell_id"
-          ],
+          "default": "cell_id",
           "description": "Name of the index that is used to describe the cells (observations).\n",
           "help_text": "type: `string`, multiple: False, default: `cell_id`"
         },
         "rna_var_index_name_output": {
           "type": "string",
-          "default": [
-            "rna_index"
-          ],
+          "default": "rna_index",
           "description": "Output name of the index that is used to describe the genes.\n",
           "help_text": "type: `string`, multiple: False, default: `rna_index`"
         },
         "rna_raw_layer_output": {
           "type": "string",
-          "default": [
-            "X"
-          ],
+          "default": "X",
           "description": "Output location for the raw transcriptomics counts.\n",
           "help_text": "type: `string`, multiple: False, default: `X`"
         },
         "rna_normalized_layer_output": {
           "type": "string",
-          "default": [
-            "log_normalized"
-          ],
+          "default": "log_normalized",
           "description": "Output location for the normalized RNA counts.\n",
           "help_text": "type: `string`, multiple: False, default: `log_normalized`"
         },
         "rna_var_gene_names_output": {
           "type": "string",
-          "default": [
-            "gene_symbol"
-          ],
+          "default": "gene_symbol",
           "description": "Name of the .var column that specifies the gene games.\n",
           "help_text": "type: `string`, multiple: False, default: `gene_symbol`"
         },
         "prot_var_index_name_output": {
           "type": "string",
-          "default": [
-            "prot_index"
-          ],
+          "default": "prot_index",
           "description": "Output name of the index that is used to describe the proteins. \n",
           "help_text": "type: `string`, multiple: False, default: `prot_index`"
         },
         "prot_raw_layer_output": {
           "type": "string",
-          "default": [
-            "X"
-          ],
+          "default": "X",
           "description": "Output location for the raw protein counts.\n",
           "help_text": "type: `string`, multiple: False, default: `X`"
         },
         "prot_normalized_layer_output": {
           "type": "string",
-          "default": [
-            "log_normalized"
-          ],
+          "default": "log_normalized",
           "description": "Output location for the normalized protein counts.\n",
           "help_text": "type: `string`, multiple: False, default: `log_normalized`"
         }
@@ -189,7 +152,7 @@
           "description": "Directory where the TileDB output will be written to.\n",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['path/to/tiledb_dir']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `path/to/tiledb_dir`"
         }
       }
     },
@@ -211,9 +174,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

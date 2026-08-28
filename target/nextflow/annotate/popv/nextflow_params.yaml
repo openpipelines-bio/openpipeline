@@ -1,25 +1,33 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# input_layer: "foo"
-# input_obs_batch: "foo"
-# input_var_subset: "foo"
-# input_obs_label: "foo"
+# input_layer: "value"
+# input_obs_batch: "value"
+# input_var_subset: "value"
+# input_obs_label: "value"
 unknown_celltype_label: "unknown"
+# ---
 
 # Reference
 reference: # please fill in - example: "TS_Bladder_filtered.h5ad"
-# reference_layer: "foo"
+# reference_layer: "value"
 reference_obs_label: "cell_ontology_class"
 reference_obs_batch: "donor_assay"
+# ---
 
 # Outputs
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
 # output_compression: "gzip"
+# ---
 
 # Arguments
-methods: # please fill in - example: ["KNN_SCVI", "SCANVI_POPV"]
+methods: # please fill in - example: "KNN_SCVI;SCANVI_POPV"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

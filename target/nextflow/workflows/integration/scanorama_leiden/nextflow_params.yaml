@@ -1,18 +1,25 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "dataset.h5mu"
 layer: "log_normalized"
 modality: "rna"
+# ---
 
 # Outputs
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
+# ---
 
-# Neighbour calculation
+# Neighbour Calculation
 uns_neighbors: "scanorama_integration_neighbors"
 obsp_neighbor_distances: "scanorama_integration_distances"
 obsp_neighbor_connectivities: "scanorama_integration_connectivities"
+# ---
 
-# Scanorama integration options
+# Scanorama Integration Options
 obs_batch: "sample_id"
 obsm_input: "X_pca"
 obsm_output: "X_scanorama"
@@ -21,16 +28,17 @@ batch_size: 5000
 sigma: 15.0
 approx: true
 alpha: 0.1
+# ---
 
-# Clustering options
+# Clustering Options
 obs_cluster: "scanorama_integration_leiden"
-leiden_resolution: [1.0]
+leiden_resolution: "1.0"
+# ---
 
-# Umap options
+# Umap Options
 obsm_umap: "X_leiden_scanorama_umap"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

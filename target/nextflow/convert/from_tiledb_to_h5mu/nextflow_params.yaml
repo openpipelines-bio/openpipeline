@@ -1,18 +1,22 @@
-# Input database
+# Dataset Input
+param_list: ""
+# ---
+
+# Input Database
 input_uri: # please fill in - example: "s3://bucket/path"
-# s3_region: "foo"
-# endpoint: "foo"
+# s3_region: "value"
+# endpoint: "value"
 s3_no_sign_request: false
-input_modality: # please fill in - example: "foo"
-input_layers: # please fill in - example: ["foo"]
+input_modality: # please fill in - example: "value"
+input_layers: # please fill in - example: "value"
+# ---
 
-# MuData output
-# output: "$id.$key.output.h5mu"
-output_modality: # please fill in - example: "foo"
+# Mudata Output
+output: # please fill in - example: "$id.$key.output.h5mu"
+output_modality: # please fill in - example: "value"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

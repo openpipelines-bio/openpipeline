@@ -1,3 +1,7 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Input
 # bam: "input.bam"
 # bam_list: "bam_list.txt"
@@ -5,15 +9,15 @@ stdin: false
 # fasta_reference: "reference.fasta"
 # fasta_reference_index: "file.fai"
 # targets: "targets.bed"
-# region: "foo"
+# region: "value"
 # samples: "samples.txt"
 # populations: "populations.txt"
-# cnv_map: "path/to/file"
+# cnv_map: "input.txt"
 gvcf: false
-# gvcf_chunk: 123
+# gvcf_chunk: 0
 # variant_input: "variant_input.vcf"
 only_use_input_alleles: false
-# haplotype_basis_alleles: "path/to/file"
+# haplotype_basis_alleles: "input.txt"
 report_all_haplotype_alleles: false
 report_monomorphic: false
 pvar: 0.0
@@ -41,23 +45,23 @@ min_supporting_allele_qsum: 0
 min_supporting_mapping_qsum: 0
 mismatch_base_quality_threshold: 10
 read_max_mismatch_fraction: 1.0
-# read_mismatch_limit: 123
-# read_snp_limit: 123
-# read_indel_limit: 123
+# read_mismatch_limit: 0
+# read_snp_limit: 0
+# read_indel_limit: 0
 standard_filters: false
 min_alternate_fraction: 0.05
 min_alternate_count: 2
 min_alternate_qsum: 0
 min_alternate_total: 1
 min_coverage: 0
-# max_coverage: 123
+# max_coverage: 0
 no_population_priors: false
 hwe_priors_off: false
 binomial_obs_priors_off: false
 allele_balance_priors_off: false
 # observation_bias: "observation_bias.txt"
-# base_quality_cap: 123
-prob_contamination: 1.0E-8
+# base_quality_cap: 0
+prob_contamination: 1e-08
 legacy_gls: false
 # contamination_estimates: "contamination_estimates.txt"
 report_genotype_likelihood_max: false
@@ -65,20 +69,20 @@ genotyping_max_iterations: 1000
 genotyping_max_banddepth: 6
 posterior_integration_limits: "1,3"
 exclude_unobserved_genotypes: false
-# genotype_variant_threshold: 123
+# genotype_variant_threshold: 0
 use_mapping_quality: false
 harmonic_indel_quality: false
 read_dependence_factor: 0.9
 genotype_qualities: false
 debug: false
 dd: false
+# ---
 
 # Output
-# output: "$id.$key.output"
+# output: "$id.$key.freebayes_out"
 # vcf: "snp.vcf"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

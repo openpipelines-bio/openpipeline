@@ -1,53 +1,61 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Query Input
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# layer: "foo"
-input_obs_batch_label: # please fill in - example: "sample_id"
-# input_obs_size_factor: "foo"
-# input_obs_categorical_covariate: ["foo"]
-# input_obs_continuous_covariate: ["foo"]
-# input_var_gene_names: "foo"
+# layer: "value"
+input_obs_batch_label: "sample_id"
+# input_obs_size_factor: "value"
+# input_obs_categorical_covariate: "value"
+# input_obs_continuous_covariate: "value"
+# input_var_gene_names: "value"
 sanitize_ensembl_ids: true
+# ---
 
-# Reference input
+# Reference Input
 reference: # please fill in - example: "reference.h5mu"
 reference_obs_target: # please fill in - example: "cell_type"
-reference_obs_batch_label: # please fill in - example: "sample_id"
-# reference_obs_size_factor: "foo"
-# reference_obs_categorical_covariate: ["foo"]
-# reference_obs_continuous_covariate: ["foo"]
+reference_obs_batch_label: "sample_id"
+# reference_obs_size_factor: "value"
+# reference_obs_categorical_covariate: "value"
+# reference_obs_continuous_covariate: "value"
 unlabeled_category: "Unknown"
 reference_var_hvg: "filter_with_hvg"
-# reference_var_gene_names: "foo"
+# reference_var_gene_names: "value"
+# ---
 
-# scVI, scANVI and scArches training options
+# Scvi, Scanvi And Scarches Training Options
 # early_stopping: true
 early_stopping_monitor: "elbo_validation"
 early_stopping_patience: 45
 early_stopping_min_delta: 0.0
-# max_epochs: 123
+# max_epochs: 0
 reduce_lr_on_plateau: true
 lr_factor: 0.6
 lr_patience: 30.0
+# ---
 
-# Leiden clustering options
-leiden_resolution: [1.0]
+# Leiden Clustering Options
+leiden_resolution: "1.0"
+# ---
 
-# Neighbor classifier arguments
+# Neighbor Classifier Arguments
 knn_weights: "uniform"
 knn_n_neighbors: 15
+# ---
 
 # Outputs
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
 output_obs_predictions: "scanvi_pred"
 output_obs_probability: "scanvi_probabilities"
 output_obsm_integrated: "X_integrated_scanvi"
 # output_compression: "gzip"
-# output_model: "$id.$key.output_model"
+# output_model: "$id.$key.output.txt"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

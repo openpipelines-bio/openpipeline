@@ -1,20 +1,25 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 input: # please fill in - example: "input.h5mu"
-# output: "$id.$key.output.h5mu"
+output: # please fill in - example: "$id.$key.output.h5mu"
 modality: "rna"
-# layer: "foo"
+# layer: "value"
 de_method: "t-test"
-groupby: # please fill in - example: "foo"
+groupby: # please fill in - example: "value"
 resource_name: "consensus"
 gene_symbol: "gene_symbol"
 expr_prop: 0.1
 min_cells: 5
 aggregate_method: "rra"
-# consensus_opts: ["foo"]
+# consensus_opts: "value"
 return_all_lrs: false
 n_perms: 100
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

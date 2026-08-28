@@ -4,21 +4,6 @@
   "description": "Convert the htseq table to a h5mu.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -30,7 +15,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, example: `['foo']`"
+          "help_text": "type: `array`, multiple: True, required, example: `foo`"
         },
         "input_counts": {
           "type": "array",
@@ -40,14 +25,14 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['counts.tsv']`"
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `counts.tsv`"
         },
         "reference": {
           "type": "string",
           "description": "The GTF file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['gencode_v41_star.gtf']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `gencode_v41_star.gtf`"
         }
       },
       "required": [
@@ -66,7 +51,7 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "output_compression": {
           "type": "string",
@@ -75,7 +60,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -100,9 +85,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

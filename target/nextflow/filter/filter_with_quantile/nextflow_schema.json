@@ -4,21 +4,6 @@
   "description": "Filter observations or features from an .h5mu file based on quantile thresholds of numeric values.\n\nThis component removes observations or features that fall outside specified quantile ranges in .obs or .var. columns.\n\nFor example, you can filter out observations with total UMI counts in the bottom 5% (quantile < 0.05) or \ntop 5% (quantile > 0.95), or retain an intermediate range (0.1 < quantile < 0.9).\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,25 +14,23 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "obs_column": {
           "type": "string",
           "description": "Name of the column in .obs to use for quantile-based filtering.\nIf not specified, no .obs filtering will be performed.\n",
-          "help_text": "type: `string`, multiple: False, example: `['total_counts']`"
+          "help_text": "type: `string`, multiple: False, example: `total_counts`"
         },
         "var_column": {
           "type": "string",
           "description": "Name of the column in .var to use for quantile-based filtering.\nIf not specified, no .var filtering will be performed.\n",
-          "help_text": "type: `string`, multiple: False, example: `['mean_counts']`"
+          "help_text": "type: `string`, multiple: False, example: `mean_counts`"
         }
       },
       "required": [
@@ -67,45 +50,39 @@
         },
         "obs_log1p_transform": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Apply log1p transformation to the obs_column values before calculating quantiles.\nThe transformed values will be stored as 'log1p_{obs_column}' in .obs.\nThis is useful for highly skewed data where log transformation can improve quantile-based filtering.\n",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "obs_min_quantile": {
           "type": "number",
           "description": "Minimum quantile threshold for .obs filtering. Observations with values below this quantile will be removed.\nValue should be between 0.0 and 1.0.\n",
-          "help_text": "type: `number`, multiple: False, example: `[0.05]`"
+          "help_text": "type: `number`, multiple: False, example: `0.05`"
         },
         "obs_max_quantile": {
           "type": "number",
           "description": "Maximum quantile threshold for .obs filtering. Observations with values above this quantile will be removed.\nValue should be between 0.0 and 1.0.\n",
-          "help_text": "type: `number`, multiple: False, example: `[0.95]`"
+          "help_text": "type: `number`, multiple: False, example: `0.95`"
         },
         "var_log1p_transform": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Apply log1p transformation to the var_column values before calculating quantiles.\nThe transformed values will be stored as 'log1p_{var_column}' in .var.\nThis is useful for highly skewed data where log transformation can improve quantile-based filtering.\n",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "var_min_quantile": {
           "type": "number",
           "description": "Minimum quantile threshold for .var filtering. Features with values below this quantile will be removed.\nValue should be between 0.0 and 1.0.\n",
-          "help_text": "type: `number`, multiple: False, example: `[0.01]`"
+          "help_text": "type: `number`, multiple: False, example: `0.01`"
         },
         "var_max_quantile": {
           "type": "number",
           "description": "Maximum quantile threshold for .var filtering. Features with values above this quantile will be removed.\nValue should be between 0.0 and 1.0.\n",
-          "help_text": "type: `number`, multiple: False, example: `[0.99]`"
+          "help_text": "type: `number`, multiple: False, example: `0.99`"
         },
         "min_values_for_quantile": {
           "type": "integer",
-          "default": [
-            10
-          ],
+          "default": 10,
           "description": "Minimum number of values required to apply quantile filtering. If fewer values are present,\nquantile filtering will be skipped to prevent data loss. \n",
           "help_text": "type: `integer`, multiple: False, default: `10`"
         }
@@ -121,31 +98,27 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         },
         "obs_name_filter": {
           "type": "string",
-          "default": [
-            "filter_with_quantile"
-          ],
+          "default": "filter_with_quantile",
           "description": "In which .obs slot to store a boolean array corresponding to which observations should be removed.",
           "help_text": "type: `string`, multiple: False, default: `filter_with_quantile`"
         },
         "obs_log1p_column": {
           "type": "string",
           "description": "Name for the column where log1p transformed obs values will be stored.\nIf not provided, defaults to 'log1p_{obs_column}'.\n",
-          "help_text": "type: `string`, multiple: False, example: `['log1p_total_counts']`"
+          "help_text": "type: `string`, multiple: False, example: `log1p_total_counts`"
         },
         "var_log1p_column": {
           "type": "string",
           "description": "Name for the column where log1p transformed var values will be stored.\nIf not provided, defaults to 'log1p_{var_column}'.\n",
-          "help_text": "type: `string`, multiple: False, example: `['log1p_total_counts']`"
+          "help_text": "type: `string`, multiple: False, example: `log1p_total_counts`"
         },
         "var_name_filter": {
           "type": "string",
-          "default": [
-            "filter_with_quantile"
-          ],
+          "default": "filter_with_quantile",
           "description": "In which .var slot to store a boolean array corresponding to which variables should be removed.",
           "help_text": "type: `string`, multiple: False, default: `filter_with_quantile`"
         },
@@ -156,7 +129,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       }
     },
@@ -178,9 +151,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

@@ -1,3 +1,7 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 base_dir: # please fill in - example: "/path/to/dir"
 pattern: # please fill in - example: "*.fastq.gz"
@@ -6,8 +10,9 @@ n_basename_id: 0
 id_name: "id"
 path_name: "path"
 # group_name: "param_list"
-# output: "$id.$key.output.yaml"
+output: # please fill in - example: "$id.$key.params.yaml"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

@@ -4,21 +4,6 @@
   "description": "Processing unimodal single-sample RNA transcriptomics data.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -27,14 +12,14 @@
         "id": {
           "type": "string",
           "description": "ID of the sample.",
-          "help_text": "type: `string`, multiple: False, required, example: `['foo']`"
+          "help_text": "type: `string`, multiple: False, required, example: `foo`"
         },
         "input": {
           "type": "string",
           "description": "Path to the sample.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['dataset.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `dataset.h5mu`"
         },
         "layer": {
           "type": "string",
@@ -57,7 +42,7 @@
           "description": "Destination path to the output.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         }
       },
       "required": [
@@ -72,47 +57,47 @@
         "min_counts": {
           "type": "integer",
           "description": "Minimum number of counts captured per cell.",
-          "help_text": "type: `integer`, multiple: False, example: `[200]`"
+          "help_text": "type: `integer`, multiple: False, example: `200`"
         },
         "max_counts": {
           "type": "integer",
           "description": "Maximum number of counts captured per cell.",
-          "help_text": "type: `integer`, multiple: False, example: `[5000000]`"
+          "help_text": "type: `integer`, multiple: False, example: `5000000`"
         },
         "min_genes_per_cell": {
           "type": "integer",
           "description": "Minimum of non-zero values per cell.",
-          "help_text": "type: `integer`, multiple: False, example: `[200]`"
+          "help_text": "type: `integer`, multiple: False, example: `200`"
         },
         "max_genes_per_cell": {
           "type": "integer",
           "description": "Maximum of non-zero values per cell.",
-          "help_text": "type: `integer`, multiple: False, example: `[1500000]`"
+          "help_text": "type: `integer`, multiple: False, example: `1500000`"
         },
         "min_cells_per_gene": {
           "type": "integer",
           "description": "Minimum of non-zero values per gene.",
-          "help_text": "type: `integer`, multiple: False, example: `[3]`"
+          "help_text": "type: `integer`, multiple: False, example: `3`"
         },
         "min_fraction_mito": {
           "type": "number",
           "description": "Minimum fraction of UMIs that are mitochondrial. Requires --obs_name_mitochondrial_fraction.",
-          "help_text": "type: `number`, multiple: False, example: `[0.0]`"
+          "help_text": "type: `number`, multiple: False, example: `0.0`"
         },
         "max_fraction_mito": {
           "type": "number",
           "description": "Maximum fraction of UMIs that are mitochondrial. Requires --obs_name_mitochondrial_fraction.\n",
-          "help_text": "type: `number`, multiple: False, example: `[0.2]`"
+          "help_text": "type: `number`, multiple: False, example: `0.2`"
         },
         "min_fraction_ribo": {
           "type": "number",
           "description": "Minimum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.",
-          "help_text": "type: `number`, multiple: False, example: `[0.0]`"
+          "help_text": "type: `number`, multiple: False, example: `0.0`"
         },
         "max_fraction_ribo": {
           "type": "number",
           "description": "Maximum fraction of UMIs that are ribosomal. Requires --obs_name_ribosomal_fraction.\n",
-          "help_text": "type: `number`, multiple: False, example: `[0.2]`"
+          "help_text": "type: `number`, multiple: False, example: `0.2`"
         },
         "skip_scrublet_doublet_detection": {
           "type": "boolean",
@@ -135,7 +120,7 @@
         "var_gene_names": {
           "type": "string",
           "description": ".var column name to be used to detect mitochondrial/ribosomal genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex or --ribosomal_gene_regex will be \nidentified as mitochondrial or ribosomal genes, respectively.  \n",
-          "help_text": "type: `string`, multiple: False, example: `['gene_symbol']`"
+          "help_text": "type: `string`, multiple: False, example: `gene_symbol`"
         },
         "var_name_mitochondrial_genes": {
           "type": "string",
@@ -149,9 +134,7 @@
         },
         "mitochondrial_gene_regex": {
           "type": "string",
-          "default": [
-            "^[mM][tT]-"
-          ],
+          "default": "^[mM][tT]-",
           "description": "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
           "help_text": "type: `string`, multiple: False, default: `^[mM][tT]-`"
         },
@@ -167,9 +150,7 @@
         },
         "ribosomal_gene_regex": {
           "type": "string",
-          "default": [
-            "^[Mm]?[Rr][Pp][LlSs]"
-          ],
+          "default": "^[Mm]?[Rr][Pp][LlSs]",
           "description": "Regex string that identifies ribosomal genes from --var_gene_names.\nBy default will detect human and mouse ribosomal genes from a gene symbol.\n",
           "help_text": "type: `string`, multiple: False, default: `^[Mm]?[Rr][Pp][LlSs]`"
         }
@@ -193,9 +174,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

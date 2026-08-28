@@ -4,21 +4,6 @@
   "description": "Quantify gene expression for subsequent testing for differential expression.\n\nThis script takes one or more alignment files in SAM/BAM format and a feature file in GFF format and calculates for each feature the number of reads mapping to it. \n\nSee http://htseq.readthedocs.io/en/master/count.html for details.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -32,14 +17,14 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `['mysample1.BAM', 'mysample2.BAM']`"
+          "help_text": "type: `array`, multiple: True, required, direction: `input`, example: `mysample1.BAM;mysample2.BAM`"
         },
         "reference": {
           "type": "string",
           "description": "Path to the GTF file containing the features.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['reference.gtf']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `reference.gtf`"
         }
       },
       "required": [
@@ -57,12 +42,12 @@
           "description": "Filename to output the counts to.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['htseq-count.tsv']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `htseq-count.tsv`"
         },
         "output_delimiter": {
           "type": "string",
           "description": "Column delimiter in output.",
-          "help_text": "type: `string`, multiple: False, example: `['\\t']`"
+          "help_text": "type: `string`, multiple: False, example: `\t`"
         },
         "output_sam": {
           "type": "array",
@@ -72,7 +57,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, direction: `output`, example: `['mysample1_out.SAM', 'mysample2_out.SAM']`"
+          "help_text": "type: `array`, multiple: True, direction: `output`, example: `mysample1_out.SAM;mysample2_out.SAM`"
         },
         "output_sam_format": {
           "type": "string",
@@ -95,9 +80,7 @@
       "properties": {
         "order": {
           "type": "string",
-          "default": [
-            "name"
-          ],
+          "default": "name",
           "description": "Sorting order of <alignment_file>. Paired-end sequencing data must be sorted either by position or\nby read name, and the sorting order must be specified. Ignored for single-end data.\n",
           "enum": [
             "pos",
@@ -107,9 +90,7 @@
         },
         "stranded": {
           "type": "string",
-          "default": [
-            "yes"
-          ],
+          "default": "yes",
           "description": "Whether the data is from a strand-specific assay. 'reverse' means 'yes' with reversed strand interpretation.",
           "enum": [
             "yes",
@@ -120,16 +101,14 @@
         },
         "minimum_alignment_quality": {
           "type": "integer",
-          "default": [
-            10
-          ],
+          "default": 10,
           "description": "Skip all reads with MAPQ alignment quality lower than the given minimum value. \nMAPQ is the 5th column of a SAM/BAM file and its usage depends on the software \nused to map the reads.\n",
           "help_text": "type: `integer`, multiple: False, default: `10`"
         },
         "type": {
           "type": "string",
           "description": "Feature type (3rd column in GTF file) to be used, all features of other type are ignored (default, suitable for Ensembl GTF files: exon)",
-          "help_text": "type: `string`, multiple: False, example: `['exon']`"
+          "help_text": "type: `string`, multiple: False, example: `exon`"
         },
         "id_attribute": {
           "type": "array",
@@ -137,7 +116,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['gene_id']`"
+          "help_text": "type: `array`, multiple: True, example: `gene_id`"
         },
         "additional_attributes": {
           "type": "array",
@@ -145,7 +124,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['gene_name']`"
+          "help_text": "type: `array`, multiple: True, example: `gene_name`"
         },
         "add_chromosome_info": {
           "type": "boolean",
@@ -155,9 +134,7 @@
         },
         "mode": {
           "type": "string",
-          "default": [
-            "union"
-          ],
+          "default": "union",
           "description": "Mode to handle reads overlapping more than one feature.",
           "enum": [
             "union",
@@ -168,9 +145,7 @@
         },
         "non_unique": {
           "type": "string",
-          "default": [
-            "none"
-          ],
+          "default": "none",
           "description": "Whether and how to score reads that are not uniquely aligned or ambiguously assigned to features.",
           "enum": [
             "none",
@@ -224,9 +199,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

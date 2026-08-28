@@ -1,45 +1,55 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Query Input
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-# input_layer: "foo"
+# input_layer: "value"
 input_obs_batch_label: # please fill in - example: "sample"
-# input_var_gene_names: "foo"
+# input_var_gene_names: "value"
 input_reference_gene_overlap: 100
 overwrite_existing_key: false
+# ---
 
-# Reference input
+# Reference Input
 reference: # please fill in - example: "reference.h5mu"
-# reference_layer: "foo"
+# reference_layer: "value"
 reference_obs_target: # please fill in - example: "cell_type"
-# reference_var_gene_names: "foo"
+# reference_var_gene_names: "value"
 reference_obs_batch_label: # please fill in - example: "sample"
+# ---
 
-# HVG subset arguments
+# Hvg Subset Arguments
 n_hvg: 2000
+# ---
 
-# PCA options
+# Pca Options
 # pca_num_components: 25
+# ---
 
-# Harmony integration options
-harmony_theta: [2.0]
+# Harmony Integration Options
+harmony_theta: "2.0"
+# ---
 
-# Leiden clustering options
-leiden_resolution: [1.0]
+# Leiden Clustering Options
+leiden_resolution: "1.0"
+# ---
 
-# Neighbor classifier arguments
+# Neighbor Classifier Arguments
 knn_weights: "uniform"
 knn_n_neighbors: 15
+# ---
 
 # Outputs
-# output: "$id.$key.output.h5mu"
-# output_obs_predictions: ["foo"]
-# output_obs_probability: ["foo"]
+output: # please fill in - example: "$id.$key.output.h5mu"
+# output_obs_predictions: "value"
+# output_obs_probability: "value"
 output_obsm_integrated: "X_integrated_harmony"
 # output_compression: "gzip"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

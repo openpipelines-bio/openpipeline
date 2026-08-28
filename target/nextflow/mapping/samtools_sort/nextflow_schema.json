@@ -4,21 +4,6 @@
   "description": "Sort and (optionally) index alignments.\n\nReads are sorted by leftmost coordinates, or by read name when `--sort_by_read_names` is used.\n\nAn appropriate `@HD-SO` sort order header tag will be added or an existing one updated if necessary.\n\nNote that to generate an index file (by specifying `--output_bai`), the default coordinate sort must be used.\nThus the `--sort_by_read_names` and `--sort_by <TAG>` options are incompatible with `--output_bai`. \n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,7 +14,7 @@
           "description": "Path to the SAM/BAM/CRAM files containing the mapped reads.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.bam']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.bam`"
         }
       },
       "required": [
@@ -46,14 +31,14 @@
           "description": "Filename to output the counts to.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.bam']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.bam`"
         },
         "output_bai": {
           "type": "string",
           "description": "BAI-format index for BAM file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.bam.bai']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.bam.bai`"
         },
         "output_format": {
           "type": "string",
@@ -63,12 +48,12 @@
             "bam",
             "cram"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['bam']`, choices: `sam`|`bam`|`cram`"
+          "help_text": "type: `string`, multiple: False, example: `bam`, choices: `sam`|`bam`|`cram`"
         },
         "compression": {
           "type": "integer",
           "description": "Compression level, from 0 (uncompressed) to 9 (best",
-          "help_text": "type: `integer`, multiple: False, example: `[5]`"
+          "help_text": "type: `integer`, multiple: False, example: `5`"
         }
       },
       "required": [
@@ -89,7 +74,7 @@
         "minimizer_kmer": {
           "type": "integer",
           "description": "Sets the kmer size to be used in the -M option.",
-          "help_text": "type: `integer`, multiple: False, example: `[20]`"
+          "help_text": "type: `integer`, multiple: False, example: `20`"
         },
         "sort_by_read_names": {
           "type": "boolean",
@@ -128,9 +113,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

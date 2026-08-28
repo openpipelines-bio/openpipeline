@@ -1,13 +1,18 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 genome_fasta: # please fill in - example: "genome_sequence.fa.gz"
 annotation_gtf: # please fill in - example: "annotation.gtf.gz"
 # motifs_file: "motifs.txt"
-non_nuclear_contigs: ["chrM"]
-# output: "$id.$key.output"
-genome: # please fill in - example: "output"
-# organism: "foo"
+non_nuclear_contigs: "chrM"
+output: # please fill in - example: "$id.$key.cellranger_reference"
+genome: "output"
+# organism: "value"
 # subset_regex: "(ERCC-00002|chr1)"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

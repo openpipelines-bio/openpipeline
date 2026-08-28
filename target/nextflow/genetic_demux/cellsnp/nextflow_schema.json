@@ -4,21 +4,6 @@
   "description": "cellSNP aims to pileup the expressed alleles in single-cell or bulk RNA-seq data. It can be directly used for donor deconvolution in multiplexed single-cell RNA-seq data, particularly with vireo.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,49 +14,49 @@
           "description": "Indexed sam/bam file(s), comma separated multiple samples. Mode 1a & 2a: one sam/bam file with single cell. Mode 1b & 2b: one or multiple bulk sam/bam files, no barcodes needed, but sample ids and regionsVCF.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.bam']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.bam`"
         },
         "sam_index_file": {
           "type": "string",
           "description": "Input SAM/BAM Index file, problem with samFileList.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.bai']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.bai`"
         },
         "sam_fileList": {
           "type": "string",
           "description": "A list file containing bam files, each per line, for Mode 1b & 2b.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['file_list.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `file_list.txt`"
         },
         "regions_vcf": {
           "type": "string",
           "description": "A vcf file listing all candidate SNPs, for fetch each variants. If None, pileup the genome. Needed for bulk samples.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['regions.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `regions.vcf`"
         },
         "targets_vcf": {
           "type": "string",
           "description": "Similar as --regions_vcf, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup).",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['targets.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `targets.vcf`"
         },
         "barcode_file": {
           "type": "string",
           "description": "A plain file listing all effective cell barcode.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['barcodes.tsv']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `barcodes.tsv`"
         },
         "sample_list": {
           "type": "string",
           "description": "A list file containing sample IDs, each per line.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['samples.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `samples.txt`"
         },
         "sample_ids": {
           "type": "string",
@@ -103,33 +88,25 @@
         },
         "cell_tag": {
           "type": "string",
-          "default": [
-            "CB"
-          ],
+          "default": "CB",
           "description": "Tag for cell barcodes, turn off with None.",
           "help_text": "type: `string`, multiple: False, default: `CB`"
         },
         "umi_tag": {
           "type": "string",
-          "default": [
-            "Auto"
-          ],
+          "default": "Auto",
           "description": "Tag for UMI: UR, Auto, None. For Auto mode, use UR if barcodes is inputted, otherwise use None. None mode means no UMI but read counts.",
           "help_text": "type: `string`, multiple: False, default: `Auto`"
         },
         "min_count": {
           "type": "integer",
-          "default": [
-            20
-          ],
+          "default": 20,
           "description": "Minimum aggragated count.",
           "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "min_maf": {
           "type": "number",
-          "default": [
-            0.0
-          ],
+          "default": 0.0,
           "description": "Minimum minor allele frequency.",
           "help_text": "type: `number`, multiple: False, default: `0.0`"
         },
@@ -157,17 +134,13 @@
         },
         "min_mapq": {
           "type": "integer",
-          "default": [
-            20
-          ],
+          "default": 20,
           "description": "Minimum MAPQ for read filtering.",
           "help_text": "type: `integer`, multiple: False, default: `20`"
         },
         "min_len": {
           "type": "integer",
-          "default": [
-            30
-          ],
+          "default": 30,
           "description": "Minimum mapped length for read filtering.",
           "help_text": "type: `integer`, multiple: False, default: `30`"
         }
@@ -183,7 +156,7 @@
           "description": "Output directory for VCF and sparse matrices.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['cellsnp_out']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `cellsnp_out`"
         }
       }
     },
@@ -205,9 +178,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

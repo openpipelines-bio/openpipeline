@@ -1,18 +1,25 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
-input: # please fill in - example: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
+input: # please fill in - example: "sample_S1_L001_R1_001.fastq.gz;sample_S1_L001_R2_001.fastq.gz"
 reference: # please fill in - example: "reference.tar.gz"
+# ---
 
 # Outputs
-# output: "$id.$key.output"
+output: # please fill in - example: "$id.$key./path/to/output"
+# ---
 
 # Arguments
 description: ""
-# force_cells: 123
+# force_cells: 0
 # peaks: "peaks.bed"
 dim_reduce: "lsa"
 # subsample_rate: 0.1
-# lanes: ["1,3"]
+# lanes: "1,3"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

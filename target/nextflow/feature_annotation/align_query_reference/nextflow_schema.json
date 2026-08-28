@@ -4,21 +4,6 @@
   "description": "Alignment of a query and reference dataset by:\n* Alignment of layers\n* Harmonization of .obs field names for batch and cell type labels\n* Harmonization of .var field name for gene names\n* Sanitation of gene names\n* Cross-checking of genes\n* Assignment of an id to the query and reference datasets\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,13 +14,11 @@
           "description": "The input (query) data to be labeled. Should be a .h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality to process. Note that the query and reference modalities should be the same.",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -57,18 +40,16 @@
         "input_obs_batch": {
           "type": "string",
           "description": "The name of the .obs column in the input (query) data containing batch information.\n",
-          "help_text": "type: `string`, multiple: False, required, example: `['sample_id']`"
+          "help_text": "type: `string`, multiple: False, required, example: `sample_id`"
         },
         "input_obs_label": {
           "type": "string",
           "description": "The name of the .obs column in the input (query) data containing cell type labels. If not provided, the --unkown_celltype_label will be assigned to all observations.\n",
-          "help_text": "type: `string`, multiple: False, example: `['cell_type']`"
+          "help_text": "type: `string`, multiple: False, example: `cell_type`"
         },
         "input_id": {
           "type": "string",
-          "default": [
-            "query"
-          ],
+          "default": "query",
           "description": "Meta id value to be assigned to the --output_obs_id .obs field of the aligned input (query) data.\n",
           "help_text": "type: `string`, multiple: False, default: `query`"
         }
@@ -88,7 +69,7 @@
           "description": "The reference data to train the CellTypist classifiers on. Only required if a pre-trained --model is not provided.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['reference.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `reference.h5mu`"
         },
         "reference_layer": {
           "type": "string",
@@ -108,18 +89,16 @@
         "reference_obs_batch": {
           "type": "string",
           "description": "The name of the .obs column in the reference data containing batch information.\n",
-          "help_text": "type: `string`, multiple: False, required, example: `['sample_id']`"
+          "help_text": "type: `string`, multiple: False, required, example: `sample_id`"
         },
         "reference_obs_label": {
           "type": "string",
           "description": "The name of the .obs column in the reference data containing cell type labels. If not provided, the --unkown_celltype_label will be assigned to all observations.\n",
-          "help_text": "type: `string`, multiple: False, example: `['cell_type']`"
+          "help_text": "type: `string`, multiple: False, example: `cell_type`"
         },
         "reference_id": {
           "type": "string",
-          "default": [
-            "reference"
-          ],
+          "default": "reference",
           "description": "Meta id value to be assigned to the --output_obs_id .obs field of the aligned reference data.\n",
           "help_text": "type: `string`, multiple: False, default: `reference`"
         }
@@ -138,76 +117,60 @@
           "description": "Aligned query data.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output_query.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output_query.h5mu`"
         },
         "output_reference": {
           "type": "string",
           "description": "Aligned reference data.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output_reference.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output_reference.h5mu`"
         },
         "output_layer": {
           "type": "string",
-          "default": [
-            "_counts"
-          ],
+          "default": "_counts",
           "description": "Name of the aligned layer containing raw counts in the output query and reference datasets.",
           "help_text": "type: `string`, multiple: False, default: `_counts`"
         },
         "output_layer_lognormalized": {
           "type": "string",
-          "default": [
-            "_log_normalized"
-          ],
+          "default": "_log_normalized",
           "description": "Name of the aligned layer containing log normalized counts in the output query and reference datasets.",
           "help_text": "type: `string`, multiple: False, default: `_log_normalized`"
         },
         "output_var_gene_names": {
           "type": "string",
-          "default": [
-            "_gene_names"
-          ],
+          "default": "_gene_names",
           "description": "Name of the .var column in the output query and reference datasets containing the gene names.",
           "help_text": "type: `string`, multiple: False, default: `_gene_names`"
         },
         "output_obs_batch": {
           "type": "string",
-          "default": [
-            "_sample_id"
-          ],
+          "default": "_sample_id",
           "description": "Name of the .obs column in the output query and reference datasets containing the batch information.",
           "help_text": "type: `string`, multiple: False, default: `_sample_id`"
         },
         "output_obs_label": {
           "type": "string",
-          "default": [
-            "_cell_type"
-          ],
+          "default": "_cell_type",
           "description": "Name of the .obs column in the output query and reference datasets containing the cell type labels.",
           "help_text": "type: `string`, multiple: False, default: `_cell_type`"
         },
         "output_obs_id": {
           "type": "string",
-          "default": [
-            "_dataset"
-          ],
+          "default": "_dataset",
           "description": "Name of the .obs column in the output query and reference datasets containing the dataset id.",
           "help_text": "type: `string`, multiple: False, default: `_dataset`"
         },
         "output_var_index": {
           "type": "string",
-          "default": [
-            "_ori_var_index"
-          ],
+          "default": "_ori_var_index",
           "description": "Name of the .var column to which the .var index of the --input and --reference datasets is stored. Only relevant if \"--preserve_var_index\" is False.",
           "help_text": "type: `string`, multiple: False, default: `_ori_var_index`"
         },
         "output_var_common_genes": {
           "type": "string",
-          "default": [
-            "_common_vars"
-          ],
+          "default": "_common_vars",
           "description": "Name of the .var column in the output query and reference datasets containing the boolean array indicating the common variables.",
           "help_text": "type: `string`, multiple: False, default: `_common_vars`"
         },
@@ -218,7 +181,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       }
     },
@@ -229,17 +192,13 @@
       "properties": {
         "input_reference_gene_overlap": {
           "type": "integer",
-          "default": [
-            100
-          ],
+          "default": 100,
           "description": "The minimum number of genes present in both the reference and query datasets.\n",
           "help_text": "type: `integer`, multiple: False, default: `100`"
         },
         "align_layers_raw_counts": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to align the query and reference layers containing raw counts.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
@@ -251,9 +210,7 @@
         },
         "unkown_celltype_label": {
           "type": "string",
-          "default": [
-            "Unknown"
-          ],
+          "default": "Unknown",
           "description": "The label to assign to cells with an unknown cell type.\n",
           "help_text": "type: `string`, multiple: False, default: `Unknown`"
         },
@@ -289,9 +246,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

@@ -4,21 +4,6 @@
   "description": "Converts an h5mu file into a Seurat file.\n\nRestrictions:\n  - Only the intersection of cells is currently loaded into the Seurat object due to the object structure limitation.\n  - Multimodal embeddings (global .obsm slot) are loaded with the assay.used field set to the default assay.\n  - Embeddings names are changed in order to comply with R & Seurat requirements and conventions.\n  - Feature names with underscores ('_') are automatically replaced with dashes ('-')\n  - Seurat does not support global variables metadata /var.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "arguments": {
       "type": "object",
       "title": "Arguments",
@@ -29,14 +14,14 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "output": {
           "type": "string",
           "description": "Output Seurat file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.rds']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.rds`"
         }
       },
       "required": [
@@ -62,9 +47,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/arguments"
     },

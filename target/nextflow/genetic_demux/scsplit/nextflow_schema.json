@@ -4,21 +4,6 @@
   "description": "scsplit is a genotype-free demultiplexing methode of pooled single-cell RNA-seq, using a hidden state model for identifying genetically distinct samples within a mixed population.",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input": {
       "type": "object",
       "title": "Input",
@@ -29,27 +14,25 @@
           "description": "VCF from mixed BAM",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.vcf`"
         },
         "bam": {
           "type": "string",
           "description": "mixed sample BAM",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['input.bam']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `input.bam`"
         },
         "bar": {
           "type": "string",
           "description": "barcodes whitelist",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['barcodes.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `barcodes.txt`"
         },
         "tag": {
           "type": "string",
-          "default": [
-            "CB"
-          ],
+          "default": "CB",
           "description": "tag for barcode",
           "help_text": "type: `string`, multiple: False, default: `CB`"
         },
@@ -58,7 +41,7 @@
           "description": "common SNVs",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['common_snvs.txt']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `common_snvs.txt`"
         },
         "num": {
           "type": "integer",
@@ -67,17 +50,13 @@
         },
         "sub": {
           "type": "integer",
-          "default": [
-            10
-          ],
+          "default": 10,
           "description": "maximum number of subpopulations in autodetect mode",
           "help_text": "type: `integer`, multiple: False, default: `10`"
         },
         "ems": {
           "type": "integer",
-          "default": [
-            30
-          ],
+          "default": 30,
           "description": "number of EM repeats to avoid local maximum",
           "help_text": "type: `integer`, multiple: False, default: `30`"
         },
@@ -91,7 +70,7 @@
           "description": "known individual genotypes to limit distinguishing variants to available variants, so that users do not need to redo genotyping on selected variants, otherwise any variants could be selected as distinguishing variants.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `input`, example: `['known_variants.vcf']`"
+          "help_text": "type: `string`, multiple: False, direction: `input`, example: `known_variants.vcf`"
         },
         "geno": {
           "type": "boolean",
@@ -111,7 +90,7 @@
           "description": "Output directory",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['scSplit_out']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `scSplit_out`"
         },
         "ref": {
           "type": "string",
@@ -148,9 +127,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input"
     },

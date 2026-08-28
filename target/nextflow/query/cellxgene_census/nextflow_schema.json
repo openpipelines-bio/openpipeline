@@ -4,21 +4,6 @@
   "description": "Query cells from a CellxGene Census or custom TileDBSoma object.\nAside from fetching the cells' RNA counts (`.X`), cell metadata\n(`.obs`) and gene metadata (`.var`), this component also fetches\nthe dataset metadata and joins it into the cell metadata.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "input database": {
       "type": "object",
       "title": "Input database",
@@ -27,12 +12,12 @@
         "input_uri": {
           "type": "string",
           "description": "If specified, a URI containing the Census SOMA objects. If specified, will take precedence over the `--census_version` argument.",
-          "help_text": "type: `string`, multiple: False, example: `['s3://bucket/path']`"
+          "help_text": "type: `string`, multiple: False, example: `s3://bucket/path`"
         },
         "census_version": {
           "type": "string",
           "description": "Which release of CellxGene census to use. Possible values are \"latest\", \"stable\", or the date of one of the releases (e.g. \"2023-07-25\"). For more information, check the documentation on [Census data releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html).",
-          "help_text": "type: `string`, multiple: False, example: `['stable']`"
+          "help_text": "type: `string`, multiple: False, example: `stable`"
         },
         "add_dataset_metadata": {
           "type": "boolean",
@@ -50,12 +35,12 @@
         "species": {
           "type": "string",
           "description": "The organism to query, usually one of `Homo sapiens` or `Mus musculus`.",
-          "help_text": "type: `string`, multiple: False, required, example: `['homo_sapiens']`"
+          "help_text": "type: `string`, multiple: False, required, example: `homo_sapiens`"
         },
         "obs_value_filter": {
           "type": "string",
           "description": "Filter for selecting the `obs` metadata (i.e. cells). Value is a filter query written in the SOMA `value_filter` syntax.",
-          "help_text": "type: `string`, multiple: False, required, example: `[\"is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'\"]`"
+          "help_text": "type: `string`, multiple: False, required, example: `is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'`"
         }
       },
       "required": [
@@ -74,12 +59,12 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, example: `['dataset_id', 'tissue', 'assay', 'disease', 'cell_type']`"
+          "help_text": "type: `array`, multiple: True, example: `dataset_id;tissue;assay;disease;cell_type`"
         },
         "cell_filter_minimum_count": {
           "type": "integer",
           "description": "A minimum number of cells per group to retain. If `--cell_filter_grouping`\nis defined, this parameter should also be provided and vice versa.\n",
-          "help_text": "type: `integer`, multiple: False, example: `[100]`"
+          "help_text": "type: `integer`, multiple: False, example: `100`"
         }
       }
     },
@@ -90,33 +75,25 @@
       "properties": {
         "cell_filter_min_genes": {
           "type": "integer",
-          "default": [
-            50
-          ],
+          "default": 50,
           "description": "Remove cells with less than this number of genes.",
           "help_text": "type: `integer`, multiple: False, default: `50`"
         },
         "cell_filter_min_counts": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Remove cells with less than this number of counts.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         },
         "gene_filter_min_cells": {
           "type": "integer",
-          "default": [
-            5
-          ],
+          "default": 5,
           "description": "Remove genes expressed in less than this number of cells.",
           "help_text": "type: `integer`, multiple: False, default: `5`"
         },
         "gene_filter_min_counts": {
           "type": "integer",
-          "default": [
-            0
-          ],
+          "default": 0,
           "description": "Remove genes with less than this number of counts.",
           "help_text": "type: `integer`, multiple: False, default: `0`"
         }
@@ -132,13 +109,11 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "output_modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality to store the output in.",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -154,7 +129,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -179,9 +154,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/input database"
     },

@@ -1,17 +1,24 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 # output_compression: "gzip"
+# ---
 
 # Input
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-input_obsp_key: # please fill in - example: "foo"
-input_obs_key: # please fill in - example: "foo"
-input_obs_value: # please fill in - example: "foo"
+input_obsp_key: # please fill in - example: "value"
+input_obs_key: # please fill in - example: "value"
+input_obs_value: # please fill in - example: "value"
+# ---
 
 # Output
 # output: "$id.$key.output.h5mu"
-output_obsm_key: # please fill in - example: "foo"
+output_obsm_key: # please fill in - example: "value"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

@@ -4,21 +4,6 @@
   "description": "scANVI () is a semi-supervised model for single-cell transcriptomics data. scANVI is an scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.\nThis component will instantiate a scANVI model from a pre-trained scVI model, integrate the data and perform label prediction.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,13 +14,11 @@
           "description": "Input h5mu file. Note that this needs to be the exact same dataset as the --scvi_model was trained on.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
@@ -61,17 +44,13 @@
         },
         "unlabeled_category": {
           "type": "string",
-          "default": [
-            "Unknown"
-          ],
+          "default": "Unknown",
           "description": "Value in the --obs_labels field that indicates unlabeled observations\n",
           "help_text": "type: `string`, multiple: False, default: `Unknown`"
         },
         "sanitize_ensembl_ids": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to sanitize ensembl ids by removing version numbers.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         }
@@ -91,7 +70,7 @@
           "description": "Pretrained SCVI reference model to initialize the SCANVI model with.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['scvi_model.pt']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `scvi_model.pt`"
         }
       },
       "required": [
@@ -108,36 +87,30 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `output`, example: `output.h5mu`"
         },
         "output_model": {
           "type": "string",
           "description": "Folder where the state of the trained model will be saved to.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['path/to/output_model']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `path/to/output_model`"
         },
         "obsm_output": {
           "type": "string",
-          "default": [
-            "X_scanvi_integrated"
-          ],
+          "default": "X_scanvi_integrated",
           "description": "In which .obsm slot to store the resulting integrated embedding.",
           "help_text": "type: `string`, multiple: False, default: `X_scanvi_integrated`"
         },
         "obs_output_predictions": {
           "type": "string",
-          "default": [
-            "scanvi_pred"
-          ],
+          "default": "scanvi_pred",
           "description": "In which .obs slot to store the predicted labels.",
           "help_text": "type: `string`, multiple: False, default: `scanvi_pred`"
         },
         "obs_output_probabilities": {
           "type": "string",
-          "default": [
-            "scanvi_proba"
-          ],
+          "default": "scanvi_proba",
           "description": "In which. obs slot to store the probabilities of the predicted labels.",
           "help_text": "type: `string`, multiple: False, default: `scanvi_proba`"
         },
@@ -148,7 +121,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       },
       "required": [
@@ -167,9 +140,7 @@
         },
         "early_stopping_monitor": {
           "type": "string",
-          "default": [
-            "elbo_validation"
-          ],
+          "default": "elbo_validation",
           "description": "Metric logged during validation set epoch.",
           "enum": [
             "elbo_validation",
@@ -180,17 +151,13 @@
         },
         "early_stopping_patience": {
           "type": "integer",
-          "default": [
-            45
-          ],
+          "default": 45,
           "description": "Number of validation epochs with no improvement after which training will be stopped.",
           "help_text": "type: `integer`, multiple: False, default: `45`"
         },
         "early_stopping_min_delta": {
           "type": "number",
-          "default": [
-            0.0
-          ],
+          "default": 0.0,
           "description": "Minimum change in the monitored quantity to qualify as an improvement, i.e. an absolute change of less than min_delta, will count as no improvement.",
           "help_text": "type: `number`, multiple: False, default: `0.0`"
         },
@@ -201,25 +168,19 @@
         },
         "reduce_lr_on_plateau": {
           "type": "boolean",
-          "default": [
-            true
-          ],
+          "default": true,
           "description": "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus.",
           "help_text": "type: `boolean`, multiple: False, default: `True`"
         },
         "lr_factor": {
           "type": "number",
-          "default": [
-            0.6
-          ],
+          "default": 0.6,
           "description": "Factor to reduce learning rate.",
           "help_text": "type: `number`, multiple: False, default: `0.6`"
         },
         "lr_patience": {
           "type": "number",
-          "default": [
-            30.0
-          ],
+          "default": 30.0,
           "description": "Number of epochs with no improvement after which learning rate will be reduced.",
           "help_text": "type: `number`, multiple: False, default: `30.0`"
         }
@@ -243,9 +204,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

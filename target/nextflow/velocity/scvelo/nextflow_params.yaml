@@ -1,32 +1,38 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Inputs
 input: # please fill in - example: "input.h5mu"
-# counts_layer: "foo"
-modality: # please fill in - example: "foo"
+# counts_layer: "value"
+modality: # please fill in - example: "value"
 layer_spliced: "spliced"
 layer_unspliced: "unspliced"
 layer_ambiguous: "ambiguous"
+# ---
 
 # Outputs
-# output: "$id.$key.output"
-# output_h5mu: "$id.$key.output_h5mu.h5mu"
+output: # please fill in - example: "$id.$key.path/to/output"
+output_h5mu: # please fill in - example: "$id.$key.output.h5mu"
 # output_compression: "gzip"
+# ---
 
-# Filtering and normalization
-# min_counts: 123
-# min_counts_u: 123
-# min_cells: 123
-# min_cells_u: 123
-# min_shared_counts: 123
-# min_shared_cells: 123
-# n_top_genes: 123
+# Filtering And Normalization
+# min_counts: 0
+# min_counts_u: 0
+# min_cells: 0
+# min_cells_u: 0
+# min_shared_counts: 0
+# min_shared_cells: 0
+# n_top_genes: 0
 log_transform: true
+# ---
 
-# Fitting parameters
-# n_principal_components: 123
+# Fitting Parameters
+# n_principal_components: 0
 n_neighbors: 30
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
-
-# Arguments
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

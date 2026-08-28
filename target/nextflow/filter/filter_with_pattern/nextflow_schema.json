@@ -4,21 +4,6 @@
   "description": "Filter a MuData object based on gene names using a regex.\n",
   "type": "object",
   "$defs": {
-    "dataset input": {
-      "type": "object",
-      "title": "Dataset input",
-      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple parameter sets to initialise a Nextflow channel.",
-      "properties": {
-        "param_list": {
-          "type": "string",
-          "default": "",
-          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
-          "format": "file-path",
-          "mimetype": "text/csv",
-          "help_text": "type: `string`, default: ``"
-        }
-      }
-    },
     "inputs": {
       "type": "object",
       "title": "Inputs",
@@ -29,20 +14,18 @@
           "description": "Input h5mu file",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `['input.h5mu']`"
+          "help_text": "type: `string`, multiple: False, required, direction: `input`, example: `input.h5mu`"
         },
         "modality": {
           "type": "string",
-          "default": [
-            "rna"
-          ],
+          "default": "rna",
           "description": "Which modality from the input MuData file to process.\n",
           "help_text": "type: `string`, multiple: False, default: `rna`"
         },
         "var_gene_names": {
           "type": "string",
           "description": "The .var field containing the gene names to be filtered. If not provided, `.var.index` will be used.\n",
-          "help_text": "type: `string`, multiple: False, example: `['gene_symbol']`"
+          "help_text": "type: `string`, multiple: False, example: `gene_symbol`"
         },
         "pattern": {
           "type": "array",
@@ -50,7 +33,7 @@
           "items": {
             "type": "string"
           },
-          "help_text": "type: `array`, multiple: True, required, example: `['MIR\\\\d+', 'AL\\\\d+', 'LINC\\\\d+', 'AC\\\\d+', 'AP\\\\d+']`"
+          "help_text": "type: `array`, multiple: True, required, example: `MIR\\d+;AL\\d+;LINC\\d+;AC\\d+;AP\\d+`"
         }
       },
       "required": [
@@ -68,7 +51,7 @@
           "description": "Output h5mu file.",
           "format": "path",
           "exists": true,
-          "help_text": "type: `string`, multiple: False, direction: `output`, example: `['output.h5mu']`"
+          "help_text": "type: `string`, multiple: False, direction: `output`, example: `output.h5mu`"
         },
         "do_subset": {
           "type": "boolean",
@@ -78,9 +61,7 @@
         },
         "var_name_filter": {
           "type": "string",
-          "default": [
-            "filter_with_pattern"
-          ],
+          "default": "filter_with_pattern",
           "description": "In which .var slot to store a boolean array corresponding to which variables should be removed.",
           "help_text": "type: `string`, multiple: False, default: `filter_with_pattern`"
         },
@@ -91,7 +72,7 @@
             "gzip",
             "lzf"
           ],
-          "help_text": "type: `string`, multiple: False, example: `['gzip']`, choices: `gzip`|`lzf`"
+          "help_text": "type: `string`, multiple: False, example: `gzip`, choices: `gzip`|`lzf`"
         }
       }
     },
@@ -113,9 +94,6 @@
     }
   },
   "allOf": [
-    {
-      "$ref": "#/$defs/dataset input"
-    },
     {
       "$ref": "#/$defs/inputs"
     },

@@ -1,8 +1,13 @@
-# Arguments
-input: # please fill in - example: "foo"
-# output: "$id.$key.output"
-verbose: false
+# Dataset Input
+param_list: ""
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Arguments
+input: # please fill in - example: "value"
+output: # please fill in - example: "$id.$key.output.txt"
+verbose: false
+# ---
+
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---

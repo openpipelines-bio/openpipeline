@@ -1,12 +1,17 @@
+# Dataset Input
+param_list: ""
+# ---
+
 # Arguments
 input: # please fill in - example: "input_dir"
-# filtered_h5: "$id.$key.filtered_h5.h5"
+# filtered_h5: "$id.$key.filtered_feature_bc_matrix.h5"
 # metrics_summary: "$id.$key.metrics_summary.csv"
 # molecule_info: "$id.$key.molecule_info.h5"
-# bam: "$id.$key.bam.bam"
-# bai: "$id.$key.bai.bai"
-# raw_h5: "$id.$key.raw_h5.h5"
+# bam: "$id.$key.possorted_genome_bam.bam"
+# bai: "$id.$key.possorted_genome_bam.bam.bai"
+# raw_h5: "$id.$key.raw_feature_bc_matrix.h5"
+# ---
 
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
+# Nextflow Input-Output Arguments
+publish_dir: # please fill in - example: "$id.$key.output/"
+# ---
