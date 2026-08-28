@@ -34,7 +34,7 @@ engines:
     setup:
       - type: python
         packages:
-        - scvi-tools~=1.4.1
+        - scvi-tools~=1.4.3
     __merge__: /src/base/requirements/testworkflows_setup.yaml
 runners:
   - type: executable

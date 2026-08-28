@@ -4,11 +4,6 @@ import pytest
 import pandas
 import scvi
 
-##VIASH START
-par = {"input": "harmony_knn/output.h5mu"}
-
-meta = {"resources_dir": "resources_test"}
-##VIASH END
 
 
 def test_run():
