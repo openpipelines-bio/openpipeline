@@ -20,7 +20,7 @@ argument_groups:
         description: |
           A .h5mu file. A neighbors graph must already have been computed for the relevant
           modality (e.g. via a neighbors component) and stored under .uns['neighbors'], or
-          under the location pointed to by --neighbors_key.
+          under the location pointed to by --uns_neighbors.
         direction: input
         required: true
         example: input.h5mu
@@ -33,10 +33,9 @@ argument_groups:
         type: string
         description: |
           The .obs column containing predefined groups (e.g. cluster labels) to use for the
-          graph abstraction. If not provided, the first available column named 'leiden' or
-          'louvain' is used.
-        required: false
-      - name: "--neighbors_key"
+          graph abstraction.
+        required: true
+      - name: "--uns_neighbors"
         type: string
         default: "neighbors"
         description: |
@@ -52,7 +51,14 @@ argument_groups:
         description: |
           Use RNA velocity to orient edges in the abstracted graph and estimate transitions,
           instead of using connectivities. Requires a directed single-cell graph stored under
-          .uns['velocity_graph'].
+          .uns, at the location pointed to by --uns_velocity_graph.
+      - name: "--uns_velocity_graph"
+        type: string
+        default: "velocity_graph"
+        description: |
+          The .uns key under which the directed single-cell RNA velocity graph is stored.
+          Only used when --use_rna_velocity is set.
+        required: false
       - name: "--model"
         type: string
         choices: ["v1.2", "v1.0"]

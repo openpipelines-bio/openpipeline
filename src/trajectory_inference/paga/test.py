@@ -65,7 +65,7 @@ def test_paga(run_component, random_h5mu_path):
     output_path = random_h5mu_path()
 
     run_component(
-        build_paga_args(output_path, obs_groups=OBS_GROUPS, neighbors_key=NEIGHBORS_KEY)
+        build_paga_args(output_path, obs_groups=OBS_GROUPS, uns_neighbors=NEIGHBORS_KEY)
     )
     assert output_path.is_file()
 
@@ -82,7 +82,7 @@ def test_paga_copy(run_component, random_h5mu_path):
         build_paga_args(
             output_path,
             obs_groups=OBS_GROUPS,
-            neighbors_key=NEIGHBORS_KEY,
+            uns_neighbors=NEIGHBORS_KEY,
             copy=True,
         )
     )
@@ -99,7 +99,7 @@ def test_paga_custom_uns_output(run_component, random_h5mu_path):
         build_paga_args(
             output_path,
             obs_groups=OBS_GROUPS,
-            neighbors_key=NEIGHBORS_KEY,
+            uns_neighbors=NEIGHBORS_KEY,
             uns_output="my_paga",
         )
     )
@@ -113,9 +113,8 @@ def test_paga_custom_uns_output(run_component, random_h5mu_path):
 def test_paga_obs_groups_not_given_raises(run_component):
     assert_component_raises(
         run_component,
-        build_paga_args("output.h5mu", neighbors_key=NEIGHBORS_KEY),
-        "You need to run `tl.leiden` or `tl.louvain` to compute community "
-        "labels, or specify `groups='an_existing_key'`",
+        build_paga_args("output.h5mu", uns_neighbors=NEIGHBORS_KEY),
+        "--obs_groups is a required argument.",
     )
 
 
@@ -123,18 +122,18 @@ def test_paga_invalid_obs_groups_raises(run_component):
     assert_component_raises(
         run_component,
         build_paga_args(
-            "output.h5mu", obs_groups="does_not_exist", neighbors_key=NEIGHBORS_KEY
+            "output.h5mu", obs_groups="does_not_exist", uns_neighbors=NEIGHBORS_KEY
         ),
         "ValueError: Requested to use .obs column does_not_exist as the "
         "grouping for PAGA, but the column is not available for modality rna.",
     )
 
 
-def test_paga_invalid_neighbors_key_raises(run_component):
+def test_paga_invalid_uns_neighbors_raises(run_component):
     assert_component_raises(
         run_component,
         build_paga_args(
-            "output.h5mu", obs_groups=OBS_GROUPS, neighbors_key="does_not_exist"
+            "output.h5mu", obs_groups=OBS_GROUPS, uns_neighbors="does_not_exist"
         ),
         "ValueError: Requested to use .uns key does_not_exist for the "
         "neighbors settings, but the key is not available for modality rna.",
@@ -147,7 +146,7 @@ def test_paga_use_rna_velocity_without_graph_raises(run_component):
         build_paga_args(
             "output.h5mu",
             obs_groups=OBS_GROUPS,
-            neighbors_key=NEIGHBORS_KEY,
+            uns_neighbors=NEIGHBORS_KEY,
             use_rna_velocity=True,
         ),
         "The passed AnnData needs to have an `uns` annotation with key "
@@ -158,7 +157,7 @@ def test_paga_use_rna_velocity_without_graph_raises(run_component):
 def test_paga_v1_0_model(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
     run_component(
-        build_paga_args(output_file, obs_groups=OBS_GROUPS, neighbors_key=NEIGHBORS_KEY)
+        build_paga_args(output_file, obs_groups=OBS_GROUPS, uns_neighbors=NEIGHBORS_KEY)
     )
 
     output_file_2 = random_h5mu_path()
@@ -166,7 +165,7 @@ def test_paga_v1_0_model(run_component, random_h5mu_path):
         build_paga_args(
             output_file_2,
             obs_groups=OBS_GROUPS,
-            neighbors_key=NEIGHBORS_KEY,
+            uns_neighbors=NEIGHBORS_KEY,
             model="v1.0",
         )
     )
@@ -198,7 +197,7 @@ def test_paga_rna_velocity(run_component, random_h5mu_path):
             output_path,
             input=velocity_input_path,
             obs_groups=OBS_GROUPS,
-            neighbors_key=NEIGHBORS_KEY,
+            uns_neighbors=NEIGHBORS_KEY,
             use_rna_velocity=True,
         )
     )
@@ -216,14 +215,61 @@ def test_paga_rna_velocity(run_component, random_h5mu_path):
     assert paga["transitions_confidence"].shape == (n_groups, n_groups)
 
 
-def test_paga_default_neighbors_key(run_component, random_h5mu_path):
+def test_paga_rna_velocity_custom_uns_key(run_component, random_h5mu_path):
+    input_data = mu.read_h5mu(input_path)
+    n_obs = input_data.mod["rna"].n_obs
+    input_data.mod["rna"].uns["my_velocity_graph"] = sp.sparse.random(
+        n_obs, n_obs, density=0.01, format="csr"
+    )
+
+    velocity_input_path = random_h5mu_path()
+    input_data.write_h5mu(velocity_input_path)
+
+    output_path = random_h5mu_path()
+    run_component(
+        build_paga_args(
+            output_path,
+            input=velocity_input_path,
+            obs_groups=OBS_GROUPS,
+            uns_neighbors=NEIGHBORS_KEY,
+            use_rna_velocity=True,
+            uns_velocity_graph="my_velocity_graph",
+        )
+    )
+    assert output_path.is_file()
+
+    output_data = mu.read_h5mu(output_path)
+    paga = output_data.mod["rna"].uns["paga"]
+
+    # confirms the RNA-velocity branch ran using the graph stored under the
+    # custom key, and that the temporary "velocity_graph" alias was cleaned up
+    assert "transitions_confidence" in paga
+    assert "velocity_graph" not in output_data.mod["rna"].uns
+
+
+def test_paga_use_rna_velocity_custom_uns_key_missing_raises(run_component):
+    assert_component_raises(
+        run_component,
+        build_paga_args(
+            "output.h5mu",
+            obs_groups=OBS_GROUPS,
+            uns_neighbors=NEIGHBORS_KEY,
+            use_rna_velocity=True,
+            uns_velocity_graph="does_not_exist",
+        ),
+        "ValueError: Requested to use .uns key does_not_exist for the RNA "
+        "velocity graph, but the key is not available for modality rna.",
+    )
+
+
+def test_paga_default_uns_neighbors(run_component, random_h5mu_path):
     output_default = random_h5mu_path()
     run_component(build_paga_args(output_default, obs_groups=OBS_GROUPS))
 
     output_key_given = random_h5mu_path()
     run_component(
         build_paga_args(
-            output_key_given, obs_groups=OBS_GROUPS, neighbors_key="neighbors"
+            output_key_given, obs_groups=OBS_GROUPS, uns_neighbors="neighbors"
         )
     )
 
@@ -233,31 +279,12 @@ def test_paga_default_neighbors_key(run_component, random_h5mu_path):
     paga_default = assert_paga_result(mu.read_h5mu(output_default), OBS_GROUPS)
     paga_key_given = assert_paga_result(mu.read_h5mu(output_key_given), OBS_GROUPS)
 
-    # omitting --neighbors_key should behave identically to passing the
+    # omitting --uns_neighbors should behave identically to passing the
     # documented default value ("neighbors") explicitly
     assert np.array_equal(
         paga_default["connectivities"].toarray(),
         paga_key_given["connectivities"].toarray(),
     )
-
-
-def test_paga_auto_detect_cluster_label(run_component, random_h5mu_path):
-    input_data = mu.read_h5mu(input_path)
-    input_data.mod["rna"].obs["leiden"] = input_data.mod["rna"].obs[OBS_GROUPS]
-
-    leiden_input_path = random_h5mu_path()
-    input_data.write_h5mu(leiden_input_path)
-
-    output_path = random_h5mu_path()
-    run_component(
-        build_paga_args(
-            output_path, input=leiden_input_path, neighbors_key=NEIGHBORS_KEY
-        )
-    )
-    assert output_path.is_file()
-
-    output_data = mu.read_h5mu(output_path)
-    assert_paga_result(output_data, "leiden", input_data=input_data)
 
 
 def test_paga_modality(run_component, random_h5mu_path):
@@ -273,7 +300,7 @@ def test_paga_modality(run_component, random_h5mu_path):
         build_paga_args(
             output_path,
             input=input_data_path,
-            neighbors_key=NEIGHBORS_KEY,
+            uns_neighbors=NEIGHBORS_KEY,
             obs_groups=OBS_GROUPS,
             modality="rna2",
         )
@@ -301,7 +328,7 @@ def test_paga_output_compression(run_component, random_h5mu_path, compression):
         build_paga_args(
             output_path,
             obs_groups=OBS_GROUPS,
-            neighbors_key=NEIGHBORS_KEY,
+            uns_neighbors=NEIGHBORS_KEY,
             output_compression=compression,
         )
     )
