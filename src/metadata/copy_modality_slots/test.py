@@ -33,7 +33,7 @@ def rng():
 
 
 @pytest.fixture
-def target_mdata(rng):
+def input_mdata(rng):
     obs_names = [f"cell_{i}" for i in range(10)]
     var_names = [f"gene_{i}" for i in range(8)]
     return mudata.MuData({"rna": _make_adata(obs_names, var_names, rng)})
@@ -41,7 +41,7 @@ def target_mdata(rng):
 
 @pytest.fixture
 def source_mdata_equal(rng):
-    # Same index sets as target, but different obs/var content.
+    # Same index sets as the input, but different obs/var content.
     obs_names = [f"cell_{i}" for i in range(10)]
     var_names = [f"gene_{i}" for i in range(8)]
     obs_extra = {
@@ -85,7 +85,7 @@ def source_mdata_equal(rng):
 
 @pytest.fixture
 def source_mdata_subset(rng):
-    # Strict subset of target (cells/genes 0..6 / 0..5 of 10/8).
+    # Strict subset of the input (cells/genes 0..6 / 0..5 of 10/8).
     obs_names = [f"cell_{i}" for i in range(7)]
     var_names = [f"gene_{i}" for i in range(6)]
     obs_extra = {
@@ -118,31 +118,31 @@ def write_mdata(tmp_path):
 
 
 # ----------------------------------------------------------------------------
-# Strict mode: source and target have equal obs/var index sets.
+# Strict mode: source and input have equal obs/var index sets.
 # ----------------------------------------------------------------------------
 
 
 def test_strict_copy_all_slot_kinds(
-    run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path
 ):
     output = tmp_path / "out.h5mu"
     source_path = write_mdata(source_mdata_equal)
-    target_path = write_mdata(target_mdata)
+    input_path = write_mdata(input_mdata)
 
     run_component(
         [
-            "--input_source",
+            "--source",
             source_path,
-            "--input_target",
-            target_path,
+            "--input",
+            input_path,
             "--obs",
-            "label,score,count,is_doublet,name",
+            "label;score;count;is_doublet;name",
             "--var",
-            "highly_variable,mean",
+            "highly_variable;mean",
             "--layers",
-            "logcounts,sparse_layer",
+            "logcounts;sparse_layer",
             "--obsm",
-            "X_pca,sparse_obsm,df_obsm",
+            "X_pca;sparse_obsm;df_obsm",
             "--varm",
             "PCs",
             "--obsp",
@@ -150,7 +150,7 @@ def test_strict_copy_all_slot_kinds(
             "--varp",
             "correlations",
             "--uns",
-            "pca,params",
+            "pca;params",
             "--output",
             output,
         ]
@@ -211,10 +211,10 @@ def test_strict_copy_all_slot_kinds(
 
 
 def test_strict_reorder_source(
-    run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path, rng
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path, rng
 ):
     # Same index sets, but source rows shuffled - values must end up correctly
-    # aligned to target order in the output.
+    # aligned to input order in the output.
     src = source_mdata_equal["rna"]
     shuffled = src[rng.permutation(src.n_obs), rng.permutation(src.n_vars)].copy()
     source_shuffled = mudata.MuData({"rna": shuffled})
@@ -222,10 +222,10 @@ def test_strict_reorder_source(
     output = tmp_path / "out.h5mu"
     run_component(
         [
-            "--input_source",
+            "--source",
             write_mdata(source_shuffled),
-            "--input_target",
-            write_mdata(target_mdata),
+            "--input",
+            write_mdata(input_mdata),
             "--obs",
             "score",
             "--obsm",
@@ -236,7 +236,7 @@ def test_strict_reorder_source(
     )
 
     out = mudata.read_h5mu(output)["rna"]
-    # Values should match the original (non-shuffled) ones, since the target
+    # Values should match the original (non-shuffled) ones, since the input
     # order is canonical.
     for i, name in enumerate(out.obs_names):
         assert out.obs["score"].iloc[i] == src.obs.loc[name, "score"]
@@ -247,15 +247,15 @@ def test_strict_reorder_source(
 
 
 def test_strict_errors_when_source_smaller(
-    run_component, target_mdata, source_mdata_subset, write_mdata, tmp_path
+    run_component, input_mdata, source_mdata_subset, write_mdata, tmp_path
 ):
     with pytest.raises(CalledProcessError) as err:
         run_component(
             [
-                "--input_source",
+                "--source",
                 write_mdata(source_mdata_subset),
-                "--input_target",
-                write_mdata(target_mdata),
+                "--input",
+                write_mdata(input_mdata),
                 "--obs",
                 "label",
                 "--output",
@@ -268,10 +268,10 @@ def test_strict_errors_when_source_smaller(
 
 
 def test_errors_when_source_has_extra_cells(
-    run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path, rng
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path, rng
 ):
-    # Add a cell to source that's not in target - should error in both strict
-    # and partial modes (source must be a subset of target).
+    # Add a cell to source that's not in the input - should error in both
+    # strict and partial modes (source must be a subset of the input).
     src = source_mdata_equal["rna"]
     extra = src[:1].copy()
     extra.obs_names = pd.Index(["extra_cell"])
@@ -280,10 +280,10 @@ def test_errors_when_source_has_extra_cells(
     with pytest.raises(CalledProcessError) as err:
         run_component(
             [
-                "--input_source",
+                "--source",
                 write_mdata(source_mod),
-                "--input_target",
-                write_mdata(target_mdata),
+                "--input",
+                write_mdata(input_mdata),
                 "--obs",
                 "score",
                 "--allow_partial",
@@ -291,29 +291,29 @@ def test_errors_when_source_has_extra_cells(
                 tmp_path / "out.h5mu",
             ]
         )
-    assert re.search(r"not present in target", err.value.stdout.decode("utf-8"))
+    assert re.search(r"not present in input", err.value.stdout.decode("utf-8"))
 
 
 # ----------------------------------------------------------------------------
-# Partial mode: source is a strict subset of target.
+# Partial mode: source is a strict subset of the input.
 # ----------------------------------------------------------------------------
 
 
 def test_partial_subset_nan_fills(
-    run_component, target_mdata, source_mdata_subset, write_mdata, tmp_path
+    run_component, input_mdata, source_mdata_subset, write_mdata, tmp_path
 ):
     output = tmp_path / "out.h5mu"
     src = source_mdata_subset["rna"]
-    tgt = target_mdata["rna"]
+    tgt = input_mdata["rna"]
 
     run_component(
         [
-            "--input_source",
+            "--source",
             write_mdata(source_mdata_subset),
-            "--input_target",
-            write_mdata(target_mdata),
+            "--input",
+            write_mdata(input_mdata),
             "--obs",
-            "label,score",
+            "label;score",
             "--var",
             "highly_variable",
             "--layers",
@@ -387,46 +387,72 @@ def test_partial_subset_nan_fills(
 
 
 # ----------------------------------------------------------------------------
-# __auto__ token
+# Unspecified slots
 # ----------------------------------------------------------------------------
 
 
-def test_auto_token_only_copies_new_keys(
-    run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path
+def test_unspecified_slots_copy_keys_missing_from_input(
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path
 ):
-    # Plant an existing key in the target's obs and obsm to confirm __auto__
-    # skips it.
-    tgt = target_mdata["rna"]
-    tgt.obs["label"] = "pre_existing"  # exists in source as Categorical
-    tgt.obsm["X_pca"] = np.zeros((tgt.n_obs, 5))
+    # Plant existing keys in the input's obs and obsm to confirm an
+    # unspecified slot skips them rather than tripping the overwrite guard.
+    inp = input_mdata["rna"]
+    inp.obs["label"] = "pre_existing"  # exists in source as Categorical
+    inp.obsm["X_pca"] = np.zeros((inp.n_obs, 5))
 
     output = tmp_path / "out.h5mu"
     run_component(
         [
-            "--input_source",
+            "--source",
             write_mdata(source_mdata_equal),
-            "--input_target",
-            write_mdata(target_mdata),
-            "--obs",
-            "__auto__",
-            "--obsm",
-            "__auto__",
-            "--uns",
-            "__auto__",
+            "--input",
+            write_mdata(input_mdata),
             "--output",
             output,
         ]
     )
 
     out = mudata.read_h5mu(output)["rna"]
-    # 'label' was already in target -> not copied; pre_existing values remain.
+    # 'label' was already in the input -> not copied; existing values remain.
     assert (out.obs["label"] == "pre_existing").all()
-    # 'score' was not in target -> copied.
+    # 'score' was not in the input -> copied.
     assert "score" in out.obs.columns
-    # X_pca was already in target -> not copied; remains zeros.
-    np.testing.assert_array_equal(out.obsm["X_pca"], np.zeros((tgt.n_obs, 5)))
-    # 'pca' and 'params' uns keys were absent -> copied.
+    # X_pca was already in the input -> not copied; remains zeros.
+    np.testing.assert_array_equal(out.obsm["X_pca"], np.zeros((inp.n_obs, 5)))
+    # Every other slot was absent from the input -> copied.
     assert "pca" in out.uns and "params" in out.uns
+    assert "logcounts" in out.layers and "sparse_layer" in out.layers
+    assert "PCs" in out.varm
+    assert "connectivities" in out.obsp
+    assert "correlations" in out.varp
+    assert "mean" in out.var.columns
+
+
+def test_specified_slot_acts_as_filter(
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path
+):
+    # A slot that is named copies only what was asked for, while slots left
+    # unspecified still copy everything the input is missing.
+    output = tmp_path / "out.h5mu"
+    run_component(
+        [
+            "--source",
+            write_mdata(source_mdata_equal),
+            "--input",
+            write_mdata(input_mdata),
+            "--obs",
+            "score",
+            "--output",
+            output,
+        ]
+    )
+
+    out = mudata.read_h5mu(output)["rna"]
+    assert "score" in out.obs.columns
+    for skipped in ("label", "count", "is_doublet", "name"):
+        assert skipped not in out.obs.columns
+    # .var was not named, so it is still copied in full.
+    assert "highly_variable" in out.var.columns and "mean" in out.var.columns
 
 
 # ----------------------------------------------------------------------------
@@ -435,16 +461,16 @@ def test_auto_token_only_copies_new_keys(
 
 
 def test_overwrite_errors_by_default(
-    run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path
 ):
-    target_mdata["rna"].obs["score"] = 0.0  # collides with source
+    input_mdata["rna"].obs["score"] = 0.0  # collides with source
     with pytest.raises(CalledProcessError) as err:
         run_component(
             [
-                "--input_source",
+                "--source",
                 write_mdata(source_mdata_equal),
-                "--input_target",
-                write_mdata(target_mdata),
+                "--input",
+                write_mdata(input_mdata),
                 "--obs",
                 "score",
                 "--output",
@@ -457,16 +483,16 @@ def test_overwrite_errors_by_default(
 
 
 def test_allow_overwrite_warns_and_overwrites(
-    run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path
 ):
-    target_mdata["rna"].obs["score"] = 0.0
+    input_mdata["rna"].obs["score"] = 0.0
     output = tmp_path / "out.h5mu"
     run_component(
         [
-            "--input_source",
+            "--source",
             write_mdata(source_mdata_equal),
-            "--input_target",
-            write_mdata(target_mdata),
+            "--input",
+            write_mdata(input_mdata),
             "--obs",
             "score",
             "--allow_overwrite",
@@ -480,15 +506,15 @@ def test_allow_overwrite_warns_and_overwrites(
 
 
 # ----------------------------------------------------------------------------
-# --var_match_column
+# --source_var_gene_names
 # ----------------------------------------------------------------------------
 
 
-def test_var_match_column_rewrites_source_var_index(
-    run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path
+def test_source_var_gene_names_rewrites_source_var_index(
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path
 ):
     # Sanitise the source's var index, but preserve the original name in a
-    # column the component will use to match against the target.
+    # column the component will use to match against the input.
     src = source_mdata_equal["rna"]
     original = list(src.var_names)
     src.var["_ori_var_index"] = original
@@ -497,11 +523,11 @@ def test_var_match_column_rewrites_source_var_index(
     output = tmp_path / "out.h5mu"
     run_component(
         [
-            "--input_source",
+            "--source",
             write_mdata(source_mdata_equal),
-            "--input_target",
-            write_mdata(target_mdata),
-            "--var_match_column",
+            "--input",
+            write_mdata(input_mdata),
+            "--source_var_gene_names",
             "_ori_var_index",
             "--var",
             "highly_variable",
@@ -511,7 +537,7 @@ def test_var_match_column_rewrites_source_var_index(
     )
 
     out = mudata.read_h5mu(output)["rna"]
-    # Values from source should now be aligned to target's gene names.
+    # Values from source should now be aligned to the input's gene names.
     for vname in out.var_names:
         expected = src.var.loc[
             src.var.index[src.var["_ori_var_index"] == vname][0], "highly_variable"
@@ -527,23 +553,23 @@ def test_var_match_column_rewrites_source_var_index(
 def test_cross_modality_copy(
     run_component, source_mdata_equal, write_mdata, tmp_path, rng
 ):
-    # Build a target whose 'prot' modality has the same cells/genes as
+    # Build an input whose 'prot' modality has the same cells/genes as
     # source's 'rna' modality.
     obs_names = list(source_mdata_equal["rna"].obs_names)
     var_names = list(source_mdata_equal["rna"].var_names)
     prot = _make_adata(obs_names, var_names, rng)
-    target = mudata.MuData({"prot": prot})
+    input_mu = mudata.MuData({"prot": prot})
 
     output = tmp_path / "out.h5mu"
     run_component(
         [
-            "--input_source",
+            "--source",
             write_mdata(source_mdata_equal),
             "--source_modality",
             "rna",
-            "--input_target",
-            write_mdata(target),
-            "--target_modality",
+            "--input",
+            write_mdata(input_mu),
+            "--modality",
             "prot",
             "--obs",
             "score",
@@ -566,17 +592,17 @@ def test_cross_modality_copy(
 
 
 def test_missing_modality_errors(
-    run_component, source_mdata_equal, write_mdata, target_mdata, tmp_path
+    run_component, source_mdata_equal, write_mdata, input_mdata, tmp_path
 ):
     with pytest.raises(CalledProcessError) as err:
         run_component(
             [
-                "--input_source",
+                "--source",
                 write_mdata(source_mdata_equal),
                 "--source_modality",
                 "doesnotexist",
-                "--input_target",
-                write_mdata(target_mdata),
+                "--input",
+                write_mdata(input_mdata),
                 "--obs",
                 "score",
                 "--output",
@@ -587,15 +613,15 @@ def test_missing_modality_errors(
 
 
 def test_missing_key_in_source_errors(
-    run_component, source_mdata_equal, write_mdata, target_mdata, tmp_path
+    run_component, source_mdata_equal, write_mdata, input_mdata, tmp_path
 ):
     with pytest.raises(CalledProcessError) as err:
         run_component(
             [
-                "--input_source",
+                "--source",
                 write_mdata(source_mdata_equal),
-                "--input_target",
-                write_mdata(target_mdata),
+                "--input",
+                write_mdata(input_mdata),
                 "--obs",
                 "no_such_column",
                 "--output",
@@ -608,15 +634,15 @@ def test_missing_key_in_source_errors(
 
 
 def test_compression(
-    run_component, target_mdata, source_mdata_equal, write_mdata, tmp_path
+    run_component, input_mdata, source_mdata_equal, write_mdata, tmp_path
 ):
     output = tmp_path / "out.h5mu"
     run_component(
         [
-            "--input_source",
+            "--source",
             write_mdata(source_mdata_equal),
-            "--input_target",
-            write_mdata(target_mdata),
+            "--input",
+            write_mdata(input_mdata),
             "--obs",
             "score",
             "--output_compression",

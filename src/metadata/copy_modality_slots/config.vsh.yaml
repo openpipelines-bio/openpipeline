@@ -4,155 +4,165 @@ scope: "public"
 label: Copy modality slots
 description: |
   Copy items (.obs, .var, .layers, .obsm, .varm, .obsp, .varp, .uns) from a
-  modality in a source MuData file into a modality in a target MuData file.
+  modality in a source MuData file into a modality in the input MuData file.
 
-  By default the source and target modalities must have identical .obs and
+  By default the source and input modalities must have identical .obs and
   .var index sets (ordering may differ; source is reindexed to match the
-  target). With --allow_partial, the source's .obs/.var indices may be a
-  strict subset of the target's; rows or columns of the target that are not
+  input). With --allow_partial, the source's .obs/.var indices may be a
+  strict subset of the input's; rows or columns of the input that are not
   represented in the source are filled with NaN for numeric slots and with
   the appropriate missing-value sentinel for DataFrame columns.
 
-  Existing keys in the target are not overwritten by default. Use
+  Existing keys in the input are not overwritten by default. Use
   --allow_overwrite to allow overwriting (a warning is emitted for each
   overwritten key).
 
-  Each slot argument accepts explicit names or the special token '__auto__'
-  to include every item that is present in the source modality but not yet
-  in the target modality.
+  Each slot argument restricts the copy to the named items. If a slot
+  argument is not specified, every item present in the source modality but
+  missing from the input modality is copied for that slot.
 authors:
   - __merge__: /src/authors/luke_zappia.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/jakub_majercik.yaml
     roles: [ author ]
 
 argument_groups:
-  - name: "Source"
+  - name: Inputs
+    description: Arguments related to the input dataset, which is copied into.
     arguments:
-      - name: "--input_source"
+      - name: "--input"
+        alternatives: [-i]
         type: file
-        description: Source h5mu file to read slots from.
+        description: The input data to copy slots into. Should be a .h5mu file.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to copy slots into.
+        type: string
+        default: "rna"
+        required: false
+
+  - name: Source
+    description: Arguments related to the source dataset, which is copied from.
+    arguments:
+      - name: "--source"
+        type: file
+        description: The source data to copy slots from. Should be a .h5mu file.
         direction: input
         required: true
         example: source.h5mu
       - name: "--source_modality"
         type: string
-        description: Modality in the source h5mu file to read slots from.
-        default: "rna"
+        description: |
+          Which modality in the source data to copy slots from. Defaults to
+          the value of --modality.
         required: false
-      - name: "--var_match_column"
+      - name: "--source_var_gene_names"
         type: string
         required: false
         description: |
-          Name of a column in the source .var to use as var names when
-          matching source variables against the target. Useful when an
-          upstream step has rewritten the source .var index (e.g. by
-          sanitising gene names) and the original, target-compatible names
-          are preserved in a column. If not set, the existing source .var
-          index is used as-is.
-
-  - name: "Target"
-    arguments:
-      - name: "--input_target"
-        type: file
-        description: Target h5mu file to copy slots into.
-        direction: input
-        required: true
-        example: target.h5mu
-      - name: "--target_modality"
-        type: string
-        description: |
-          Modality in the target h5mu file to copy slots into. Defaults to
-          the value of --source_modality.
-        required: false
+          The name of the .var column in the source data containing gene names
+          to match against the input .var index; when not provided, the source
+          .var index is used. Useful when an upstream step has rewritten the
+          source .var index (e.g. by sanitising gene names) and the original,
+          input-compatible names are preserved in a column.
 
   - name: "Slots to copy"
     description: |
-      Items to copy from the source modality into the target modality. Each
-      argument accepts explicit names or the special token '__auto__' to
-      include all items present in the source modality but missing from the
-      target modality. If not provided, that slot is skipped.
+      Items to copy from the source modality into the input modality. Each
+      argument restricts the copy to the named items. If an argument is not
+      specified, every item present in the source modality but missing from
+      the input modality is copied for that slot.
     arguments:
       - name: "--obs"
         type: string
         multiple: true
-        multiple_sep: ","
         required: false
-        example: "obs1,obs2"
-        description: .obs columns to copy.
+        example: [obs1, obs2]
+        description: |
+          .obs columns to copy. If not specified, all .obs columns present in
+          the source but missing from the input are copied.
       - name: "--var"
         type: string
         multiple: true
-        multiple_sep: ","
         required: false
-        example: "var1,var2"
-        description: .var columns to copy.
+        example: [var1, var2]
+        description: |
+          .var columns to copy. If not specified, all .var columns present in
+          the source but missing from the input are copied.
       - name: "--layers"
         type: string
         multiple: true
-        multiple_sep: ","
         required: false
-        example: "layer1,layer2"
-        description: .layers keys to copy.
+        example: [layer1, layer2]
+        description: |
+          .layers keys to copy. If not specified, all .layers keys present in
+          the source but missing from the input are copied.
       - name: "--obsm"
         type: string
         multiple: true
-        multiple_sep: ","
         required: false
-        example: "obsm1,obsm2"
-        description: .obsm keys to copy.
+        example: [obsm1, obsm2]
+        description: |
+          .obsm keys to copy. If not specified, all .obsm keys present in the
+          source but missing from the input are copied.
       - name: "--varm"
         type: string
         multiple: true
-        multiple_sep: ","
         required: false
-        example: "varm1,varm2"
-        description: .varm keys to copy.
+        example: [varm1, varm2]
+        description: |
+          .varm keys to copy. If not specified, all .varm keys present in the
+          source but missing from the input are copied.
       - name: "--obsp"
         type: string
         multiple: true
-        multiple_sep: ","
         required: false
-        example: "obsp1,obsp2"
-        description: .obsp keys to copy.
+        example: [obsp1, obsp2]
+        description: |
+          .obsp keys to copy. If not specified, all .obsp keys present in the
+          source but missing from the input are copied.
       - name: "--varp"
         type: string
         multiple: true
-        multiple_sep: ","
         required: false
-        example: "varp1,varp2"
-        description: .varp keys to copy.
+        example: [varp1, varp2]
+        description: |
+          .varp keys to copy. If not specified, all .varp keys present in the
+          source but missing from the input are copied.
       - name: "--uns"
         type: string
         multiple: true
-        multiple_sep: ","
         required: false
-        example: "uns1,uns2"
-        description: .uns keys to copy.
+        example: [uns1, uns2]
+        description: |
+          .uns keys to copy. If not specified, all .uns keys present in the
+          source but missing from the input are copied.
 
   - name: "Options"
     arguments:
       - name: "--allow_overwrite"
         type: boolean_true
         description: |
-          Allow overwriting keys that already exist in the target modality.
+          Allow overwriting keys that already exist in the input modality.
           By default the component raises an error if a key already exists;
           when enabled, existing keys are overwritten with a warning.
       - name: "--allow_partial"
         type: boolean_true
         description: |
           Allow the source's .obs/.var indices to be a strict subset of the
-          target's. Rows or columns of the target that are not represented
-          in the source are filled with missing values (NaN for numeric
-          data; appropriate sentinel for DataFrame columns). By default the
-          two index sets must be equal.
+          input's. Rows or columns of the input that are not represented in
+          the source are filled with missing values (NaN for numeric data;
+          appropriate sentinel for DataFrame columns). By default the two
+          index sets must be equal.
 
-  - name: "Output"
+  - name: Outputs
     arguments:
       - name: "--output"
         alternatives: ["-o"]
         type: file
-        description: Output h5mu file (the target with slots copied from the source).
+        description: Output h5mu file (the input with slots copied from the source).
         direction: output
         required: true
         example: output.h5mu
@@ -183,4 +193,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      label: [ singlecpu, lowmem ]
+      label: [ singlecpu, midmem ]
