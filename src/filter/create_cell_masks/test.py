@@ -7,6 +7,7 @@ import mudata as mu
 import numpy as np
 import pandas as pd
 import pytest
+from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
@@ -57,37 +58,35 @@ def input_path(input_h5mu, random_h5mu_path):
     return path
 
 
-def _assert_untouched(
-    adata_before, adata_after, *, new_obs_cols, new_obsm_keys, new_uns_keys
+def _assert_rest_unchanged(
+    input_path, output_path, modality, *, new_obs_cols, new_obsm_keys, new_uns_keys
 ):
-    """Confirm that only the expected new keys appear; nothing else was changed."""
-    np.testing.assert_array_equal(adata_before.X, adata_after.X)
-    pd.testing.assert_index_equal(adata_before.obs_names, adata_after.obs_names)
-    pd.testing.assert_index_equal(adata_before.var_names, adata_after.var_names)
-    pd.testing.assert_frame_equal(adata_before.var, adata_after.var)
-    # Pre-existing obs columns survive identically.
-    for col in adata_before.obs.columns:
-        pd.testing.assert_series_equal(
-            adata_before.obs[col], adata_after.obs[col], check_names=False
-        )
-    # Only the new obs columns are added; nothing else.
-    added_obs = set(adata_after.obs.columns) - set(adata_before.obs.columns)
-    assert added_obs == set(new_obs_cols), f"unexpected obs cols: {added_obs}"
-    # Pre-existing obsm survives identically.
-    for key in adata_before.obsm:
-        np.testing.assert_array_equal(adata_before.obsm[key], adata_after.obsm[key])
-    added_obsm = set(adata_after.obsm.keys()) - set(adata_before.obsm.keys())
-    assert added_obsm == set(new_obsm_keys), f"unexpected obsm keys: {added_obsm}"
-    # Pre-existing uns survives.
-    for key in adata_before.uns:
-        assert key in adata_after.uns
-    added_uns = set(adata_after.uns.keys()) - set(adata_before.uns.keys())
+    """Strip the newly created slots from the output and confirm that the rest of
+    the MuData object is identical to the input."""
+    input_data = mu.read_h5mu(str(input_path))
+    output_data = mu.read_h5mu(str(output_path))
+    adata = output_data.mod[modality]
+
+    adata.obs = adata.obs.drop(columns=list(new_obs_cols))
+    for key in new_obsm_keys:
+        del adata.obsm[key]
+
+    # .uns is not covered by assert_annotation_objects_equal, so compare it here.
+    added_uns = set(adata.uns.keys()) - set(input_data.mod[modality].uns.keys())
     assert added_uns == set(new_uns_keys), f"unexpected uns keys: {added_uns}"
+    for key in new_uns_keys:
+        del adata.uns[key]
+
+    # The new .obs columns are also pulled into the global .obs of the MuData.
+    output_data.obs = output_data.obs.drop(
+        columns=[f"{modality}:{col}" for col in new_obs_cols]
+    )
+    output_data.update()
+
+    assert_annotation_objects_equal(input_path, output_data)
 
 
-def test_with_prefix_and_groups(
-    run_component, input_h5mu, input_path, random_h5mu_path
-):
+def test_with_prefix_and_groups(run_component, input_path, random_h5mu_path):
     output = random_h5mu_path()
 
     run_component(
@@ -144,24 +143,18 @@ def test_with_prefix_and_groups(
     assert len(filters_df) == 3
     assert set(filters_df["group"].tolist()) == {"rna", "control"}
 
-    # Nothing else on the RNA modality changed.
-    _assert_untouched(
-        input_h5mu["rna"],
-        rna,
+    # Nothing else in the MuData object changed, including the other modality.
+    _assert_rest_unchanged(
+        input_path,
+        output,
+        "rna",
         new_obs_cols={"cell_mask", "cell_mask_rna", "cell_mask_control"},
         new_obsm_keys={"cell_masks"},
         new_uns_keys={"cell_filters"},
     )
 
-    # The other modality is untouched.
-    prot_before = input_h5mu["prot"]
-    prot_after = mdata["prot"]
-    np.testing.assert_array_equal(prot_before.X, prot_after.X)
-    pd.testing.assert_frame_equal(prot_before.obs, prot_after.obs)
-    assert set(prot_after.obsm.keys()) == set(prot_before.obsm.keys())
 
-
-def test_filter_without_group(run_component, input_h5mu, input_path, random_h5mu_path):
+def test_filter_without_group(run_component, input_path, random_h5mu_path):
     """A filter without a group still produces an individual mask and contributes
     to the 'overall' group mask, but produces no per-group mask column."""
     output = random_h5mu_path()
@@ -196,8 +189,17 @@ def test_filter_without_group(run_component, input_h5mu, input_path, random_h5mu
     filters_df = rna.uns["cell_filters"]
     assert filters_df["group"].iloc[0] == ""
 
+    _assert_rest_unchanged(
+        input_path,
+        output,
+        "rna",
+        new_obs_cols={"cell_mask"},
+        new_obsm_keys={"cell_masks"},
+        new_uns_keys={"cell_filters"},
+    )
 
-def test_without_prefix(run_component, input_h5mu, input_path, random_h5mu_path):
+
+def test_without_prefix(run_component, input_path, random_h5mu_path):
     """Omitting --prefix yields un-prefixed slot names."""
     output = random_h5mu_path()
     run_component(
@@ -219,9 +221,10 @@ def test_without_prefix(run_component, input_h5mu, input_path, random_h5mu_path)
     for col in ("mask", "mask_rna", "mask_control"):
         assert col in rna.obs.columns
 
-    _assert_untouched(
-        input_h5mu["rna"],
-        rna,
+    _assert_rest_unchanged(
+        input_path,
+        output,
+        "rna",
         new_obs_cols={"mask", "mask_rna", "mask_control"},
         new_obsm_keys={"masks"},
         new_uns_keys={"filters"},
