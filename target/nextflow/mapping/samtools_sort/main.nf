@@ -3377,7 +3377,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/samtools_sort",
     "viash_version" : "0.9.7",
-    "git_commit" : "abebc422d4b849d4d96fe0182218b58aefe76e12",
+    "git_commit" : "75c797c563a145b3e1b1ac017e33e9250d75814f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
