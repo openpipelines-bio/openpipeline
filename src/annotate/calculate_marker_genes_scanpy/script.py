@@ -11,7 +11,7 @@ par = {
     "obs_clustering": "leiden_0.5",
     "output": "output.h5mu",
     "output_markers": "markers.csv",
-    "output_uns": "rank_genes_groups",
+    "uns_output": "rank_genes_groups",
     "output_compression": "gzip",
     "method": "t-test",
     "corr_method": "benjamini-hochberg",
@@ -53,7 +53,7 @@ def calculate_marker_genes(adata, par):
         corr_method=par["corr_method"],
         tie_correct=par["tie_correct"],
         pts=True,
-        key_added=par["output_uns"],
+        key_added=par["uns_output"],
     )
 
 
@@ -63,7 +63,7 @@ def filter_marker_genes(adata, par):
     logger.info("Max out-group fraction: %s", par["max_out_group_fraction"])
     logger.info("Compare absolute values: %s", par["compare_abs"])
 
-    filtered_key_added = f"{par['output_uns']}_filtered"
+    filtered_key_added = f"{par['uns_output']}_filtered"
     sc.tl.filter_rank_genes_groups(
         adata,
         groupby=par["obs_clustering"],
@@ -97,7 +97,7 @@ def filter_marker_genes(adata, par):
 
 
 def format_results(adata, par, filtered_key_added=None):
-    results = sc.get.rank_genes_groups_df(adata, group=None, key=par["output_uns"])
+    results = sc.get.rank_genes_groups_df(adata, group=None, key=par["uns_output"])
 
     if par["filter_results"]:
         results["is_marker"] = False
@@ -126,7 +126,7 @@ def main(par):
     logger.info("Calculating marker genes")
     calculate_marker_genes(adata, par)
 
-    filtered_key_added = f"{par['output_uns']}_filtered"
+    filtered_key_added = f"{par['uns_output']}_filtered"
     if par["filter_results"]:
         logger.info("Filtering marker genes")
         filtered_key_added, filtered_markers = filter_marker_genes(adata, par)

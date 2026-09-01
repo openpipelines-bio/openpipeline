@@ -49,7 +49,7 @@ argument_groups:
         default: markers.csv
         example: markers.csv
         description: Path to the output CSV file where marker genes will be saved.
-      - name: --output_uns
+      - name: --uns_output
         type: string
         default: rank_genes_groups
         description: Key in `.uns` where the results will be stored.
