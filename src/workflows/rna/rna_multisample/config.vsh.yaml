@@ -187,12 +187,18 @@ argument_groups:
         default: true
         description: If true, center the data to zero mean before scaling. Set to false to omit zero-centering, which allows sparse input to be handled efficiently.
          
+  - __merge__: /src/base/device_type_argument.yaml
+
 dependencies:
-  - name: feature_annotation/highly_variable_features_scanpy
+  - name: wrappers/preprocessing/highly_variable_genes
+    repository: openpipeline_rapids
+    alias: highly_variable_features_scanpy
   - name: workflows/qc/qc
     alias: rna_qc
   - name: metadata/add_id
-  - name: transform/scale
+  - name: wrappers/preprocessing/scale
+    repository: openpipeline_rapids
+    alias: scale
   - name: workflows/rna/log_normalize
 resources:
   - type: nextflow_script

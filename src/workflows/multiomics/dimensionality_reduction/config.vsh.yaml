@@ -83,8 +83,14 @@ argument_groups:
         default: "X_umap"
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
+  - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: dimred/pca
+  - name: wrappers/preprocessing/pca
+    repository: openpipeline_rapids
+    alias: pca
+  - name: preprocessing/filter_genes
+    repository: openpipeline_rapids
+    alias: filter_genes
   - name: workflows/multiomics/neighbors_leiden_umap
 resources:
   - type: nextflow_script

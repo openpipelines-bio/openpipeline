@@ -169,6 +169,7 @@ argument_groups:
         choices: ["gzip", "lzf"]
         required: false
         example: "gzip"
+  - __merge__: /src/base/device_type_argument.yaml
 
 dependencies:
   - name: workflows/integration/harmony_leiden
@@ -176,9 +177,16 @@ dependencies:
   - name: labels_transfer/knn
   - name: workflows/multiomics/split_h5mu
   - name: dataflow/concatenate_h5mu
-  - name: dimred/pca
+  - name: wrappers/preprocessing/pca
+    repository: openpipeline_rapids
+    alias: pca
+  - name: preprocessing/filter_genes
+    repository: openpipeline_rapids
+    alias: filter_genes
   - name: feature_annotation/align_query_reference
-  - name: feature_annotation/highly_variable_features_scanpy
+  - name: wrappers/preprocessing/highly_variable_genes
+    repository: openpipeline_rapids
+    alias: highly_variable_features_scanpy
   - name: transform/delete_layer
   - name: workflows/multiomics/split_modalities
   - name: dataflow/merge

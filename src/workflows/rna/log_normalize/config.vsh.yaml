@@ -43,9 +43,14 @@ argument_groups:
         direction: output
         description: Destination path to the output.
         example: output.h5mu
+  - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: transform/normalize_total
-  - name: transform/log1p
+  - name: wrappers/preprocessing/normalize_total
+    repository: openpipeline_rapids
+    alias: normalize_total
+  - name: wrappers/preprocessing/log1p
+    repository: openpipeline_rapids
+    alias: log1p
   - name: transform/delete_layer
 resources:
   - type: nextflow_script

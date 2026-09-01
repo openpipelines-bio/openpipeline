@@ -8,6 +8,8 @@
 
 ## NEW FEATURES
 
+* `workflows/rna/log_normalize`, `workflows/rna/rna_multisample`, `workflows/multiomics/neighbors_leiden_umap`, `workflows/multiomics/dimensionality_reduction`, `workflows/multiomics/process_batches`, `workflows/multiomics/process_samples`, `workflows/integration/harmony_leiden`, `workflows/integration/bbknn_leiden`, `workflows/integration/scvi_leiden`, `workflows/integration/scanorama_leiden`, `workflows/integration/totalvi_leiden`, `workflows/integration/totalvi_scarches_leiden`, `workflows/annotation/harmony_knn`, `workflows/annotation/scvi_knn`, `workflows/annotation/scanvi_scarches`, `workflows/annotation/celltypist`: added a `--device_type` argument to select between the CPU (scanpy) and GPU (rapids-singlecell) implementation of normalization, log1p, scaling, highly variable feature detection, PCA, neighbor calculation, BBKNN, Harmony, Leiden clustering and UMAP. Steps with both implementations now depend on the `wrappers/*` workflows from the `openpipeline_rapids` package, which dispatch to either variant. The default is `cpu`, so existing runs are unchanged. Setting `gpu` requires an x86_64 host with a CUDA-capable NVIDIA GPU (PR #1225).
+
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
 
 * `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -15,6 +17,10 @@
 * `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
 
 * `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
+
+## MINOR CHANGES
+
+* `workflows/utils/gpu.config`: added an opt-in Nextflow config that passes the host's NVIDIA devices into GPU-labelled containers, for use with `--device_type gpu` (PR #1225).
 
 # openpipelines 4.2.0
 
