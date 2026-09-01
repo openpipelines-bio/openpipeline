@@ -49,6 +49,10 @@ argument_groups:
         default: markers.csv
         example: markers.csv
         description: Path to the output CSV file where marker genes will be saved.
+      - name: --output_uns
+        type: string
+        default: rank_genes_groups
+        description: Key in `.uns` where the results will be stored.
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Rank genes groups
@@ -72,10 +76,6 @@ argument_groups:
         description: |
           Whether to apply tie correction to the Wilcoxon test statistic. Only
           used when `--method` is `wilcoxon`.
-      - name: --key_added
-        type: string
-        default: rank_genes_groups
-        description: Key in `.uns` where the results will be stored.
 
   - name: Filter rank genes groups
     description: Arguments for scanpy `filter_rank_genes_groups()`
