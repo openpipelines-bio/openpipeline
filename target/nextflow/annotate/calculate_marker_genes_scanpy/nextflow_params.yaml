@@ -1,0 +1,29 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+obs_clustering: # please fill in - example: "leiden_0.5"
+
+# Outputs
+# output: "output.h5mu"
+# output_markers: "markers.csv"
+uns_output: "rank_genes_groups"
+# output_compression: "gzip"
+
+# Rank genes groups
+method: "t-test"
+corr_method: "benjamini-hochberg"
+tie_correct: false
+
+# Filter rank genes groups
+filter_results: false
+min_in_group_fraction: 0.25
+max_out_group_fraction: 0.5
+min_fold_change: 1.0
+compare_abs: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
