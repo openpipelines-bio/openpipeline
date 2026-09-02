@@ -5,7 +5,7 @@ description: |
   Convert the molecular barcode sequence SAM tag from BD format (MA) to 10X format (UB).
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]

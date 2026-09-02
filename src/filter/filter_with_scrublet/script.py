@@ -25,6 +25,7 @@ par = {
     "stdev_doublet_rate": None,
     "sim_doublet_ratio": None,
     "n_neighbors": None,
+    "scrublet_score_threshold": None,
 }
 meta = {
     "name": "scrublet",
@@ -72,23 +73,33 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     distance_metric=par["distance_metric"],
     use_approx_neighbors=False,
 )
+if par["scrublet_score_threshold"] is not None:
+    logger.info(
+        "\tApplying manual doublet score threshold of %s",
+        par["scrublet_score_threshold"],
+    )
+    predicted_doublets = scrub.call_doublets(threshold=par["scrublet_score_threshold"])
 
 try:
     keep_cells = np.invert(predicted_doublets)
 except TypeError:
-    if par["allow_automatic_threshold_detection_fail"]:
-        # Scrublet might not throw an error and return None if it fails to detect doublets...
-        logger.info(
-            "\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
+    # Scrublet might not throw an error and return None if it fails to detect doublets...
+    if par["scrublet_score_threshold"]:
+        raise RuntimeError(
+            "Scrublet could not detect doublets even with a manual threshold set."
         )
-        keep_cells = np.nan
-        doublet_scores = np.nan
-    else:
+    if not par["allow_automatic_threshold_detection_fail"]:
         raise RuntimeError(
             "Scrublet could not automatically detect the doublet score threshold. "
-            "--allow_automatic_threshold_detection_fail can be used to ignore this failure "
-            "and set the corresponding output columns to NA."
+            "Either --allow_automatic_threshold_detection_fail can be used to ignore this failure "
+            "and set the corresponding output columns to NA, or a manual --scrublet_score_threshold can be provided."
         )
+    logger.info(
+        "\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA."
+    )
+    keep_cells = np.nan
+    doublet_scores = np.nan
+
 
 logger.info("\tStoring output into .obs")
 if par["obs_name_doublet_score"] is not None:

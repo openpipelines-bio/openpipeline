@@ -61,6 +61,7 @@ workflow run_wf {
           "modality": state.modality,
           "var_qc_metrics": state.var_qc_metrics,
           "top_n_vars": state.top_n_vars,
+          "log1p_transform": state.log1p_transform,
           "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
           "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
           "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,

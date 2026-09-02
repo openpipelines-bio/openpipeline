@@ -6,8 +6,6 @@ authors:
     roles: [ author ]
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
 
 description: |
   Calculates the score associated to S phase and G2M phase and annotates the cell cycle phase for each cell, as implemented by scanpy. 

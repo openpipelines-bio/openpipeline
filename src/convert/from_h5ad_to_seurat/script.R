@@ -1,5 +1,7 @@
 library(anndataR)
 
+rhdf5::h5disableFileLocking()
+
 ### VIASH START
 par <- list(
   input = "data_split/split_data.h5ad",
@@ -13,7 +15,8 @@ seurat_obj <- read_h5ad(
   par$input,
   mode = "r",
   as = "Seurat",
-  assay_name = par$assay
+  assay_name = par$assay,
+  x_mapping = par$x_mapping
 )
 
 saveRDS(seurat_obj, file = par$output)

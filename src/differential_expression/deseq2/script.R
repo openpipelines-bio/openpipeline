@@ -2,6 +2,8 @@ library(DESeq2)
 library(anndataR)
 library(hdf5r)
 
+rhdf5::h5disableFileLocking()
+
 ## VIASH START
 par <- list(
   input = paste0(
