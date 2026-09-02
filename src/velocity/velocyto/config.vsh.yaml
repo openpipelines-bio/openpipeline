@@ -4,7 +4,7 @@ scope: "public"
 description: "Runs the velocity analysis on a BAM file, outputting a loom file."
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: [-i]

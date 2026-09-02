@@ -32,6 +32,13 @@ argument_groups:
         type: string
         description: Name of the .uns slot under which to QC metrics (if any).
         default: "metrics_cellranger"
+      - name: "--output_filtered_data"
+        type: boolean_true
+        description: |
+          If enabled, read the per-sample filtered count matrices
+          (per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5)
+          instead of the aggregated raw count matrix
+          (multi/count/raw_feature_bc_matrix.h5).
 dependencies:
   - name: mapping/cellranger_multi
     alias: cellranger_multi_component

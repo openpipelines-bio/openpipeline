@@ -18,9 +18,7 @@ info:
   license: Unknown
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
+    roles: [ author ]
 
 argument_groups:
 - name: Inputs

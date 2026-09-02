@@ -1,4 +1,62 @@
-# openpipelines (unreleased)
+# openpipelines x.x.x
+
+## BREAKING CHANGES
+
+* `transform/scale`: `--zero_center` is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of a `boolean_false` flag. Pass `--zero_center false` to omit centering (PR #1216).
+
+* `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of `boolean_false` (PR #1216).
+
+## NEW FEATURES
+
+* `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+
+* `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+
+* `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
+
+* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
+
+# openpipelines 4.2.0
+
+## NEW FEATURES
+
+* `qc/calculate_qc_metrics`: log1p-transformed qc metrics (`log1p_<col>`) are now added to `.var` and `.obs` by default via the new `--log1p_transform` flag (default `true`, mirroring scanpy behavior) (PR #1182, #1197).
+
+* `workflows/qc/qc`, `workflows/rna/rna_multisample`, `workflows/prot/prot_multisample`, `workflows/multiomics/process_samples` and `workflows/multiomics/process_batches`: expose the `--log1p_transform` flag (PR #1182).
+
+## NEW FEATURES
+
+* `filter/filter_with_scrublet`: added `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
+
+* `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
+
+* `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
+
+## MINOR CHANGES
+
+* `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
+
+* `dataflow/concatenate_h5mu`: Remove the unused parameter `--obs_sample_name` from the configuration (PR #1195).
+
+* `convert/from_h5ad_to_seurat`, `convert/from_h5mu_or_h5ad_to_seurat`, `convert/from_seurat_to_h5mu`, `differential_expression/deseq2`: Unpin anndataR (PR #1201). 
+
+* `convert/from_h5ad_to_seurat`, `convert/from_h5mu_or_h5ad_to_seurat`: Added a `--x_mapping` argument to control the Seurat layer the AnnData `.X` matrix is stored in (default `counts`) (PR #1201).
+
+* `labels_transfer/knn`: bump `pynndescent` to 0.5.13 (PR #1205)
+
+* `correction/cellbender_remove_background`: Update the base image to `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` (Python 3.12) and pin CellBender to a commit that is compatible with Python 3.12 (PR #1212).
+
+## BUG FIXES
+
+* `annotate/scanvi`: no longer predicts cell type labels that are absent from the reference. Reference label columns often declare more categories than are actually used (e.g. when the reference is a subset of a larger atlas), which previously caused scANVI to occasionally assign query cells to those empty labels. Unused labels are now dropped before training (PR #1207).
+
+* `workflows/prot/prot_multisample`: fix two malformed state keys in the `prot_qc` call so the `--output_var_num_nonzero_obs` and `--output_var_pct_dropout` arguments are passed through correctly (PR #1196).
+
+* `workflows/test_workflows/multiomics/process_batches`: drop the recomputed `pct_dropout` column from the prot output in `workflow_test2` before comparing against the reference data, which predates PR #1196 and lacks the column (PR #1209).
+
+* `annotate/celltypist`: only enable GPU training when both a CUDA device and a working `cuml` install are present, and raise an error if training on the reference does not return a usable model. Previously, a missing `cuml` install caused the GPU training path to fail silently and fall back to downloading and predicting with the default `Immune_All_Low.pkl` model (PR #1211, # 1213).
+
+# openpipelines 4.1.0
 
 ## NEW FEATURES
 
@@ -24,9 +82,11 @@
 
 * `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in a source MuData file into a modality in the input MuData file. Each slot argument restricts the copy to the named items; a slot left unspecified copies everything present in the source but missing from the input. Source and input index sets must match by default; `--allow_partial` permits the source to be a strict subset (with NaN-fill). Also supports `--allow_overwrite`, `--source_var_gene_names`, and cross-modality transfers (PR #1166).
 
+* `annotate/calculate_marker_genes`: New component that calculates cluster marker genes using `scanpy` (PR #1168)
+
 ## MAJOR CHANGES
 
-* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140).
+* `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
 
 * `annotate/popv`: bump version to 0.6.1 (PR #1167).
 
@@ -44,7 +104,7 @@
 
 * `annotate/singler`: set `--input_layer` default to `log_normalized` and `--reference_var_input` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
 
-* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155).
+* `workflows/annotation/scanvi_scarches`: set `--input_obs_batch_label` and `--reference_obs_batch_label` defaults to `sample_id` and `--reference_var_hvg` default to `filter_with_hvg` to align with upstream workflow defaults (PR #1155, #1189).
 
 * `cluster/leiden`: added `flavor`, `n_iterations` and `seed` arguments (PR #1132)
 
@@ -52,7 +112,11 @@
 
 * `workflows/multiomics/process_samples`: refactored to use a shared `process_singlesample_base` subworkflow, which is also used by the new `process_singlesample` workflow to avoid code duplication (PR #1147).
 
-* Bump anndata to `0.12.11` (PR #1174).
+* Bump anndata to `0.12.16` (PR #1174 and PR #1188).
+
+* Bump mudata to `0.3.8` (PR #1188).
+
+* Bump lianapy to `1.7.1` (PR #1188).
 
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
@@ -63,6 +127,8 @@
 * `dataflow/split_h5mu`: pin scipy version to 1.16.3 to avoid regression that corrupts large sparse matrix indexing (PR #1153).
 
 * `convert/from_h5ad_h5mu`: store and reset var index names to avoid issues with a change in mudata (PR #1184).
+
+* `convert/from_cellranger_multi_to_h5mu`: fix `KeyError` in multiplexed experiments when sample IDs look like floating-point numbers (e.g. `"156573596.0"`); the metrics summary is now parsed with string dtype so sample IDs continue to match the per-sample directory names (PR #1192).
 
 # openpipelines 4.0.4
 

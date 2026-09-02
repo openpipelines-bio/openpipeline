@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Install Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: 4.5.3
@@ -43,7 +43,7 @@ jobs:
       dest_paths: ${{ steps.cache.outputs.dest_paths }}
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0 
 
@@ -91,14 +91,14 @@ jobs:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
 
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - uses: viash-io/viash-actions/setup@v6
     - uses: viash-io/viash-actions/project/update-docker-engine@v6
     # use cache
     - name: Restore test resources cache
       if: ${{ needs.list.outputs.cache_key != '' }}
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       timeout-minutes: 10
       with:
         path: ${{ needs.list.outputs.dest_paths }}
@@ -126,7 +126,7 @@ jobs:
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
 
     - name: Login to the nvidia container registry
-      uses: docker/login-action@v4
+      uses: docker/login-action@v4.6.0
       env: 
           NVIDIA_PASSWORD: ${{ secrets.NVIDIA_PASSWORD }}
       if: ${{ env.NVIDIA_PASSWORD != '' }}
