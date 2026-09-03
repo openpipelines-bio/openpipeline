@@ -20,6 +20,10 @@
 
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
+## BUG FIXES
+
+* `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES

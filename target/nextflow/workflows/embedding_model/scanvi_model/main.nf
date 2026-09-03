@@ -3546,7 +3546,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/embedding_model/scanvi_model",
     "viash_version" : "0.9.7",
-    "git_commit" : "f557c460327ce0a529c641070dd9c87492a69a1c",
+    "git_commit" : "9a5bf1fbfb4db82e6625dbee2692b6d8bc1a278c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
