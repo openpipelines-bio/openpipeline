@@ -18,6 +18,13 @@
 
 * `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in a source MuData file into a modality in the input MuData file (PR #1166).
 
+## BUG FIXES
+
+* `convert/from_cellranger_multi_to_h5mu`, `workflows/ingestion/cellranger_multi`: when processing Cell Ranger output from multiplexed experiments, filtered count matrices were being output. This is consistent when multiplexing is done using Cell Multiplexing Oligos (CMOs), as per-sample raw matrices are unavailable in this case. However, for other multiplexing methods (e.g. Flex) it is possible to assign all reads to a sample, meaning per-sample raw count matrices are available. Therefore, when dealing with multiplexed experiments, the following changes were made for consistency (PR ####):
+  - Fixed outputting raw count matrices instead of filtered ones (when `output_filtered_data` is not set).
+  - When per-sample raw counts are not available, `NotImplementedError` will be thrown.
+  - The original behavior (i.e. outputting filtered data) can be invoked by using the `output_filtered_data` argument.
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES

@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+import warnings
 import scanpy
 import pandas as pd
 import mudata
@@ -132,6 +133,7 @@ def gather_input_data(dir: Path):
                 "sure that the specified input folder is a valid cellranger multi output."
             )
 
+    # Cell Ranger dropped the 'multi' subfolder starting Cell Ranger v10
     library_type_dir = multi_dir if (multi_dir := (dir / "multi")).is_dir() else dir
     for library_type in library_type_dir.iterdir():
         if library_type.name in POSSIBLE_LIBRARY_TYPES:
@@ -149,6 +151,10 @@ def gather_input_data(dir: Path):
             raise ValueError(
                 f"Contents of the 'multi' folder must be found one of the following: {','.join(POSSIBLE_LIBRARY_TYPES)}."
             )
+
+    # The 'count' folder (i.e. the folder with the 'global' count matrix) is in:
+    #    - the 'multi' folder (Cell Ranger v9)
+    #    - the root of the Cell Ranger output
     if not found_input["count"]:
         found_input["count"] = dir
 
@@ -157,45 +163,101 @@ def gather_input_data(dir: Path):
         found_input["feature_reference"] = feature_reference
 
     per_sample_outs_dir = dir / "per_sample_outs"
+    if not per_sample_outs_dir.is_dir():
+        raise FileNotFoundError("Could not find 'per_sample_outs' folder.")
+
+    per_sample_files = {
+        "metrics_summary.csv": "metrics_summary",
+        "count/crispr_analysis/perturbation_efficiencies_by_feature.csv": "perturbation_efficiencies_by_feature",
+        "crispr_analysis/perturbation_efficiencies_by_feature.csv": "perturbation_efficiencies_by_feature",  # Cell Ranger v10
+        "count/crispr_analysis/perturbation_efficiencies_by_target.csv": "perturbation_efficiencies_by_target",
+        "crispr_analysis/perturbation_efficiencies_by_target.csv": "perturbation_efficiencies_by_target",  # Cell Ranger v10
+        "antigen_analysis": "antigen_analysis",
+    }
+
+    # Count matrix detection:
+    #  - No multiplexing:
+    #      * Raw counts: (multi)/(count)/raw_feature_bc_matrix.h5 (always available)
+    #      * Filtered counts: per_sample_outs/<sample>/sample_filtered_feature_bc_matrix.h5 (always available)
+    #  - Multiplexing:
+    #      * Raw counts: use 'per_sample_outs/<sample>/sample_raw_feature_bc_matrix.h5' (NOT always available; i.e. CMO multiplexing)
+    #      * Filtered counts: use 'per_sample_outs/<sample>/sample_filtered_feature_bc_matrix.h5' (always available)
+
+    # Get contents of 'per_sample_outs', this covers most of the cases.
+    # Either the filtered or the raw count matrices needs to populate the MuData objects
+    # For further processing it does not really matter which one it is so use the same key in both
+    raw_or_filtered = "filtered" if par["output_filtered_data"] else "raw"
+    count_filename = f"sample_{raw_or_filtered}_feature_bc_matrix.h5"
+    per_sample_files.update(
+        {
+            f"count/{count_filename}": "sample_feature_bc_matrix",
+            count_filename: "sample_feature_bc_matrix",  # Cell Ranger v10
+        }
+    )
     samples_dirs = [
         samplepath
         for samplepath in per_sample_outs_dir.iterdir()
         if samplepath.is_dir()
     ]
+    if not samples_dirs:
+        raise FileNotFoundError(f"No samples were found in {per_sample_outs_dir}.")
+
     for samples_dir in samples_dirs:
-        for file_part in (
-            "metrics_summary.csv",
-            "count/crispr_analysis/perturbation_efficiencies_by_feature.csv",
-            "crispr_analysis/perturbation_efficiencies_by_feature.csv",  # Cell Ranger v10
-            "count/crispr_analysis/perturbation_efficiencies_by_target.csv",
-            "crispr_analysis/perturbation_efficiencies_by_target.csv",  # Cell Ranger v10
-            "antigen_analysis",
-        ):
+        for file_part, destination_key in per_sample_files.items():
             found_file = samples_dir / file_part
             if found_file.exists():
-                file_name = found_file.name.removesuffix(".csv")
-                found_input.setdefault(file_name, {})[samples_dir.name] = found_file
-
-    if par["output_filtered_data"]:
-        for samples_dir in samples_dirs:
-            for file_part in (
-                "count/sample_filtered_feature_bc_matrix.h5",
-                "sample_filtered_feature_bc_matrix.h5",  # Cell Ranger v10
-            ):
-                found_file = samples_dir / file_part
-                if found_file.exists():
-                    found_input.setdefault("filtered_counts", {})[samples_dir.name] = (
-                        found_file
-                    )
-                    break
-            else:
-                raise ValueError(
-                    f"Expected a filtered count matrix under {samples_dir}, "
-                    "but none was found. Make sure the input directory is a "
-                    "valid cellranger multi output that contains per-sample "
-                    "filtered feature-barcode matrices."
+                found_input.setdefault(destination_key, {})[samples_dir.name] = (
+                    found_file
                 )
 
+    # No output was selected from the 'per_sample_outs',
+    # this is because are two special cases when converting raw counts:
+    #   - No multiplexing has been done: grab the global 'raw' count matrix.
+    #   - Multiplexing, but per-sample raw matrices are not available (CMO barcoding).
+    # Raw output has been requested and there are no 'raw'
+    if not found_input.get("sample_feature_bc_matrix"):
+        if par["output_filtered_data"]:
+            raise FileNotFoundError(
+                "Requested to output per-sample filtered counts, "
+                "but no 'sample_filtered_feature_bc_matrix.h5' files found."
+            )
+        # No multiplexing; the global count matrix is the "sample" matrix.
+        if not found_input.get("multiplexing_analysis"):
+            if len(samples_dirs) > 1:
+                raise ValueError(
+                    "'multiplexing_analysis' folder not detected, "
+                    "but found multiple samples in 'per_sample_outs'. "
+                    "Is this valid Cell Ranger output?"
+                )
+            matrix_file = found_input["count"] / "raw_feature_bc_matrix.h5"
+            if not matrix_file.is_file():
+                raise FileNotFoundError(
+                    f"Expected a raw count matrix at {matrix_file}, but none was found. "
+                    "Make sure the input directory is a valid cellranger multi output."
+                )
+
+            # For Cell Ranger multi output from OpenPipelines, 'samples_dirs[0].name'
+            # will be 'run'. But this makes it compatible with Cell Ranger output from other sources.
+            found_input["sample_feature_bc_matrix"] = {
+                samples_dirs[0].name: matrix_file
+            }
+        else:
+            # Multiplexing, and requested raw data, but it is missing. Might be CMO multiplexing or corrupt data.
+            # For CMO analyses, the raw counts per sample (i.e. `sample_raw_feature_bc_matrix` files) are not present.
+            raise NotImplementedError(
+                "Requested to output raw counts for a multiplexed experiment (multiplexing_analysis folder present), "
+                "but a raw count matrix per sample is not available in the Cell Ranger output. "
+                "This might either be the normal result of the used chemistry (e.g. CMO multiplexing) "
+                "or due to corrupt Cell Ranger output. The option `output_filtered_data` can be used "
+                "to request the filtered instead of raw count matrices."
+            )
+    sample_dir_names = {sample_dir.name for sample_dir in samples_dirs}
+    found_samples = set(found_input["sample_feature_bc_matrix"].keys())
+    missing_samples = sample_dir_names - found_samples
+    if missing_samples:
+        raise FileNotFoundError(
+            f"Could not find count matrix input for samples {missing_samples}"
+        )
     return found_input
 
 
@@ -241,87 +303,33 @@ def process_feature_reference(
     return mudatas
 
 
-def _modality_name_factory(library_type):
-    return ("".join(library_type.replace("-", "_").split())).lower()
-
-
 def _rename_var_to_gene_ids(adata: anndata.AnnData):
     # set the gene ids as var_names (unique Ensembl IDs); gene symbols, which
     # scanpy.read_10x_h5 uses as var_names by default, are not unique
     adata.var = adata.var.rename_axis("gene_symbol").reset_index().set_index("gene_ids")
 
 
-def _aggregated_counts_to_per_sample_mudatas(
-    adata: anndata.AnnData, multiplexing_info, metrics_files
-):
-    logger.info("Convert to mudata")
-    feature_types = defaultdict(_modality_name_factory, FEATURE_TYPES_NAMES)
-    mudata_all_samples = mudata.MuData(adata, feature_types_names=feature_types)
-    if multiplexing_info:
-        # Get the mapping between the barcode and the sample ID from one of the metrics files
-        metrics_file = pd.read_csv(
-            list(metrics_files.values())[0],
-            decimal=".",
-            quotechar='"',
-            thousands=",",
-            usecols=("Group Name", "Metric Value", "Metric Name"),
-            dtype=pd.StringDtype(),
-        )
-        sample_ids = metrics_file[metrics_file["Metric Name"] == "Sample ID"]
-        barcode_sample_mapping = (
-            sample_ids.loc[:, ["Group Name", "Metric Value"]]
-            .set_index("Group Name")
-            .squeeze()
-            .to_dict()
-        )
-        # When probe barcodes are combined with multiplexing barcodes; the probe barcode (BC)
-        # is paired with other sample with other sample information using the syntax "{BC}+{antibody}"
-        # (or even "{BC}+{antibody}+{crispr guide}"). The cells_per_tag
-        # file only encodes the BCs; so we need to strip the other information.
-        barcode_sample_mapping = {
-            key_.partition("+")[0]: value_
-            for key_, value_ in barcode_sample_mapping.items()
-        }
-        return split_samples(
-            mudata_all_samples, multiplexing_info, barcode_sample_mapping
-        )
-    return {"run": mudata_all_samples}
+def process_counts(count_matrices: dict[str, Path]):
+    def modality_name_factory(library_type):
+        return ("".join(library_type.replace("-", "_").split())).lower()
 
-
-def process_counts_filtered(filtered_counts: dict[str, Path]):
-    # Unlike the raw matrix, per-sample filtered matrices are already
-    # demultiplexed by cellranger, so each h5 maps 1:1 to an output mudata.
-    feature_types = defaultdict(_modality_name_factory, FEATURE_TYPES_NAMES)
-    mudatas = {}
-    for sample_name, filtered_h5 in filtered_counts.items():
-        logger.info("Reading %s.", filtered_h5)
-        adata = scanpy.read_10x_h5(filtered_h5, gex_only=False)
-        _rename_var_to_gene_ids(adata)
-        mudatas[sample_name] = mudata.MuData(adata, feature_types_names=feature_types)
-    return mudatas
-
-
-def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
-    counts_matrix_file = counts_folder / "raw_feature_bc_matrix.h5"
-    logger.info("Reading %s.", counts_matrix_file)
-    adata = scanpy.read_10x_h5(counts_matrix_file, gex_only=False)
-    _rename_var_to_gene_ids(adata)
-    return _aggregated_counts_to_per_sample_mudatas(
-        adata, multiplexing_info, metrics_files
-    )
-
-
-def split_samples(mudata_obj, multiplexing_analysis_folder, barcode_sample_mapping):
     result = {}
-    cells_per_tag_file = multiplexing_analysis_folder / "cells_per_tag.json"
-    with cells_per_tag_file.open("r") as open_json:
-        sample_cell_mapping = json.load(open_json)
+    for sample_name, count_matrix_file in count_matrices.items():
+        logger.info("Reading '%s' for sample '%s'", count_matrix_file, sample_name)
 
-    for barcode, indices in sample_cell_mapping.items():
-        if indices:
-            sample_mudata = mudata_obj[indices]
-            sample = barcode_sample_mapping[barcode]
-            result[sample] = sample_mudata.copy()
+        with warnings.catch_warnings():
+            # We can ignore the duplicate var names in the matrix because we will be using the gene IDs later.
+            warnings.filterwarnings(
+                "ignore", category=UserWarning, message="Variable names are not unique"
+            )
+            adata = scanpy.read_10x_h5(count_matrix_file, gex_only=False)
+
+        _rename_var_to_gene_ids(adata)
+        feature_types = defaultdict(modality_name_factory, FEATURE_TYPES_NAMES)
+        sample_mudata = mudata.MuData(adata, feature_types_names=feature_types)
+
+        result[sample_name] = sample_mudata
+
     return result
 
 
@@ -440,7 +448,6 @@ def process_vdj(mudatas: dict[str, mudata.MuData], vdj_folder_path: str):
 
 def get_modalities(input_data):
     dispatcher = {
-        "multiplexing_analysis": split_samples,
         "vdj_t": process_vdj,
         "vdj_b": process_vdj,
         "vdj_t_gd": process_vdj,
@@ -454,19 +461,12 @@ def get_modalities(input_data):
         ),
         "antigen_analysis": process_antigen_analysis,
     }
-    if input_data.get("filtered_counts"):
-        mudata_per_sample = process_counts_filtered(
-            input_data["filtered_counts"],
-        )
-    else:
-        mudata_per_sample = process_counts(
-            input_data["count"],
-            input_data["multiplexing_analysis"],
-            input_data["metrics_summary"],
-        )
+    mudata_per_sample = process_counts(input_data["sample_feature_bc_matrix"])
+
     for modality_name, modality_data_path in input_data.items():
         if (
-            modality_name in ("count", "multiplexing_analysis", "filtered_counts")
+            modality_name
+            in ("count", "multiplexing_analysis", "sample_feature_bc_matrix")
             or not modality_data_path
         ):
             continue
