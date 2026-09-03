@@ -11,7 +11,7 @@ authors:
   - __merge__: /src/authors/angela_pisco.yaml
     roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ author ]
 argument_groups:

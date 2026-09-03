@@ -5,7 +5,7 @@ description: |
   Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ contributor ]
 arguments:
