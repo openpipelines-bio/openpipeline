@@ -44,7 +44,7 @@ arguments:
     type: string
     multiple: true
     description: |
-      User-defined list of feature names to exclude before HVG calculation. 
+      User-defined list of feature names to exclude before HVG calculation.
       These features will be excluded from HVG selection but will remain in the output data.
     required: false
     example: ["MT-CO1", "MT-CO2", "MT-ND1"]
@@ -65,6 +65,12 @@ arguments:
     default: "hvg"
     description: In which .varm slot to store additional metadata.
 
+  - name: "--uns_name"
+    type: string
+    description: |
+      In which .uns slot to store the details of the HVG selection including the
+      flavor used. Set to "hvg" to replicate default scanpy behavior.
+
   # arguments
   - name: "--flavor"
     type: string
@@ -77,46 +83,46 @@ arguments:
   - name: "--n_top_features"
     type: integer
     description: Number of highly-variable features to keep. Mandatory if flavor='seurat_v3'.
-  
+
   - name: "--min_mean"
     type: double
     description: If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
     default: 0.0125
-  
+
   - name: "--max_mean"
     type: double
     description: If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
     default: 3
-  
+
   - name: "--min_disp"
     type: double
     description: If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
     default: 0.5
-  
+
   - name: "--max_disp"
     type: double
     description: If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'. Default is +inf.
     # default: "+inf"
-  
+
   - name: "--span"
     type: double
-    description: The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor='seurat_v3'. 
+    description: The fraction of the data (cells) used when estimating the variance in the loess model fit if flavor='seurat_v3'.
     default: 0.3
-  
+
   - name: "--n_bins"
     type: integer
     description: Number of bins for binning the mean feature expression. Normalization is done with respect to each bin. If just a single feature falls into a bin, the normalized dispersion is artificially set to 1.
     default: 20
-  
+
   - name: "--obs_batch_key"
     type: string
     description: |
-      If specified, highly-variable features are selected within each batch separately and merged. This simple 
-      process avoids the selection of batch-specific features and acts as a lightweight batch correction method. 
-      For all flavors, features are first sorted by how many batches they are a HVG. For dispersion-based flavors 
+      If specified, highly-variable features are selected within each batch separately and merged. This simple
+      process avoids the selection of batch-specific features and acts as a lightweight batch correction method.
+      For all flavors, features are first sorted by how many batches they are a HVG. For dispersion-based flavors
       ties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across
       batches) rank based on within-batch normalized variance.
-  
+
 __merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
@@ -133,7 +139,7 @@ test_resources:
 engines:
 - type: docker
   image: python:3.12
-  setup: 
+  setup:
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:
