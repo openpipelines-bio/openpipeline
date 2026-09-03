@@ -16,6 +16,8 @@
 
 * `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
 
+* `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES
@@ -79,8 +81,6 @@
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: add `--intersect_obs` option to remove observations that are not present in all processed modalities, so each modality shares the same set of cells (PR #1173, 1175).
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
-
-* `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
 * `annotate/calculate_marker_genes`: New component that calculates cluster marker genes using `scanpy` (PR #1168)
 
