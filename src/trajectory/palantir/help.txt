@@ -1,0 +1,48 @@
+palantir - Pseudotime and fate probabilities via Palantir
+
+USAGE
+  palantir --input INPUT --output OUTPUT --start_cell BARCODE [options]
+  palantir --input INPUT --output OUTPUT \
+           --start_cell_cluster CLUSTER --start_cell_obs_key OBS_KEY [options]
+
+DESCRIPTION
+  Runs the full Palantir trajectory inference workflow:
+    1. palantir.utils.run_diffusion_maps  - diffusion map on a low-dimensional embedding
+    2. palantir.core.run_palantir         - Markov chain pseudotime + fate probabilities
+
+  Palantir reference: Setty et al. Nature Biotechnology (2019) doi:10.1038/s41587-019-0068-4
+
+KEY PARAMETERS
+  --obsm_input          .obsm key of the embedding (default: X_pca_integrated)
+                        Recommended: X_phate (PHATE) or X_pca_integrated (Harmony PCA)
+  --start_cell          Exact cell barcode to use as trajectory root
+  --start_cell_cluster  Cluster label; picks best early cell automatically (requires --start_cell_obs_key)
+  --start_cell_obs_key  .obs column with cluster labels (default: subpopulation)
+  --terminal_states     Explicit list of terminal-state barcodes (optional; auto-detected if omitted)
+  --terminal_states_obs_key  .obs column whose unique values define terminal populations
+  --num_waypoints       Waypoint cells summarising the trajectory (default: 500)
+  --n_components        Diffusion-map components (default: 10)
+  --knn                 k-nearest neighbours for diffusion map (default: 30)
+  --scale_components    Scale DM components by eigenvalues before Palantir (default: true)
+  --seed                Random seed (default: 42)
+
+OUTPUTS  (added to the chosen modality)
+  obs[--obs_pseudotime]           palantir_pseudotime   - cell pseudotime in [0, 1]
+  obs[--obs_entropy]              palantir_entropy      - differentiation entropy per cell
+  obsm[--obsm_fate_probabilities] palantir_fate_probabilities - n_cells x n_terminal matrix
+  uns[--uns_waypoints]            palantir_waypoints    - list of waypoint cell barcodes
+
+PALANTIR API REFERENCE
+  palantir.utils.run_diffusion_maps(data, embedding_basis, n_components, knn)
+    Computes diffusion maps from the given embedding and stores results in
+    adata.obsm['DM_EigenVectors'], adata.uns['DM_EigenValues'].
+
+  palantir.utils.early_cell(data, obs_key, cluster, cell_name)
+    Selects the cell in `cluster` with the highest early-trajectory score.
+
+  palantir.core.run_palantir(data, early_cell, terminal_states, num_waypoints, scale_components)
+    Returns a PalantirResults object with attributes:
+      .pseudotime       pd.Series  - pseudotime per cell
+      .entropy          pd.Series  - differentiation entropy per cell
+      .branch_probs     pd.DataFrame - fate probabilities (cells x terminal states)
+      .waypoints        pd.Index   - selected waypoint cell barcodes
