@@ -1,0 +1,17 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+
+# Outputs
+# output: "output.h5mu"
+# output_compression: "gzip"
+
+# Parameters
+modality: # please fill in - example: "rna"
+filters: # please fill in - example: ["total_counts:gt:100:rna", "cell_volume:lt:10"]
+# prefix: "cell"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
