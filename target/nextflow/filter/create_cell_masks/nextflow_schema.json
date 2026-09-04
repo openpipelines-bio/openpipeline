@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "create_cell_masks",
+  "description": "Create boolean cell masks using a set of provided filters. These masks are\nstored so that they can be used to select cells in later stages.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "A MuData file containing the data to filter",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "The output MuData file with the created cell masks.\nIndividual cell masks are stored as a `DataFrame` in `.obsm` and\nsummary masks for each filter group are stored as boolean columns in\n`.obs`.\n",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"output.h5mu\"`, direction: `output`. ",
+          "default": "output.h5mu"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "parameters": {
+      "title": "Parameters",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "modality": {
+          "type": "string",
+          "description": "The name of the modality to use from the MuData object.\nThis specifies which AnnData object within the MuData file should be\nfiltered.\n",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"rna\"`. "
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A set of filters to create cell masks",
+          "help_text": "Type: `string`, multiple: `True`, required, example: `[\"total_counts:gt:100:rna\";\"cell_volume:lt:10\"]`. "
+        },
+        "prefix": {
+          "type": "string",
+          "description": "An optional prefix to use for naming the cell masks `DataFrame` and\n`.obs` columns",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"cell\"`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/parameters"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

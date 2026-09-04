@@ -3653,7 +3653,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.9.7",
-    "git_commit" : "9a6eb462cc9445b87834491fc0427ddc9bccef89",
+    "git_commit" : "f1f9541585b0a4358359ea3639a5cdf47981be24",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata move_obsm_to_obs"
-LABEL org.opencontainers.image.created="2026-09-03T07:20:20Z"
+LABEL org.opencontainers.image.created="2026-09-04T07:22:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9a6eb462cc9445b87834491fc0427ddc9bccef89"
+LABEL org.opencontainers.image.revision="f1f9541585b0a4358359ea3639a5cdf47981be24"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

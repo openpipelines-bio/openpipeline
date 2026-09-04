@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "copy_modality_slots",
+  "description": "Copy items (.obs, .var, .layers, .obsm, .varm, .obsp, .varp, .uns) from a\nmodality in a source MuData file into a modality in the input MuData file.\n\nBy default the source and input modalities must have identical .obs and\n.var index sets (ordering may differ; source is reindexed to match the\ninput). With --allow_partial, the source's .obs/.var indices may be a\nstrict subset of the input's; rows or columns of the input that are not\nrepresented in the source are filled with NaN for numeric slots and with\nthe appropriate missing-value sentinel for DataFrame columns.\n\nExisting keys in the input are not overwritten by default. Use\n--allow_overwrite to allow overwriting (a warning is emitted for each\noverwritten key).\n\nEach slot argument restricts the copy to the named items. If a slot\nargument is not specified, every item present in the source modality but\nmissing from the input modality is copied for that slot.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "Arguments related to the input dataset, which is copied into.",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The input data to copy slots into",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality to copy slots into.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file (the input with slots copied from the source).",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "source": {
+      "title": "Source",
+      "type": "object",
+      "description": "Arguments related to the source dataset, which is copied from.",
+      "properties": {
+        "source": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The source data to copy slots from",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"source.h5mu\"`. "
+        },
+        "source_modality": {
+          "type": "string",
+          "description": "Which modality in the source data to copy slots from",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "source_var_gene_names": {
+          "type": "string",
+          "description": "The name of the .var column in the source data containing gene names\nto match against the input .var index; when not provided, the source\n.var index is used",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "slots to copy": {
+      "title": "Slots to copy",
+      "type": "object",
+      "description": "Items to copy from the source modality into the input modality. Each\nargument restricts the copy to the named items. If an argument is not\nspecified, every item present in the source modality but missing from\nthe input modality is copied for that slot.\n",
+      "properties": {
+        "obs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": ".obs columns to copy",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"obs1\";\"obs2\"]`. "
+        },
+        "var": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": ".var columns to copy",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"var1\";\"var2\"]`. "
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": ".layers keys to copy",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"layer1\";\"layer2\"]`. "
+        },
+        "obsm": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": ".obsm keys to copy",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"obsm1\";\"obsm2\"]`. "
+        },
+        "varm": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": ".varm keys to copy",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"varm1\";\"varm2\"]`. "
+        },
+        "obsp": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": ".obsp keys to copy",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"obsp1\";\"obsp2\"]`. "
+        },
+        "varp": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": ".varp keys to copy",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"varp1\";\"varp2\"]`. "
+        },
+        "uns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": ".uns keys to copy",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"uns1\";\"uns2\"]`. "
+        }
+      }
+    },
+    "options": {
+      "title": "Options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "allow_overwrite": {
+          "type": "boolean",
+          "description": "Allow overwriting keys that already exist in the input modality.\nBy default the component raises an error if a key already exists;\nwhen enabled, existing keys are overwritten with a warning.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "allow_partial": {
+          "type": "boolean",
+          "description": "Allow the source's .obs/.var indices to be a strict subset of the\ninput's",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/source"
+    },
+    {
+      "$ref": "#/$defs/slots to copy"
+    },
+    {
+      "$ref": "#/$defs/options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

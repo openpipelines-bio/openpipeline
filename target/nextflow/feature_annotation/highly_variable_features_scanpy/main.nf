@@ -3478,7 +3478,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.7",
-    "git_commit" : "9a6eb462cc9445b87834491fc0427ddc9bccef89",
+    "git_commit" : "f1f9541585b0a4358359ea3639a5cdf47981be24",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3759,9 +3759,11 @@ logger.info("\\\\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
-if par.get("varm_name", None) is not None and "mean_bin" in out:
-    # drop mean_bin as mudata/anndata doesn't support tuples
-    data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
+if par.get("varm_name", None) is not None:
+    # drop mean_bin if present as mudata/anndata doesn't support tuples
+    if "mean_bin" in out.columns:
+        out = out.drop(columns=["mean_bin"])
+    data.varm[par["varm_name"]] = out
 
 logger.info("Writing h5mu to file")
 write_h5ad_to_h5mu_with_compression(

@@ -1,0 +1,32 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+
+# Source
+source: # please fill in - example: "source.h5mu"
+# source_modality: "foo"
+# source_var_gene_names: "foo"
+
+# Slots to copy
+# obs: ["obs1", "obs2"]
+# var: ["var1", "var2"]
+# layers: ["layer1", "layer2"]
+# obsm: ["obsm1", "obsm2"]
+# varm: ["varm1", "varm2"]
+# obsp: ["obsp1", "obsp2"]
+# varp: ["varp1", "varp2"]
+# uns: ["uns1", "uns2"]
+
+# Options
+allow_overwrite: false
+allow_partial: false
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
