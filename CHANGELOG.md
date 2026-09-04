@@ -75,7 +75,7 @@
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_batches`, `feature_annotation/highly_variable_features_scanpy`: add an option to exclude features before running highly variable gene calculation based on a user-defined list of feature names (PR #1121).
 
 * `annotate/consensus_vote`: new component computing a (weighted) majority vote across cell type labels from multiple annotation methods (PR #1151).
-*
+* 
 * `filter/filter_with_quantile`: added a component to filter numerical .obs or .var columns based on quantile thresholds, with optional subsetting (PR #1146).
 
 * `dimred/pca`: added possibility to do chunked processing using arguments `chunks` and `chunk_size`. Also added a `seed` argument in order to better control the variability between executions (PR #1157).
@@ -170,13 +170,13 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: VDJ related output is now stored in AIRR Rearrangement standard.
    Because one cell can have multiple receptor chains, this relationship is represented as an `awkward` array
-   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109 and PR #1130).
+   stored in `.obsm["airr"]` slot of the VDJ modality (PR #1109 and PR #1130). 
 
 * `workflows/annotation/totalvi_scarches_leiden` and `annotate/totalvi_scarches`: Renamed previously implemented versions of `workflows/annotation/totalvi_leiden` and `annotate/totalvi` to reflect that scArches is used for reference mapping with TotalVI (PR #1092).
 
 ## NEW FUNCTIONALITY
 
-* `convert/from_cellranger_multi_to_h5mu`: add support for Cell Ranger 10 (PR #1109).
+* `convert/from_cellranger_multi_to_h5mu`: add support for Cell Ranger 10 (PR #1109). 
 
 * `filter/filter_with_pattern`: Filters a MuData object based on gene names using a regex pattern (PR #1070).
 
@@ -223,9 +223,9 @@
 * `transform/normalize_total`, `transform/clr`, `transform/log1p`: Add disk resource labels (PR #1073).
 
 * `integrate/totalvi`: Add `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments to include additional covariates during model training (PR #1076).
-
+  
 * `workflows/integration`: Surface `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` in the `totalvi_leiden` and `scvi_leiden` workflows (PR #1076).
-
+  
 * `integrate/scarches` and `workflows/annotate/scanvi_scarches`: Enable correction for technical variability by multiple continuous and categorical covariates.
 
 * Various components and workflows in `integrate`, `annotate`, `workflows/integration` and `workflows/annotation`: Optionally disable ensembl id sanitation (by stripping the version number) using the `--sanitize_ensembl_ids` argument (PR #1084).
@@ -260,7 +260,7 @@
 
 * `download_file` has been deprecated and will be removed in openpipeline 3.0 (PR #1015).
 
-* `scarches`: Loading of legacy models no longer asumes the model to based on SCANVI. An argument (`reference_class`) was added which need to be set in this case (PR #1035).
+* `scarches`: Loading of legacy models no longer asumes the model to based on SCANVI. An argument (`reference_class`) was added which need to be set in this case (PR #1035). 
 
 * `convert/from_h5mu_to_seurat` has been deprecated and will be removed in openpipeline 4.0. Use `convert/from_h5mu_or_h5ad_to_seurat` instead (PR #1046).
 
@@ -274,14 +274,14 @@
 
 Warning: These experimental features are subject to change in future releases.
 
-* Added `from_h5mu_or_h5ad_to_tiledb` component (PR #1034).
+* Added `from_h5mu_or_h5ad_to_tiledb` component (PR #1034). 
 
-* Added `differential_expression/create_pseudobulk`: Generation of pseudobulk samples from single-cell transcriptomics data,
+* Added `differential_expression/create_pseudobulk`: Generation of pseudobulk samples from single-cell transcriptomics data, 
   to create bulk-like expression profiles suitable for differential expression analysis with methods designed for bulk differential expression analysis (PR #1042).
 
 * Added `annotate/singler`: Cell type annotation using SingleR (PR #1051).
 
-* Added `tiledb_soma_healthcheck` component (PR #1055).
+* Added `tiledb_soma_healthcheck` component (PR #1055). 
 
 * Added `tiledb/move_mudata_obsm_to_tiledb` (PR #1065).
 
@@ -340,7 +340,7 @@ Warning: These experimental features are subject to change in future releases.
 
 * Add support for nextflow versions starting major version 25.01 (PR #1009).
 
-* Fix an issue where an interger being passed to a argument with `type: double` resulted in an error (PR #1009).
+* Fix an issue where an interger being passed to a argument with `type: double` resulted in an error (PR #1009). 
 
 # openpipelines 2.1.0
 
@@ -350,7 +350,7 @@ Warning: These experimental features are subject to change in future releases.
 
 * Deprecation of `workflows/annotation/scgpt_integration_knn` component (PR #952).
 
-* `annotate/scanvi`: Remove scarches functionality from this component, as it is already covered in `integrate/scarches` (PR #986).
+* `annotate/scanvi`: Remove scarches functionality from this component, as it is already covered in `integrate/scarches` (PR #986). 
 
 ## NEW FUNCTIONALITY
 
@@ -391,7 +391,7 @@ Warning: These experimental features are subject to change in future releases.
 
 * Bump viash to `0.9.3` (PR #995).
 
-* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949).
+* Several workflows: refactor neighbors, leiden and UMAP in a separate subworkflow (PR #942 and PR #949). 
 
 * `grep_annotation_column` and `subset_obsp`: Fix compatibility for SciPy (PR #945).
 
@@ -411,7 +411,7 @@ Warning: These experimental features are subject to change in future releases.
 
 * Fix `-stub` runs (PR #1000).
 
-* `cluster/leiden`: Fix an issue where insufficient shared memory (size of `/dev/shm`) causes the processing to hang.
+* `cluster/leiden`: Fix an issue where insufficient shared memory (size of `/dev/shm`) causes the processing to hang.  
 
 * `utils/subset_vars`: Convert .var column used for subsetting of dtype "boolean" to dtype "bool" when it doesn't contain NaN values (PR #959).
 
@@ -429,7 +429,7 @@ Warning: These experimental features are subject to change in future releases.
 
 ## BREAKING CHANGES
 
-* `velocity/scvelo`: update `scvelo` to `0.3.3`, which also removes support for using `loom` input files. The component now uses a `MuData` object as input. Several arguments were added to support selecting different inputs from the MuData file: `counts_layer`, `modality`, `layer_spliced`, `layer_unspliced`, `layer_ambiguous`. An `output_h5mu` argument was has been added (PR #932).
+* `velocity/scvelo`: update `scvelo` to `0.3.3`, which also removes support for using `loom` input files. The component now uses a `MuData` object as input. Several arguments were added to support selecting different inputs from the MuData file: `counts_layer`, `modality`, `layer_spliced`, `layer_unspliced`, `layer_ambiguous`. An `output_h5mu` argument was has been added (PR #932). 
 
 * `src/annotate/onclass` and `src/annotate/celltypist`: Input parameter for gene name layers of input datasets has been updated to `--input_var_gene_names` and `reference_var_gene_names` (PR #919).
 
@@ -460,7 +460,7 @@ Warning: These experimental features are subject to change in future releases.
 
 * `scgpt/cell_type_annotation` component update: Added support for multi-processing (PR #832).
 
-* Several annotation (`src/annotate/`) components (`onclass`, `celltypist`, `random_forest_annotation`, `scanvi`, `svm_annotation`): Updated input parameteres to ensure uniformity across components, implemented functionality to cross-check the overlap of genes between query and reference (model) datasets and implemented logic to allow for subsetting of genes (PR #919).
+* Several annotation (`src/annotate/`) components (`onclass`, `celltypist`, `random_forest_annotation`, `scanvi`, `svm_annotation`): Updated input parameteres to ensure uniformity across components, implemented functionality to cross-check the overlap of genes between query and reference (model) datasets and implemented logic to allow for subsetting of genes (PR #919). 
 
 * `workflows/annotation/scgpt_annotation` workflow: Added a scGPT transformer-based cell type annotation workflow (PR #832).
 
@@ -476,7 +476,7 @@ Warning: These experimental features are subject to change in future releases.
 
 ## BUG FIXES
 
-* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936 and PR #938).
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #936 and PR #938). 
 
 * `scgpt/embedding`: remove unused argument `dbsn` (PR #875).
 
@@ -513,10 +513,10 @@ Warning: These experimental features are subject to change in future releases.
 * The `workflows` folder in the root of the project no longer contains symbolic links to the build workflows in `target`.
   Using any workflows that was previously linked in this directory will now result in an error which will indicate
   the location of the workflow to be used instead (PR #796).
-
+  
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
-* Several components: update anndata to `0.11.1` and mudata to `0.3.1` (PR #645 and PR #901), and scanpy to `1.10.4` (PR #901).
+* Several components: update anndata to `0.11.1` and mudata to `0.3.1` (PR #645 and PR #901), and scanpy to `1.10.4` (PR #901). 
 
 * `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead (PR #843).
 
@@ -548,7 +548,7 @@ Warning: These experimental features are subject to change in future releases.
 
 * Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
-* `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized
+* `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
   gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
   representation with reduced dimensions will be created and stored in addition to the non-scaled data (PR #733).
 
@@ -558,7 +558,7 @@ Warning: These experimental features are subject to change in future releases.
 
 * Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
-* `convert/from_cellranger_to_h5mu`: add support for antigen analysis.
+* `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
 
 * Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
@@ -584,12 +584,12 @@ Warning: These experimental features are subject to change in future releases.
 
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
-
+  
 * `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
 
 * `dataflow/split_h5mu` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
-* `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801).
+* `workflows/test_workflows/ingestion` components & `workflows/ingestion`: Added standalone components for integration testing of ingestion workflows (PR #801). 
 
 * `workflows/ingestion/make_reference`: Add additional arguments passed through to the STAR and BD Rhapsody reference components (PR #846).
 
@@ -675,7 +675,7 @@ Warning: These experimental features are subject to change in future releases.
 
 ## BUG FIXES
 
-* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #939, backported from PR #936 and PR #938).
+* `scvi_leiden` workflow: fix the input layer argument of the workflow not being passed to the scVI component (PR #939, backported from PR #936 and PR #938). 
 
 # openpipelines 1.0.3
 
@@ -687,9 +687,9 @@ Warning: These experimental features are subject to change in future releases.
 
 ## BUG FIXES
 
-* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
   data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
-  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
   which is present in another sample; causing the values being filled with `NA` (PR #842, backported from PR #837).
 
 # openpipelines 1.0.1
@@ -741,7 +741,7 @@ after concatenation (PR #807)
 
 ## BUG FIXES
 
-* `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions
+* `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
   using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
 
 * Fix publishing in `process_samples` and `process_batches` (PR #759).
@@ -801,7 +801,7 @@ the result to be out of bounds.
            execution. However, if a developer wishes to contribute to the project, symlink support should be enabled
            in git using `git config core.symlinks=true`. Alternatively, use
            `git clone -c core.symlinks=true git@github.com:openpipelines-bio/openpipeline.git` when cloning the
-           repository. This avoids the symlinks being resolved (PR #628).
+           repository. This avoids the symlinks being resolved (PR #628). 
         4bis. With PR #668, the workflows have been renamed. This does not hamper the backwards compatibility
               of the symlinks that have been described in 4, because they still use the original location
               which includes the original name.
@@ -814,7 +814,7 @@ the result to be out of bounds.
                 * `multiomics/integration/initialize_integration` changed to `multiomics/dimensionality_reduction`,
                 * finally, all workflows at `multiomics/integration/*` were moved to `integration/*`
 
-        5. Removed the `workflows/utils` folder. Functionality that was provided by the `DataflowHelper`
+        5. Removed the `workflows/utils` folder. Functionality that was provided by the `DataflowHelper` 
            and `WorkflowHelper` is now being provided by viash when the workflow is being build (PR #605).
 
   End-user facing changes:
@@ -842,7 +842,7 @@ the result to be out of bounds.
     * `rna_multisample`: Renamed arguments (PR #667).
       - `--filter_with_hvg_n_top_genes` became `--highly_variable_features_n_top_features`
       - `--filter_with_hvg_flavor` became `--highly_variable_features_flavor`
-
+ 
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
 ## MAJOR CHANGES
@@ -856,9 +856,9 @@ the result to be out of bounds.
   - (New) When multiple unimodal files are provided, they can be used used as is.
   - (New) Mosaic input (i.e. multiple uni- or multimodal files) are split into unimodal files.
     Providing the same modality twice is not supported however, meaning the modalities should be unique.
-    For example, using `input: ["data1.h5mu", "data2.h5mu"]` with `data1.h5mu` providing data for `rna` and `atac`
+    For example, using `input: ["data1.h5mu", "data2.h5mu"]` with `data1.h5mu` providing data for `rna` and `atac` 
     and `data2.h5mu` for `rna` and `prot` will not work, because the `rna` modality is present in both input files.
-
+  
 * `multisample` workflow: throw an error when argument values for the merge component or the `initialize_integration` workflow differ between the inputs (PR #606).
 
 * Added a `split_modalities` workflow in order to split a multimodal mudata files into several unimodal mudata files. Its behavior is identical to the `split_modalities` component, but it also provides functionality to make sure everything works when nextflow's `-stub` option is enabled (PR #606).
@@ -903,7 +903,7 @@ the result to be out of bounds.
 
 * `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
 
-* `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642).
+* `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 
 
 * Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
 
@@ -925,9 +925,9 @@ the result to be out of bounds.
 
 ## BUG FIXES
 
-* `transform/log1p`: fix `--input_layer` argument not functioning (PR #678).
+* `transform/log1p`: fix `--input_layer` argument not functioning (PR #678). 
 
-* `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653).
+* `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653).   
 
 * `filter/filter_with_scrublet`: (Testing) Fix duplicate test function names (PR #641).
 
@@ -941,7 +941,7 @@ the result to be out of bounds.
 
 * `workflows/dimensionality_reduction` workflow: nearest neighbour calculations no longer recalcalates the PCA when `obm_input` `--obsm_pca` is not set to `X_pca`.
 
-* `feature_annotation/highly_variable_scanpy`: fix .X being used to remove observations with 0 counts when `--layer` has been specified.
+* `feature_annotation/highly_variable_scanpy`: fix .X being used to remove observations with 0 counts when `--layer` has been specified. 
 
 * `filter/filter_with_counts`: fix `--layer` argument not being used.
 
@@ -974,7 +974,7 @@ Implementing this changes involved breaking some existing functionality:
 
 ## NEW FUNCTIONALITY
 
-* `workflows/qc`: A pipeline to add basic qc statistics to a MuData object (PR #585).
+* `workflows/qc`: A pipeline to add basic qc statistics to a MuData object (PR #585). 
 
 * `workflows/rna_singlesample`: added `--obs_name_mitochondrial_fraction` and make sure that the values from `--max_fraction_mito`  and `--min_fraction_mito` are bound between 0 and 1 (PR #585).
 
@@ -1008,8 +1008,8 @@ Implementing this changes involved breaking some existing functionality:
 
 * Update viashpy and pin it to `0.5.0` (PR #572 and PR #577).
 
-* `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dimred/pca`, `dimred/umap/`,
-`filter/filter_with_counts`, `filter/filter_with_hvg`, `filter/remove_modality`, `filter/subset_h5mu`,
+* `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dimred/pca`, `dimred/umap/`, 
+`filter/filter_with_counts`, `filter/filter_with_hvg`, `filter/remove_modality`, `filter/subset_h5mu`, 
 `integrate/scanorama`, `transform/delete_layer` and `transform/log1p`: update python to `3.9` (PR #572).
 
 * `integrate/scarches`: update base image, `scvi-tools` and `pandas` to `nvcr.io/nvidia/pytorch:23.09-py3`, `~=1.0.3` and `~=2.1.0` respectively (PR #572).
@@ -1020,7 +1020,7 @@ Implementing this changes involved breaking some existing functionality:
 
 * Several integration workflows: prevent leiden from being executed when no resolutions are provided (PR #583).
 
-* `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #568).
+* `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #568). 
 
 * `annotate/popv`: bump `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
 
@@ -1028,7 +1028,7 @@ Implementing this changes involved breaking some existing functionality:
 
 * `mapping/multi_star`: pin multiqc to 1.15.0 (PR #566).
 
-* `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563).
+* `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
 
 * `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
 
@@ -1134,7 +1134,7 @@ Implementing this changes involved breaking some existing functionality:
 
 * Added `var_qc_metrics_fill_na_value` argument to `calculate_qc_metrics` (PR #477).
 
-* Added `multiomics/multisample` pipeline to run multisample processing followed by the integration setup. It is considered an entrypoint into the full pipeline which skips the single-sample processing. The idea is to allow a a re-run of these steps after a sample has already been processed by the `full_pipeline`. Keep in mind that samples that are provided as input to this pipeline are processed separately and are not concatenated. Hence, the input should be a concatenated sample (PR #475).
+* Added `multiomics/multisample` pipeline to run multisample processing followed by the integration setup. It is considered an entrypoint into the full pipeline which skips the single-sample processing. The idea is to allow a a re-run of these steps after a sample has already been processed by the `full_pipeline`. Keep in mind that samples that are provided as input to this pipeline are processed separately and are not concatenated. Hence, the input should be a concatenated sample (PR #475). 
 
 * Added `multiomics/integration/bbknn_leiden` workflow. (PR #456).
 
@@ -1180,7 +1180,7 @@ Implementing this changes involved breaking some existing functionality:
 
 * Fix an issue in several workflows where the `--output` argument would not work (PR #476).
 
-* `integration/harmony_leiden` and `integration/scanorama_leiden`: Fix an issue where the prefix of the columns that store the leiden clusters was hardcoded to `leiden`, instead of adapting to the value for `--obs_cluster` (PR #482).
+* `integration/harmony_leiden` and `integration/scanorama_leiden`: Fix an issue where the prefix of the columns that store the leiden clusters was hardcoded to `leiden`, instead of adapting to the value for `--obs_cluster` (PR #482). 
 
 * `velocity/velocyto`: Resolve symbolic link before checking whether the transcriptome is a gzip (PR #484).
 
@@ -1290,7 +1290,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `annotate/popv`: now sets `aprox` to `False` to avoid using `annoy` in scanorama because it fails on processors that are missing the AVX-512 instruction sets, causing `Illegal instruction (core dumped)`.
 
-* `workflows/full_pipeline`: Avoid adding sample names to observation ids twice (PR #457).
+* `workflows/full_pipeline`: Avoid adding sample names to observation ids twice (PR #457). 
 
 # openpipelines 0.8.0
 
@@ -1335,7 +1335,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
 * `integrate/scvi`: Fix bug when subsetting using the `var_input` argument (PR #385).
-*
+* 
 * `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
 
 ## MINOR CHANGES
@@ -1421,7 +1421,7 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 * `workflows`: Updated `WorkflowHelper` to newer version that allows applying defaults when calling a subworkflow from another workflow.
 
-* Several components: pin matplotlib to <3.7 to fix scanpy compatibility (see https://github.com/scverse/scanpy/issues/2411).
+* Several components: pin matplotlib to <3.7 to fix scanpy compatibility (see https://github.com/scverse/scanpy/issues/2411).  
 
 * `workflows`: fix a bug when running a subworkflow from a workflow would cause the parent config to be read instead of the subworklow config.
 
@@ -1463,7 +1463,7 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 ## BUG FIXES
 
-* `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`.
+* `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
 
 * `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
 
@@ -1541,7 +1541,7 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 * Keep data for modalities that are not specifically enabled when running full pipeline.
 
-* Fix many components thanks to Viash 0.6.4, which causes errors to be
+* Fix many components thanks to Viash 0.6.4, which causes errors to be 
   thrown when input and output files are defined but not found.
 
 
@@ -1579,7 +1579,7 @@ These options were previously covered in the `bin/init` script, but this new fea
 
   ```groovy
   include { passthroughMap as pmap } from "./DataflowHelper.nf"
-
+  
   workflow {
     Channel.fromList([["id", [input: "foo"], "passthrough"]])
       | pmap{ id, data ->
@@ -1756,7 +1756,7 @@ Major redesign of the integration and multiomic workflows. Current list of workf
 
 * `convert/from_bdrhap_to_h5mu`: Merge one or more BD rhapsody outputs into an h5mu file.
 
-* `dataflow/split_modalities`: Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files.
+* `dataflow/split_modalities`: Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
 
 * `dataflow/concat`: Combine data from multiple samples together.
 
@@ -1830,7 +1830,7 @@ Imported workflows from `czbiohub/utilities`:
 
 ## MINOR CHANGES
 
-* Fix `interactive/run_cirrocumulus` script raising `NotImplementedError` caused by using `MutData.var_names_make_unique()`
+* Fix `interactive/run_cirrocumulus` script raising `NotImplementedError` caused by using `MutData.var_names_make_unique()` 
 on each modality instead of on the whole `MuData` object.
 
 * Fix `transform/normalize_total` and `interactive/run_cirrocumulus` component build missing a hdf5 dependency.
