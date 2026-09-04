@@ -211,10 +211,10 @@ def gather_input_data(dir: Path):
                 )
 
     # No output was selected from the 'per_sample_outs',
-    # this is because are two special cases when converting raw counts:
+    # this is because there are two special cases when converting raw counts:
     #   - No multiplexing has been done: grab the global 'raw' count matrix.
     #   - Multiplexing, but per-sample raw matrices are not available (CMO barcoding).
-    # Raw output has been requested and there are no 'raw'
+    # Raw output has been requested but there is no 'raw' output
     if not found_input.get("sample_feature_bc_matrix"):
         if par["output_filtered_data"]:
             raise FileNotFoundError(
