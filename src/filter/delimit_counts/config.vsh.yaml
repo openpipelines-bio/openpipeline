@@ -5,7 +5,7 @@ description: |
   Turns an .obs column containing count values into a boolean column based on thresholds.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author, maintainer]
+    roles: [ author ]
 
 argument_groups:
   - name: Inputs

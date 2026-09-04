@@ -5,7 +5,7 @@ description: |
   Turns a column containing values between 0 and 1 into a boolean column based on thresholds.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author, maintainer]
+    roles: [ author ]
 
 argument_groups:
   - name: Inputs

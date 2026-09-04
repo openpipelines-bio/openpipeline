@@ -5,7 +5,7 @@ description: |
   Convert bcl files to fastq files using bcl2fastq.
 authors:
   - __merge__: /src/authors/toni_verbeiren.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: [ "-i", "--runfolder_dir" ]

@@ -79,6 +79,7 @@ workflow run_wf {
         "highly_variable_features_features_to_exclude": "highly_variable_features_features_to_exclude",
         "var_qc_metrics": "var_qc_metrics",
         "top_n_vars": "top_n_vars",
+        "log1p_transform": "log1p_transform",
         "layer": "rna_layer",
         "enable_scaling": "rna_enable_scaling",
         "scaling_output_layer": "rna_scaling_output_layer",

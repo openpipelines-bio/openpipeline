@@ -226,6 +226,7 @@ def test_filter_with_hvg_batch_with_batch(
     output_data.var = output_data.var.drop(
         columns=["rna:filter_with_hvg"], errors="raise"
     )
+    del output_data["rna"].varm["hvg"]
     del output_data["rna"].uns["hvg"]
     assert_annotation_objects_equal(lognormed_batch_test_data_path, output_data)
 
@@ -264,6 +265,7 @@ def test_filter_with_hvg_seurat_v3(run_component, input_path):
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
+    assert "hvg" in data.mod["rna"].varm
     assert data.mod["rna"].uns["hvg"] == {"flavor": "seurat_v3"}
     # Put the output data back into its original shape
     # so that we can compare it to the input
@@ -271,6 +273,7 @@ def test_filter_with_hvg_seurat_v3(run_component, input_path):
         columns=["filter_with_hvg"], errors="raise"
     )
     data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
+    del data["rna"].varm["hvg"]
     del data["rna"].uns["hvg"]
     assert_annotation_objects_equal(input_path, data)
 
