@@ -455,9 +455,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation highly_variable_features_scanpy"
-LABEL org.opencontainers.image.created="2026-09-03T14:07:45Z"
+LABEL org.opencontainers.image.created="2026-09-04T11:12:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9a5bf1fbfb4db82e6625dbee2692b6d8bc1a278c"
+LABEL org.opencontainers.image.revision="e1097f46a387d6eeaed6d18f6819a027440090ab"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -639,6 +639,12 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: hvg"
   echo "        In which .varm slot to store additional metadata."
+  echo ""
+  echo "    --uns_name"
+  echo "        type: string"
+  echo "        In which .uns slot to store the details of the HVG selection including"
+  echo "        the"
+  echo "        flavor used. Set to \"hvg\" to replicate default scanpy behavior."
   echo ""
   echo "    --flavor"
   echo "        type: string"
@@ -855,6 +861,17 @@ while [[ $# -gt 0 ]]; do
         --varm_name=*)
             [ -n "$VIASH_PAR_VARM_NAME" ] && ViashError Bad arguments for option \'--varm_name=*\': \'$VIASH_PAR_VARM_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_VARM_NAME=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --uns_name)
+            [ -n "$VIASH_PAR_UNS_NAME" ] && ViashError Bad arguments for option \'--uns_name\': \'$VIASH_PAR_UNS_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_NAME="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --uns_name. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --uns_name=*)
+            [ -n "$VIASH_PAR_UNS_NAME" ] && ViashError Bad arguments for option \'--uns_name=*\': \'$VIASH_PAR_UNS_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_NAME=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --flavor)
@@ -1444,6 +1461,7 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'varm_name': $( if [ ! -z ${VIASH_PAR_VARM_NAME+x} ]; then echo "r'${VIASH_PAR_VARM_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'uns_name': $( if [ ! -z ${VIASH_PAR_UNS_NAME+x} ]; then echo "r'${VIASH_PAR_UNS_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'flavor': $( if [ ! -z ${VIASH_PAR_FLAVOR+x} ]; then echo "r'${VIASH_PAR_FLAVOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'n_top_features': $( if [ ! -z ${VIASH_PAR_N_TOP_FEATURES+x} ]; then echo "int(r'${VIASH_PAR_N_TOP_FEATURES//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_mean': $( if [ ! -z ${VIASH_PAR_MIN_MEAN+x} ]; then echo "float(r'${VIASH_PAR_MIN_MEAN//\'/\'\"\'\"r\'}')"; else echo None; fi ),
@@ -1656,6 +1674,9 @@ if par.get("varm_name", None) is not None:
     if "mean_bin" in out.columns:
         out = out.drop(columns=["mean_bin"])
     data.varm[par["varm_name"]] = out
+
+if par.get("uns_name", None) is not None:
+    data.uns[par["uns_name"]] = {"flavor": par["flavor"]}
 
 logger.info("Writing h5mu to file")
 write_h5ad_to_h5mu_with_compression(

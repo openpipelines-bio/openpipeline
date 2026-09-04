@@ -7,6 +7,7 @@ modality: "rna"
 # output: "$id.$key.output.h5mu"
 var_name_filter: "filter_with_hvg"
 varm_name: "hvg"
+# uns_name: "foo"
 flavor: "seurat"
 # n_top_features: 123
 min_mean: 0.0125

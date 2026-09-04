@@ -73,6 +73,11 @@
           "help_text": "Type: `string`, multiple: `False`, default: `\"hvg\"`. ",
           "default": "hvg"
         },
+        "uns_name": {
+          "type": "string",
+          "description": "In which .uns slot to store the details of the HVG selection including the\nflavor used",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
         "flavor": {
           "type": "string",
           "description": "Choose the flavor for identifying highly variable features",

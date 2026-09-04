@@ -3177,6 +3177,15 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--uns_name",
+          "description" : "In which .uns slot to store the details of the HVG selection including the\nflavor used. Set to \\"hvg\\" to replicate default scanpy behavior.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--flavor",
           "description" : "Choose the flavor for identifying highly variable features. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.\n",
           "default" : [
@@ -3478,7 +3487,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.7",
-    "git_commit" : "9a5bf1fbfb4db82e6625dbee2692b6d8bc1a278c",
+    "git_commit" : "e1097f46a387d6eeaed6d18f6819a027440090ab",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3552,6 +3561,7 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_name': $( if [ ! -z ${VIASH_PAR_VARM_NAME+x} ]; then echo "r'${VIASH_PAR_VARM_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'uns_name': $( if [ ! -z ${VIASH_PAR_UNS_NAME+x} ]; then echo "r'${VIASH_PAR_UNS_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'flavor': $( if [ ! -z ${VIASH_PAR_FLAVOR+x} ]; then echo "r'${VIASH_PAR_FLAVOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'n_top_features': $( if [ ! -z ${VIASH_PAR_N_TOP_FEATURES+x} ]; then echo "int(r'${VIASH_PAR_N_TOP_FEATURES//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_mean': $( if [ ! -z ${VIASH_PAR_MIN_MEAN+x} ]; then echo "float(r'${VIASH_PAR_MIN_MEAN//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3764,6 +3774,9 @@ if par.get("varm_name", None) is not None:
     if "mean_bin" in out.columns:
         out = out.drop(columns=["mean_bin"])
     data.varm[par["varm_name"]] = out
+
+if par.get("uns_name", None) is not None:
+    data.uns[par["uns_name"]] = {"flavor": par["flavor"]}
 
 logger.info("Writing h5mu to file")
 write_h5ad_to_h5mu_with_compression(
