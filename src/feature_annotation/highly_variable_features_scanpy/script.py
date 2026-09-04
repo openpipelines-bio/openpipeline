@@ -221,6 +221,9 @@ if par.get("varm_name", None) is not None:
         out = out.drop(columns=["mean_bin"])
     data.varm[par["varm_name"]] = out
 
+if par.get("uns_name", None) is not None:
+    data.uns[par["uns_name"]] = {"flavor": par["flavor"]}
+
 logger.info("Writing h5mu to file")
 write_h5ad_to_h5mu_with_compression(
     par["output"], par["input"], modality_name, data, par["output_compression"]

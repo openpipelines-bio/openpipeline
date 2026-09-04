@@ -382,5 +382,31 @@ def test_filter_with_hvg_exclude_features(run_component, lognormed_test_data_pat
     )
 
 
+def test_filter_with_hvg_stores_uns(run_component, lognormed_test_data_path):
+    """
+    Test that the uns attribute is correctly populated with HVG information.
+    """
+    run_component(
+        [
+            "--flavor",
+            "seurat",
+            "--input",
+            lognormed_test_data_path,
+            "--output",
+            "output.h5mu",
+            "--layer",
+            "log_transformed",
+            "--output_compression",
+            "gzip",
+            "--uns_name",
+            "hvg",
+        ]
+    )
+    assert os.path.exists("output.h5mu")
+    data = mu.read_h5mu("output.h5mu")
+    assert "hvg" in data.mod["rna"].varm
+    assert data.mod["rna"].uns["hvg"] == {"flavor": "seurat"}
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
