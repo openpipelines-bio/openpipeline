@@ -1,0 +1,121 @@
+name: paga
+namespace: "trajectory_inference"
+scope: "public"
+description: |
+   PAGA (partition-based graph abstraction) infers the connectivity between cell clusters or
+   other groupings by quantifying how strongly neighboring partitions of a cell-cell graph are
+   connected to one another. The result is a coarse-grained, denoised map of the data's
+   topology that captures both continuous and disconnected structure, and can be used to infer
+   trajectories between cell populations without assuming an underlying tree-like or linear
+   shape.
+
+   Wolf et al. 2019, Genome Biology
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: |
+          A .h5mu file. A neighbors graph must already have been computed for the relevant
+          modality (e.g. via a neighbors component) and stored under .uns['neighbors'], or
+          under the location pointed to by --uns_neighbors.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--obs_groups"
+        type: string
+        description: |
+          The .obs column containing predefined groups (e.g. cluster labels) to use for the
+          graph abstraction.
+        required: true
+      - name: "--uns_neighbors"
+        type: string
+        default: "neighbors"
+        description: |
+          The .uns key under which the neighbors settings are stored, used to look up the
+          corresponding connectivities and distances matrices in .obsp.
+        required: false
+
+  - name: Arguments
+    arguments:
+      - name: "--use_rna_velocity"
+        type: boolean
+        default: false
+        description: |
+          Use RNA velocity to orient edges in the abstracted graph and estimate transitions,
+          instead of using connectivities. Requires a directed single-cell graph stored under
+          .uns, at the location pointed to by --uns_velocity_graph.
+      - name: "--uns_velocity_graph"
+        type: string
+        default: "velocity_graph"
+        description: |
+          The .uns key under which the directed single-cell RNA velocity graph is stored.
+          Only used when --use_rna_velocity is set.
+        required: false
+      - name: "--model"
+        type: string
+        choices: ["v1.2", "v1.0"]
+        default: "v1.2"
+        description: The PAGA connectivity model to use.
+      - name: "--copy"
+        type: boolean
+        default: false
+        description: |
+          Copy the AnnData object before computation and return a copy. Otherwise, perform
+          the computation in place.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: [-o]
+        type: file
+        description: |
+          Output h5mu file, with the PAGA graph abstraction results stored in the .uns slot
+          pointed to by --uns_output.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--uns_output"
+        type: string
+        default: "paga"
+        description: |
+          The .uns key under which to store the PAGA results (a dict containing the
+          'connectivities' and 'connectivities_tree' adjacency matrices, plus the .obs column
+          name used for the grouping).
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+        packages:
+          - python-igraph
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowcpu, lowmem]

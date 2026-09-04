@@ -40,6 +40,8 @@
 
 * `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
 
+* `trajectory_inference/paga`: new component that infers the connectivity between cell clusters using PAGA (partition-based graph abstraction), producing a coarse-grained abstraction of the data's topology that can be used to reconstruct developmental trajectories (PR #1224).
+
 ## MINOR CHANGES
 
 * `qc/calculate_qc_metrics`: parametrize the names of the top-n-vars `.obs` output columns with the `--output_obs_top_n_vars` flag (PR #1182).
