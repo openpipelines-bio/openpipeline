@@ -26,6 +26,8 @@
 
 * `transform/clr`: pass `flavor="seurat"` to `muon` explicitly, so that a change to the `muon` default cannot silently alter the normalized counts (PR #1229).
 
+* `report/mermaid`: update the base image from Node 20, which is end-of-life, to Node 22 (PR #1229).
+
 ## BUG FIXES
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
@@ -33,6 +35,8 @@
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail (PR #1229).
 
 * `transform/clr`: compute the expected values in the unit tests in float64 and compare them with a tolerance appropriate for float32, instead of relying on the output being bit-for-bit identical to a numpy reimplementation of `muon` internals (PR #1229).
+
+* `qc/calculate_atac_qc_metrics`: merge the `anndata`/`mudata` and `scanpy` requirements in a single `__merge__` field. Two `__merge__` fields were specified for the same Python setup, of which only the last one was applied, leaving `anndata` and `mudata` unpinned (PR #1229).
 
 # openpipelines 4.2.0
 
