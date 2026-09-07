@@ -3266,7 +3266,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/cellranger_mkgtf",
     "viash_version" : "0.9.7",
-    "git_commit" : "76fb01fadc663a877113cf6b3695b5f8b5c50fe2",
+    "git_commit" : "b07ebc5e29995daa271ccb502222ed2a6d53d175",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
