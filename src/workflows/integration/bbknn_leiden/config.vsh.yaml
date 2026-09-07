@@ -108,6 +108,9 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf2
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_gpu_wf
   - path: /resources_test/pbmc_1k_protein_v3
 dependencies:
   - name: wrappers/tools/leiden

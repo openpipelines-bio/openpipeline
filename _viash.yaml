@@ -45,6 +45,22 @@ info:
   nextflow_labels_ci:
     - path: src/workflows/utils/labels_ci.config
       description: Adds the correct memory and CPU labels when running on the Viash Hub CI.
+    - path: src/workflows/utils/gpu.config
+      description: Passes the host's NVIDIA devices into GPU-labelled processes. The Viash Hub CI has a GPU available; the GitHub Actions runners do not and omit this file.
+  gpu_tests:
+    # Integration tests that exercise the GPU (rapids-singlecell) implementations
+    # selected with '--device_type gpu'. These require a CUDA-capable NVIDIA GPU and
+    # are skipped by the GitHub Actions integration test, which has no GPU runner.
+    - component: workflows/rna/log_normalize
+      entrypoint: test_gpu_wf
+    - component: workflows/rna/rna_multisample
+      entrypoint: test_gpu_wf
+    - component: workflows/multiomics/dimensionality_reduction
+      entrypoint: test_gpu_wf
+    - component: workflows/integration/bbknn_leiden
+      entrypoint: test_gpu_wf
+    - component: workflows/integration/harmony_leiden
+      entrypoint: test_gpu_wf
 
 config_mods: |
   .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}
