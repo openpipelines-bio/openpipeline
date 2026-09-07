@@ -39,12 +39,14 @@ def test_clr(run_component, tmp_path):
     assert "clr" in output_h5mu.mod["prot"].layers.keys()
     assert output_h5mu.mod["prot"].layers["clr"] is not None
     input = read_h5mu(input_file)
-    input_col = input.mod["prot"].X[:, 0].toarray()
+    input_col = input.mod["prot"].X[:, 0].toarray().astype(np.float64)
     result_col = output_h5mu.mod["prot"].layers["clr"][:, 0].toarray()
     expected_col = np.log1p(
         input_col / np.exp(np.log1p(input_col).sum(axis=0) / input_col.size)
     )
-    np.testing.assert_allclose(result_col, expected_col)
+    # The reference is computed in float64 while the component works in float32,
+    # so the comparison must tolerate float32 error accumulated by the sum.
+    np.testing.assert_allclose(result_col, expected_col, rtol=1e-5)
 
 
 def test_clr_not_enough_observation_raises(run_component, tmp_path):
@@ -160,12 +162,14 @@ def test_clr_set_axis(run_component, tmp_path):
     assert "clr" in output_h5mu.mod["prot"].layers.keys()
     assert output_h5mu.mod["prot"].layers["clr"] is not None
     input = read_h5mu(input_file)
-    input_row = input.mod["prot"].X[0].toarray()
+    input_row = input.mod["prot"].X[0].toarray().astype(np.float64)
     result_row = output_h5mu.mod["prot"].layers["clr"][0].toarray()
     expected_row = np.log1p(
         input_row / np.exp(np.log1p(input_row).sum(axis=1) / input_row.size)
     )
-    np.testing.assert_allclose(result_row, expected_row)
+    # The reference is computed in float64 while the component works in float32,
+    # so the comparison must tolerate float32 error accumulated by the sum.
+    np.testing.assert_allclose(result_row, expected_row, rtol=1e-5)
 
 
 if __name__ == "__main__":
