@@ -85,6 +85,7 @@ workflow run_wf {
         "scaling_output_layer": "rna_scaling_output_layer",
         "scaling_max_value": "rna_scaling_max_value",
         "scaling_zero_center": "rna_scaling_zero_center",
+        "device_type": "device_type",
       ],
       "prot": [
         "layer": "prot_layer",
@@ -120,7 +121,7 @@ workflow run_wf {
           def newKeys = currentKeys + stateMapping.values()
           return newKeys
         } 
-        keysToRemove -= ["rna_enable_scaling", "rna_scaling_output_layer"]
+        keysToRemove -= ["rna_enable_scaling", "rna_scaling_output_layer", "device_type"]
         def newState = state.findAll{it.key !in keysToRemove }
         [id, newState]
       }
@@ -194,6 +195,7 @@ workflow run_wf {
                     "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
                     "output": state.workflow_output,
+                    "device_type": state.device_type,
                   ],
                 "dimensionality_reduction_scaling_rna":
                   [
@@ -213,6 +215,7 @@ workflow run_wf {
                     "obsp_neighbor_connectivities": "connectivities_scaled",
                     "obsp_neighbor_distances": "distances_scaled",
                     "output": state.workflow_output,
+                    "device_type": state.device_type,
                   ],
                 "dimensionality_reduction_prot":
                   [
@@ -222,6 +225,7 @@ workflow run_wf {
                     "modality": "prot",
                     "pca_overwrite": state.pca_overwrite,
                     "output": state.workflow_output,
+                    "device_type": state.device_type,
                   ]
               ]
               return stateMappings[component.name]

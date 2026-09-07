@@ -164,6 +164,7 @@ argument_groups:
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
 
+  - __merge__: /src/base/device_type_argument.yaml
 dependencies:
   - name: integrate/totalvi
   - name: workflows/multiomics/neighbors_leiden_umap
