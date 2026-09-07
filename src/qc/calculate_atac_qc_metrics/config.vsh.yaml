@@ -103,8 +103,7 @@ engines:
           - libhdf5-dev
           - gcc
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-        __merge__: [ /src/base/requirements/scanpy.yaml, .]
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
           - muon~=0.1.9
           - pysam~=0.22.0
