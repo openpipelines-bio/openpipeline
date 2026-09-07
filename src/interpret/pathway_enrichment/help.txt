@@ -1,0 +1,55 @@
+```sh
+python -c "import gseapy as gp; help(gp.prerank)"
+```
+prerank(rnk, gene_sets, outdir='test', pheno_pos='Pos', pheno_neg='Neg',
+        min_size=15, max_size=500, permutation_num=1000, weighted_score_type=1,
+        ascending=False, threads=1, figsize=(6.5, 6), format='pdf',
+        graph_num=20, no_plot=False, seed=None, verbose=False)
+
+Run pre-ranked GSEA.
+
+Parameters
+----------
+rnk : pd.Series or pd.DataFrame
+    Index: gene symbols. Values: ranking metric (e.g. log2FC).
+gene_sets : str, list, dict
+    Enrichr library name(s), path to GMT file, or {name: [genes]} dict.
+min_size : int
+    Minimum gene set size (after intersection with input genes). Default 15.
+max_size : int
+    Maximum gene set size. Default 500.
+permutation_num : int
+    Number of permutations. Default 1000.
+seed : int or None
+    Random seed.
+no_plot : bool
+    Skip figure generation if True.
+
+Returns
+-------
+gseapy.gsea.Prerank object
+    .res2d : pd.DataFrame with columns Term, ES, NES, NOM p-val, FDR q-val, ...
+
+```sh
+python -c "import gseapy as gp; help(gp.enrich)"
+```
+enrich(gene_list, gene_sets, organism='Human', outdir='test',
+       cutoff=0.05, min_size=0, max_size=0, no_plot=False, verbose=False)
+
+Run over-representation analysis (ORA).
+
+Parameters
+----------
+gene_list : list
+    List of gene symbols (e.g. significant DE genes).
+gene_sets : str, list, dict
+    Enrichr library name(s), path to GMT file, or {name: [genes]} dict.
+organism : str
+    'Human' or 'Mouse'. Used for Enrichr lookups.
+cutoff : float
+    Adjusted p-value threshold for result filtering.
+
+Returns
+-------
+gseapy.enrichr.Enrichr object
+    .res2d : pd.DataFrame with columns Gene_set, Term, Overlap, P-value, Adjusted P-value, ...
