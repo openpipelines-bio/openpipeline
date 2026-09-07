@@ -177,6 +177,7 @@ workflow run_wf {
             "rna_scaling_umap_obsm_output": state.rna_scaling_umap_obsm_output,
             "rna_scaling_max_value": state.rna_scaling_max_value,
             "rna_scaling_zero_center": state.rna_scaling_zero_center,
+            "device_type": state.device_type,
           ]
         },
         toState: {id, output, state -> 

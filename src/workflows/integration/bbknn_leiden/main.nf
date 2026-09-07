@@ -16,13 +16,14 @@ workflow run_wf {
         "input": "input",
         "modality": "modality",
         "obsm_input": "obsm_input",
-        "obs_batch": "obs_batch",
+        "batch_key": "obs_batch",
         "uns_output": "uns_output",
         "obsp_distances": "obsp_distances",
         "obsp_connectivities": "obsp_connectivities",
-        "n_neighbors_within_batch": "n_neighbors_within_batch",
+        "neighbors_within_batch": "n_neighbors_within_batch",
         "n_pcs": "n_pcs",
-        "n_trim": "n_trim",
+        "trim": "n_trim",
+        "device_type": "device_type",
       ],
       toState: [
         "input": "output"
@@ -37,7 +38,8 @@ workflow run_wf {
         "obsp_connectivities": "obsp_connectivities",
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
-        "modality": "modality"
+        "modality": "modality",
+        "device_type": "device_type"
       ],
       toState: [
         "input": "output"
@@ -67,7 +69,8 @@ workflow run_wf {
           "obsm_output": state.obsm_umap,
           "modality": state.modality,
           "output": state.workflow_output,
-          "output_compression": "gzip"
+          "output_compression": "gzip",
+          "device_type": state.device_type
        ]
       },
       toState: ["output": "output"]

@@ -32,6 +32,9 @@ scaling_output_layer: "scaled"
 # scaling_max_value: 123.0
 scaling_zero_center: true
 
+# Compute
+device_type: "cpu"
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"

@@ -12,7 +12,8 @@ workflow run_wf {
           "input": "input",
           "modality": "modality",
           "input_layer": "layer",
-          "target_sum": "target_sum"
+          "target_sum": "target_sum",
+          "device_type": "device_type"
         ],
         args: [
           "output_layer": "normalized",
@@ -21,11 +22,12 @@ workflow run_wf {
           "input": "output",
         ]
       )
-      | log1p.run( 
+      | log1p.run(
         fromState: [
           "input": "input",
           "modality": "modality",
-          "output_layer": "output_layer"
+          "output_layer": "output_layer",
+          "device_type": "device_type"
         ],
         args: [
           "input_layer": "normalized",

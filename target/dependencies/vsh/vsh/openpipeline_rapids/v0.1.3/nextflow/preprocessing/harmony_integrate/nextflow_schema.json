@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "harmony_integrate",
+  "description": "Integrate observations over one or more batch/covariate columns on the GPU\nusing Harmony.\n\nWraps rapids-singlecell's `rsc.pp.harmony_integrate`, which runs Harmony batch\nintegration on a PCA embedding stored in `.obsm` and writes the corrected\nembedding to a new `.obsm` slot. Useful for removing batch effects prior to\ndownstream neighbor search, clustering, and embedding.\n",
+  "type": "object",
+  "$defs": {
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "obsm_input": {
+          "type": "string",
+          "description": "Which .obsm slot to use as the PCA embedding to integrate (basis).",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_pca\"`. ",
+          "default": "X_pca"
+        },
+        "obs_covariates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The .obs columns to integrate over (the batch/covariate keys passed to\nHarmony)",
+          "help_text": "Type: `string`, multiple: `True`, required. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file containing the integrated embedding.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"output.h5mu\"`, direction: `output`. ",
+          "default": "output.h5mu"
+        },
+        "obsm_output": {
+          "type": "string",
+          "description": "In which .obsm slot to store the Harmony-corrected embedding.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_pca_harmony\"`. ",
+          "default": "X_pca_harmony"
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "Allow overwriting the .obsm output slot if it already exists.",
+          "help_text": "Type: `boolean`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata\nobjects",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "options": {
+      "title": "Options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "theta": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Diversity clustering penalty parameter",
+          "help_text": "Type: `double`, multiple: `True`, default: `[2.0]`. ",
+          "default": [
+            2.0
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "description": "Which Harmony implementation to use",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"harmony2\"`, choices: ``harmony2`, `harmony1``. ",
+          "enum": [
+            "harmony2",
+            "harmony1"
+          ],
+          "default": "harmony2"
+        },
+        "n_clusters": {
+          "type": "integer",
+          "description": "Number of clusters used by Harmony",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "max_iter_harmony": {
+          "type": "integer",
+          "description": "Maximum number of rounds to run Harmony.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `10`. ",
+          "default": 10
+        },
+        "random_state": {
+          "type": "integer",
+          "description": "A random seed.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `0`. ",
+          "default": 0
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

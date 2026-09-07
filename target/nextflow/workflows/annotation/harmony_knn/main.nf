@@ -3383,6 +3383,28 @@ meta = [
           "multiple_sep" : ";"
         }
       ]
+    },
+    {
+      "name" : "Compute",
+      "description" : "Options controlling which implementation of each step runs.",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--device_type",
+          "description" : "Which implementation to use for the steps that have both a CPU and a GPU\nvariant (normalization, log1p, scaling, highly variable features, PCA,\nneighbors, BBKNN, Harmony, Leiden clustering and UMAP):\n\n  * `cpu` (default): the scanpy implementation.\n  * `gpu`: the rapids-singlecell implementation from the\n    `openpipeline_rapids` package.\n\nSelecting `gpu` requires a CUDA-capable NVIDIA GPU on every executor that\nruns a GPU-labelled process; there is no automatic fallback to CPU. The\nGPU processes also need the container runtime to be given access to the\ndevices, which is done by adding `-c src/workflows/utils/gpu.config` to\nthe Nextflow command.",
+          "default" : [
+            "cpu"
+          ],
+          "required" : false,
+          "choices" : [
+            "cpu",
+            "gpu"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
     }
   ],
   "resources" : [
@@ -3456,9 +3478,21 @@ meta = [
       }
     },
     {
-      "name" : "dimred/pca",
+      "name" : "wrappers/preprocessing/pca",
+      "alias" : "pca",
       "repository" : {
-        "type" : "local"
+        "type" : "vsh",
+        "repo" : "openpipeline_rapids",
+        "tag" : "v0.1.3"
+      }
+    },
+    {
+      "name" : "preprocessing/filter_genes",
+      "alias" : "filter_genes",
+      "repository" : {
+        "type" : "vsh",
+        "repo" : "openpipeline_rapids",
+        "tag" : "v0.1.3"
       }
     },
     {
@@ -3468,9 +3502,12 @@ meta = [
       }
     },
     {
-      "name" : "feature_annotation/highly_variable_features_scanpy",
+      "name" : "wrappers/preprocessing/highly_variable_genes",
+      "alias" : "highly_variable_features_scanpy",
       "repository" : {
-        "type" : "local"
+        "type" : "vsh",
+        "repo" : "openpipeline_rapids",
+        "tag" : "v0.1.3"
       }
     },
     {
@@ -3490,6 +3527,14 @@ meta = [
       "repository" : {
         "type" : "local"
       }
+    }
+  ],
+  "repositories" : [
+    {
+      "type" : "vsh",
+      "name" : "openpipeline_rapids",
+      "repo" : "openpipeline_rapids",
+      "tag" : "v0.1.3"
     }
   ],
   "license" : "MIT",
@@ -3581,7 +3626,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn",
     "viash_version" : "0.9.7",
-    "git_commit" : "b07ebc5e29995daa271ccb502222ed2a6d53d175",
+    "git_commit" : "d2afc6693840f33c6373e4337e7bba14de918c63",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3600,9 +3645,43 @@ meta = [
         {
           "path" : "src/workflows/utils/labels_ci.config",
           "description" : "Adds the correct memory and CPU labels when running on the Viash Hub CI."
+        },
+        {
+          "path" : "src/workflows/utils/gpu.config",
+          "description" : "Passes the host's NVIDIA devices into GPU-labelled processes. The Viash Hub CI has a GPU available; the GitHub Actions runners do not and omit this file."
+        }
+      ],
+      "gpu_tests" : [
+        {
+          "component" : "workflows/rna/log_normalize",
+          "entrypoint" : "test_gpu_wf"
+        },
+        {
+          "component" : "workflows/rna/rna_multisample",
+          "entrypoint" : "test_gpu_wf"
+        },
+        {
+          "component" : "workflows/multiomics/dimensionality_reduction",
+          "entrypoint" : "test_gpu_wf"
+        },
+        {
+          "component" : "workflows/integration/bbknn_leiden",
+          "entrypoint" : "test_gpu_wf"
+        },
+        {
+          "component" : "workflows/integration/harmony_leiden",
+          "entrypoint" : "test_gpu_wf"
         }
       ]
     },
+    "repositories" : [
+      {
+        "type" : "vsh",
+        "name" : "openpipeline_rapids",
+        "repo" : "openpipeline_rapids",
+        "tag" : "v0.1.3"
+      }
+    ],
     "viash_version" : "0.9.7",
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
@@ -3634,9 +3713,13 @@ harmony_leiden_workflow = harmony_leiden_workflow_viashalias.run(key: "harmony_l
 include { knn } from "${meta.resources_dir}/../../../../nextflow/labels_transfer/knn/main.nf"
 include { split_h5mu } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/multiomics/split_h5mu/main.nf"
 include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/concatenate_h5mu/main.nf"
-include { pca } from "${meta.resources_dir}/../../../../nextflow/dimred/pca/main.nf"
+include { pca as pca_viashalias } from "${meta.root_dir}/dependencies/vsh/vsh/openpipeline_rapids/v0.1.3/_private/nextflow/wrappers/preprocessing/pca/main.nf"
+pca = pca_viashalias.run(key: "pca")
+include { filter_genes as filter_genes_viashalias } from "${meta.root_dir}/dependencies/vsh/vsh/openpipeline_rapids/v0.1.3/nextflow/preprocessing/filter_genes/main.nf"
+filter_genes = filter_genes_viashalias.run(key: "filter_genes")
 include { align_query_reference } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/align_query_reference/main.nf"
-include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
+include { highly_variable_genes as highly_variable_features_scanpy_viashalias } from "${meta.root_dir}/dependencies/vsh/vsh/openpipeline_rapids/v0.1.3/_private/nextflow/wrappers/preprocessing/highly_variable_genes/main.nf"
+highly_variable_features_scanpy = highly_variable_features_scanpy_viashalias.run(key: "highly_variable_features_scanpy")
 include { delete_layer } from "${meta.resources_dir}/../../../../nextflow/transform/delete_layer/main.nf"
 include { split_modalities } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/multiomics/split_modalities/main.nf"
 include { merge } from "${meta.resources_dir}/../../../../nextflow/dataflow/merge/main.nf"
@@ -3739,10 +3822,11 @@ workflow run_wf {
             fromState: [
                 "input": "input",
                 "modality": "modality",
-                "n_top_features": "n_hvg"
+                "n_top_features": "n_hvg",
+                "device_type": "device_type"
             ],
             args: [
-                "layer": "_counts",
+                "input_layer": "_counts",
                 "var_input": "_common_vars",
                 "var_name_filter": "_common_hvg",
                 "obs_batch_key": "_sample_id"
@@ -3751,12 +3835,30 @@ workflow run_wf {
                 "input": "output"
             ]
         )
+        // The GPU (rapids-singlecell) PCA errors out on genes with zero expression,
+        // which concatenating query and reference can leave behind. The CPU PCA
+        // tolerates them, so only the GPU path needs this.
+        | filter_genes.run(
+            runIf: {id, state -> state.device_type == "gpu"},
+            fromState: {id, state ->
+                [
+                    "input": state.input,
+                    "modality": state.modality,
+                ]
+            },
+            args: [
+                "layer": "_counts",
+                "min_counts": 1,
+            ],
+            toState: ["input": "output"]
+        )
         | pca.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",
                 "overwrite": "overwrite_existing_key",
-                "num_compontents": "pca_num_components"
+                "num_compontents": "pca_num_components",
+                "device_type": "device_type"
             ],
             args: [
                 "layer": "_counts",
@@ -3792,6 +3894,7 @@ workflow run_wf {
                 "obsm_integrated": state.output_obsm_integrated,
                 "theta": state.harmony_theta,
                 "leiden_resolution": state.leiden_resolution,
+                "device_type": state.device_type,
             ]},
             args: [
                 "embedding": "X_pca_query_reference",

@@ -3243,6 +3243,14 @@ meta = [
     "image" : "public",
     "target" : "public"
   },
+  "repositories" : [
+    {
+      "type" : "vsh",
+      "name" : "openpipeline_rapids",
+      "repo" : "openpipeline_rapids",
+      "tag" : "v0.1.3"
+    }
+  ],
   "license" : "MIT",
   "links" : {
     "repository" : "https://github.com/openpipelines-bio/openpipeline",
@@ -3387,7 +3395,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column",
     "viash_version" : "0.9.7",
-    "git_commit" : "b07ebc5e29995daa271ccb502222ed2a6d53d175",
+    "git_commit" : "d2afc6693840f33c6373e4337e7bba14de918c63",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3406,9 +3414,43 @@ meta = [
         {
           "path" : "src/workflows/utils/labels_ci.config",
           "description" : "Adds the correct memory and CPU labels when running on the Viash Hub CI."
+        },
+        {
+          "path" : "src/workflows/utils/gpu.config",
+          "description" : "Passes the host's NVIDIA devices into GPU-labelled processes. The Viash Hub CI has a GPU available; the GitHub Actions runners do not and omit this file."
+        }
+      ],
+      "gpu_tests" : [
+        {
+          "component" : "workflows/rna/log_normalize",
+          "entrypoint" : "test_gpu_wf"
+        },
+        {
+          "component" : "workflows/rna/rna_multisample",
+          "entrypoint" : "test_gpu_wf"
+        },
+        {
+          "component" : "workflows/multiomics/dimensionality_reduction",
+          "entrypoint" : "test_gpu_wf"
+        },
+        {
+          "component" : "workflows/integration/bbknn_leiden",
+          "entrypoint" : "test_gpu_wf"
+        },
+        {
+          "component" : "workflows/integration/harmony_leiden",
+          "entrypoint" : "test_gpu_wf"
         }
       ]
     },
+    "repositories" : [
+      {
+        "type" : "vsh",
+        "name" : "openpipeline_rapids",
+        "repo" : "openpipeline_rapids",
+        "tag" : "v0.1.3"
+      }
+    ],
     "viash_version" : "0.9.7",
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
