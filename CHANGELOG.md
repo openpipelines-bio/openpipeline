@@ -18,6 +18,14 @@
 
 * `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
 
+* `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in a source MuData file into a modality in the input MuData file (PR #1166).
+
+* `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
+
+## BUG FIXES
+
+* `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
+
 ## MINOR CHANGES
 
 * `workflows/utils/gpu.config`: added an opt-in Nextflow config that passes the host's NVIDIA devices into GPU-labelled containers, for use with `--device_type gpu` (PR #1225).
@@ -86,6 +94,8 @@
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
 
+* `annotate/calculate_marker_genes`: New component that calculates cluster marker genes using `scanpy` (PR #1168)
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
@@ -123,6 +133,8 @@
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
 * Testing: bump `viashpy` to 0.10.0 (PR #1178).
+
+* `feature_annotation/highly_variable_features_scanpy`: allow storing details of the method flavor using the `uns_name` parameter (PR #1185)
 
 ## BUG FIXES
 
