@@ -39,14 +39,16 @@ def test_clr(run_component, tmp_path):
     assert "clr" in output_h5mu.mod["prot"].layers.keys()
     assert output_h5mu.mod["prot"].layers["clr"] is not None
     input = read_h5mu(input_file)
-    input_col = input.mod["prot"].X[:, 0].toarray().astype(np.float64)
+    # CLR normalizes across the requested axis, which requires CSC for axis 0.
+    # The geometric mean is taken over the sparse matrix rather than a dense
+    # column, because summing only the stored values is what determines the
+    # float32 rounding of the result.
+    input_x = input.mod["prot"].X.tocsc()
+    input_col = input_x[:, 0].toarray()
     result_col = output_h5mu.mod["prot"].layers["clr"][:, 0].toarray()
-    expected_col = np.log1p(
-        input_col / np.exp(np.log1p(input_col).sum(axis=0) / input_col.size)
-    )
-    # The reference is computed in float64 while the component works in float32,
-    # so the comparison must tolerate float32 error accumulated by the sum.
-    np.testing.assert_allclose(result_col, expected_col, rtol=1e-5)
+    logmean = np.asarray(np.log1p(input_x).mean(axis=0)).ravel()[0]
+    expected_col = np.log1p(input_col / np.exp(logmean))
+    np.testing.assert_allclose(result_col, expected_col)
 
 
 def test_clr_not_enough_observation_raises(run_component, tmp_path):
@@ -162,14 +164,13 @@ def test_clr_set_axis(run_component, tmp_path):
     assert "clr" in output_h5mu.mod["prot"].layers.keys()
     assert output_h5mu.mod["prot"].layers["clr"] is not None
     input = read_h5mu(input_file)
-    input_row = input.mod["prot"].X[0].toarray().astype(np.float64)
+    # Normalizing across axis 1 requires CSR, see the note in test_clr.
+    input_x = input.mod["prot"].X.tocsr()
+    input_row = input_x[0].toarray()
     result_row = output_h5mu.mod["prot"].layers["clr"][0].toarray()
-    expected_row = np.log1p(
-        input_row / np.exp(np.log1p(input_row).sum(axis=1) / input_row.size)
-    )
-    # The reference is computed in float64 while the component works in float32,
-    # so the comparison must tolerate float32 error accumulated by the sum.
-    np.testing.assert_allclose(result_row, expected_row, rtol=1e-5)
+    logmean = np.asarray(np.log1p(input_x).mean(axis=1)).ravel()[0]
+    expected_row = np.log1p(input_row / np.exp(logmean))
+    np.testing.assert_allclose(result_row, expected_row)
 
 
 if __name__ == "__main__":

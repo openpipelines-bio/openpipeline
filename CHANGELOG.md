@@ -24,7 +24,7 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
-* `transform/clr`: compute the expected values in the unit tests in float64 and compare them with a tolerance appropriate for float32, instead of relying on the output being bit-for-bit identical to a numpy reimplementation of `muon` internals (PR #1231).
+* `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
 # openpipelines 4.2.0
 
