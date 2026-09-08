@@ -24,6 +24,8 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
+* `qc/calculate_atac_qc_metrics`: merge the `anndata`/`mudata` and `scanpy` requirements into a single `__merge__` field. Two `__merge__` fields were specified for the same Python setup, of which only the last one was applied, leaving `anndata` and `mudata` unpinned (PR #1233).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES
