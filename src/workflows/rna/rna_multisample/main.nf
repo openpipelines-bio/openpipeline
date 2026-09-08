@@ -13,8 +13,7 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "layer": "layer",
-        "modality": "modality",
-        "device_type": "device_type"
+        "modality": "modality"
       ],
       toState: [
         "input": "output"
@@ -30,7 +29,6 @@ workflow run_wf {
           "output_layer": state.scaling_output_layer,
           "max_value": state.scaling_max_value,
           "zero_center": state.scaling_zero_center,
-          "device_type": state.device_type,
         ]
       },
       toState: ["input": "output"],
@@ -39,14 +37,13 @@ workflow run_wf {
       fromState: {id, state ->
         [
           "input": state.input,
-          "input_layer": "log_normalized",
+          "layer": "log_normalized",
           "modality": state.modality,
           "var_name_filter": state.highly_variable_features_var_output,
           "n_top_features": state.highly_variable_features_n_top_features,
           "flavor": state.highly_variable_features_flavor,
           "obs_batch_key": state.highly_variable_features_obs_batch_key,
-          "features_to_exclude": state.highly_variable_features_features_to_exclude,
-          "device_type": state.device_type
+          "features_to_exclude": state.highly_variable_features_features_to_exclude
         ]
       },
       toState: ["input": "output"],

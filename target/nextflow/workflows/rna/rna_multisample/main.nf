@@ -3417,28 +3417,6 @@ meta = [
           "multiple_sep" : ";"
         }
       ]
-    },
-    {
-      "name" : "Compute",
-      "description" : "Options controlling which implementation of each step runs.",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--device_type",
-          "description" : "Which implementation to use for the steps that have both a CPU and a GPU\nvariant (normalization, log1p, scaling, highly variable features, PCA,\nneighbors, BBKNN, Harmony, Leiden clustering and UMAP):\n\n  * `cpu` (default): the scanpy implementation.\n  * `gpu`: the rapids-singlecell implementation from the\n    `openpipeline_rapids` package.\n\nSelecting `gpu` requires a CUDA-capable NVIDIA GPU on every executor that\nruns a GPU-labelled process; there is no automatic fallback to CPU. The\nGPU processes also need the container runtime to be given access to the\ndevices, which is done by adding `-c src/workflows/utils/gpu.config` to\nthe Nextflow command.",
-          "default" : [
-            "cpu"
-          ],
-          "required" : false,
-          "choices" : [
-            "cpu",
-            "gpu"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
     }
   ],
   "resources" : [
@@ -3467,12 +3445,6 @@ meta = [
       "entrypoint" : "test_wf"
     },
     {
-      "type" : "nextflow_script",
-      "path" : "test.nf",
-      "is_executable" : true,
-      "entrypoint" : "test_gpu_wf"
-    },
-    {
       "type" : "file",
       "path" : "/resources_test/concat_test_data"
     }
@@ -3487,12 +3459,9 @@ meta = [
   },
   "dependencies" : [
     {
-      "name" : "wrappers/preprocessing/highly_variable_genes",
-      "alias" : "highly_variable_features_scanpy",
+      "name" : "feature_annotation/highly_variable_features_scanpy",
       "repository" : {
-        "type" : "vsh",
-        "repo" : "openpipeline_rapids",
-        "tag" : "v0.1.3"
+        "type" : "local"
       }
     },
     {
@@ -3509,12 +3478,9 @@ meta = [
       }
     },
     {
-      "name" : "wrappers/preprocessing/scale",
-      "alias" : "scale",
+      "name" : "transform/scale",
       "repository" : {
-        "type" : "vsh",
-        "repo" : "openpipeline_rapids",
-        "tag" : "v0.1.3"
+        "type" : "local"
       }
     },
     {
@@ -3522,14 +3488,6 @@ meta = [
       "repository" : {
         "type" : "local"
       }
-    }
-  ],
-  "repositories" : [
-    {
-      "type" : "vsh",
-      "name" : "openpipeline_rapids",
-      "repo" : "openpipeline_rapids",
-      "tag" : "v0.1.3"
     }
   ],
   "license" : "MIT",
@@ -3621,7 +3579,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample",
     "viash_version" : "0.9.7",
-    "git_commit" : "d2afc6693840f33c6373e4337e7bba14de918c63",
+    "git_commit" : "3f2e822c2654d80f6414f6539833914f81b66b92",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3640,43 +3598,9 @@ meta = [
         {
           "path" : "src/workflows/utils/labels_ci.config",
           "description" : "Adds the correct memory and CPU labels when running on the Viash Hub CI."
-        },
-        {
-          "path" : "src/workflows/utils/gpu.config",
-          "description" : "Passes the host's NVIDIA devices into GPU-labelled processes. The Viash Hub CI has a GPU available; the GitHub Actions runners do not and omit this file."
-        }
-      ],
-      "gpu_tests" : [
-        {
-          "component" : "workflows/rna/log_normalize",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/rna/rna_multisample",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/multiomics/dimensionality_reduction",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/integration/bbknn_leiden",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/integration/harmony_leiden",
-          "entrypoint" : "test_gpu_wf"
         }
       ]
     },
-    "repositories" : [
-      {
-        "type" : "vsh",
-        "name" : "openpipeline_rapids",
-        "repo" : "openpipeline_rapids",
-        "tag" : "v0.1.3"
-      }
-    ],
     "viash_version" : "0.9.7",
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
@@ -3703,13 +3627,11 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { highly_variable_genes as highly_variable_features_scanpy_viashalias } from "${meta.root_dir}/dependencies/vsh/vsh/openpipeline_rapids/v0.1.3/_private/nextflow/wrappers/preprocessing/highly_variable_genes/main.nf"
-highly_variable_features_scanpy = highly_variable_features_scanpy_viashalias.run(key: "highly_variable_features_scanpy")
+include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
 include { qc as rna_qc_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/qc/qc/main.nf"
 rna_qc = rna_qc_viashalias.run(key: "rna_qc")
 include { add_id } from "${meta.resources_dir}/../../../../nextflow/metadata/add_id/main.nf"
-include { scale as scale_viashalias } from "${meta.root_dir}/dependencies/vsh/vsh/openpipeline_rapids/v0.1.3/_private/nextflow/wrappers/preprocessing/scale/main.nf"
-scale = scale_viashalias.run(key: "scale")
+include { scale } from "${meta.resources_dir}/../../../../nextflow/transform/scale/main.nf"
 include { log_normalize } from "${meta.resources_dir}/../../../../_private/nextflow/workflows/rna/log_normalize/main.nf"
 
 // inner workflow
@@ -3729,8 +3651,7 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "layer": "layer",
-        "modality": "modality",
-        "device_type": "device_type"
+        "modality": "modality"
       ],
       toState: [
         "input": "output"
@@ -3746,7 +3667,6 @@ workflow run_wf {
           "output_layer": state.scaling_output_layer,
           "max_value": state.scaling_max_value,
           "zero_center": state.scaling_zero_center,
-          "device_type": state.device_type,
         ]
       },
       toState: ["input": "output"],
@@ -3755,14 +3675,13 @@ workflow run_wf {
       fromState: {id, state ->
         [
           "input": state.input,
-          "input_layer": "log_normalized",
+          "layer": "log_normalized",
           "modality": state.modality,
           "var_name_filter": state.highly_variable_features_var_output,
           "n_top_features": state.highly_variable_features_n_top_features,
           "flavor": state.highly_variable_features_flavor,
           "obs_batch_key": state.highly_variable_features_obs_batch_key,
-          "features_to_exclude": state.highly_variable_features_features_to_exclude,
-          "device_type": state.device_type
+          "features_to_exclude": state.highly_variable_features_features_to_exclude
         ]
       },
       toState: ["input": "output"],

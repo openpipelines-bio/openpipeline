@@ -43,14 +43,9 @@ argument_groups:
         direction: output
         description: Destination path to the output.
         example: output.h5mu
-  - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: wrappers/preprocessing/normalize_total
-    repository: openpipeline_rapids
-    alias: normalize_total
-  - name: wrappers/preprocessing/log1p
-    repository: openpipeline_rapids
-    alias: log1p
+  - name: transform/normalize_total
+  - name: transform/log1p
   - name: transform/delete_layer
 resources:
   - type: nextflow_script
@@ -62,9 +57,6 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_gpu_wf
   - path: /resources_test/pbmc_1k_protein_v3
 runners:
   - type: nextflow

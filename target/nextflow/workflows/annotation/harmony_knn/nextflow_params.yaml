@@ -38,9 +38,6 @@ knn_n_neighbors: 15
 output_obsm_integrated: "X_integrated_harmony"
 # output_compression: "gzip"
 
-# Compute
-device_type: "cpu"
-
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"

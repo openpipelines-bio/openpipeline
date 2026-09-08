@@ -47,8 +47,7 @@ workflow run_wf {
           "obsm_input": "embedding",
           "obs_covariates": "obs_covariates",
           "obsm_output": "obsm_integrated",
-          "theta": "theta",
-          "device_type": "device_type"
+          "theta": "theta"
       ],
       toState: ["input": "output"]
     )
@@ -64,7 +63,6 @@ workflow run_wf {
         "leiden_resolution": "leiden_resolution",
         "obs_cluster": "obs_cluster",
         "obsm_umap": "obsm_umap",
-        "device_type": "device_type",
       ],
       toState: ["output": "output"]
     )

@@ -109,8 +109,7 @@ workflow run_wf {
               "modality": "modality",
               "obsm_input": "output_obsm_integrated",
               "output": "workflow_output",
-              "leiden_resolution": "leiden_resolution",
-              "device_type": "device_type"
+              "leiden_resolution": "leiden_resolution"
           ],
           args: [
               "uns_neighbors": "scanvi_integration_neighbors",

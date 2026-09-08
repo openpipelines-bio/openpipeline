@@ -120,11 +120,8 @@ argument_groups:
         default: "X_leiden_harmony_umap"
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
-  - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: wrappers/preprocessing/harmony_integrate
-    repository: openpipeline_rapids
-    alias: harmonypy
+  - name: integrate/harmonypy
   - name: workflows/multiomics/neighbors_leiden_umap
   - name: convert/from_tiledb_to_h5mu
   - name: tiledb/move_mudata_obsm_to_tiledb
@@ -145,9 +142,6 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf2
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_gpu_wf
   - path: /resources_test/pbmc_1k_protein_v3
 runners:
   - type: nextflow

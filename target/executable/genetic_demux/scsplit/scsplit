@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 RUN git clone https://github.com/jon-xu/scSplit && cd scSplit && git apply /opt/scSplit.patch && cp scSplit /usr/local/bin && cd .. && rm -rf scSplit
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux scsplit"
-LABEL org.opencontainers.image.created="2026-09-07T12:41:58Z"
+LABEL org.opencontainers.image.created="2026-09-08T07:23:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d2afc6693840f33c6373e4337e7bba14de918c63"
+LABEL org.opencontainers.image.revision="3f2e822c2654d80f6414f6539833914f81b66b92"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

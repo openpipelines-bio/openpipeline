@@ -3359,28 +3359,6 @@ meta = [
           "multiple_sep" : ";"
         }
       ]
-    },
-    {
-      "name" : "Compute",
-      "description" : "Options controlling which implementation of each step runs.",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--device_type",
-          "description" : "Which implementation to use for the steps that have both a CPU and a GPU\nvariant (normalization, log1p, scaling, highly variable features, PCA,\nneighbors, BBKNN, Harmony, Leiden clustering and UMAP):\n\n  * `cpu` (default): the scanpy implementation.\n  * `gpu`: the rapids-singlecell implementation from the\n    `openpipeline_rapids` package.\n\nSelecting `gpu` requires a CUDA-capable NVIDIA GPU on every executor that\nruns a GPU-labelled process; there is no automatic fallback to CPU. The\nGPU processes also need the container runtime to be given access to the\ndevices, which is done by adding `-c src/workflows/utils/gpu.config` to\nthe Nextflow command.",
-          "default" : [
-            "cpu"
-          ],
-          "required" : false,
-          "choices" : [
-            "cpu",
-            "gpu"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
     }
   ],
   "resources" : [
@@ -3504,14 +3482,6 @@ meta = [
       }
     }
   ],
-  "repositories" : [
-    {
-      "type" : "vsh",
-      "name" : "openpipeline_rapids",
-      "repo" : "openpipeline_rapids",
-      "tag" : "v0.1.3"
-    }
-  ],
   "license" : "MIT",
   "links" : {
     "repository" : "https://github.com/openpipelines-bio/openpipeline",
@@ -3601,7 +3571,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.9.7",
-    "git_commit" : "d2afc6693840f33c6373e4337e7bba14de918c63",
+    "git_commit" : "3f2e822c2654d80f6414f6539833914f81b66b92",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3620,43 +3590,9 @@ meta = [
         {
           "path" : "src/workflows/utils/labels_ci.config",
           "description" : "Adds the correct memory and CPU labels when running on the Viash Hub CI."
-        },
-        {
-          "path" : "src/workflows/utils/gpu.config",
-          "description" : "Passes the host's NVIDIA devices into GPU-labelled processes. The Viash Hub CI has a GPU available; the GitHub Actions runners do not and omit this file."
-        }
-      ],
-      "gpu_tests" : [
-        {
-          "component" : "workflows/rna/log_normalize",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/rna/rna_multisample",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/multiomics/dimensionality_reduction",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/integration/bbknn_leiden",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/integration/harmony_leiden",
-          "entrypoint" : "test_gpu_wf"
         }
       ]
     },
-    "repositories" : [
-      {
-        "type" : "vsh",
-        "name" : "openpipeline_rapids",
-        "repo" : "openpipeline_rapids",
-        "tag" : "v0.1.3"
-      }
-    ],
     "viash_version" : "0.9.7",
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
@@ -3785,7 +3721,6 @@ workflow run_wf {
         "scaling_output_layer": "rna_scaling_output_layer",
         "scaling_max_value": "rna_scaling_max_value",
         "scaling_zero_center": "rna_scaling_zero_center",
-        "device_type": "device_type",
       ],
       "prot": [
         "layer": "prot_layer",
@@ -3821,7 +3756,7 @@ workflow run_wf {
           def newKeys = currentKeys + stateMapping.values()
           return newKeys
         } 
-        keysToRemove -= ["rna_enable_scaling", "rna_scaling_output_layer", "device_type"]
+        keysToRemove -= ["rna_enable_scaling", "rna_scaling_output_layer"]
         def newState = state.findAll{it.key !in keysToRemove }
         [id, newState]
       }
@@ -3895,7 +3830,6 @@ workflow run_wf {
                     "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
                     "output": state.workflow_output,
-                    "device_type": state.device_type,
                   ],
                 "dimensionality_reduction_scaling_rna":
                   [
@@ -3915,7 +3849,6 @@ workflow run_wf {
                     "obsp_neighbor_connectivities": "connectivities_scaled",
                     "obsp_neighbor_distances": "distances_scaled",
                     "output": state.workflow_output,
-                    "device_type": state.device_type,
                   ],
                 "dimensionality_reduction_prot":
                   [
@@ -3925,7 +3858,6 @@ workflow run_wf {
                     "modality": "prot",
                     "pca_overwrite": state.pca_overwrite,
                     "output": state.workflow_output,
-                    "device_type": state.device_type,
                   ]
               ]
               return stateMappings[component.name]

@@ -15,7 +15,6 @@ workflow run_wf {
           "input": "input",
           "modality": "modality",
           "layer": "input_layer",
-          "device_type": "device_type",
         ],
         toState: ["input": "output"]
       )
@@ -33,7 +32,6 @@ workflow run_wf {
           "input": "reference",
           "modality": "modality",
           "layer": "reference_layer",
-          "device_type": "device_type",
         ],
         toState: ["reference": "output"]
       )

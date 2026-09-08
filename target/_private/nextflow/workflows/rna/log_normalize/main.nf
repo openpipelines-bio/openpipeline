@@ -3148,28 +3148,6 @@ meta = [
           "multiple_sep" : ";"
         }
       ]
-    },
-    {
-      "name" : "Compute",
-      "description" : "Options controlling which implementation of each step runs.",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--device_type",
-          "description" : "Which implementation to use for the steps that have both a CPU and a GPU\nvariant (normalization, log1p, scaling, highly variable features, PCA,\nneighbors, BBKNN, Harmony, Leiden clustering and UMAP):\n\n  * `cpu` (default): the scanpy implementation.\n  * `gpu`: the rapids-singlecell implementation from the\n    `openpipeline_rapids` package.\n\nSelecting `gpu` requires a CUDA-capable NVIDIA GPU on every executor that\nruns a GPU-labelled process; there is no automatic fallback to CPU. The\nGPU processes also need the container runtime to be given access to the\ndevices, which is done by adding `-c src/workflows/utils/gpu.config` to\nthe Nextflow command.",
-          "default" : [
-            "cpu"
-          ],
-          "required" : false,
-          "choices" : [
-            "cpu",
-            "gpu"
-          ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
     }
   ],
   "resources" : [
@@ -3198,12 +3176,6 @@ meta = [
       "entrypoint" : "test_wf"
     },
     {
-      "type" : "nextflow_script",
-      "path" : "test.nf",
-      "is_executable" : true,
-      "entrypoint" : "test_gpu_wf"
-    },
-    {
       "type" : "file",
       "path" : "/resources_test/pbmc_1k_protein_v3"
     }
@@ -3215,21 +3187,15 @@ meta = [
   },
   "dependencies" : [
     {
-      "name" : "wrappers/preprocessing/normalize_total",
-      "alias" : "normalize_total",
+      "name" : "transform/normalize_total",
       "repository" : {
-        "type" : "vsh",
-        "repo" : "openpipeline_rapids",
-        "tag" : "v0.1.3"
+        "type" : "local"
       }
     },
     {
-      "name" : "wrappers/preprocessing/log1p",
-      "alias" : "log1p",
+      "name" : "transform/log1p",
       "repository" : {
-        "type" : "vsh",
-        "repo" : "openpipeline_rapids",
-        "tag" : "v0.1.3"
+        "type" : "local"
       }
     },
     {
@@ -3237,14 +3203,6 @@ meta = [
       "repository" : {
         "type" : "local"
       }
-    }
-  ],
-  "repositories" : [
-    {
-      "type" : "vsh",
-      "name" : "openpipeline_rapids",
-      "repo" : "openpipeline_rapids",
-      "tag" : "v0.1.3"
     }
   ],
   "license" : "MIT",
@@ -3336,7 +3294,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/workflows/rna/log_normalize",
     "viash_version" : "0.9.7",
-    "git_commit" : "d2afc6693840f33c6373e4337e7bba14de918c63",
+    "git_commit" : "3f2e822c2654d80f6414f6539833914f81b66b92",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3355,43 +3313,9 @@ meta = [
         {
           "path" : "src/workflows/utils/labels_ci.config",
           "description" : "Adds the correct memory and CPU labels when running on the Viash Hub CI."
-        },
-        {
-          "path" : "src/workflows/utils/gpu.config",
-          "description" : "Passes the host's NVIDIA devices into GPU-labelled processes. The Viash Hub CI has a GPU available; the GitHub Actions runners do not and omit this file."
-        }
-      ],
-      "gpu_tests" : [
-        {
-          "component" : "workflows/rna/log_normalize",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/rna/rna_multisample",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/multiomics/dimensionality_reduction",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/integration/bbknn_leiden",
-          "entrypoint" : "test_gpu_wf"
-        },
-        {
-          "component" : "workflows/integration/harmony_leiden",
-          "entrypoint" : "test_gpu_wf"
         }
       ]
     },
-    "repositories" : [
-      {
-        "type" : "vsh",
-        "name" : "openpipeline_rapids",
-        "repo" : "openpipeline_rapids",
-        "tag" : "v0.1.3"
-      }
-    ],
     "viash_version" : "0.9.7",
     "source" : "/home/runner/work/openpipeline/openpipeline/src",
     "target" : "/home/runner/work/openpipeline/openpipeline/target",
@@ -3418,10 +3342,8 @@ meta = [
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { normalize_total as normalize_total_viashalias } from "${meta.root_dir}/dependencies/vsh/vsh/openpipeline_rapids/v0.1.3/_private/nextflow/wrappers/preprocessing/normalize_total/main.nf"
-normalize_total = normalize_total_viashalias.run(key: "normalize_total")
-include { log1p as log1p_viashalias } from "${meta.root_dir}/dependencies/vsh/vsh/openpipeline_rapids/v0.1.3/_private/nextflow/wrappers/preprocessing/log1p/main.nf"
-log1p = log1p_viashalias.run(key: "log1p")
+include { normalize_total } from "${meta.resources_dir}/../../../../../nextflow/transform/normalize_total/main.nf"
+include { log1p } from "${meta.resources_dir}/../../../../../nextflow/transform/log1p/main.nf"
 include { delete_layer } from "${meta.resources_dir}/../../../../../nextflow/transform/delete_layer/main.nf"
 
 // inner workflow
@@ -3440,8 +3362,7 @@ workflow run_wf {
           "input": "input",
           "modality": "modality",
           "input_layer": "layer",
-          "target_sum": "target_sum",
-          "device_type": "device_type"
+          "target_sum": "target_sum"
         ],
         args: [
           "output_layer": "normalized",
@@ -3450,12 +3371,11 @@ workflow run_wf {
           "input": "output",
         ]
       )
-      | log1p.run(
+      | log1p.run( 
         fromState: [
           "input": "input",
           "modality": "modality",
-          "output_layer": "output_layer",
-          "device_type": "device_type"
+          "output_layer": "output_layer"
         ],
         args: [
           "input_layer": "normalized",
