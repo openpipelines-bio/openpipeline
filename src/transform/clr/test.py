@@ -39,10 +39,7 @@ def test_clr(run_component, tmp_path):
     assert "clr" in output_h5mu.mod["prot"].layers.keys()
     assert output_h5mu.mod["prot"].layers["clr"] is not None
     input = read_h5mu(input_file)
-    # CLR normalizes across the requested axis, which requires CSC for axis 0.
-    # The geometric mean is taken over the sparse matrix rather than a dense
-    # column, because summing only the stored values is what determines the
-    # float32 rounding of the result.
+    # Match muon: take the mean over the sparse matrix, CSC for axis 0.
     input_x = input.mod["prot"].X.tocsc()
     input_col = input_x[:, 0].toarray()
     result_col = output_h5mu.mod["prot"].layers["clr"][:, 0].toarray()
@@ -164,7 +161,7 @@ def test_clr_set_axis(run_component, tmp_path):
     assert "clr" in output_h5mu.mod["prot"].layers.keys()
     assert output_h5mu.mod["prot"].layers["clr"] is not None
     input = read_h5mu(input_file)
-    # Normalizing across axis 1 requires CSR, see the note in test_clr.
+    # Match muon: take the mean over the sparse matrix, CSR for axis 1.
     input_x = input.mod["prot"].X.tocsr()
     input_row = input_x[0].toarray()
     result_row = output_h5mu.mod["prot"].layers["clr"][0].toarray()
