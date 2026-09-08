@@ -24,6 +24,8 @@
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
+* `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES
