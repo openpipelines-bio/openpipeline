@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.description="Companion container for running component transform move_layer"
-LABEL org.opencontainers.image.created="2026-09-08T07:23:39Z"
+LABEL org.opencontainers.image.created="2026-09-09T07:32:07Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3f2e822c2654d80f6414f6539833914f81b66b92"
+LABEL org.opencontainers.image.revision="3d20a87e7de5d960a8db64383d31446a0abb5a7e"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
