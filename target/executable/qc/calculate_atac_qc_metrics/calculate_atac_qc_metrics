@@ -453,13 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.11.4" "muon~=0.1.7" "pysam~=0.22.0"
+  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" "scanpy~=1.11.4" "muon~=0.1.7" "pysam~=0.22.0" && \
+  python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_atac_qc_metrics"
-LABEL org.opencontainers.image.created="2026-09-04T11:12:33Z"
+LABEL org.opencontainers.image.created="2026-09-10T08:26:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e1097f46a387d6eeaed6d18f6819a027440090ab"
+LABEL org.opencontainers.image.revision="1cec4e28ba9b0f496e1a6b858f1c1dd52146ff0a"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
