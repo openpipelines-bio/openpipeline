@@ -465,9 +465,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer xgboost"
-LABEL org.opencontainers.image.created="2026-09-09T07:32:07Z"
+LABEL org.opencontainers.image.created="2026-09-10T07:28:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3d20a87e7de5d960a8db64383d31446a0abb5a7e"
+LABEL org.opencontainers.image.revision="c6c103b67adf6c0b398cfa8b142fa52acf17e399"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
