@@ -24,6 +24,10 @@
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
+* `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
+
+* `transform/clr`: pass `flavor="seurat"` to `muon` explicitly, so that a change to the `muon` default cannot silently alter the normalized counts (PR #1232).
+
 ## BUG FIXES
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
