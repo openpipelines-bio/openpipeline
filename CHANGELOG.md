@@ -20,6 +20,10 @@
 
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
+## MINOR CHANGES
+
+* `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
+
 ## BUG FIXES
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
