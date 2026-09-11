@@ -446,7 +446,7 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM node:20-bullseye
+FROM node:22-bookworm
 ENTRYPOINT []
 RUN npm install -g "@mermaid-js/mermaid-cli"
 
@@ -456,9 +456,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
-LABEL org.opencontainers.image.created="2026-09-10T07:28:17Z"
+LABEL org.opencontainers.image.created="2026-09-11T07:26:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c6c103b67adf6c0b398cfa8b142fa52acf17e399"
+LABEL org.opencontainers.image.revision="48f416e15c1b6dd36aec812c8f900159d4166ede"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

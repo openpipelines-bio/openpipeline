@@ -3316,7 +3316,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count_split",
     "viash_version" : "0.9.7",
-    "git_commit" : "c6c103b67adf6c0b398cfa8b142fa52acf17e399",
+    "git_commit" : "48f416e15c1b6dd36aec812c8f900159d4166ede",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -3266,7 +3266,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "node:20-bullseye",
+      "image" : "node:22-bookworm",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3292,7 +3292,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/report/mermaid",
     "viash_version" : "0.9.7",
-    "git_commit" : "c6c103b67adf6c0b398cfa8b142fa52acf17e399",
+    "git_commit" : "48f416e15c1b6dd36aec812c8f900159d4166ede",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
