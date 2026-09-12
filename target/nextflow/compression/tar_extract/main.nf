@@ -3244,7 +3244,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/compression/tar_extract",
     "viash_version" : "0.9.7",
-    "git_commit" : "48f416e15c1b6dd36aec812c8f900159d4166ede",
+    "git_commit" : "be64415a36b40014811731f8ba95b4269f073571",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
