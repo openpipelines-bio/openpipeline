@@ -25,6 +25,19 @@
 * `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in a source MuData file into a modality in the input MuData file (PR #1166).
 
 * `convert/from_cellranger_multi_to_h5mu`: When processing non-multiplexed data, the value provided to Cell Ranger's `--id` parameter (as registered in the Cell Ranger multi output folder name) is now used as the sample name. For Cell Ranger output from openpipelines this is still `run`, but for externally generated data this implies a matching output file name  for the MuData object (PR #1227)
+* `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
+
+## MINOR CHANGES
+
+* `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
+
+## BUG FIXES
+
+* `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
+
+* `qc/calculate_atac_qc_metrics`: merge the `anndata`/`mudata` and `scanpy` requirements into a single `__merge__` field. Two `__merge__` fields were specified for the same Python setup, of which only the last one was applied, leaving `anndata` and `mudata` unpinned (PR #1233).
+
+* `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
 # openpipelines 4.2.0
 
@@ -129,6 +142,8 @@
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
 * Testing: bump `viashpy` to 0.10.0 (PR #1178).
+
+* `feature_annotation/highly_variable_features_scanpy`: allow storing details of the method flavor using the `uns_name` parameter (PR #1185)
 
 ## BUG FIXES
 
