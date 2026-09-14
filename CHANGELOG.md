@@ -26,7 +26,6 @@
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
 
-* `transform/clr`: pass `flavor="seurat"` to `muon` explicitly, so that a change to the `muon` default cannot silently alter the normalized counts (PR #1232).
 
 ## BUG FIXES
 
