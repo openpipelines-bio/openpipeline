@@ -3618,7 +3618,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.9.7",
-    "git_commit" : "3f9146216ec6d6e87039c81ef4eeeceb44053a91",
+    "git_commit" : "1279758d7ed07bddb49cb7bbc26b50be70f05277",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

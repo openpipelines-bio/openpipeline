@@ -453,14 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" "scanpy~=1.11.4" "muon~=0.1.7" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" "scanpy~=1.11.4" "muon~=0.1.9" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component transform tfidf"
-LABEL org.opencontainers.image.created="2026-09-14T08:03:34Z"
+LABEL org.opencontainers.image.created="2026-09-15T07:59:00Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3f9146216ec6d6e87039c81ef4eeeceb44053a91"
+LABEL org.opencontainers.image.revision="1279758d7ed07bddb49cb7bbc26b50be70f05277"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

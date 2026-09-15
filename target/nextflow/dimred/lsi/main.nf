@@ -3396,7 +3396,7 @@ meta = [
             "awkward",
             "scipy~=1.17.1",
             "mudata~=0.3.8",
-            "muon~=0.1.7"
+            "muon~=0.1.9"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3432,7 +3432,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/lsi",
     "viash_version" : "0.9.7",
-    "git_commit" : "3f9146216ec6d6e87039c81ef4eeeceb44053a91",
+    "git_commit" : "1279758d7ed07bddb49cb7bbc26b50be70f05277",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
