@@ -1,0 +1,145 @@
+name: pseudotime_dynamics
+namespace: "trajectory"
+scope: "public"
+description: |
+  Fits smoothing splines (scipy UnivariateSpline) of subpopulation proportion versus
+  pseudotime to reveal which cell subpopulations expand or contract along a disease trajectory.
+
+  For each participant the median single-cell pseudotime is used as a scalar pseudotime
+  coordinate.  A UnivariateSpline is then fitted per subpopulation using participant-level
+  proportions as the response.
+
+  Results are stored per subpopulation in `.uns[--uns_output]`:
+    - `pseudotime_grid`     -  evenly-spaced pseudotime values used for prediction
+    - `proportion_fitted`   -  GAM-smoothed proportion on that grid
+    - `peak_pseudotime`     -  pseudotime at which the fitted proportion is maximal
+    - `r_squared`           -  pseudo-R^2 of the GAM fit
+    - `p_value`             -  significance of the spline smooth term
+
+  This is step 5 of the BEYOND methodology (Habib et al. 2024).
+
+keywords: [ trajectory, pseudotime, GAM, dynamics, BEYOND ]
+links:
+  repository: https://github.com/dswah/pyGAM
+  documentation: https://pygam.readthedocs.io
+references:
+  doi: []
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file with pseudotime in obs and proportions in uns.
+        direction: input
+        required: true
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+        description: Modality to read obs and uns from.
+
+      - name: "--obs_pseudotime"
+        type: string
+        default: "palantir_pseudotime"
+        required: false
+        description: ".obs column containing single-cell pseudotime values (e.g. from trajectory/palantir)."
+
+      - name: "--obs_participant_id"
+        type: string
+        default: "participant_id"
+        required: false
+        description: ".obs column identifying each participant / donor."
+
+      - name: "--uns_proportions"
+        type: string
+        default: "proportions"
+        required: false
+        description: ".uns key holding the participant x subpopulation proportion dict (output of metadata/calculate_proportions)."
+
+  - name: Arguments
+    arguments:
+      - name: "--n_splines"
+        type: integer
+        default: 8
+        min: 4
+        required: false
+        description: Number of B-spline basis functions for the GAM smooth.
+
+      - name: "--lam"
+        type: double
+        default: 0.6
+        min: 0.0
+        required: false
+        description: Smoothing regularisation penalty (lambda). Higher values produce smoother fits.
+
+      - name: "--n_pseudotime_bins"
+        type: integer
+        default: 100
+        min: 10
+        required: false
+        description: Number of evenly-spaced pseudotime values on which the fitted curve is evaluated.
+
+      - name: "--min_cells_per_participant"
+        type: integer
+        default: 5
+        min: 1
+        required: false
+        description: Participants with fewer cells than this threshold are excluded from fitting.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file with dynamics stored in uns.
+        direction: output
+        required: true
+        example: output.h5mu
+
+      - name: "--uns_output"
+        type: string
+        default: "dynamics"
+        required: false
+        description: ".uns key under which per-subpopulation dynamics dicts are stored."
+
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: test_data/
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - scipy
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, midmem, middisk]

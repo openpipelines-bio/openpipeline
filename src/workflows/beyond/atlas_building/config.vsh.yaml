@@ -1,0 +1,226 @@
+name: "atlas_building"
+namespace: "workflows/beyond"
+scope: "public"
+description: |
+  Builds a multi-donor single-cell atlas from per-sample h5mu files.
+
+  Input: one channel event per sample (id = sample/participant ID, input = h5mu).
+  Steps (all using existing OpenPipeline components/workflows):
+    1. Per-sample: add_id (records participant ID in obs) -> rna_singlesample (QC/filter/scrublet)
+    2. concatenate_h5mu (all samples -> one multi-donor object)
+    3. rna_multisample (normalize -> log1p -> HVF selection)
+    4. dimred/pca
+    5. harmony_leiden (Harmony integration -> neighbors -> Leiden -> UMAP)
+    6. annotation/celltypist workflow (broad cell-type labels in obs["celltypist_pred"])
+    7. split_h5mu by obs["celltypist_pred"]
+    8. Per-cell-type: dimred/pca -> neighbors_leiden_umap
+       (Leiden labels stored as obs["subpopulation"])
+    9. concatenate_h5mu (all cell types -> atlas)
+
+  Output: atlas h5mu with
+    obs["participant_id"]    -  donor of origin (set by --obs_participant_id)
+    obs["celltypist_pred"]   -  broad cell type label
+    obs["subpopulation"]     -  per-cell-type Leiden subcluster (BEYOND input)
+    obsm["X_pca_integrated"]  -  Harmony-corrected embedding
+    obsm["X_umap"]            -  UMAP coordinates
+
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Per-sample h5mu file (one event per sample in the Nextflow channel).
+        example: sample.h5mu
+
+      - name: "--layer"
+        type: string
+        required: false
+        description: Input layer to use. If not specified, .X is used.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Output atlas h5mu with obs["subpopulation"].
+        example: atlas.h5mu
+
+  - name: Sample metadata
+    arguments:
+      - name: "--obs_participant_id"
+        type: string
+        default: "participant_id"
+        required: false
+        description: |
+          Name of the .obs column in which to store the sample/participant ID
+          (the channel event id). Used downstream by calculate_proportions.
+
+  - name: QC and filtering
+    arguments:
+      - name: "--min_counts"
+        type: integer
+        example: 200
+        description: Minimum UMI counts per cell.
+      - name: "--max_counts"
+        type: integer
+        example: 5000000
+        description: Maximum UMI counts per cell.
+      - name: "--min_genes_per_cell"
+        type: integer
+        example: 200
+        description: Minimum genes detected per cell.
+      - name: "--max_genes_per_cell"
+        type: integer
+        example: 1500000
+        description: Maximum genes detected per cell.
+      - name: "--min_cells_per_gene"
+        type: integer
+        example: 3
+        description: Minimum cells expressing a gene (gene-level filter).
+      - name: "--max_fraction_mito"
+        type: double
+        min: 0
+        max: 1
+        example: 0.2
+        description: |
+          Maximum mitochondrial fraction per cell. Requires --obs_name_mitochondrial_fraction.
+      - name: "--obs_name_mitochondrial_fraction"
+        type: string
+        required: false
+        description: .obs column storing mitochondrial fraction (required for mito filtering).
+      - name: "--var_name_mitochondrial_genes"
+        type: string
+        required: false
+        description: .var column flagging mitochondrial genes.
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        example: gene_symbol
+        description: .var column with gene symbols (for mito/ribo detection).
+      - name: "--skip_scrublet_doublet_detection"
+        type: boolean_true
+        description: Skip Scrublet doublet detection.
+
+  - name: HVF and normalization
+    arguments:
+      - name: "--highly_variable_features_var_output"
+        type: string
+        default: "filter_with_hvg"
+        required: false
+        description: .var column to flag highly variable features.
+      - name: "--highly_variable_features_obs_batch_key"
+        type: string
+        default: "participant_id"
+        required: false
+        description: |
+          .obs batch key for per-batch HVF selection. Defaults to "participant_id",
+          which is the column written by add_id (see --obs_participant_id).
+      - name: "--highly_variable_features_n_top_features"
+        type: integer
+        required: false
+        description: Number of highly variable features to retain.
+
+  - name: Integration
+    arguments:
+      - name: "--obs_covariates"
+        type: string
+        multiple: true
+        required: true
+        example: ["participant_id"]
+        description: |
+          .obs column(s) to regress out during Harmony integration.
+          Must include the participant/batch column (e.g. participant_id).
+      - name: "--leiden_resolution"
+        type: double
+        multiple: true
+        default: [1.0]
+        required: false
+        description: Leiden resolution(s) for the initial whole-atlas clustering.
+      - name: "--obs_cluster"
+        type: string
+        default: "leiden"
+        required: false
+        description: .obs column name for the initial Leiden cluster labels.
+
+  - name: Annotation
+    arguments:
+      - name: "--model"
+        type: file
+        description: |
+          Pretrained CellTypist model (.pkl). Required unless --reference is provided.
+        required: false
+        example: Immune_All_Low.pkl
+      - name: "--reference"
+        type: file
+        required: false
+        description: Reference h5mu for training CellTypist on-the-fly.
+      - name: "--reference_obs_target"
+        type: string
+        default: "cell_ontology_class"
+        required: false
+        description: .obs column in the reference containing cell type labels.
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: .var column with gene symbols for the query dataset.
+      - name: "--majority_voting"
+        type: boolean
+        default: false
+        required: false
+        description: Enable CellTypist majority-voting refinement.
+      - name: "--obs_celltypist_pred"
+        type: string
+        default: "celltypist_pred"
+        required: false
+        description: .obs column in which CellTypist predictions are stored.
+
+  - name: Subpopulation clustering
+    arguments:
+      - name: "--subpop_leiden_resolution"
+        type: double
+        multiple: true
+        default: [0.5]
+        required: false
+        description: |
+          Leiden resolution(s) for per-cell-type subpopulation clustering.
+      - name: "--obs_subpopulation"
+        type: string
+        default: "subpopulation"
+        required: false
+        description: |
+          .obs column name for the per-cell-type Leiden subpopulation labels.
+          This is the primary BEYOND input for calculate_proportions.
+
+dependencies:
+  - name: metadata/add_id
+  - name: workflows/rna/rna_singlesample
+  - name: dataflow/concatenate_h5mu
+  - name: workflows/rna/rna_multisample
+  - name: dimred/pca
+  - name: workflows/integration/harmony_leiden
+  - name: workflows/annotation/celltypist
+    alias: celltypist_workflow
+  - name: dataflow/split_h5mu
+  - name: workflows/multiomics/neighbors_leiden_umap
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/beyond_test_data
+
+runners:
+  - type: nextflow
