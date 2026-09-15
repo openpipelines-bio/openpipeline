@@ -6,6 +6,12 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of `boolean_false` (PR #1216).
 
+* `convert/from_cellranger_multi_to_h5mu`, `workflows/ingestion/cellranger_multi`: when processing Cell Ranger output from multiplexed experiments, filtered count matrices were being output. This is consistent when multiplexing is done using Cell Multiplexing Oligos (CMOs), as per-sample raw matrices are unavailable in this case. However, for other multiplexing methods (e.g. Flex) it is possible to assign all reads to a sample, meaning per-sample raw count matrices are available. Therefore, when dealing with multiplexed experiments, the following changes were made for consistency (PR #1227):
+  - Fixed outputting raw count matrices instead of filtered ones (when `output_filtered_data` is not set).
+  - When per-sample raw counts are not available, `NotImplementedError` will be thrown. 
+    Keep in mind that processing data from experiments using CMO multiplexing will now always result in a `NotImplementedError` when using default parameters.
+  - The original behavior (i.e. outputting filtered data) can be invoked by using the `output_filtered_data` argument.
+
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -18,6 +24,7 @@
 
 * `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in a source MuData file into a modality in the input MuData file (PR #1166).
 
+* `convert/from_cellranger_multi_to_h5mu`: When processing non-multiplexed data, the value provided to Cell Ranger's `--id` parameter (as registered in the Cell Ranger multi output folder name) is now used as the sample name. For Cell Ranger output from openpipelines this is still `run`, but for externally generated data this implies a matching output file name  for the MuData object (PR #1227)
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
 ## MINOR CHANGES
