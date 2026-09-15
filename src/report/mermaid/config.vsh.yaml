@@ -52,7 +52,7 @@ test_resources:
 
 engines:
   - type: docker
-    image: "node:20-bullseye"
+    image: "node:22-bookworm"
     setup:
       - type: javascript
         npm: 

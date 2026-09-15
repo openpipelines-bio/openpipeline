@@ -22,13 +22,21 @@
 
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
+## MINOR CHANGES
+
+* `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
+
+* `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
+
+* `workflows/utils/gpu.config`: added an opt-in Nextflow config that passes the host's NVIDIA devices into GPU-labelled containers, for use with `--device_type gpu` (PR #1225).
+
 ## BUG FIXES
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
-## MINOR CHANGES
+* `qc/calculate_atac_qc_metrics`: merge the `anndata`/`mudata` and `scanpy` requirements into a single `__merge__` field. Two `__merge__` fields were specified for the same Python setup, of which only the last one was applied, leaving `anndata` and `mudata` unpinned (PR #1233).
 
-* `workflows/utils/gpu.config`: added an opt-in Nextflow config that passes the host's NVIDIA devices into GPU-labelled containers, for use with `--device_type gpu` (PR #1225).
+* `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
 # openpipelines 4.2.0
 
