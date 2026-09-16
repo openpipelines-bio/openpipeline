@@ -18,8 +18,6 @@ meta = {
 
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 
-# This test dataset's leiden clustering was computed on the harmony-integrated
-# neighbors graph, and is stored under a non-default column/key name.
 OBS_GROUPS = "harmony_integration_leiden_1.0"
 NEIGHBORS_KEY = "harmonypy_integration_neighbors"
 
@@ -39,11 +37,7 @@ def assert_paga_result(output_data, groups_key, input_data=None):
     """Assert that a component run produced a well-formed PAGA result for the
     non-RNA-velocity code path, and return the `paga` dict for further checks."""
     if input_data is not None:
-        # other modalities should be untouched
         assert_annotation_objects_equal(input_data.mod["prot"], output_data.mod["prot"])
-        # PAGA should only add to .uns -- .obs/.var/.obsm/.X on "rna" itself
-        # should otherwise be unaffected (assert_annotation_objects_equal
-        # does not compare .uns, so the new "paga" entry doesn't interfere)
         assert_annotation_objects_equal(input_data.mod["rna"], output_data.mod["rna"])
 
     paga = output_data.mod["rna"].uns["paga"]
@@ -73,23 +67,6 @@ def test_paga(run_component, random_h5mu_path):
     output_data = mu.read_h5mu(output_path)
 
     assert_paga_result(output_data, OBS_GROUPS, input_data=input_data)
-
-
-def test_paga_copy(run_component, random_h5mu_path):
-    output_path = random_h5mu_path()
-
-    run_component(
-        build_paga_args(
-            output_path,
-            obs_groups=OBS_GROUPS,
-            uns_neighbors=NEIGHBORS_KEY,
-            copy=True,
-        )
-    )
-    assert output_path.is_file()
-
-    output_data = mu.read_h5mu(output_path)
-    assert "paga" in output_data.mod["rna"].uns
 
 
 def test_paga_custom_uns_output(run_component, random_h5mu_path):
@@ -206,8 +183,6 @@ def test_paga_rna_velocity(run_component, random_h5mu_path):
     output_data = mu.read_h5mu(output_path)
     paga = output_data.mod["rna"].uns["paga"]
 
-    # the RNA-velocity branch populates `transitions_confidence` instead of
-    # `connectivities` -- this confirms that branch actually ran
     assert "transitions_confidence" in paga
     assert "connectivities" not in paga
     assert paga["groups"] == OBS_GROUPS
@@ -240,9 +215,6 @@ def test_paga_rna_velocity_custom_uns_key(run_component, random_h5mu_path):
 
     output_data = mu.read_h5mu(output_path)
     paga = output_data.mod["rna"].uns["paga"]
-
-    # confirms the RNA-velocity branch ran using the graph stored under the
-    # custom key, and that the temporary "velocity_graph" alias was cleaned up
     assert "transitions_confidence" in paga
     assert "velocity_graph" not in output_data.mod["rna"].uns
 
@@ -278,9 +250,6 @@ def test_paga_default_uns_neighbors(run_component, random_h5mu_path):
 
     paga_default = assert_paga_result(mu.read_h5mu(output_default), OBS_GROUPS)
     paga_key_given = assert_paga_result(mu.read_h5mu(output_key_given), OBS_GROUPS)
-
-    # omitting --uns_neighbors should behave identically to passing the
-    # documented default value ("neighbors") explicitly
     assert np.array_equal(
         paga_default["connectivities"].toarray(),
         paga_key_given["connectivities"].toarray(),
@@ -309,7 +278,6 @@ def test_paga_modality(run_component, random_h5mu_path):
 
     output_data = mu.read_h5mu(output_path)
 
-    # the original "rna" modality should be untouched
     assert_annotation_objects_equal(input_data.mod["rna"], output_data.mod["rna"])
     assert "paga" not in output_data.mod["rna"].uns
 
@@ -334,14 +302,8 @@ def test_paga_output_compression(run_component, random_h5mu_path, compression):
     )
     assert output_path.is_file()
 
-    # content must still be correct after the compress-and-rewrite step
     output_data = mu.read_h5mu(output_path)
     assert_paga_result(output_data, OBS_GROUPS)
-
-    # every non-scalar dataset newly written by this component must carry the
-    # requested codec. Pre-existing datasets from the input file (e.g. under
-    # mod/prot) may already have their own compression, which compress_h5mu
-    # intentionally leaves untouched, so those are out of scope here.
     with h5py.File(output_path, "r") as f:
 
         def check_compression(name, obj):

@@ -11,7 +11,6 @@ par = {
     "use_rna_velocity": False,
     "uns_velocity_graph": "velocity_graph",
     "model": "v1.2",
-    "copy": False,
     "output": "output.h5mu",
     "uns_output": "paga",
     "output_compression": None,
@@ -61,11 +60,8 @@ result = sc.tl.paga(
     groups=par["obs_groups"],
     use_rna_velocity=par["use_rna_velocity"],
     model=par["model"],
-    neighbors_key=par["uns_neighbors"],
-    copy=par["copy"],
+    neighbors_key=par["uns_neighbors"]
 )
-if par["copy"]:
-    data = result
 
 if velocity_graph_aliased:
     del data.uns["velocity_graph"]

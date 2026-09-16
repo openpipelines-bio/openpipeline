@@ -64,13 +64,7 @@ argument_groups:
         choices: ["v1.2", "v1.0"]
         default: "v1.2"
         description: The PAGA connectivity model to use.
-      - name: "--copy"
-        type: boolean
-        default: false
-        description: |
-          Copy the AnnData object before computation and return a copy. Otherwise, perform
-          the computation in place.
-
+  
   - name: Outputs
     arguments:
       - name: "--output"
