@@ -195,7 +195,7 @@ build_info:
   output: "target/executable/convert/from_10xmtx_to_h5mu"
   executable: "target/executable/convert/from_10xmtx_to_h5mu/from_10xmtx_to_h5mu"
   viash_version: "0.9.7"
-  git_commit: "1279758d7ed07bddb49cb7bbc26b50be70f05277"
+  git_commit: "0f4d1f09741540dd91020f9f0a0f9b5049881cc4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
