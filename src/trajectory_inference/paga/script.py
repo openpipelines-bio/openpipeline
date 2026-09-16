@@ -40,9 +40,6 @@ if par["uns_neighbors"] not in data.uns:
         f"settings, but the key is not available for modality {par['modality']}."
     )
 
-# scanpy's RNA-velocity branch always reads the graph from .uns['velocity_graph'],
-# so when a different key is requested, alias its contents there for the duration
-# of the call and remove the alias again afterwards.
 velocity_graph_key = par["uns_velocity_graph"]
 velocity_graph_aliased = False
 if par["use_rna_velocity"] and velocity_graph_key != "velocity_graph":
