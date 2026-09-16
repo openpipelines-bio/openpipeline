@@ -57,7 +57,7 @@ result = sc.tl.paga(
     groups=par["obs_groups"],
     use_rna_velocity=par["use_rna_velocity"],
     model=par["model"],
-    neighbors_key=par["uns_neighbors"]
+    neighbors_key=par["uns_neighbors"],
 )
 
 if velocity_graph_aliased:
