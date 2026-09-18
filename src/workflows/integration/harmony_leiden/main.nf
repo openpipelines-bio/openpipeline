@@ -39,8 +39,8 @@ workflow run_wf {
         "input": "output",
       ]
     )
-    // run harmonypy
-    | harmonypy.run(
+    // run Harmony integration
+    | harmony_integrate.run(
       fromState: [
           "input": "input",
           "modality": "modality",

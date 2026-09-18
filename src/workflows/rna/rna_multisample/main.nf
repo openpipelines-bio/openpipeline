@@ -35,7 +35,7 @@ workflow run_wf {
       },
       toState: ["input": "output"],
     )
-    | highly_variable_features_scanpy.run(
+    | highly_variable_features.run(
       fromState: {id, state ->
         [
           "input": state.input,

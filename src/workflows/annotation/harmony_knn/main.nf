@@ -90,7 +90,7 @@ workflow run_wf {
             toState: ["input": "output"]
         )
         | view {"After concatenation: $it"}
-        | highly_variable_features_scanpy.run(
+        | highly_variable_features.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",

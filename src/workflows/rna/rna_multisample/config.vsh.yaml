@@ -192,7 +192,7 @@ argument_groups:
 dependencies:
   - name: wrappers/preprocessing/highly_variable_genes
     repository: openpipeline_rapids
-    alias: highly_variable_features_scanpy
+    alias: highly_variable_features
   - name: workflows/qc/qc
     alias: rna_qc
   - name: metadata/add_id

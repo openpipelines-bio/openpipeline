@@ -124,7 +124,7 @@ argument_groups:
 dependencies:
   - name: wrappers/preprocessing/harmony_integrate
     repository: openpipeline_rapids
-    alias: harmonypy
+    alias: harmony_integrate
   - name: workflows/multiomics/neighbors_leiden_umap
   - name: convert/from_tiledb_to_h5mu
   - name: tiledb/move_mudata_obsm_to_tiledb
