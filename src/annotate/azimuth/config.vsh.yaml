@@ -7,7 +7,7 @@ description: |
   celltypist or singleR, Azimuth does not train on a user-provided
   reference: the model is fixed, so only a query dataset is required.
 authors:
-  - __merge__: /src/authors/mirte_de_temmerman.yaml
+  - __merge__: /src/authors/mirte_detemmerman.yaml
     roles: [ author ]
 
 argument_groups:
