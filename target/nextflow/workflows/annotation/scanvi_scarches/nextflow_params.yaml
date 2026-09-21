@@ -49,6 +49,9 @@ output_obs_probabilities: "scanvi_probabilities"
 # output_compression: "gzip"
 # output_model: "$id.$key.output_model"
 
+# Compute
+device_type: "cpu"
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"

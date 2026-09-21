@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "log1p",
+  "description": "Logarithmize the data matrix.\n\nComputes X = log(X + 1), where log denotes the natural logarithm unless\na different base is given.\n",
+  "type": "object",
+  "$defs": {
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "input_layer": {
+          "type": "string",
+          "description": "Input layer to use",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_obsm": {
+          "type": "string",
+          "description": "Entry in .obsm to log-transform",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"output.h5mu\"`, direction: `output`. ",
+          "default": "output.h5mu"
+        },
+        "output_layer": {
+          "type": "string",
+          "description": "Output layer to write the transformed matrix to",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "output_obsm": {
+          "type": "string",
+          "description": "Output entry in .obsm to write the transformed matrix to",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata\nobjects",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "options": {
+      "title": "Options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "base": {
+          "type": "number",
+          "description": "Base of the logarithm",
+          "help_text": "Type: `double`, multiple: `False`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

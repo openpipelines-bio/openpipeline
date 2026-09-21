@@ -77,6 +77,9 @@ rna_scaling_umap_obsm_output: "scaled_umap"
 # rna_scaling_max_value: 123.0
 rna_scaling_zero_center: true
 
+# Compute
+device_type: "cpu"
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"

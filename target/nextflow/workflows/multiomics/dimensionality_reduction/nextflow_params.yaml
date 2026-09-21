@@ -22,6 +22,9 @@ obsp_neighbor_connectivities: "connectivities"
 # Umap options
 obsm_umap: "X_umap"
 
+# Compute
+device_type: "cpu"
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"

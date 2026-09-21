@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pca",
+  "description": "Computes PCA coordinates, loadings and variance decomposition.\n",
+  "type": "object",
+  "$defs": {
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "obsm_output": {
+          "type": "string",
+          "description": "In which .obsm slot to store the resulting embedding.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_pca\"`. ",
+          "default": "X_pca"
+        },
+        "varm_output": {
+          "type": "string",
+          "description": "In which .varm slot to store the resulting loadings matrix.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"pca_loadings\"`. ",
+          "default": "pca_loadings"
+        },
+        "uns_output": {
+          "type": "string",
+          "description": "In which .uns slot to store the resulting variance objects.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"pca_variance\"`. ",
+          "default": "pca_variance"
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "Allow overwriting .obsm, .varm and .uns slots.",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "inputs": {
+      "title": "inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Use specified layer for expression values instead of the .X object from the modality.",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "var_input": {
+          "type": "string",
+          "description": "Column name in .var matrix that will be used to select which genes to run the PCA on.",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"filter_with_hvg\"`. "
+        }
+      }
+    },
+    "options": {
+      "title": "Options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "num_components": {
+          "type": "integer",
+          "description": "Number of principal components to compute",
+          "help_text": "Type: `integer`, multiple: `False`, example: `25`. "
+        },
+        "chunked": {
+          "type": "boolean",
+          "description": "If True, perform an incremental PCA on segments of a predefined size",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "chunk_size": {
+          "type": "integer",
+          "description": "Number of observations to include in each chunk",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Used to set the initial states for the optimization",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

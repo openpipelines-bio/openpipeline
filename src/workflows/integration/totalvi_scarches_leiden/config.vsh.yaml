@@ -200,6 +200,7 @@ argument_groups:
         default: "X_totalvi_umap"
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
+  - __merge__: /src/base/device_type_argument.yaml
 dependencies:
   - name: integrate/totalvi_scarches
   - name: workflows/multiomics/neighbors_leiden_umap

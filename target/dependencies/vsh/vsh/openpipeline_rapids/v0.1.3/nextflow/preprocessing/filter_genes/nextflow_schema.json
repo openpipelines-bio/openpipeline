@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "filter_genes",
+  "description": "Filter genes based on number of counts or cells.\n\nKeep genes that have at least min_counts counts or are expressed in at least\nmin_cells cells, or at most max_counts counts or are expressed in at most\nmax_cells cells. At least one threshold must be provided.\n\nWraps the rapids-singlecell rsc.pp.filter_genes function.\n",
+  "type": "object",
+  "$defs": {
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "Input h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality from the input MuData file to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "layer": {
+          "type": "string",
+          "description": "Layer of counts to filter on",
+          "help_text": "Type: `string`, multiple: `False`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"output.h5mu\"`, direction: `output`. ",
+          "default": "output.h5mu"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata\nobjects",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "options": {
+      "title": "Options",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "min_counts": {
+          "type": "integer",
+          "description": "Minimum number of counts required for a gene to pass filtering.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "min_cells": {
+          "type": "integer",
+          "description": "Minimum number of cells expressing a gene required for it to pass\nfiltering.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "max_counts": {
+          "type": "integer",
+          "description": "Maximum number of counts allowed for a gene to pass filtering.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "max_cells": {
+          "type": "integer",
+          "description": "Maximum number of cells expressing a gene allowed for it to pass\nfiltering.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/options"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
