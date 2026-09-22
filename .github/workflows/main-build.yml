@@ -209,11 +209,7 @@ jobs:
           }
         ] | unique' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        # Integration tests listed under 'gpu_tests' in _viash.yaml require an NVIDIA
-        # GPU, which the GitHub Actions runners do not have. They are excluded here and
-        # run on the Viash Hub CI instead.
-        echo "workflows=$(jq -c '[ .[]  | select(.scope.target != "test") | . as $config | ($config.package_config.info.gpu_tests // []) as $gpu_tests | (.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
-        select(. as $test | $gpu_tests | any(.component == ($config.namespace + "/" + $config.name) and .entrypoint == $test.entrypoint) | not) |
+        echo "workflows=$(jq -c '[ .[]  | select(.scope.target != "test") | . as $config | (.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
         { 
           "name": $config.name,
           "namespace": $config.namespace,

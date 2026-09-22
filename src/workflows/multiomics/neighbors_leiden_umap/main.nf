@@ -23,8 +23,7 @@ workflow run_wf {
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obsm_input": "obsm_input",
         "output": "workflow_output",
-        "modality": "modality",
-        "device_type": "device_type"
+        "modality": "modality"
       ],
       toState: ["input": "output"]
     )
@@ -36,7 +35,6 @@ workflow run_wf {
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
         "modality": "modality",
-        "device_type": "device_type",
       ],
       toState: ["input": "output"]
     )
@@ -59,7 +57,6 @@ workflow run_wf {
           "uns_neighbors": "uns_neighbors",
           "obsm_output": "obsm_umap",
           "modality": "modality",
-          "device_type": "device_type",
         ],
       args: ["output_compression": "gzip"],
       toState: ["input": "output"]

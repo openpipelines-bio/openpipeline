@@ -154,23 +154,6 @@
         }
       }
     },
-    "compute": {
-      "title": "Compute",
-      "type": "object",
-      "description": "Options controlling which implementation of each step runs.",
-      "properties": {
-        "device_type": {
-          "type": "string",
-          "description": "Which implementation to use for the steps that have both a CPU and a GPU\nvariant (normalization, log1p, scaling, highly variable features, PCA,\nneighbors, BBKNN, Harmony, Leiden clustering and UMAP):\n\n  * `cpu` (default): the scanpy implementation.\n  * `gpu`: the rapids-singlecell implementation from the\n    `openpipeline_rapids` package.\n\nSelecting `gpu` requires a CUDA-capable NVIDIA GPU on every executor that\nruns a GPU-labelled process; there is no automatic fallback to CPU",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"cpu\"`, choices: ``cpu`, `gpu``. ",
-          "enum": [
-            "cpu",
-            "gpu"
-          ],
-          "default": "cpu"
-        }
-      }
-    },
     "nextflow input-output arguments": {
       "title": "Nextflow input-output arguments",
       "type": "object",
@@ -199,9 +182,6 @@
     },
     {
       "$ref": "#/$defs/umap options"
-    },
-    {
-      "$ref": "#/$defs/compute"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"

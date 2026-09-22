@@ -94,7 +94,6 @@ argument_groups:
         default: "X_leiden_bbknn_umap"
         required: false
         description: "In which .obsm slot to store the resulting UMAP embedding."
-  - __merge__: /src/base/device_type_argument.yaml
 resources:
   - type: nextflow_script
     path: main.nf
@@ -108,20 +107,11 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf2
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_gpu_wf
   - path: /resources_test/pbmc_1k_protein_v3
 dependencies:
-  - name: wrappers/tools/leiden
-    repository: openpipeline_rapids
-    alias: leiden
-  - name: wrappers/tools/umap
-    repository: openpipeline_rapids
-    alias: umap
-  - name: wrappers/preprocessing/bbknn
-    repository: openpipeline_rapids
-    alias: bbknn
+  - name: cluster/leiden
+  - name: dimred/umap
+  - name: neighbors/bbknn
   - name: metadata/move_obsm_to_obs 
 runners:
   - type: nextflow

@@ -47,8 +47,7 @@ workflow run_wf {
         "leiden_resolution": state.leiden_resolution,
         "obsm_umap": state.obsm_umap,
         "obsm_input": state.obsm_integrated,
-        "output": state.workflow_output,
-        "device_type": state.device_type
+        "output": state.workflow_output
       ]},
       toState: ["output": "output"],
     )
