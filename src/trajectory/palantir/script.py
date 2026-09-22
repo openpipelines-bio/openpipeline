@@ -40,6 +40,12 @@ logger = setup_logger()
 
 def _resolve_start_cell(adata, par):
     """Return a single cell barcode to use as the trajectory root."""
+    if par["start_cell"] is not None and par["start_cell_cluster"] is not None:
+        raise ValueError(
+            "--start_cell and --start_cell_cluster are mutually exclusive; "
+            f"got --start_cell '{par['start_cell']}' and --start_cell_cluster "
+            f"'{par['start_cell_cluster']}'. Provide exactly one."
+        )
     if par["start_cell_cluster"] is not None:
         obs_key = par["start_cell_obs_key"]
         cluster = par["start_cell_cluster"]
@@ -75,6 +81,11 @@ def _resolve_start_cell(adata, par):
 
 def _resolve_terminal_states(adata, par):
     """Return a list of terminal-state barcodes, or None for auto-detection."""
+    if par["terminal_states"] and par["terminal_states_obs_key"]:
+        raise ValueError(
+            "--terminal_states and --terminal_states_obs_key are mutually exclusive; "
+            "provide at most one."
+        )
     if par["terminal_states"]:
         for cell in par["terminal_states"]:
             if cell not in adata.obs_names:

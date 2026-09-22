@@ -4,10 +4,10 @@ import numpy as np
 
 ## VIASH START
 par = {
-    "input": "test_data/phate_input.h5mu",
+    "input": "phate_input.h5mu",
     "modality": "rna",
     "obsm_input": "X_pca",
-    "output": "test_data/phate_output.h5mu",
+    "output": "phate_output.h5mu",
     "obsm_output": "X_phate",
     "n_components": 2,
     "knn": 5,

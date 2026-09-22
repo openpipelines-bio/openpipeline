@@ -1,6 +1,7 @@
 import sys
 import pytest
 import numpy as np
+import pandas as pd
 import anndata as ad
 import mudata as mu
 
@@ -31,19 +32,14 @@ def _make_mudata(tmp_path, n_cells=300, n_dims=10, seed=42):
         ]
     ).astype("float32")
 
-    # Minimal gene matrix (Palantir doesn't use X, just the embedding)
-    X = rng.negative_binomial(2, 0.5, (n_cells, 50)).astype("float32")
-
-    obs = {
-        "cluster": np.repeat(["A", "B", "C", "D", "E"], n_cells // 5),
-    }
-    obs["cluster"] = obs["cluster"][:n_cells]
-
-    adata = ad.AnnData(
-        X=X,
-        obs={"cluster": obs["cluster"]},
+    # No X: Palantir only reads the embedding in .obsm
+    cluster = np.repeat(["A", "B", "C", "D", "E"], n_cells // 5)[:n_cells]
+    obs = pd.DataFrame(
+        {"cluster": cluster},
+        index=[f"cell_{i:04d}" for i in range(n_cells)],
     )
-    adata.obs.index = [f"cell_{i:04d}" for i in range(n_cells)]
+
+    adata = ad.AnnData(obs=obs)
     adata.obsm["X_pca_integrated"] = embedding
 
     mdata = mu.MuData({"rna": adata})
