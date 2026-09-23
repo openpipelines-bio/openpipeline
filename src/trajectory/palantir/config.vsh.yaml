@@ -4,19 +4,30 @@ scope: "public"
 description: |
   Computes pseudotime and fate probabilities using Palantir.
 
-  Palantir models cell fate as a Markov chain on a k-nearest-neighbour graph built from
-  a low-dimensional embedding (typically PHATE or PCA). It produces:
-  - A pseudotime value for every cell.
+  Palantir models fate as a Markov chain on a k-nearest-neighbour graph built from a
+  low-dimensional embedding (typically PHATE or PCA). It produces:
+  - A pseudotime value for every observation.
   - Branch fate probabilities for each terminal state.
-  - An optional set of waypoint cells summarising the trajectory.
+  - An optional set of waypoint observations summarising the trajectory.
 
   The component runs the full Palantir workflow:
     1. Diffusion maps on the chosen embedding.
-    2. `palantir.core.run_palantir` starting from `--start_cell`.
+    2. `palantir.core.run_palantir` starting from `--start_group`.
 
-  If `--start_cell_obs_key` and `--start_cell_cluster` are provided, the start cell is
-  chosen automatically as the cell with the highest early-pseudotime score in that cluster
-  (Palantir `utils.early_cell`). Otherwise `--start_cell` must be an exact cell barcode.
+  If `--start_group_column` and `--start_group_cluster` are provided, the root is chosen
+  automatically as the observation with the highest early-pseudotime score in that
+  population (Palantir `utils.early_cell`). Otherwise `--start_group` must be an exact
+  identifier.
+
+  Two input modes, exactly one of which must be given:
+    - `--input`: an h5mu file, using the embedding in `.obsm[--obsm_input]` and the
+      cluster labels in `.obs`.
+    - `--input_table`: a CSV with an identifier column plus one numeric column per
+      embedding dimension (e.g. `--output_table` of `dimred/phate`), with cluster
+      labels supplied by the optional `--metadata` CSV. This is the group-level mode
+      used by the BEYOND methodology, where every row is a participant rather than a
+      cell and no cell-level data is involved. `--start_group` and `--terminal_states`
+      are then row identifiers of the table.
 keywords: [ trajectory, pseudotime, fate probabilities, palantir ]
 links:
   homepage: https://www.krishnaswamylab.org/projects/palantir
@@ -35,9 +46,11 @@ argument_groups:
       - name: "--input"
         alternatives: ["-i"]
         type: file
-        description: Input h5mu file.
+        description: |
+          Input h5mu file. Mutually exclusive with `--input_table`; exactly one of
+          the two is required.
         direction: input
-        required: true
+        required: false
         example: input.h5mu
 
       - name: "--modality"
@@ -53,35 +66,61 @@ argument_groups:
         description: |
           `.obsm` key of the low-dimensional embedding used to build the diffusion map.
           Recommended: `X_phate` (output of `dimred/phate`) or `X_pca_integrated`
-          (output of `integrate/harmonypy`).
+          (output of `integrate/harmonypy`). Only used with `--input`.
         example: X_phate
 
-  - name: Start cell
+      - name: "--input_table"
+        type: file
+        direction: input
+        required: false
+        description: |
+          Input CSV with one row per observation: an identifier column plus one numeric
+          column per embedding dimension. Mutually exclusive with `--input`.
+        example: phate.csv
+
+      - name: "--id_column"
+        type: string
+        required: false
+        description: Identifier column of `--input_table`. Defaults to its first column.
+        example: "participant_id"
+
+      - name: "--metadata"
+        type: file
+        direction: input
+        required: false
+        description: |
+          Optional CSV with the same identifier column as `--input_table` plus label
+          columns, supplying the values read by `--start_group_column` and
+          `--terminal_states_column` in table mode. Only used with `--input_table`.
+        example: traits.csv
+
+  - name: Trajectory root
     arguments:
-      - name: "--start_cell"
+      - name: "--start_group"
         type: string
         required: false
         description: |
-          Exact cell barcode (`.obs_names` value) to use as the trajectory root.
-          Required unless `--start_cell_cluster` is provided.
+          Identifier of the observation to use as the trajectory root: an `.obs_names`
+          value with `--input`, a row identifier of `--input_table` otherwise.
+          Required unless `--start_group_cluster` is provided.
         example: "ACGTACGT-1"
 
-      - name: "--start_cell_cluster"
+      - name: "--start_group_cluster"
         type: string
         required: false
         description: |
-          Cluster label identifying the start-cell population. When provided, the cell
-          with the best early-trajectory score within this cluster is selected
-          automatically. Requires `--start_cell_obs_key`.
+          Label identifying the root population. When provided, the observation with the
+          best early-trajectory score within that population is selected automatically.
+          Requires `--start_group_column`.
         example: "ExN.1"
 
-      - name: "--start_cell_obs_key"
+      - name: "--start_group_column"
         type: string
-        default: "subpopulation"
         required: false
         description: |
-          `.obs` column containing cluster labels used together with
-          `--start_cell_cluster` to identify the start cell.
+          Column holding the labels used together with `--start_group_cluster`: an `.obs`
+          column with `--input`, a column of `--metadata` otherwise.
+        example: "subpopulation"
 
   - name: Arguments
     arguments:
@@ -93,7 +132,8 @@ argument_groups:
         description: |
           Number of waypoint cells used to represent the trajectory. Larger values give
           smoother pseudotime but increase runtime. The Palantir paper uses 1200; 500 is
-          sufficient for datasets < 50k cells.
+          sufficient for datasets < 50k cells. Must be larger than `--waypoint_knn` and
+          is capped at the number of observations.
 
       - name: "--n_components"
         type: integer
@@ -107,7 +147,22 @@ argument_groups:
         default: 30
         min: 5
         required: false
-        description: Number of k-nearest neighbours for the diffusion map.
+        description: |
+          Number of k-nearest neighbours for the diffusion map
+          (`palantir.utils.run_diffusion_maps`). Must be smaller than the number of
+          observations.
+
+      - name: "--waypoint_knn"
+        type: integer
+        default: 30
+        min: 2
+        required: false
+        description: |
+          Number of k-nearest neighbours for the waypoint graph that pseudotime is
+          computed on (`palantir.core.run_palantir`). Must be smaller than
+          `--num_waypoints`. Palantir's own default is 30, which is too large for the
+          group-level cohorts of `--input_table`; the BEYOND reference implementation
+          uses 15.
 
       - name: "--scale_components"
         type: boolean
@@ -120,17 +175,19 @@ argument_groups:
         multiple: true
         required: false
         description: |
-          Explicit cell barcodes to use as terminal states (branch endpoints). If not
-          provided, Palantir selects terminal states automatically.
+          Identifiers of the observations to pin as terminal states (branch endpoints).
+          If neither this nor `--terminal_states_column` is given, Palantir selects
+          terminal states automatically.
         example: ["CELL_A-1", "CELL_B-1"]
 
-      - name: "--terminal_states_obs_key"
+      - name: "--terminal_states_column"
         type: string
         required: false
         description: |
-          `.obs` column whose unique values identify terminal-state populations. One
-          representative cell (highest connectivity) is chosen per unique value.
-          Mutually exclusive with `--terminal_states`.
+          Column whose unique values identify terminal-state populations - an `.obs`
+          column with `--input`, a column of `--metadata` otherwise. One representative
+          observation (highest connectivity) is chosen per unique value. Mutually
+          exclusive with `--terminal_states`.
 
       - name: "--seed"
         type: integer
@@ -143,34 +200,55 @@ argument_groups:
       - name: "--output"
         alternatives: ["-o"]
         type: file
-        description: Output h5mu file.
+        description: Output h5mu file. Required with `--input`.
         direction: output
-        required: true
+        required: false
         example: output.h5mu
 
-      - name: "--obs_pseudotime"
+      - name: "--output_table"
+        type: file
+        direction: output
+        required: false
+        description: |
+          Output CSV with the identifier column, `--pseudotime_column`,
+          `--entropy_column`,
+          one `fate_<terminal state>` column per terminal state and a boolean
+          `palantir_waypoint` column. Required with `--input_table`.
+        example: pseudotime.csv
+
+      - name: "--pseudotime_column"
         type: string
         default: "palantir_pseudotime"
         required: false
-        description: "`.obs` column in which pseudotime values are stored."
+        description: |
+          Name of the column holding the pseudotime values: an `.obs` column with
+          `--input`, a column of `--output_table` otherwise.
 
-      - name: "--obs_entropy"
+      - name: "--entropy_column"
         type: string
         default: "palantir_entropy"
         required: false
-        description: "`.obs` column in which differentiation-entropy values are stored."
+        description: |
+          Name of the column holding the differentiation-entropy values: an `.obs`
+          column with `--input`, a column of `--output_table` otherwise.
 
       - name: "--obsm_fate_probabilities"
         type: string
         default: "palantir_fate_probabilities"
         required: false
-        description: "`.obsm` key for the cell x terminal-state fate-probability matrix."
+        description: |
+          `.obsm` key for the observation x terminal-state fate-probability matrix.
+          Only used with `--input`; `--output_table` carries one `fate_<terminal state>`
+          column instead.
 
       - name: "--uns_waypoints"
         type: string
         default: "palantir_waypoints"
         required: false
-        description: "`.uns` key under which the waypoint cell indices are stored."
+        description: |
+          `.uns` key under which the waypoint indices are stored. Only used with
+          `--input`; `--output_table` carries a boolean `palantir_waypoint` column
+          instead.
 
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
@@ -179,10 +257,14 @@ resources:
     path: script.py
   - path: /src/utils/setup_logger.py
   - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/group_table.py
 
 test_resources:
   - type: python_script
     path: test.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/group_table.py
 
 engines:
   - type: docker

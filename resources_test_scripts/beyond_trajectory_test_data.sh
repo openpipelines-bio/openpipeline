@@ -1,289 +1,399 @@
 #!/bin/bash
-# Generates a simulated multi-donor snRNA-seq atlas for testing the BEYOND components.
+# Builds the BEYOND test fixture from a real, openly licensed snRNA-seq cohort.
 #
-# The simulation is structured, not noise: every quantity the BEYOND workflow is supposed
-# to recover is put into the data on purpose, so a broken component changes the result.
+# Source
+# ------
+#   PsychAD RADC_Cohort, dorsolateral prefrontal cortex, 152 donors,
+#   693682 nuclei x 34176 genes, 10x 3' v3.
 #
-#   - Each donor has a latent severity s in [0, 1]. Donors are ordered by s, which is what
-#     PHATE + Palantir are expected to recover as a trajectory.
-#   - Subpopulation composition is a function of s: within each cell type one subpopulation
-#     expands with severity, one contracts, one is flat. "Proportions" throughout means, per
-#     donor, the fraction of that donor's cells that fall in each subpopulation (rows sum
-#     to 1) - that is the matrix `stats/calculate_label_proportions` produces and the input
-#     of PHATE, the dynamics fit, the communities and the association tests.
-#   - Counts come from a negative-binomial model with per-gene means, per-cell library
-#     sizes, cell-type and subpopulation marker genes, a per-donor gene-level effect
-#     (applied at the count level, so integration has something real to remove) and a
-#     disease effect on a fixed set of genes, scaled by s.
-#   - The DE tables are computed from the simulated counts (donor pseudobulk, Welch t-test
-#     of high- vs low-severity donors, BH correction) rather than drawn at random, so the
-#     genes they call are the genes the simulation perturbed, and they overlap the
-#     DISEASE_UP / DISEASE_DOWN sets in the GMT file.
-#   - The traits table carries `amyloid` and `braak`, both functions of s, plus traits that
-#     are independent of it - so an association test has both a true and a null answer.
+#   CZ CELLxGENE Discover collection:
+#     https://cellxgene.cziscience.com/collections/84ce6837-548d-4a1f-919f-0bc0d9a3952f
+#   Publication: doi:10.1101/2024.10.31.24316513
+#   Licence: CC-BY 4.0. Attribution is required; redistribution is not restricted.
+#   The submitters certify the data as non-identifiable, so no individual-level
+#   controlled-access data is involved.
+#
+# Why real data
+# -------------
+# The previous fixture was a hand-written negative-binomial simulation. Composition,
+# trajectory and trait effects were all planted by the same script that the workflow was
+# then asked to recover, so any structure the real method depends on but the simulation
+# did not reproduce was invisible. This cohort carries the structure BEYOND is built for:
+# a three-level annotation hierarchy (class 8 / subclass 27 / subtype 65) matching
+# BEYOND's cell class / cell type / subpopulation, and donor-level neuropathology.
+#
+# The BEYOND cellular landscape is a landscape of *participants*, not of cells, so the
+# proportion matrix is the unit of analysis. Subsetting cells damages it, which is why
+# `proportions.csv` below is computed from all 693682 nuclei while `atlas.h5mu` carries a
+# subsample. The two are consistent by construction: the same within-class normalisation
+# on the same annotation.
 #
 # Produces: resources_test/beyond_test_data/
-#   atlas.h5mu      - ~864 cells x 2000 genes; 12 donors; 3 cell types; 9 subpopulations;
-#                     obsm["X_pca"], obsm["X_pca_integrated"]
-#   de_ExN.csv      - DE results per cell type, computed from the counts above
-#   de_InN.csv
-#   de_Ast.csv
-#   gene_sets.gmt   - local GMT (no internet needed), incl. the true disease gene sets
-#   traits.csv      - donor-level traits (participant x trait)
+#   atlas.h5mu        - 32377 nuclei x ~300 genes; all 152 donors (167-226 nuclei each,
+#                       stratified by subtype); obs["participant_id"], obs["cell_class"],
+#                       obs["subpopulation"]. Feeds stats/calculate_label_proportions.
+#   proportions.csv   - 152 donors x 65 subtypes, within-class prevalence, computed from
+#                       ALL 693682 nuclei. Feeds every group-level step.
+#   traits.csv        - 152 donors x 8 traits. AD_status / Parkinson_disease /
+#                       Vascular_status vary; Schizophrenia and ASCVD_status are
+#                       single-level in this cohort and are therefore true null traits.
+#   de_EN.csv         - AD vs non-AD differential expression per cell class, computed
+#   de_IN.csv           from donor pseudobulk of the nuclei above (Welch t-test on
+#   de_Astro.csv        log2 CPM, BH correction).
+#   gene_sets.gmt     - one set of class-specific marker genes per cell class, ranked by
+#                       expression specificity in this dataset. Independent of the AD
+#                       contrast above, so the enrichment step is not circular.
 #
-# Usage: bash resources_test_scripts/beyond_trajectory_test_data.sh
+# The 6.28 GB source file is downloaded once and kept. Set BEYOND_RADC_H5AD to reuse a
+# copy that is already on disk.
 
 set -eo pipefail
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
-OUT="resources_test/beyond_test_data"
+ID=beyond_test_data
+OUT="resources_test/$ID"
 mkdir -p "$OUT"
 
-python3 - <<'PYEOF'
+RADC_URL="https://datasets.cellxgene.cziscience.com/54293783-669c-410e-919d-474960f8761b.h5ad"
+RADC_H5AD="${BEYOND_RADC_H5AD:-$OUT/temp_RADC_Cohort.h5ad}"
+
+if [ ! -f "$RADC_H5AD" ]; then
+  echo "Downloading PsychAD RADC_Cohort (6.28 GB) to $RADC_H5AD"
+  mkdir -p "$(dirname "$RADC_H5AD")"
+  curl -L --fail --retry 3 -o "$RADC_H5AD" "$RADC_URL"
+else
+  echo "Reusing $RADC_H5AD"
+fi
+
+python3 <<PYCODE
+import os
 import numpy as np
 import pandas as pd
-import anndata as ad
-import mudata as mu
-from scipy.sparse import csr_matrix
-from scipy.stats import t as t_dist
-from sklearn.decomposition import PCA
+import h5py
+import scipy.sparse as sp
+from anndata import AnnData
+from mudata import MuData
 
-out = "resources_test/beyond_test_data"
-rng = np.random.default_rng(42)
+SRC = "$RADC_H5AD"
+OUT = "$OUT"
 
-# -- Parameters ---------------------------------------------------------------
-N_DONORS   = 12
-CELL_TYPES = ["ExN", "InN", "Ast"]
-SUBPOPS    = {ct: [f"{ct}.{i}" for i in range(1, 4)] for ct in CELL_TYPES}
-N_GENES    = 2000
-CELLS_PER_DONOR_PER_TYPE = 24   # split over the 3 subpopulations by composition
-NB_DISPERSION = 5.0             # negative-binomial size parameter
+SEED               = 0
+CELLS_PER_DONOR    = 200   # cap; donors with fewer nuclei keep all of them
+N_MARKERS_PER_CLASS = 25   # size of each gene set, and of the class part of the panel
+N_TOP_EXPRESSED     = 100  # genes added to the panel regardless of class specificity
+DE_CLASSES          = ["EN", "IN", "Astro"]
 
-gene_names = [f"GENE{i:05d}" for i in range(N_GENES)]
-donors     = [f"donor_{i:02d}" for i in range(1, N_DONORS + 1)]
+rng = np.random.default_rng(SEED)
+f = h5py.File(SRC, "r")
 
-# Latent severity per donor: the trajectory the workflow should recover
-severity = dict(zip(donors, np.linspace(0.0, 1.0, N_DONORS)))
-
-# -- Gene programmes -----------------------------------------------------------
-# Baseline expression level per gene (long-tailed, as in real data)
-base_mean = rng.gamma(shape=0.8, scale=6.0, size=N_GENES) + 0.1
-
-# Cell-type marker genes: 100 per type, 4x up in that type
-ct_markers = {ct: np.arange(i * 100, (i + 1) * 100) for i, ct in enumerate(CELL_TYPES)}
-# Subpopulation marker genes: 20 per subpopulation, 3x up in that subpopulation
-sp_markers = {}
-offset = 300
-for ct in CELL_TYPES:
-    for sp in SUBPOPS[ct]:
-        sp_markers[sp] = np.arange(offset, offset + 20)
-        offset += 20
-
-# Disease genes: up- and down-regulated with severity, in every cell type
-disease_up   = np.arange(1000, 1060)
-disease_down = np.arange(1060, 1120)
-
-# Per-donor gene-level effect, applied to the counts (not to the embedding)
-donor_effect = {d: np.exp(rng.normal(0, 0.12, N_GENES)) for d in donors}
+# -- obs -----------------------------------------------------------------------
+def _decode(values):
+    return np.array(
+        [v.decode() if isinstance(v, bytes) else v for v in values], dtype=object
+    )
 
 
-def composition(cell_type, s):
-    """Subpopulation fractions within a cell type at severity s: one up, one down, one flat."""
-    weights = np.array([0.2 + 0.6 * s, 0.8 - 0.6 * s, 0.4])
-    return weights / weights.sum()
+def categorical(group, key):
+    """Read an AnnData column, which may be stored plainly or as a categorical."""
+    g = group[key]
+    if isinstance(g, h5py.Group) and "categories" in g:
+        return pd.Categorical.from_codes(g["codes"][:], _decode(g["categories"][:]))
+    return _decode(g[:])
+
+OBS_KEYS = [
+    "donor_id", "class", "subclass", "subtype", "sex", "genetic_ancestry",
+    "development_stage", "AD_status", "Parkinson_disease", "Vascular_status",
+    "DLBD_status", "Schizophrenia", "ASCVD_status",
+]
+obs = pd.DataFrame({k: categorical(f["obs"], k) for k in OBS_KEYS})
+n_cells_total = len(obs)
+print(f"Source: {n_cells_total} nuclei, {obs.donor_id.nunique()} donors, "
+      f"{obs['class'].nunique()} classes, {obs.subtype.nunique()} subtypes")
+
+# -- proportions: within-class prevalence over ALL nuclei -----------------------
+#
+# The reference implementation normalises within the cell-type grouping, not over all
+# subpopulations of a donor (2. Cell-type analysis/3.create.proportion.matrix.R:32-37),
+# so each donor's row sums to the number of classes they have nuclei in, not to 1.
+counts = (
+    obs.groupby(["class", "subtype", "donor_id"], observed=True)
+    .size()
+    .rename("n")
+    .reset_index()
+)
+counts["prevalence"] = counts["n"] / counts.groupby(
+    ["class", "donor_id"], observed=True
+)["n"].transform("sum")
+proportions = counts.pivot_table(
+    index="donor_id", columns="subtype", values="prevalence",
+    fill_value=0, aggfunc="sum", observed=True,
+)
+proportions.index.name = "participant_id"
+proportions.to_csv(f"{OUT}/proportions.csv")
+print(f"Wrote {OUT}/proportions.csv  "
+      f"({proportions.shape[0]} donors x {proportions.shape[1]} subtypes, "
+      f"from all {n_cells_total} nuclei)")
+
+# -- donor traits ---------------------------------------------------------------
+traits = obs.groupby("donor_id", observed=True).agg(lambda s: s.iloc[0])
+traits = traits[[
+    "AD_status", "Parkinson_disease", "Vascular_status", "DLBD_status",
+    "Schizophrenia", "ASCVD_status", "sex", "genetic_ancestry",
+]].copy()
+# "68-year-old stage" -> 68, so the association tests have a continuous covariate
+age = obs.groupby("donor_id", observed=True)["development_stage"].first().astype(str)
+traits["age"] = age.str.extract(r"(\d+)").astype(float).to_numpy()
+traits.index.name = "participant_id"
+traits.to_csv(f"{OUT}/traits.csv")
+print(f"Wrote {OUT}/traits.csv  ({traits.shape[0]} donors x {traits.shape[1]} traits)")
+
+# -- stratified cell subset ------------------------------------------------------
+keep = []
+for donor, group in obs.groupby("donor_id", observed=True):
+    if len(group) <= CELLS_PER_DONOR:
+        keep.append(group.index.to_numpy())
+        continue
+    frac = CELLS_PER_DONOR / len(group)
+    for _, sub in group.groupby("subtype", observed=True):
+        k = max(1, int(round(len(sub) * frac)))
+        keep.append(rng.choice(sub.index.to_numpy(), size=min(k, len(sub)), replace=False))
+selected = np.sort(np.concatenate(keep))
+sub_obs = obs.loc[selected]
+print(f"Subset: {len(selected)} nuclei, {sub_obs.donor_id.nunique()} donors, "
+      f"{sub_obs.subtype.nunique()} subtypes")
+
+# -- read the selected rows of the CSR matrix ------------------------------------
+X = f["X"]
+indptr = X["indptr"][:]
+data_ds, indices_ds = X["data"], X["indices"]
+n_genes_total = int(X.attrs["shape"][1])
+
+rows, cols, vals = [], [], []
+for i, cell in enumerate(selected):
+    start, stop = int(indptr[cell]), int(indptr[cell + 1])
+    if stop <= start:
+        continue
+    idx = indices_ds[start:stop]
+    cols.append(idx)
+    vals.append(data_ds[start:stop])
+    rows.append(np.full(len(idx), i, dtype=np.int32))
+counts_matrix = sp.csr_matrix(
+    (np.concatenate(vals),
+     (np.concatenate(rows), np.concatenate(cols).astype(np.int32))),
+    shape=(len(selected), n_genes_total),
+    dtype=np.float32,
+)
+print(f"Read {counts_matrix.nnz} non-zero entries")
+
+gene_names = np.asarray(categorical(f["var"], "feature_name"), dtype=object)
+
+# -- log CPM, used for markers and for DE ----------------------------------------
+library = np.asarray(counts_matrix.sum(axis=1)).ravel()
+library[library == 0] = 1.0
+cpm = counts_matrix.multiply(1e6 / library[:, None]).tocsr()
+logcpm = cpm.copy()
+logcpm.data = np.log2(logcpm.data + 1.0)
+
+cell_class = sub_obs["class"].to_numpy()
+classes = list(pd.unique(sub_obs["class"]))
+
+# -- class marker genes ----------------------------------------------------------
+#
+# Specificity = mean log2 CPM inside the class minus mean log2 CPM outside it. Computed
+# from expression only, so the sets are independent of the AD contrast used for the DE
+# tables and the enrichment step is not testing the same numbers twice.
+class_means = {}
+for cls in classes:
+    mask = cell_class == cls
+    class_means[cls] = np.asarray(logcpm[mask].mean(axis=0)).ravel()
+overall_mean = np.asarray(logcpm.mean(axis=0)).ravel()
+n_per_class = {cls: int((cell_class == cls).sum()) for cls in classes}
+
+markers = {}
+used = set()
+for cls in classes:
+    rest = (overall_mean * len(selected) - class_means[cls] * n_per_class[cls]) / max(
+        1, len(selected) - n_per_class[cls]
+    )
+    specificity = class_means[cls] - rest
+    # A marker has to be expressed, not merely relatively enriched in a sparse gene
+    expressed = class_means[cls] > 0.5
+    order = np.argsort(-np.where(expressed, specificity, -np.inf))
+    picked = []
+    for j in order:
+        if not np.isfinite(specificity[j]) or not expressed[j]:
+            break
+        name = gene_names[j]
+        if name in used:
+            continue
+        picked.append(j)
+        used.add(name)
+        if len(picked) == N_MARKERS_PER_CLASS:
+            break
+    markers[cls] = picked
+    print(f"  {cls:7s} {len(picked)} markers, e.g. {list(gene_names[picked[:4]])}")
+
+with open(f"{OUT}/gene_sets.gmt", "w") as handle:
+    for cls, idx in markers.items():
+        genes = [str(gene_names[j]) for j in idx]
+        handle.write("\t".join([f"{cls}_MARKERS", f"{cls} class markers"] + genes) + "\n")
+print(f"Wrote {OUT}/gene_sets.gmt  ({len(markers)} sets)")
+
+# -- gene panel for the atlas ------------------------------------------------------
+# Every marker gene, plus the most-expressed genes so the panel is not only markers.
+# Duplicate gene symbols would collide in var_names, so keep the first index per symbol.
+panel, seen = [], set()
+
+def add_gene(j):
+    name = str(gene_names[j])
+    if name in seen:
+        return False
+    seen.add(name)
+    panel.append(int(j))
+    return True
+
+for idx in markers.values():
+    for j in idx:
+        add_gene(j)
+n_marker_genes = len(panel)
+
+added = 0
+for j in np.argsort(-overall_mean):
+    if added == N_TOP_EXPRESSED:
+        break
+    if add_gene(int(j)):
+        added += 1
+
+panel = np.array(sorted(panel))
+print(f"Gene panel: {len(panel)} genes ({n_marker_genes} markers + {added} most expressed)")
+
+# -- differential expression per class, over ALL nuclei ------------------------------
+#
+# Donor pseudobulk needs every nucleus, not the 200-per-donor subsample: with the
+# subsample no gene survives BH correction, which leaves the enrichment step nothing to
+# rank. X is CSR, so it is streamed in row blocks and summed into a
+# (class, donor) x gene count matrix; the full matrix is never held in memory.
+from scipy.stats import ttest_ind
+
+ad_status = traits["AD_status"]
+ad_donors = set(ad_status.index[ad_status == "Yes"])
+ctrl_donors = set(ad_status.index[ad_status == "No"])
+
+all_donors = list(proportions.index)
+donor_index = {d: i for i, d in enumerate(all_donors)}
+obs_donor_idx = obs["donor_id"].astype(str).map(donor_index).to_numpy()
+obs_class = obs["class"].astype(str).to_numpy()
+
+pseudobulk_counts = {
+    cls: np.zeros((len(all_donors), n_genes_total), dtype=np.float64)
+    for cls in DE_CLASSES
+}
+BLOCK = 20000
+for a in range(0, n_cells_total, BLOCK):
+    b = min(a + BLOCK, n_cells_total)
+    start_ptr, stop_ptr = int(indptr[a]), int(indptr[b])
+    block = sp.csr_matrix(
+        (
+            data_ds[start_ptr:stop_ptr],
+            indices_ds[start_ptr:stop_ptr].astype(np.int32),
+            indptr[a : b + 1] - start_ptr,
+        ),
+        shape=(b - a, n_genes_total),
+    )
+    for cls in DE_CLASSES:
+        mask = obs_class[a:b] == cls
+        if not mask.any():
+            continue
+        rows_here = np.flatnonzero(mask)
+        donors_here = obs_donor_idx[a:b][rows_here]
+        selector = sp.csr_matrix(
+            (
+                np.ones(len(rows_here)),
+                (donors_here, rows_here),
+            ),
+            shape=(len(all_donors), b - a),
+        )
+        pseudobulk_counts[cls] += np.asarray((selector @ block).todense())
+    print(f"  pseudobulk {b}/{n_cells_total} nuclei", flush=True)
+
+f.close()
 
 
-# -- Simulate cells ------------------------------------------------------------
-counts_rows, obs_rows = [], []
-for donor in donors:
-    s = severity[donor]
-    for ct in CELL_TYPES:
-        fractions = composition(ct, s)
-        # Multinomial over the subpopulations of this cell type, so composition
-        # varies with severity and cell counts still vary between donors.
-        n_per_sp = rng.multinomial(CELLS_PER_DONOR_PER_TYPE, fractions)
-        for sp, n_cells in zip(SUBPOPS[ct], n_per_sp):
-            for _ in range(int(n_cells)):
-                mu_gene = base_mean.copy()
-                mu_gene[ct_markers[ct]] *= 4.0
-                mu_gene[sp_markers[sp]] *= 3.0
-                mu_gene[disease_up]   *= 1.0 + 8.0 * s
-                mu_gene[disease_down] *= 1.0 / (1.0 + 8.0 * s)
-                mu_gene = mu_gene * donor_effect[donor]
-                # Library size varies per cell
-                mu_gene = mu_gene * rng.lognormal(0.0, 0.2)
-                # Negative binomial with fixed dispersion
-                p = NB_DISPERSION / (NB_DISPERSION + mu_gene)
-                counts_rows.append(
-                    rng.negative_binomial(NB_DISPERSION, p).astype("float32")
-                )
-                obs_rows.append(
-                    {
-                        "cell_type": ct,
-                        "subpopulation": sp,
-                        "participant_id": donor,
-                        "sample_id": donor,
-                    }
-                )
+def bh(pvals):
+    p = np.asarray(pvals, dtype=float)
+    ok = np.isfinite(p)
+    q = np.full(p.shape, np.nan)
+    if ok.sum() == 0:
+        return q
+    ranked = np.argsort(p[ok])
+    m = int(ok.sum())
+    adj = p[ok][ranked] * m / np.arange(1, m + 1)
+    adj = np.minimum.accumulate(adj[::-1])[::-1]
+    out = np.empty(m)
+    out[ranked] = np.clip(adj, 0, 1)
+    q[ok] = out
+    return q
 
-n_cells = len(counts_rows)
-X = csr_matrix(np.vstack(counts_rows))
-obs = pd.DataFrame(obs_rows)
-obs.index = [f"cell_{i:05d}" for i in range(n_cells)]
-for col in ["cell_type", "subpopulation", "participant_id", "sample_id"]:
-    obs[col] = pd.Categorical(obs[col])
 
-obs["n_counts"]        = np.asarray(X.sum(axis=1)).ravel().astype(int)
-obs["n_genes"]         = np.asarray((X > 0).sum(axis=1)).ravel().astype(int)
-obs["leiden"]          = pd.Categorical(obs["subpopulation"])
-obs["celltypist_pred"] = pd.Categorical(obs["cell_type"])
+for cls in DE_CLASSES:
+    pb = pseudobulk_counts[cls]
+    library = pb.sum(axis=1)
+    present = library > 0
+    cpm = np.zeros_like(pb)
+    cpm[present] = pb[present] / library[present, None] * 1e6
+    logcpm_pb = np.log2(cpm + 1.0)
 
-var = pd.DataFrame(index=pd.Index(gene_names, name="gene_symbol"))
-var["highly_variable"] = False
-var.loc[var.index[:600], "highly_variable"] = True
-
-adata = ad.AnnData(X=X, obs=obs, var=var)
-
-# -- Embeddings ----------------------------------------------------------------
-# PCA with sklearn on the log-normalised highly variable genes. sklearn rather than
-# scanpy so this script needs only numpy/scipy/sklearn/anndata/mudata; the result is
-# the same decomposition scanpy would compute.
-X_dense   = np.asarray(X.todense(), dtype="float32")
-X_lognorm = np.log1p(X_dense / (X_dense.sum(axis=1, keepdims=True) + 1e-9) * 1e4)
-hvg       = np.flatnonzero(var["highly_variable"].to_numpy())
-
-X_pca = PCA(n_components=30, random_state=42).fit_transform(X_lognorm[:, hvg])
-adata.obsm["X_pca"] = X_pca.astype("float32")
-
-# The donor effect is in the counts, so it is in X_pca. "Integrated" means it has been
-# removed: centre each donor's cells on the global mean (a stand-in for Harmony).
-X_integrated = X_pca.copy()
-participants = obs["participant_id"].to_numpy()
-for donor in donors:
-    mask = participants == donor
-    X_integrated[mask] += X_pca.mean(axis=0) - X_pca[mask].mean(axis=0)
-adata.obsm["X_pca_integrated"] = X_integrated.astype("float32")
-
-# No .obsm["X_umap"]: nothing in the BEYOND components reads it, and a fake 2-D
-# projection would only look like a real UMAP.
-
-mdata = mu.MuData({"rna": adata})
-atlas_path = f"{out}/atlas.h5mu"
-mdata.write_h5mu(atlas_path, compression="gzip")
-print(f"Wrote {atlas_path}  ({n_cells} cells x {N_GENES} genes, {N_DONORS} donors)")
-
-# -- DE tables, computed from the simulated counts -----------------------------
-# Donor pseudobulk per cell type, then a linear regression of log2 CPM on donor severity
-# across all donors (which uses the whole gradient, not a high/low split). The genes this
-# calls are the genes the simulation perturbed. `log2FoldChange` is the slope, i.e. the
-# log2 change between the least and the most affected donor.
-sev_vec = np.array([severity[d] for d in donors])
-x_centered = sev_vec - sev_vec.mean()
-dof = N_DONORS - 2
-
-for ct in CELL_TYPES:
-    ct_mask = (obs["cell_type"] == ct).to_numpy()
-    pseudobulk = {}
-    for donor in donors:
-        mask = ct_mask & (participants == donor)
-        summed = X_dense[mask].sum(axis=0)
-        cpm = summed / max(summed.sum(), 1.0) * 1e6
-        pseudobulk[donor] = np.log2(cpm + 1.0)
-    pb = pd.DataFrame(pseudobulk, index=gene_names).T
-
-    Y = pb.to_numpy()
-    Y_centered = Y - Y.mean(axis=0)
-    slope = (x_centered @ Y_centered) / (x_centered @ x_centered)
-    fitted = np.outer(x_centered, slope)
-    resid_var = ((Y_centered - fitted) ** 2).sum(axis=0) / dof
-    se = np.sqrt(resid_var / (x_centered @ x_centered)) + 1e-12
-    stat = slope / se
-    pvals = 2 * t_dist.sf(np.abs(stat), dof)
-    pvals = np.nan_to_num(pvals, nan=1.0)
-    lfc = slope
-
-    order = np.argsort(pvals)
-    ranks = np.empty_like(order)
-    ranks[order] = np.arange(1, N_GENES + 1)
-    padj = np.minimum.accumulate(
-        (pvals * N_GENES / ranks)[order][::-1]
-    )[::-1]
-    padj_full = np.empty(N_GENES)
-    padj_full[order] = np.clip(padj, 0, 1)
+    is_ad = np.array([d in ad_donors and present[i] for i, d in enumerate(all_donors)])
+    is_ctrl = np.array([d in ctrl_donors and present[i] for i, d in enumerate(all_donors)])
+    stat, pval = ttest_ind(
+        logcpm_pb[is_ad], logcpm_pb[is_ctrl], axis=0, equal_var=False
+    )
+    lfc = logcpm_pb[is_ad].mean(axis=0) - logcpm_pb[is_ctrl].mean(axis=0)
+    base = cpm[present].mean(axis=0)
+    expressed = base > 1.0
 
     de = pd.DataFrame(
         {
-            "baseMean": pb.mean(axis=0).to_numpy(),
-            "log2FoldChange": lfc,
-            "lfcSE": se,
-            "stat": np.nan_to_num(stat),
-            "pvalue": pvals,
-            "padj": padj_full,
-        },
-        index=pd.Index(gene_names, name="gene"),
-    )
-    csv_path = f"{out}/de_{ct}.csv"
-    de.to_csv(csv_path)
-    n_sig = int((padj_full < 0.05).sum())
-    n_sig_disease = int(
-        (padj_full[np.concatenate([disease_up, disease_down])] < 0.05).sum()
-    )
-    print(
-        f"Wrote {csv_path}  ({N_GENES} genes, {n_sig} sig at padj<0.05, "
-        f"{n_sig_disease}/120 of them in the simulated disease sets, "
-        f"min padj {padj_full.min():.2g})"
-    )
+            "gene": gene_names[expressed],
+            "baseMean": base[expressed],
+            "log2FoldChange": lfc[expressed],
+            "stat": stat[expressed],
+            "pvalue": pval[expressed],
+            "padj": bh(pval[expressed]),
+        }
+    ).set_index("gene")
+    de = de[~de.index.duplicated()].sort_values("pvalue")
+    de.to_csv(f"{OUT}/de_{cls}.csv")
+    n_sig = int((de["padj"] < 0.05).sum())
+    print(f"Wrote {OUT}/de_{cls}.csv  ({len(de)} genes, {n_sig} with padj < 0.05, "
+          f"{int(is_ad.sum())} AD vs {int(is_ctrl.sum())} control donors, "
+          f"all {n_cells_total} nuclei)")
 
-# -- Local GMT file ------------------------------------------------------------
-gmt_path = f"{out}/gene_sets.gmt"
-with open(gmt_path, "w") as fh:
-    fh.write("DISEASE_UP\tna\t"   + "\t".join(gene_names[i] for i in disease_up) + "\n")
-    fh.write("DISEASE_DOWN\tna\t" + "\t".join(gene_names[i] for i in disease_down) + "\n")
-    for ct in CELL_TYPES:
-        fh.write(
-            f"MARKERS_{ct}\tna\t"
-            + "\t".join(gene_names[i] for i in ct_markers[ct])
-            + "\n"
-        )
-    fh.write("BACKGROUND\tna\t" + "\t".join(gene_names[1500:1600]) + "\n")
-print(f"Wrote {gmt_path}  (6 gene sets, 2 of them the true disease sets)")
-
-# -- Donor traits --------------------------------------------------------------
-sev = np.array([severity[d] for d in donors])
-traits = pd.DataFrame(
+# -- atlas.h5mu ---------------------------------------------------------------------
+atlas_obs = pd.DataFrame(
     {
-        "participant_id": donors,
-        # traits that follow the latent severity: an association test must find these
-        "amyloid": (sev * 10 + rng.normal(0, 0.5, N_DONORS)).round(2),
-        "braak":   np.clip(np.round(sev * 6 + rng.normal(0, 0.4, N_DONORS)), 0, 6),
-        "diagnosis": np.where(sev > 0.5, "AD", "control"),
-        # traits independent of it: an association test must not find these
-        "age": rng.integers(60, 90, N_DONORS).astype(float),
-        "sex": rng.choice(["M", "F"], N_DONORS),
-        "pmi": rng.uniform(2, 24, N_DONORS).round(1),
-        "cohort": rng.choice(["cohort_A", "cohort_B"], N_DONORS),
-    }
+        "participant_id": sub_obs["donor_id"].astype(str).to_numpy(),
+        "cell_class": sub_obs["class"].astype(str).to_numpy(),
+        "subclass": sub_obs["subclass"].astype(str).to_numpy(),
+        "subpopulation": sub_obs["subtype"].astype(str).to_numpy(),
+    },
+    index=pd.Index([f"cell_{i:06d}" for i in range(len(selected))], name="cell_id"),
 )
-traits_path = f"{out}/traits.csv"
-traits.to_csv(traits_path, index=False)
-print(f"Wrote {traits_path}  ({N_DONORS} donors x {traits.shape[1] - 1} traits)")
+for col in atlas_obs.columns:
+    atlas_obs[col] = atlas_obs[col].astype("category")
 
-# -- Report the composition signal that was built in --------------------------
-counts_df = (
-    adata.obs.groupby(["participant_id", "subpopulation"], observed=True)
-    .size()
-    .unstack(fill_value=0)
-)
-proportions = counts_df.div(counts_df.sum(axis=1), axis=0)
-corr = proportions.corrwith(pd.Series(severity), axis=0)
-print(
-    "Subpopulation proportion vs severity correlation: "
-    + ", ".join(f"{sp}={corr[sp]:+.2f}" for sp in proportions.columns)
-)
-PYEOF
+var = pd.DataFrame(index=pd.Index(gene_names[panel].astype(str), name="gene_symbol"))
+adata = AnnData(X=counts_matrix[:, panel].tocsr(), obs=atlas_obs, var=var)
+adata.layers["counts"] = adata.X.copy()
 
-echo ""
-echo "Done. Test data in $OUT:"
-ls -lh "$OUT"
+mdata = MuData({"rna": adata})
+mdata.write_h5mu(f"{OUT}/atlas.h5mu", compression="gzip")
+size_mb = os.path.getsize(f"{OUT}/atlas.h5mu") / 1e6
+print(f"Wrote {OUT}/atlas.h5mu  ({adata.n_obs} nuclei x {adata.n_vars} genes, "
+      f"{atlas_obs.participant_id.nunique()} donors, {size_mb:.1f} MB)")
+PYCODE
+
+echo "Done. Contents of $OUT:"
+ls -la "$OUT"

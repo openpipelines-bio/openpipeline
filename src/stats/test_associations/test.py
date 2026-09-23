@@ -215,6 +215,69 @@ def test_transform_logit(run_component, tmp_path):
     assert betas["logit"] == pytest.approx(0.8, abs=0.2)
 
 
+def test_transform_sqrt(run_component, tmp_path):
+    """--transform sqrt fits the square root of the response, as BEYOND does."""
+    rng = np.random.default_rng(7)
+    n = 60
+    trait = rng.normal(0, 1, n)
+    # Generated linear on the sqrt scale, so only --transform sqrt recovers the slope
+    root = 0.4 + 0.1 * trait + rng.normal(0, 0.01, n)
+    prop = np.clip(root, 1e-6, None) ** 2
+    df = pd.DataFrame({"prop": prop, "trait_A": trait})
+    input_path = tmp_path / "prop_sqrt.csv"
+    df.to_csv(str(input_path), index=False)
+
+    betas = {}
+    for transform in ("none", "sqrt"):
+        output = tmp_path / f"assoc_{transform}.csv"
+        run_component(
+            [
+                "--input",
+                str(input_path),
+                "--response_columns",
+                "prop",
+                "--predictor_columns",
+                "trait_A",
+                "--transform",
+                transform,
+                "--output",
+                str(output),
+            ]
+        )
+        betas[transform] = pd.read_csv(str(output))["beta"].iloc[0]
+
+    assert betas["none"] != betas["sqrt"]
+    assert betas["sqrt"] == pytest.approx(0.1, abs=0.02), (
+        f"sqrt transform did not recover the generating slope: {betas['sqrt']}"
+    )
+
+
+def test_transform_sqrt_negative_response(run_component, tmp_path):
+    """--transform sqrt rejects negative responses instead of producing NaN."""
+    df = pd.DataFrame(
+        {"prop": np.linspace(-0.2, 0.5, 30), "trait_A": np.linspace(0, 1, 30)}
+    )
+    input_path = tmp_path / "negative.csv"
+    df.to_csv(str(input_path), index=False)
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                str(input_path),
+                "--response_columns",
+                "prop",
+                "--predictor_columns",
+                "trait_A",
+                "--transform",
+                "sqrt",
+                "--output",
+                str(tmp_path / "out.csv"),
+            ]
+        )
+    assert "--transform sqrt requires non-negative" in err.value.stdout.decode("utf-8")
+
+
 def test_fdr_scope(run_component, tmp_path):
     """per_response correction is applied within each response, not over all tests."""
     _, input_path = _make_tables(tmp_path)

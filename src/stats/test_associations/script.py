@@ -125,6 +125,13 @@ def _transform_responses(df, responses, method, pseudocount):
         shifted = values.where(values > 0, pseudocount)
         log_vals = np.log(shifted)
         df[responses] = log_vals.sub(log_vals.mean(axis=1), axis=0)
+    elif method == "sqrt":
+        if (values < 0).any().any():
+            raise ValueError(
+                "--transform sqrt requires non-negative response values; "
+                "found negative values."
+            )
+        df[responses] = np.sqrt(values)
     logger.info("Applied '%s' transform to %d response columns.", method, len(responses))
     return df
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 import sys
-import numpy as np
 import pandas as pd
 from mudata import read_h5mu
 
@@ -10,10 +9,10 @@ par = {
     "modality": "rna",
     "obs_group": "participant_id",
     "obs_label": "subpopulation",  # generic: any .obs label column
+    "obs_normalize_within": None,
     "output": "proportions_output.h5mu",
     "output_csv": None,
     "uns_output": "proportions",
-    "obsm_output": "proportions",
     "output_compression": None,
 }
 meta = {
@@ -42,7 +41,11 @@ def main():
     group_col = par["obs_group"]
     label_col = par["obs_label"]
 
+    within_col = par["obs_normalize_within"]
+
     required_cols = [label_col] if group_col is None else [group_col, label_col]
+    if within_col is not None:
+        required_cols.append(within_col)
     for col in required_cols:
         if col not in adata.obs.columns:
             raise ValueError(
@@ -72,8 +75,48 @@ def main():
     counts = (
         obs.groupby([group_col, label_col], observed=True).size().unstack(fill_value=0)
     )
-    # Normalise rows to proportions (sum = 1 per group)
-    proportions = counts.div(counts.sum(axis=1), axis=0)
+
+    if within_col is None:
+        # Normalise rows to proportions (sum = 1 per group)
+        proportions = counts.div(counts.sum(axis=1), axis=0)
+    else:
+        # Normalise within each (group, --obs_normalize_within) stratum. Every label
+        # belongs to exactly one stratum, so the denominator of a label's column is the
+        # group's total over the labels sharing its stratum.
+        label_to_within = (
+            obs[[label_col, within_col]]
+            .drop_duplicates()
+            .groupby(label_col, observed=True)[within_col]
+            .agg(lambda values: sorted(set(values)))
+        )
+        ambiguous = {
+            str(label): values
+            for label, values in label_to_within.items()
+            if len(values) > 1
+        }
+        if ambiguous:
+            raise ValueError(
+                f"Every '{label_col}' value must belong to exactly one "
+                f"'{within_col}' value, but these span several: {ambiguous}. "
+                f"'--obs_normalize_within' expects a strict hierarchy."
+            )
+        strata = {
+            str(label): str(values[0]) for label, values in label_to_within.items()
+        }
+        denominators = pd.DataFrame(index=counts.index, columns=counts.columns)
+        for stratum in sorted(set(strata.values())):
+            members = [c for c in counts.columns if strata[str(c)] == stratum]
+            totals = counts[members].sum(axis=1)
+            for member in members:
+                denominators[member] = totals
+        denominators = denominators.astype(float)
+        proportions = counts.div(denominators).fillna(0.0)
+        logger.info(
+            "Normalised within '%s' (%d strata); rows sum to the number of strata "
+            "present in a group, not to 1.",
+            within_col,
+            len(set(strata.values())),
+        )
 
     n_groups = proportions.shape[0]
     n_labels = proportions.shape[1]
@@ -89,34 +132,6 @@ def main():
     proportions.columns = proportions.columns.astype(str)
     mdata.mod[modality].uns[uns_key] = proportions
     logger.info("Stored proportion matrix in .uns['%s'].", uns_key)
-
-    # Optional per-cell copy in .obsm. Every cell of a group carries the same row, so this
-    # is redundant by construction; it exists only for cell-level components that take an
-    # .obsm matrix (dimred/phate). Not written unless --obsm_output is given.
-    obsm_key = par["obsm_output"]
-    if obsm_key:
-        group_ids = obs[group_col].values
-        obsm_matrix = np.array(
-            [
-                proportions.loc[str(gid)].values
-                if str(gid) in proportions.index
-                else np.zeros(n_labels)
-                for gid in group_ids
-            ],
-            dtype=np.float64,
-        )
-        # Wrap in a DataFrame so column names (labels) are preserved
-        obsm_df = pd.DataFrame(
-            obsm_matrix,
-            index=adata.obs_names,
-            columns=proportions.columns,
-        )
-        mdata.mod[modality].obsm[obsm_key] = obsm_df
-        logger.info(
-            "Stored per-cell proportion vectors in .obsm['%s'] (shape: %s).",
-            obsm_key,
-            obsm_df.shape,
-        )
 
     # Optional tabular copy for downstream components that do not read MuData
     if par["output_csv"]:

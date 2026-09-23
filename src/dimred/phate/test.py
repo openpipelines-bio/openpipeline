@@ -260,5 +260,177 @@ def test_branches_preserved(run_component, tmp_path):
     )
 
 
+# ---------------------------------------------------------------------------
+# Table mode: group-level input, no MuData involved
+# ---------------------------------------------------------------------------
+
+
+def _make_table(tmp_path, n_obs=120, n_features=10, seed=42, id_column="participant_id"):
+    """CSV with a branching manifold, one row per group."""
+    rng = np.random.default_rng(seed)
+    values, branch = _branching_manifold(n_obs, n_features, rng)
+    df = pd.DataFrame(
+        values, columns=[f"label_{i}" for i in range(n_features)]
+    )
+    df.insert(0, id_column, [f"donor_{i}" for i in range(n_obs)])
+    table_path = tmp_path / "input_table.csv"
+    df.to_csv(table_path, index=False)
+    return df, branch, table_path
+
+
+def test_table_mode(run_component, tmp_path):
+    """--input_table in, --output_table out, identifier column preserved."""
+    df, _, table_path = _make_table(tmp_path)
+    output_path = tmp_path / "phate.csv"
+
+    run_component(
+        [
+            "--input_table",
+            str(table_path),
+            "--output_table",
+            str(output_path),
+        ]
+    )
+
+    assert output_path.is_file()
+    result = pd.read_csv(output_path)
+    assert list(result.columns) == ["participant_id", "phate_1", "phate_2"], (
+        f"Unexpected columns: {list(result.columns)}"
+    )
+    assert result.shape[0] == df.shape[0]
+    assert list(result["participant_id"]) == list(df["participant_id"]), (
+        "Row order / identifiers not preserved"
+    )
+    assert np.isfinite(result[["phate_1", "phate_2"]].to_numpy()).all()
+
+
+def test_table_mode_n_components(run_component, tmp_path):
+    """--n_components controls the number of phate_* columns."""
+    _, _, table_path = _make_table(tmp_path)
+    output_path = tmp_path / "phate_3d.csv"
+
+    run_component(
+        [
+            "--input_table",
+            str(table_path),
+            "--output_table",
+            str(output_path),
+            "--n_components",
+            "3",
+        ]
+    )
+
+    result = pd.read_csv(output_path)
+    assert list(result.columns) == [
+        "participant_id",
+        "phate_1",
+        "phate_2",
+        "phate_3",
+    ]
+
+
+def test_table_mode_id_column(run_component, tmp_path):
+    """--id_column picks a non-first identifier column."""
+    rng = np.random.default_rng(0)
+    values, _ = _branching_manifold(60, 6, rng)
+    df = pd.DataFrame(values, columns=[f"label_{i}" for i in range(6)])
+    df["donor"] = [f"d{i}" for i in range(60)]
+    table_path = tmp_path / "id_last.csv"
+    df.to_csv(table_path, index=False)
+    output_path = tmp_path / "phate_id.csv"
+
+    run_component(
+        [
+            "--input_table",
+            str(table_path),
+            "--id_column",
+            "donor",
+            "--output_table",
+            str(output_path),
+        ]
+    )
+
+    result = pd.read_csv(output_path)
+    assert list(result.columns) == ["donor", "phate_1", "phate_2"]
+    assert list(result["donor"]) == list(df["donor"])
+
+
+def test_table_mode_preserves_branches(run_component, tmp_path):
+    """The Y-shaped manifold survives the table round trip."""
+    _, branch, table_path = _make_table(tmp_path)
+    output_path = tmp_path / "phate_branch.csv"
+
+    run_component(
+        [
+            "--input_table",
+            str(table_path),
+            "--output_table",
+            str(output_path),
+        ]
+    )
+
+    emb = pd.read_csv(output_path)[["phate_1", "phate_2"]].to_numpy()
+    tips_a = emb[branch == "a"][-10:]
+    tips_b = emb[branch == "b"][-10:]
+    within = 0.5 * (
+        np.linalg.norm(tips_a - tips_a.mean(axis=0), axis=1).mean()
+        + np.linalg.norm(tips_b - tips_b.mean(axis=0), axis=1).mean()
+    )
+    between = np.linalg.norm(tips_a.mean(axis=0) - tips_b.mean(axis=0))
+    assert between > 2 * within, (
+        f"Branch tips not separated: between={between:.4f}, within={within:.4f}"
+    )
+
+
+@pytest.mark.parametrize(
+    "args,message",
+    [
+        (["--input_table", "TABLE", "--output_table", "OUT", "--input", "H5MU"],
+         "Exactly one of"),
+        ([], "Exactly one of"),
+        (["--input_table", "TABLE"], "--output_table is required"),
+        (["--input", "H5MU"], "--output is required"),
+    ],
+)
+def test_input_mode_errors(run_component, tmp_path, args, message):
+    """Exactly one input mode, with the matching output argument."""
+    _, h5mu_path = _make_mudata(tmp_path, n_obs=30, n_pcs=5)
+    _, _, table_path = _make_table(tmp_path, n_obs=30, n_features=5)
+    substitutions = {
+        "TABLE": str(table_path),
+        "H5MU": str(h5mu_path),
+        "OUT": str(tmp_path / "out.csv"),
+    }
+    resolved = [substitutions.get(a, a) for a in args]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(resolved)
+    assert message in err.value.stdout.decode("utf-8")
+
+
+def test_table_mode_non_numeric_column(run_component, tmp_path):
+    """A second non-numeric column is rejected rather than silently dropped."""
+    df = pd.DataFrame(
+        {
+            "participant_id": [f"d{i}" for i in range(20)],
+            "batch": ["a"] * 20,
+            "label_0": np.linspace(0, 1, 20),
+        }
+    )
+    table_path = tmp_path / "non_numeric.csv"
+    df.to_csv(table_path, index=False)
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input_table",
+                str(table_path),
+                "--output_table",
+                str(tmp_path / "out.csv"),
+            ]
+        )
+    assert "non-numeric value column" in err.value.stdout.decode("utf-8")
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

@@ -1,9 +1,8 @@
 import sys
+import subprocess
 import pytest
 import numpy as np
 import pandas as pd
-import anndata as ad
-import mudata as mu
 
 ## VIASH START
 meta = {
@@ -13,240 +12,246 @@ meta = {
 }
 ## VIASH END
 
+ID = "participant_id"
 
-def _make_input(tmp_path, n_participants=15, cells_per=12, seed=0):
-    """Synthetic h5mu with pseudotime + uns['proportions']."""
+
+def _make_tables(tmp_path, n_groups=40, seed=42, id_column=ID):
+    """Two group-level tables with known proportion dynamics.
+
+    Three labels with different shapes along pseudotime, so a broken fit is
+    visible rather than merely noisy:
+      - `rising`  monotonically increases
+      - `falling` monotonically decreases
+      - `peaking` peaks in the middle
+    Proportions of the three sum to 1 per group, as real compositions do.
+    """
     rng = np.random.default_rng(seed)
-    subpops = ["A", "B", "C", "D"]
-    participant_ids = [f"donor_{i:02d}" for i in range(n_participants)]
-    participant_pt = np.linspace(0.05, 0.95, n_participants)
+    ids = [f"donor_{i:03d}" for i in range(n_groups)]
+    pt = np.linspace(0.0, 1.0, n_groups)
 
-    # Simple proportion trajectories
-    def sig(x, x0):
-        return 1 / (1 + np.exp(-10 * (x - x0)))
+    rising = 0.2 + 0.6 * pt
+    falling = 0.8 - 0.6 * pt
+    peaking = 0.4 - 1.2 * (pt - 0.5) ** 2
+    raw = np.column_stack([rising, falling, peaking])
+    raw = raw + rng.normal(0, 0.01, raw.shape)
+    raw = np.clip(raw, 1e-6, None)
+    props = raw / raw.sum(axis=1, keepdims=True)
 
-    props = np.column_stack(
-        [
-            sig(participant_pt, 0.3),
-            1 - sig(participant_pt, 0.7),
-            np.ones(n_participants) * 0.4,
-            np.ones(n_participants) * 0.3,
-        ]
-    )
-    props = np.clip(props + rng.normal(0, 0.02, props.shape), 0.01, None)
-    props = (props.T / props.sum(axis=1)).T
-    prop_df = pd.DataFrame(props, index=participant_ids, columns=subpops)
+    prop_df = pd.DataFrame(props, columns=["rising", "falling", "peaking"])
+    prop_df.insert(0, id_column, ids)
+    prop_path = tmp_path / "proportions.csv"
+    prop_df.to_csv(prop_path, index=False)
 
-    obs_rows = []
-    for i, pid in enumerate(participant_ids):
-        for _ in range(cells_per):
-            obs_rows.append(
-                {
-                    "participant_id": pid,
-                    "subpopulation": rng.choice(subpops),
-                    "palantir_pseudotime": float(
-                        np.clip(participant_pt[i] + rng.normal(0, 0.02), 0, 1)
-                    ),
-                }
-            )
-    obs = pd.DataFrame(
-        obs_rows, index=[f"c{i}" for i in range(n_participants * cells_per)]
-    )
-    # No X: the component only reads .obs and .uns
-    adata = ad.AnnData(obs=obs)
-    adata.uns["proportions"] = prop_df.to_dict()
+    # Shuffled, so the component cannot rely on row order to align the tables
+    pt_df = pd.DataFrame(
+        {
+            id_column: ids,
+            "palantir_pseudotime": pt,
+            "palantir_entropy": rng.random(n_groups),
+        }
+    ).sample(frac=1.0, random_state=seed)
+    pt_path = tmp_path / "pseudotime.csv"
+    pt_df.to_csv(pt_path, index=False)
 
-    path = tmp_path / "input.h5mu"
-    mu.MuData({"rna": adata}).write_h5mu(str(path))
-    return path, subpops
+    return prop_path, pt_path, ids
 
 
 def test_basic(run_component, tmp_path):
-    """Runs without error and stores uns['dynamics'] with expected keys."""
-    h5mu, subpops = _make_input(tmp_path)
-    out = tmp_path / "out.h5mu"
+    """Long-format curves for every label, on the requested number of bins."""
+    prop_path, pt_path, _ = _make_tables(tmp_path)
+    output = tmp_path / "dynamics.csv"
 
     run_component(
         [
             "--input",
-            str(h5mu),
-            "--obs_group",
-            "participant_id",
+            str(prop_path),
+            "--pseudotime",
+            str(pt_path),
             "--output",
-            str(out),
-            "--n_splines",
-            "5",
-        ]
-    )
-
-    assert out.is_file()
-    mdata = mu.read_h5mu(str(out))
-    dyn = mdata.mod["rna"].uns["dynamics"]
-
-    assert set(dyn.keys()) == set(subpops), "Not all subpops in dynamics"
-    for sp in subpops:
-        assert "pseudotime_grid" in dyn[sp]
-        assert "proportion_fitted" in dyn[sp]
-        assert "peak_pseudotime" in dyn[sp]
-        assert "r_squared" in dyn[sp]
-        assert "p_value" in dyn[sp]
-        assert len(dyn[sp]["pseudotime_grid"]) == 100  # default n_pseudotime_bins
-        assert len(dyn[sp]["proportion_fitted"]) == 100
-
-
-def test_custom_keys(run_component, tmp_path):
-    """Custom obs/uns key names are respected."""
-    h5mu, _ = _make_input(tmp_path, seed=1)
-    # rename columns to use non-default names
-    mdata = mu.read_h5mu(str(h5mu))
-    adata = mdata.mod["rna"]
-    adata.obs["my_pt"] = adata.obs["palantir_pseudotime"]
-    adata.obs["my_pid"] = adata.obs["participant_id"]
-    adata.uns["my_props"] = adata.uns["proportions"]
-    path2 = tmp_path / "input2.h5mu"
-    mdata.write_h5mu(str(path2))
-    out = tmp_path / "out2.h5mu"
-
-    run_component(
-        [
-            "--input",
-            str(path2),
-            "--obs_pseudotime",
-            "my_pt",
-            "--obs_group",
-            "my_pid",
-            "--uns_proportions",
-            "my_props",
-            "--uns_output",
-            "my_dynamics",
-            "--n_splines",
-            "5",
-            "--output",
-            str(out),
-        ]
-    )
-
-    mdata_out = mu.read_h5mu(str(out))
-    assert "my_dynamics" in mdata_out.mod["rna"].uns
-
-
-def test_n_pseudotime_bins(run_component, tmp_path):
-    """--n_pseudotime_bins controls the length of grid/fitted arrays."""
-    h5mu, subpops = _make_input(tmp_path, seed=2)
-    out = tmp_path / "out3.h5mu"
-
-    run_component(
-        [
-            "--input",
-            str(h5mu),
-            "--obs_group",
-            "participant_id",
-            "--n_splines",
-            "5",
+            str(output),
             "--n_pseudotime_bins",
             "50",
-            "--output",
-            str(out),
         ]
     )
 
-    dyn = mu.read_h5mu(str(out)).mod["rna"].uns["dynamics"]
-    for sp in subpops:
-        assert len(dyn[sp]["pseudotime_grid"]) == 50
+    assert output.is_file()
+    result = pd.read_csv(output)
+    assert list(result.columns) == ["label", "pseudotime", "proportion_fitted"]
+    assert sorted(result["label"].unique()) == ["falling", "peaking", "rising"]
+    assert len(result) == 3 * 50
+    assert np.isfinite(result["proportion_fitted"]).all()
 
 
-def test_peak_pseudotime_range(run_component, tmp_path):
-    """Peak pseudotime must be in [0, 1]."""
-    h5mu, subpops = _make_input(tmp_path, seed=3)
-    out = tmp_path / "out4.h5mu"
+def test_curve_shapes(run_component, tmp_path):
+    """The fitted curves reproduce the shapes that were put in."""
+    prop_path, pt_path, _ = _make_tables(tmp_path)
+    output = tmp_path / "dynamics.csv"
+    stats_path = tmp_path / "stats.csv"
 
     run_component(
         [
             "--input",
-            str(h5mu),
-            "--obs_group",
-            "participant_id",
-            "--n_splines",
-            "5",
+            str(prop_path),
+            "--pseudotime",
+            str(pt_path),
             "--output",
-            str(out),
+            str(output),
+            "--output_stats",
+            str(stats_path),
+            "--lam",
+            "0.001",
         ]
     )
 
-    dyn = mu.read_h5mu(str(out)).mod["rna"].uns["dynamics"]
-    for sp in subpops:
-        assert 0.0 <= dyn[sp]["peak_pseudotime"] <= 1.0, (
-            f"peak_pseudotime out of range for {sp}"
-        )
+    curves = pd.read_csv(output)
+    by_label = {
+        label: group.sort_values("pseudotime")["proportion_fitted"].to_numpy()
+        for label, group in curves.groupby("label")
+    }
+    assert by_label["rising"][-1] > by_label["rising"][0], "'rising' does not rise"
+    assert by_label["falling"][-1] < by_label["falling"][0], "'falling' does not fall"
 
-
-def test_group_excluded_for_too_few_cells(run_component, tmp_path):
-    """A group below --min_cells_per_group must be dropped from the fit."""
-    h5mu, subpops = _make_input(tmp_path, n_participants=15, cells_per=12, seed=3)
-
-    # Rewrite the input so one donor keeps only 2 cells
-    mdata = mu.read_h5mu(str(h5mu))
-    adata = mdata.mod["rna"]
-    small_donor = "donor_07"
-    donor_cells = [
-        name
-        for name, pid in zip(adata.obs_names, adata.obs["participant_id"])
-        if pid == small_donor
+    stats = pd.read_csv(stats_path).set_index("label")
+    assert list(stats.columns) == [
+        "peak_pseudotime",
+        "r_squared",
+        "p_value",
+        "n_groups",
     ]
-    dropped = set(donor_cells[2:])
-    subset = adata[[n for n in adata.obs_names if n not in dropped]].copy()
-    subset.uns["proportions"] = adata.uns["proportions"]
+    assert stats.loc["peaking", "peak_pseudotime"] == pytest.approx(0.5, abs=0.2), (
+        f"'peaking' peaks at {stats.loc['peaking', 'peak_pseudotime']}, expected ~0.5"
+    )
+    assert stats.loc["rising", "peak_pseudotime"] > 0.8
+    assert stats.loc["falling", "peak_pseudotime"] < 0.2
+    assert (stats["n_groups"] == 40).all()
 
-    small_path = tmp_path / "small_donor.h5mu"
-    mu.MuData({"rna": subset}).write_h5mu(str(small_path))
-    assert (subset.obs["participant_id"] == small_donor).sum() == 2
 
-    out_excluded = tmp_path / "out_excluded.h5mu"
+def test_partial_overlap(run_component, tmp_path):
+    """Groups present in only one table are dropped, the rest still fit."""
+    prop_path, pt_path, ids = _make_tables(tmp_path)
+    trimmed = pd.read_csv(pt_path)
+    trimmed = trimmed[trimmed[ID] != ids[0]]
+    trimmed_path = tmp_path / "pseudotime_trimmed.csv"
+    trimmed.to_csv(trimmed_path, index=False)
+
+    output = tmp_path / "dynamics.csv"
+    stats_path = tmp_path / "stats.csv"
     run_component(
         [
             "--input",
-            str(small_path),
-            "--obs_group",
-            "participant_id",
+            str(prop_path),
+            "--pseudotime",
+            str(trimmed_path),
             "--output",
-            str(out_excluded),
-            "--min_cells_per_group",
-            "5",
-            "--n_splines",
-            "5",
+            str(output),
+            "--output_stats",
+            str(stats_path),
         ]
     )
-    dyn = mu.read_h5mu(str(out_excluded)).mod["rna"].uns["dynamics"]
-    for sp in subpops:
-        groups = list(dyn[sp]["groups"])
-        assert small_donor not in groups, (
-            f"{small_donor} has 2 cells but was still fitted for {sp}"
-        )
-        assert len(groups) == 14, (
-            f"Expected 14 fitted groups for {sp}, got {len(groups)}"
-        )
 
-    # Same input, threshold lowered: the donor must come back
-    out_included = tmp_path / "out_included.h5mu"
+    stats = pd.read_csv(stats_path)
+    assert (stats["n_groups"] == 39).all(), (
+        f"Expected 39 groups after dropping one, got {stats['n_groups'].unique()}"
+    )
+
+
+def test_custom_pseudotime_column(run_component, tmp_path):
+    """--pseudotime_column selects a differently named column."""
+    prop_path, pt_path, _ = _make_tables(tmp_path)
+    renamed = pd.read_csv(pt_path).rename(columns={"palantir_pseudotime": "via_time"})
+    renamed_path = tmp_path / "pseudotime_renamed.csv"
+    renamed.to_csv(renamed_path, index=False)
+
+    output = tmp_path / "dynamics.csv"
     run_component(
         [
             "--input",
-            str(small_path),
-            "--obs_group",
-            "participant_id",
+            str(prop_path),
+            "--pseudotime",
+            str(renamed_path),
+            "--pseudotime_column",
+            "via_time",
             "--output",
-            str(out_included),
-            "--min_cells_per_group",
-            "1",
-            "--n_splines",
-            "5",
+            str(output),
         ]
     )
-    dyn_all = mu.read_h5mu(str(out_included)).mod["rna"].uns["dynamics"]
-    for sp in subpops:
-        assert small_donor in list(dyn_all[sp]["groups"]), (
-            f"{small_donor} missing for {sp} with --min_cells_per_group 1"
-        )
+    assert pd.read_csv(output)["label"].nunique() == 3
+
+
+def test_id_column(run_component, tmp_path):
+    """--id_column picks a non-first identifier column shared by both tables."""
+    prop_path, pt_path, _ = _make_tables(tmp_path, id_column="donor")
+    prop = pd.read_csv(prop_path)
+    prop = prop[[c for c in prop.columns if c != "donor"] + ["donor"]]
+    reordered = tmp_path / "proportions_reordered.csv"
+    prop.to_csv(reordered, index=False)
+
+    output = tmp_path / "dynamics.csv"
+    run_component(
+        [
+            "--input",
+            str(reordered),
+            "--pseudotime",
+            str(pt_path),
+            "--id_column",
+            "donor",
+            "--output",
+            str(output),
+        ]
+    )
+    assert pd.read_csv(output)["label"].nunique() == 3
+
+
+@pytest.mark.parametrize(
+    "mutation,message",
+    [
+        ("duplicate_id", "duplicated identifiers"),
+        ("non_numeric", "non-numeric value column"),
+        ("bad_id_column", "not found in --pseudotime"),
+        ("bad_pseudotime_column", "--pseudotime_column"),
+        ("too_few_groups", "--min_groups"),
+    ],
+)
+def test_input_errors(run_component, tmp_path, mutation, message):
+    """Each malformed input is rejected with a specific message."""
+    prop_path, pt_path, _ = _make_tables(tmp_path)
+    args = [
+        "--input",
+        str(prop_path),
+        "--pseudotime",
+        str(pt_path),
+        "--output",
+        str(tmp_path / "out.csv"),
+    ]
+
+    if mutation == "duplicate_id":
+        df = pd.read_csv(prop_path)
+        df.loc[1, ID] = df.loc[0, ID]
+        path = tmp_path / "dup.csv"
+        df.to_csv(path, index=False)
+        args[1] = str(path)
+    elif mutation == "non_numeric":
+        df = pd.read_csv(prop_path)
+        df["batch"] = "a"
+        path = tmp_path / "non_numeric.csv"
+        df.to_csv(path, index=False)
+        args[1] = str(path)
+    elif mutation == "bad_id_column":
+        df = pd.read_csv(pt_path).rename(columns={ID: "other_id"})
+        path = tmp_path / "bad_id.csv"
+        df.to_csv(path, index=False)
+        args[3] = str(path)
+    elif mutation == "bad_pseudotime_column":
+        args += ["--pseudotime_column", "nope"]
+    elif mutation == "too_few_groups":
+        df = pd.read_csv(pt_path).head(3)
+        path = tmp_path / "short.csv"
+        df.to_csv(path, index=False)
+        args[3] = str(path)
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert message in err.value.stdout.decode("utf-8")
 
 
 if __name__ == "__main__":

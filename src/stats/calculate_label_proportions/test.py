@@ -46,7 +46,7 @@ def synthetic_mudata(tmp_path):
 
 
 def test_basic(run_component, tmp_path):
-    """Proportions are computed and stored in uns, and in obsm when asked for."""
+    """Proportions are computed and stored in uns."""
     mdata, h5mu_path = _make_mudata(
         tmp_path, n_donors=3, n_subpops=4, cells_per_group=10
     )
@@ -62,8 +62,6 @@ def test_basic(run_component, tmp_path):
             "participant_id",
             "--obs_label",
             "subpopulation",
-            "--obsm_output",
-            "proportions",
         ]
     )
 
@@ -83,10 +81,6 @@ def test_basic(run_component, tmp_path):
     row_sums = prop_df.sum(axis=1)
     np.testing.assert_allclose(row_sums.values, np.ones(3), atol=1e-10)
 
-    # obsm["proportions"] must exist with correct shape
-    assert "proportions" in adata.obsm
-    obsm = adata.obsm["proportions"]
-    assert obsm.shape == (len(adata), 4)
 
 
 def test_uniform_proportions(run_component, tmp_path):
@@ -144,17 +138,126 @@ def test_custom_column_names(run_component, tmp_path):
             "cell_class",
             "--uns_output",
             "my_props",
-            "--obsm_output",
-            "my_props",
         ]
     )
 
     result = read_h5mu(str(output_path))
     adata_out = result.mod["rna"]
     assert "my_props" in adata_out.uns
-    assert "my_props" in adata_out.obsm
     prop_df = pd.DataFrame(adata_out.uns["my_props"]).T
     np.testing.assert_allclose(prop_df.sum(axis=1).values, np.ones(2), atol=1e-10)
+
+
+def test_normalize_within(run_component, tmp_path):
+    """--obs_normalize_within makes each label's denominator its own class.
+
+    Two classes of very different size. Globally the small class's labels are a few
+    percent of the donor; within their own class they are half of it. The two
+    normalisations therefore cannot be confused for one another.
+    """
+    composition = {
+        "donor_A": {("big", "b1"): 90, ("big", "b2"): 10, ("small", "s1"): 5, ("small", "s2"): 5},
+        "donor_B": {("big", "b1"): 25, ("big", "b2"): 75, ("small", "s1"): 8, ("small", "s2"): 2},
+    }
+    obs_rows = []
+    for donor, cells in composition.items():
+        for (cls, label), n in cells.items():
+            obs_rows += [
+                {"participant_id": donor, "cell_class": cls, "subpopulation": label}
+            ] * n
+    obs = pd.DataFrame(obs_rows)
+    obs.index = [f"cell_{k}" for k in range(len(obs))]
+    h5mu_path = tmp_path / "hierarchy.h5mu"
+    MuData({"rna": AnnData(obs=obs)}).write_h5mu(str(h5mu_path))
+    output_path = tmp_path / "output_within.h5mu"
+
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--obs_group",
+            "participant_id",
+            "--obs_label",
+            "subpopulation",
+            "--obs_normalize_within",
+            "cell_class",
+        ]
+    )
+
+    prop = pd.DataFrame(read_h5mu(str(output_path)).mod["rna"].uns["proportions"])
+    expected = {
+        "donor_A": {"b1": 0.9, "b2": 0.1, "s1": 0.5, "s2": 0.5},
+        "donor_B": {"b1": 0.25, "b2": 0.75, "s1": 0.8, "s2": 0.2},
+    }
+    for donor, values in expected.items():
+        for label, value in values.items():
+            assert prop.loc[donor, label] == pytest.approx(value, abs=1e-12), (
+                f"{donor}/{label}: expected {value}, got {prop.loc[donor, label]}"
+            )
+
+    # Two classes, so a row sums to 2 and not to 1
+    np.testing.assert_allclose(prop.sum(axis=1).to_numpy(), np.full(2, 2.0), atol=1e-12)
+
+
+def test_normalize_within_differs_from_global(run_component, tmp_path):
+    """Without --obs_normalize_within the same input gives the global proportions."""
+    obs_rows = (
+        [{"participant_id": "d", "cell_class": "big", "subpopulation": "b1"}] * 90
+        + [{"participant_id": "d", "cell_class": "small", "subpopulation": "s1"}] * 10
+    )
+    obs = pd.DataFrame(obs_rows)
+    obs.index = [f"cell_{k}" for k in range(len(obs))]
+    h5mu_path = tmp_path / "global.h5mu"
+    MuData({"rna": AnnData(obs=obs)}).write_h5mu(str(h5mu_path))
+    output_path = tmp_path / "output_global.h5mu"
+
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output",
+            str(output_path),
+            "--obs_group",
+            "participant_id",
+            "--obs_label",
+            "subpopulation",
+        ]
+    )
+
+    prop = pd.DataFrame(read_h5mu(str(output_path)).mod["rna"].uns["proportions"])
+    assert prop.loc["d", "b1"] == pytest.approx(0.9)
+    assert prop.loc["d", "s1"] == pytest.approx(0.1)
+
+
+def test_normalize_within_requires_hierarchy(run_component, tmp_path):
+    """A label that spans two classes is rejected, not silently double-counted."""
+    obs_rows = (
+        [{"participant_id": "d", "cell_class": "big", "subpopulation": "shared"}] * 10
+        + [{"participant_id": "d", "cell_class": "small", "subpopulation": "shared"}] * 10
+    )
+    obs = pd.DataFrame(obs_rows)
+    obs.index = [f"cell_{k}" for k in range(len(obs))]
+    h5mu_path = tmp_path / "ambiguous.h5mu"
+    MuData({"rna": AnnData(obs=obs)}).write_h5mu(str(h5mu_path))
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                str(h5mu_path),
+                "--output",
+                str(tmp_path / "out.h5mu"),
+                "--obs_group",
+                "participant_id",
+                "--obs_label",
+                "subpopulation",
+                "--obs_normalize_within",
+                "cell_class",
+            ]
+        )
+    assert "expects a strict hierarchy" in err.value.stdout.decode("utf-8")
 
 
 def test_missing_column_raises(run_component, tmp_path):
@@ -244,8 +347,6 @@ def test_unequal_group_sizes(run_component, tmp_path):
             "participant_id",
             "--obs_label",
             "subpopulation",
-            "--obsm_output",
-            "proportions",
         ]
     )
 
@@ -259,48 +360,6 @@ def test_unequal_group_sizes(run_component, tmp_path):
         expected_df.to_numpy(dtype=float),
         atol=1e-12,
         err_msg=f"Proportions differ from hand-computed values:\n{prop_df}",
-    )
-
-    # every cell carries its own donor's row
-    obsm = pd.DataFrame(
-        np.asarray(adata_out.obsm["proportions"]),
-        index=adata_out.obs_names,
-        columns=prop_df.columns,
-    )
-    for donor in composition:
-        rows = obsm[adata_out.obs["participant_id"].to_numpy() == donor]
-        np.testing.assert_allclose(
-            rows.to_numpy(dtype=float),
-            np.tile(
-                expected_df.loc[donor].to_numpy(dtype=float), (len(rows), 1)
-            ),
-            atol=1e-12,
-            err_msg=f"obsm rows for {donor} do not match its proportion vector",
-        )
-
-
-def test_obsm_not_written_by_default(run_component, tmp_path):
-    """The redundant per-cell copy is only written when --obsm_output is given."""
-    mdata, h5mu_path = _make_mudata(tmp_path, n_donors=2, n_subpops=3, cells_per_group=5)
-    output_path = tmp_path / "output_no_obsm.h5mu"
-
-    run_component(
-        [
-            "--input",
-            str(h5mu_path),
-            "--output",
-            str(output_path),
-            "--obs_group",
-            "participant_id",
-            "--obs_label",
-            "subpopulation",
-        ]
-    )
-
-    adata_out = read_h5mu(str(output_path)).mod["rna"]
-    assert "proportions" in adata_out.uns
-    assert "proportions" not in adata_out.obsm, (
-        f".obsm should be empty without --obsm_output, found {list(adata_out.obsm)}"
     )
 
 

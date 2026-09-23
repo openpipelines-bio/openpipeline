@@ -2,26 +2,27 @@ name: fit_proportion_dynamics
 namespace: "trajectory"
 scope: "public"
 description: |
-  Fits smoothing splines (scipy UnivariateSpline) of subpopulation proportion versus
-  pseudotime to reveal which cell subpopulations expand or contract along a disease trajectory.
+  Fits a smoothing spline (`scipy.interpolate.UnivariateSpline`) of label proportion
+  versus pseudotime to reveal which cell subpopulations expand or contract along a
+  disease trajectory.
 
-  For each group of cells (`--obs_group`, e.g. a participant or sample) the median
-  single-cell pseudotime is used as a scalar pseudotime coordinate.  A UnivariateSpline is
-  then fitted per subpopulation using group-level proportions as the response.
+  This is a group-level component: every row is a group (a participant, donor or
+  sample), not a cell. It takes two tables and writes two tables, and never opens a
+  MuData - no cell-level data is involved.
 
-  Results are stored per subpopulation in `.uns[--uns_output]`:
-    - `pseudotime_grid`     -  evenly-spaced pseudotime values used for prediction
-    - `proportion_fitted`   -  GAM-smoothed proportion on that grid
-    - `peak_pseudotime`     -  pseudotime at which the fitted proportion is maximal
-    - `r_squared`           -  pseudo-R^2 of the GAM fit
-    - `p_value`             -  significance of the spline smooth term
+    --input       group x label proportions
+                  (`--output_csv` of `stats/calculate_label_proportions`)
+    --pseudotime  one pseudotime value per group
+                  (`--output_table` of `trajectory/palantir`)
 
-  This is step 5 of the BEYOND methodology (Green et al., Nature 2024).
+  Both tables are joined on their identifier column; groups missing from either are
+  dropped.
 
-keywords: [ trajectory, pseudotime, GAM, dynamics, BEYOND ]
+  This is step 4 of the BEYOND methodology (Green et al., Nature 2024).
+
+keywords: [ trajectory, pseudotime, spline, dynamics, BEYOND ]
 links:
-  repository: https://github.com/dswah/pyGAM
-  documentation: https://pygam.readthedocs.io
+  documentation: https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.UnivariateSpline.html
 references:
   doi: 10.1038/s41586-024-07871-6
 license: MIT
@@ -35,53 +36,46 @@ argument_groups:
       - name: "--input"
         alternatives: ["-i"]
         type: file
-        description: Input h5mu file with pseudotime in obs and proportions in uns.
         direction: input
         required: true
-        example: input.h5mu
+        description: |
+          CSV with the group x label proportion matrix: an identifier column plus one
+          numeric column per label.
+        example: proportions.csv
 
-      - name: "--modality"
+      - name: "--pseudotime"
+        type: file
+        direction: input
+        required: true
+        description: |
+          CSV with the same identifier column plus a pseudotime column
+          (`--pseudotime_column`). Extra columns are ignored.
+        example: pseudotime.csv
+
+      - name: "--id_column"
         type: string
-        default: "rna"
         required: false
-        description: Modality to read obs and uns from.
+        description: |
+          Identifier column shared by both tables. Defaults to the first column of
+          `--input`.
+        example: "participant_id"
 
-      - name: "--obs_pseudotime"
+      - name: "--pseudotime_column"
         type: string
         default: "palantir_pseudotime"
         required: false
-        description: ".obs column containing single-cell pseudotime values (e.g. from trajectory/palantir)."
-
-      - name: "--obs_group"
-        type: string
-        required: true
-        example: "sample_id"
-        description: |
-          `.obs` column that groups the cells (e.g. a participant, donor or sample
-          identifier). Must match the row index of the proportion matrix in
-          `--uns_proportions`.
-
-      - name: "--uns_proportions"
-        type: string
-        default: "proportions"
-        required: false
-        description: ".uns key holding the group x label proportion dict (output of stats/calculate_label_proportions)."
+        description: Column of `--pseudotime` holding the pseudotime values.
 
   - name: Arguments
     arguments:
-      - name: "--n_splines"
-        type: integer
-        default: 8
-        min: 4
-        required: false
-        description: Number of B-spline basis functions for the GAM smooth.
-
       - name: "--lam"
         type: double
         default: 0.6
         min: 0.0
         required: false
-        description: Smoothing regularisation penalty (lambda). Higher values produce smoother fits.
+        description: |
+          Smoothing regularisation penalty. The spline smoothing factor is
+          `lam * n_groups`; higher values produce smoother fits.
 
       - name: "--n_pseudotime_bins"
         type: integer
@@ -90,44 +84,47 @@ argument_groups:
         required: false
         description: Number of evenly-spaced pseudotime values on which the fitted curve is evaluated.
 
-      - name: "--min_cells_per_group"
+      - name: "--min_groups"
         type: integer
         default: 5
-        min: 1
+        min: 4
         required: false
-        description: Groups with fewer cells than this threshold are excluded from fitting.
+        description: |
+          Minimum number of groups required to fit. A cubic spline needs at least 4
+          points; fewer groups than this is an error rather than a silent bad fit.
 
   - name: Outputs
     arguments:
       - name: "--output"
         alternatives: ["-o"]
         type: file
-        description: Output h5mu file with dynamics stored in uns.
         direction: output
         required: true
-        example: output.h5mu
+        description: |
+          Long-format CSV of the fitted curves, one row per (label, pseudotime bin):
+          `label`, `pseudotime`, `proportion_fitted`.
+        example: dynamics.csv
 
-      - name: "--uns_output"
-        type: string
-        default: "dynamics"
+      - name: "--output_stats"
+        type: file
+        direction: output
         required: false
         description: |
-          `.uns` key under which per-subpopulation dynamics dicts are stored. Each dict
-          holds the fitted curve, `peak_pseudotime`, `r_squared`, `p_value` and
-          `groups` - the groups that passed `--min_cells_per_group` and were used
-          for the fit.
-
-    __merge__: [., /src/base/h5_compression_argument.yaml]
+          CSV with one row per label: `label`, `peak_pseudotime`, `r_squared`,
+          `p_value`, `n_groups`.
+        example: dynamics_stats.csv
 
 resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
-  - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/group_table.py
 
 test_resources:
   - type: python_script
     path: test.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/group_table.py
 
 engines:
   - type: docker
@@ -137,8 +134,9 @@ engines:
         packages:
           - procps
       - type: python
-        __merge__: /src/base/requirements/anndata_mudata.yaml
         packages:
+          - pandas
+          - numpy
           - scipy
     test_setup:
       - type: python

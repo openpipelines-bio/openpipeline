@@ -110,7 +110,7 @@ argument_groups:
       - name: "--transform"
         type: string
         default: "none"
-        choices: [none, logit, clr]
+        choices: [none, logit, clr, sqrt]
         required: false
         description: |
           Transformation applied to the response values before modelling.
@@ -118,6 +118,8 @@ argument_groups:
           `clr` = centered log-ratio across all responses of a row, for compositional
           responses such as cell-type proportions. Both add a small pseudocount to
           zeros; see `--pseudocount`.
+          `sqrt` = variance stabilisation for proportions, as used by the BEYOND
+          reference implementation. It needs no pseudocount.
 
       - name: "--pseudocount"
         type: double

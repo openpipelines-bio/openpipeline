@@ -10,15 +10,16 @@ description: |
   proportion matrix is stored in:
 
   * `.uns[<uns_output>]`  -  a DataFrame (rows = groups, columns = labels)
-  * `.obsm[<obsm_output>]`  -  optional per-cell copy: each cell carries the proportion
-    vector of its own group (shape n_cells x n_labels). Redundant by construction, only
-    written when `--obsm_output` is given.
+  * `--output_csv`  -  the same matrix as a table, for components that do not read
+    `MuData`. This is what the BEYOND trajectory workflow passes to every step after
+    this one.
 
   When `--obs_group` is omitted, all cells are treated as a single group named `all`,
   giving the overall label proportions of the dataset.
 
   Missing combinations (a group has zero cells with a given label) are filled with 0.
-  Rows are normalised to sum to 1.
+  Rows are normalised to sum to 1, or, with `--obs_normalize_within`, to the number of
+  classes a group has cells in.
 
   Used as the first step of the BEYOND methodology (Green et al., "Cellular communities
   reveal trajectories of brain ageing and Alzheimer's disease", Nature 2024), where the
@@ -64,6 +65,21 @@ argument_groups:
           index of the proportion matrix.
         required: true
         example: "cell_type"
+      - name: "--obs_normalize_within"
+        type: string
+        description: |
+          Optional `.obs` column the labels nest under - typically the broader cell
+          class that `--obs_label` subdivides. When given, each cell's proportion is
+          taken within its own (group, class) stratum rather than over all of the
+          group's cells, so a row sums to the number of classes the group has cells in
+          rather than to 1.
+
+          This is what the BEYOND reference implementation does: subpopulation
+          prevalence is computed within cell type, so rare cell types are not drowned
+          out by abundant ones and a shift inside one cell type is not diluted by the
+          composition of the others.
+        required: false
+        example: "cell_class"
 
   - name: "Output"
     arguments:
@@ -90,16 +106,6 @@ argument_groups:
           Key under `.uns` where the proportion matrix is stored, as a DataFrame with the
           groups as index and the labels as columns.
         default: "proportions"
-        required: false
-        example: "proportions"
-      - name: "--obsm_output"
-        type: string
-        description: |
-          Optional key under `.obsm` holding a per-cell copy of the matrix: every cell
-          carries its own group's proportion vector (shape n_cells x n_labels). The rows
-          repeat once per cell of a group, so this is redundant with `--uns_output`; it
-          exists for cell-level components that can only take an `.obsm` matrix
-          (`dimred/phate`). Nothing is written to `.obsm` when it is not given.
         required: false
         example: "proportions"
     __merge__: [., /src/base/h5_compression_argument.yaml]

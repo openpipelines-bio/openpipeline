@@ -1,26 +1,22 @@
 import sys
 import numpy as np
 import pandas as pd
-import mudata as mu
 from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.spatial.distance import squareform
 from scipy.stats import pearsonr
 
 ## VIASH START
 par = {
-    "input": "communities_input.h5mu",
-    "modality": "rna",
-    "obs_label": "subpopulation",
-    "uns_proportions": "proportions",
-    "uns_dynamics": "dynamics",
+    "input": "proportions.csv",
+    "dynamics": "dynamics.csv",
+    "id_column": None,
     "n_communities": 3,
     "alpha": 0.5,
+    "correlation_method": "spearman",
     "method": "hierarchical",
     "linkage": "ward",
-    "output": "communities_output.h5mu",
-    "obs_community_id": "community_id",
-    "uns_output": "cellular_communities",
-    "output_compression": None,
+    "output": "communities.csv",
+    "output_similarity": None,
 }
 meta = {
     "resources_dir": "src/cluster/label_communities/",
@@ -30,33 +26,54 @@ meta = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from compress_h5mu import write_h5ad_to_h5mu_with_compression
+from group_table import read_group_table
 
 logger = setup_logger()
 
 
-def _cooccurrence_similarity(prop_df):
-    """Pearson correlation matrix of participant proportion vectors (subpop x subpop)."""
-    # prop_df: participants x subpopulations
-    corr = prop_df.corr(method="pearson")
-    # Pearson r is already bounded to [-1, 1]; only the NaN produced by a
-    # zero-variance subpopulation (constant proportion across participants)
-    # needs handling - treat it as "no co-occurrence signal".
+def _cooccurrence_similarity(prop_df, method):
+    """Correlation matrix of group proportion vectors (label x label)."""
+    # prop_df: groups x labels
+    corr = prop_df.corr(method=method)
+    # Pearson/Spearman r is already bounded to [-1, 1]; only the NaN produced by a
+    # zero-variance label (constant proportion across groups) needs handling -
+    # treat it as "no co-occurrence signal".
     corr = corr.fillna(0)
     return corr
 
 
-def _dynamics_similarity(dynamics, subpops):
-    """Pearson correlation of fitted proportion curves (subpop x subpop)."""
-    n = len(subpops)
-    sim = np.eye(n)
+def _read_dynamics(path, labels):
+    """Long-format curve table -> {label: fitted curve}, ordered by pseudotime."""
+    df = pd.read_csv(path)
+    required = {"label", "pseudotime", "proportion_fitted"}
+    missing = required.difference(df.columns)
+    if missing:
+        raise ValueError(
+            f"--dynamics '{path}' is missing column(s) {sorted(missing)}. "
+            f"Available: {list(df.columns)}"
+        )
     curves = {}
-    for sp in subpops:
-        if sp in dynamics:
-            curves[sp] = np.array(dynamics[sp]["proportion_fitted"])
+    for label, group in df.groupby("label"):
+        curves[str(label)] = (
+            group.sort_values("pseudotime")["proportion_fitted"].to_numpy(dtype=float)
+        )
+    absent = [lab for lab in labels if lab not in curves]
+    if absent:
+        logger.warning(
+            "%d label(s) have no fitted curve in --dynamics and get zero dynamics "
+            "similarity: %s",
+            len(absent),
+            absent[:10],
+        )
+    return curves
 
-    for i, sp_i in enumerate(subpops):
-        for j, sp_j in enumerate(subpops):
+
+def _dynamics_similarity(curves, labels):
+    """Pearson correlation of fitted proportion curves (label x label)."""
+    n = len(labels)
+    sim = np.eye(n)
+    for i, sp_i in enumerate(labels):
+        for j, sp_j in enumerate(labels):
             if i >= j:
                 continue
             if sp_i in curves and sp_j in curves:
@@ -71,7 +88,7 @@ def _dynamics_similarity(dynamics, subpops):
                 r = 0.0
             sim[i, j] = r
             sim[j, i] = r
-    return pd.DataFrame(sim, index=subpops, columns=subpops)
+    return pd.DataFrame(sim, index=labels, columns=labels)
 
 
 def _cluster_hierarchical(dist_mat, n_communities, link_method):
@@ -98,44 +115,60 @@ def _cluster_spectral(sim_mat, n_communities):
     return (labels + 1).astype(str)
 
 
-def main():
-    logger.info("Reading input from %s", par["input"])
-    mdata = mu.read_h5mu(par["input"])
-    adata = mdata.mod[par["modality"]]
-
-    # -- validate -------------------------------------------------------------
-    label_col = par["obs_label"]
-    if label_col not in adata.obs.columns:
-        raise ValueError(
-            f"Column '{label_col}' not found in .obs. "
-            f"Available: {list(adata.obs.columns)}"
-        )
-    for key in (par["uns_proportions"], par["uns_dynamics"]):
-        if key not in adata.uns:
-            raise ValueError(
-                f"Key '{key}' not found in .uns. Available: {list(adata.uns.keys())}"
+def _write_similarity(path, co_sim, dyn_sim, combined_df, labels):
+    rows = []
+    for i, sp_i in enumerate(labels):
+        for sp_j in labels[i + 1 :]:
+            rows.append(
+                {
+                    "label_1": sp_i,
+                    "label_2": sp_j,
+                    "co_occurrence": float(co_sim.loc[sp_i, sp_j]),
+                    "dynamics": float(dyn_sim.loc[sp_i, sp_j]),
+                    "combined": float(combined_df.loc[sp_i, sp_j]),
+                }
             )
+    pd.DataFrame(rows).to_csv(path, index=False)
+    logger.info("Written %d label pairs to %s.", len(rows), path)
 
-    # -- load data -------------------------------------------------------------
-    prop_df = pd.DataFrame(adata.uns[par["uns_proportions"]])  # groups x labels
-    dynamics = adata.uns[par["uns_dynamics"]]
-    subpops = prop_df.columns.tolist()
-    logger.info(
-        "Proportion matrix: %d groups x %d labels.",
-        *prop_df.shape,
-    )
+
+def main():
+    alpha = par["alpha"]
+    if alpha < 1.0 and par["dynamics"] is None:
+        raise ValueError(
+            f"--dynamics is required unless --alpha is 1.0; got --alpha {alpha}."
+        )
+
+    logger.info("Reading proportions from %s", par["input"])
+    prop_df = read_group_table(par["input"], par["id_column"], "--input")
+    labels = [str(c) for c in prop_df.columns]
+    prop_df.columns = labels
+    logger.info("Proportion matrix: %d groups x %d labels.", *prop_df.shape)
+
+    if par["n_communities"] > len(labels):
+        raise ValueError(
+            f"--n_communities ({par['n_communities']}) exceeds the number of labels "
+            f"in --input ({len(labels)})."
+        )
 
     # -- similarity matrices ---------------------------------------------------
-    logger.info("Computing co-occurrence similarity (Pearson correlation).")
-    co_sim = _cooccurrence_similarity(prop_df)
+    logger.info(
+        "Computing co-occurrence similarity (%s correlation).",
+        par["correlation_method"],
+    )
+    co_sim = _cooccurrence_similarity(prop_df, par["correlation_method"])
 
-    logger.info("Computing dynamics similarity (curve correlation).")
-    dyn_sim = _dynamics_similarity(dynamics, subpops)
+    if par["dynamics"] is not None:
+        logger.info("Computing dynamics similarity from %s.", par["dynamics"])
+        curves = _read_dynamics(par["dynamics"], labels)
+        dyn_sim = _dynamics_similarity(curves, labels)
+    else:
+        logger.info("No --dynamics given; dynamics similarity is the identity.")
+        dyn_sim = pd.DataFrame(np.eye(len(labels)), index=labels, columns=labels)
 
-    alpha = par["alpha"]
     combined = alpha * co_sim.values + (1.0 - alpha) * dyn_sim.values
     combined = np.clip(combined, -1, 1)
-    combined_df = pd.DataFrame(combined, index=subpops, columns=subpops)
+    combined_df = pd.DataFrame(combined, index=labels, columns=labels)
     logger.info("Combined similarity matrix (alpha=%.2f) computed.", alpha)
 
     # -- clustering -----------------------------------------------------------
@@ -156,37 +189,19 @@ def main():
         logger.info("Spectral clustering (n_communities=%d).", n_comm)
         community_labels = _cluster_spectral(combined_df, n_comm)
 
-    subpop_to_community = dict(zip(subpops, community_labels))
-    logger.info("Community assignments: %s", subpop_to_community)
-
-    # -- assign to cells -------------------------------------------------------
-    comm_col = par["obs_community_id"]
-    adata.obs[comm_col] = (
-        adata.obs[label_col].map(subpop_to_community).fillna("unassigned")
+    out = pd.DataFrame({"label": labels, "community_id": community_labels})
+    out.to_csv(par["output"], index=False)
+    logger.info(
+        "Assigned %d labels to %d communities; written to %s.",
+        len(labels),
+        out["community_id"].nunique(),
+        par["output"],
     )
-    logger.info("Assigned community labels to .obs['%s'].", comm_col)
 
-    # -- store metadata in uns -------------------------------------------------
-    uns_key = par["uns_output"]
-    adata.uns[uns_key] = {
-        "subpopulation_communities": subpop_to_community,
-        "n_communities": n_comm,
-        "alpha": alpha,
-        "method": method,
-        "co_occurrence_similarity": co_sim.to_dict(),
-        "dynamics_similarity": dyn_sim.to_dict(),
-        "combined_similarity": combined_df.to_dict(),
-    }
-    logger.info("Stored community metadata in .uns['%s'].", uns_key)
-
-    logger.info("Writing output to %s", par["output"])
-    write_h5ad_to_h5mu_with_compression(
-        output_file=par["output"],
-        h5mu=par["input"],
-        modality_name=par["modality"],
-        modality_data=adata,
-        output_compression=par["output_compression"],
-    )
+    if par["output_similarity"]:
+        _write_similarity(
+            par["output_similarity"], co_sim, dyn_sim, combined_df, labels
+        )
 
 
 if __name__ == "__main__":

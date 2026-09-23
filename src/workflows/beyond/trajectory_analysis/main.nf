@@ -2,10 +2,12 @@
 //
 // Input:  single channel event [ id, state ] where state.input is the atlas h5mu
 //         carrying obs[--obs_group] + obs[--obs_label] (see beyond/subpopulation_clustering).
-// Output: h5mu with the BEYOND annotations, plus the association table and the optional
-//         enrichment table as CSV files.
+// Output: the atlas h5mu with the proportion matrix in uns, plus the group-level
+//         result tables as CSV files.
 //
-// Steps 1-5 pass the h5mu along; steps 6-7 work on tables and leave the h5mu untouched.
+// Step 1 is the only step that reads cell-level data. It converts the atlas into a
+// group x label proportion table, and every step after it is table in / table out -
+// the BEYOND cellular landscape is a donor landscape, not a cell landscape.
 //
 // Channel convention throughout: [ id, state_map ]
 
@@ -24,89 +26,107 @@ workflow run_wf {
 
     // -- 1. Group x label proportion matrix ----------------------------------------
     //
-    // The CSV copy is what the (MuData-free) association step downstream consumes.
+    // The only step that opens the h5mu. The CSV it writes is what every downstream
+    // step consumes.
     | calculate_label_proportions.run(
         fromState: { id, state -> [
           "input":       state.input,
           "obs_group":   state.obs_group,
           "obs_label":   state.obs_label,
+          "obs_normalize_within": state.obs_normalize_within,
           "uns_output":  state.uns_proportions,
-          "obsm_output": state.uns_proportions,
           "output":      state.workflow_output,
-          "output_csv":  "${id}.proportions.csv",
+          "output_csv":  state.output_proportions_csv,
         ]},
         toState: { id, output, state ->
           state + [
-            "input":            output.output,
-            "proportions_csv":  output.output_csv,
+            "input":                    output.output,
+            "output_proportions_csv":   output.output_csv,
           ]
         }
       )
 
-    // -- 2. PHATE cellular landscape (input: proportion matrix in obsm) -------------
+    // -- 2. PHATE cellular landscape (donor x subpopulation proportions) -----------
     | phate.run(
         fromState: { id, state -> [
-          "input":      state.input,
-          "obsm_input": state.uns_proportions,
-          "output":     state.workflow_output,
+          "input_table":  state.output_proportions_csv,
+          "id_column":    state.obs_group,
+          "output_table": state.output_phate_csv,
+          "n_components": state.phate_n_components,
+          "knn":          state.phate_knn,
+          "decay":        state.phate_decay,
         ]},
-        toState: [ "input": "output" ]
+        toState: { id, output, state ->
+          state + [ "output_phate_csv": output.output_table ]
+        }
       )
 
-    // -- 3. Palantir pseudotime + fate probabilities (input: X_phate) ---------------
+    // -- 3. Palantir pseudotime + fate probabilities on the landscape --------------
+    //
+    // The trait table doubles as the label source for --start_group_cluster, so a root
+    // can be named as e.g. "the non-demented donors" rather than a single identifier.
     | palantir.run(
         fromState: { id, state -> [
-          "input":                   state.input,
-          "obsm_input":              "X_phate",
-          "start_cell":              state.start_cell,
-          "start_cell_cluster":      state.start_cell_cluster,
-          "start_cell_obs_key":      state.start_cell_obs_key,
-          "terminal_states_obs_key": state.terminal_states_obs_key,
+          "input_table":             state.output_phate_csv,
+          "id_column":               state.obs_group,
+          "metadata":                state.traits_csv,
+          "start_group":             state.start_group,
+          "start_group_cluster":     state.start_group_cluster,
+          "start_group_column":      state.start_group_column,
+          "terminal_states":         state.terminal_states,
+          "terminal_states_column":  state.terminal_states_column,
           "num_waypoints":           state.num_waypoints,
           "n_components":            state.palantir_n_components,
           "knn":                     state.palantir_knn,
-          "output":                  state.workflow_output,
+          "waypoint_knn":            state.palantir_waypoint_knn,
+          "pseudotime_column":       state.pseudotime_column,
+          "output_table":            state.output_pseudotime_csv,
         ]},
-        toState: [ "input": "output" ]
+        toState: { id, output, state ->
+          state + [ "output_pseudotime_csv": output.output_table ]
+        }
       )
 
     // -- 4. Spline-fitted proportion dynamics along pseudotime ---------------------
     | fit_proportion_dynamics.run(
         fromState: { id, state -> [
-          "input":           state.input,
-          "obs_pseudotime":  state.obs_pseudotime,
-          "obs_group":       state.obs_group,
-          "uns_proportions": state.uns_proportions,
-          "n_splines":       state.n_splines,
-          "lam":             state.dynamics_lam,
-          "uns_output":      state.uns_dynamics,
-          "output":          state.workflow_output,
+          "input":              state.output_proportions_csv,
+          "pseudotime":         state.output_pseudotime_csv,
+          "id_column":          state.obs_group,
+          "pseudotime_column":  state.pseudotime_column,
+          "lam":                state.dynamics_lam,
+          "output":             state.output_dynamics_csv,
+          "output_stats":       state.output_dynamics_stats_csv,
         ]},
-        toState: [ "input": "output" ]
+        toState: { id, output, state ->
+          state + [
+            "output_dynamics_csv":        output.output,
+            "output_dynamics_stats_csv":  output.output_stats,
+          ]
+        }
       )
 
     // -- 5. Cellular community detection (co-occurrence + dynamics) ----------------
     | label_communities.run(
         fromState: { id, state -> [
-          "input":           state.input,
-          "obs_label":       state.obs_label,
-          "uns_proportions": state.uns_proportions,
-          "uns_dynamics":    state.uns_dynamics,
-          "n_communities":   state.n_communities,
-          "alpha":           state.communities_alpha,
-          "method":          state.communities_method,
-          "output":          state.workflow_output,
+          "input":               state.output_proportions_csv,
+          "dynamics":            state.output_dynamics_csv,
+          "id_column":           state.obs_group,
+          "n_communities":       state.n_communities,
+          "alpha":               state.communities_alpha,
+          "correlation_method":  state.communities_correlation_method,
+          "method":              state.communities_method,
+          "output":              state.output_communities_csv,
         ]},
-        toState: [ "input": "output" ]
+        toState: { id, output, state ->
+          state + [ "output_communities_csv": output.output ]
+        }
       )
 
     // -- 6. Trait associations on the proportion table ------------------------------
-    //
-    // Tabular in / tabular out: the proportion CSV from step 1 is joined with the trait
-    // table on the group column, so the h5mu (state.input) is left untouched here.
     | test_associations.run(
         fromState: { id, state -> [
-          "input":                state.proportions_csv,
+          "input":                state.output_proportions_csv,
           "metadata":             state.traits_csv,
           "join_on":              state.obs_group,
           "predictor_columns":    state.trait_columns,
@@ -142,9 +162,16 @@ workflow run_wf {
       )
 
     | map { id, state ->
-        // The association table always exists; the enrichment table only when gseapy ran.
+        // The h5mu and every table above always exist; the enrichment table only
+        // when gseapy ran.
         def out = [
           "output":                         state.input,
+          "output_proportions_csv":         state.output_proportions_csv,
+          "output_phate_csv":               state.output_phate_csv,
+          "output_pseudotime_csv":          state.output_pseudotime_csv,
+          "output_dynamics_csv":            state.output_dynamics_csv,
+          "output_dynamics_stats_csv":      state.output_dynamics_stats_csv,
+          "output_communities_csv":         state.output_communities_csv,
           "output_trait_associations_csv":  state.output_trait_associations_csv,
         ]
         if (state.de_results_csv != null) {

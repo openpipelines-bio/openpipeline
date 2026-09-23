@@ -5,23 +5,26 @@ description: |
   Detects cellular communities by combining co-occurrence and dynamics similarity
   of subpopulations  -  the core clustering step of the BEYOND methodology.
 
-  Two subpopulation x subpopulation similarity matrices are computed:
+  This is a group-level component: it works on a group x label proportion table,
+  not on cells, and never opens a MuData.
 
-  1. **Co-occurrence similarity**: Pearson correlation of group (e.g. participant)
-     proportion vectors across subpopulations. Subpopulations that tend to expand or
-     contract together receive a high score.
+  Two label x label similarity matrices are computed:
 
-  2. **Dynamics similarity**: Pearson correlation of GAM-fitted proportion curves
-     along pseudotime. Subpopulations with parallel temporal trajectories receive
-     a high score.
+  1. **Co-occurrence similarity**: correlation of group (e.g. participant)
+     proportion vectors across labels. Labels that tend to expand or contract
+     together receive a high score. The reference implementation uses Spearman
+     (`--correlation_method`).
+
+  2. **Dynamics similarity**: Pearson correlation of the spline-fitted proportion
+     curves along pseudotime (`--dynamics`, from `trajectory/fit_proportion_dynamics`).
+     Labels with parallel temporal trajectories receive a high score.
 
   The combined similarity (weighted sum controlled by `--alpha`) is converted to a
   distance matrix and Ward-linkage hierarchical clustering is applied to group
-  subpopulations into `--n_communities` cellular communities.
+  labels into `--n_communities` cellular communities.
 
-  Outputs:
-    - `obs["community_id"]`     -  community label for every cell
-    - `uns["cellular_communities"]`  -  subpopulation -> community mapping + metadata
+  To carry the community labels back onto cells, join `--output` onto `.obs` with
+  `metadata/join_csv`.
 
 keywords: [ cellular communities, clustering, co-occurrence, dynamics, BEYOND ]
 links:
@@ -39,37 +42,29 @@ argument_groups:
       - name: "--input"
         alternatives: ["-i"]
         type: file
-        description: Input h5mu file with proportion matrix and dynamics in uns.
         direction: input
         required: true
-        example: input.h5mu
-
-      - name: "--modality"
-        type: string
-        default: "rna"
-        required: false
-        description: Modality to read and write.
-
-      - name: "--obs_label"
-        type: string
-        required: true
-        example: "cell_type"
         description: |
-          `.obs` column holding the labels that were used to compute the proportions
-          (e.g. cell types or subpopulations). Must match the column index of the
-          proportion matrix in `--uns_proportions`.
+          CSV with the group x label proportion matrix: an identifier column plus one
+          numeric column per label
+          (`--output_csv` of `stats/calculate_label_proportions`).
+        example: proportions.csv
 
-      - name: "--uns_proportions"
-        type: string
-        default: "proportions"
+      - name: "--dynamics"
+        type: file
+        direction: input
         required: false
-        description: ".uns key with the group x label proportion dict (from stats/calculate_label_proportions)."
+        description: |
+          Long-format CSV of fitted proportion curves with columns `label`,
+          `pseudotime` and `proportion_fitted` (`--output` of
+          `trajectory/fit_proportion_dynamics`). Required unless `--alpha` is 1.0.
+        example: dynamics.csv
 
-      - name: "--uns_dynamics"
+      - name: "--id_column"
         type: string
-        default: "dynamics"
         required: false
-        description: ".uns key with per-subpopulation dynamics dicts (from trajectory/fit_proportion_dynamics)."
+        description: Identifier column of `--input`. Defaults to its first column.
+        example: "participant_id"
 
   - name: Arguments
     arguments:
@@ -91,6 +86,16 @@ argument_groups:
           Final similarity = alpha * co_occurrence + (1 - alpha) * dynamics.
           Set to 1.0 for purely co-occurrence-based clustering, 0.0 for dynamics only.
 
+      - name: "--correlation_method"
+        type: string
+        default: "spearman"
+        choices: [pearson, spearman]
+        required: false
+        description: |
+          Correlation used for the co-occurrence similarity. The BEYOND reference
+          implementation uses Spearman, which is robust to the skew of compositional
+          proportions.
+
       - name: "--method"
         type: string
         default: "hierarchical"
@@ -110,34 +115,32 @@ argument_groups:
       - name: "--output"
         alternatives: ["-o"]
         type: file
-        description: Output h5mu with community labels in obs and uns.
         direction: output
         required: true
-        example: output.h5mu
+        description: |
+          CSV with one row per label: `label`, `community_id`.
+        example: communities.csv
 
-      - name: "--obs_community_id"
-        type: string
-        default: "community_id"
+      - name: "--output_similarity"
+        type: file
+        direction: output
         required: false
-        description: ".obs column name for community labels assigned to each cell."
-
-      - name: "--uns_output"
-        type: string
-        default: "cellular_communities"
-        required: false
-        description: ".uns key where community metadata is stored."
-
-    __merge__: [., /src/base/h5_compression_argument.yaml]
+        description: |
+          Long-format CSV of the similarity matrices, one row per label pair:
+          `label_1`, `label_2`, `co_occurrence`, `dynamics`, `combined`.
+        example: community_similarity.csv
 
 resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
-  - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/group_table.py
 
 test_resources:
   - type: python_script
     path: test.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/group_table.py
 
 engines:
   - type: docker
@@ -147,8 +150,9 @@ engines:
         packages:
           - procps
       - type: python
-        __merge__: /src/base/requirements/anndata_mudata.yaml
         packages:
+          - pandas
+          - numpy
           - scipy
           - scikit-learn
     test_setup:
