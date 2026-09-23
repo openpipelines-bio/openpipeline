@@ -342,8 +342,8 @@ argument_groups:
         required: false
         description: |
           DE result CSV (e.g. from differential_expression/deseq2). When provided,
-          pathway enrichment is run and results stored in uns["pathway_enrichment"].
-          When omitted, the step is skipped.
+          pathway enrichment is run and the results are written to
+          `--output_pathway_csv`. When omitted, the step is skipped.
         example: de_results.csv
       - name: "--gene_column"
         type: string
