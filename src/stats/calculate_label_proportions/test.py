@@ -82,7 +82,6 @@ def test_basic(run_component, tmp_path):
     np.testing.assert_allclose(row_sums.values, np.ones(3), atol=1e-10)
 
 
-
 def test_uniform_proportions(run_component, tmp_path):
     """With equal cell counts per group, all proportions should be 1/n_subpops."""
     n_subpops = 4
@@ -156,8 +155,18 @@ def test_normalize_within(run_component, tmp_path):
     normalisations therefore cannot be confused for one another.
     """
     composition = {
-        "donor_A": {("big", "b1"): 90, ("big", "b2"): 10, ("small", "s1"): 5, ("small", "s2"): 5},
-        "donor_B": {("big", "b1"): 25, ("big", "b2"): 75, ("small", "s1"): 8, ("small", "s2"): 2},
+        "donor_A": {
+            ("big", "b1"): 90,
+            ("big", "b2"): 10,
+            ("small", "s1"): 5,
+            ("small", "s2"): 5,
+        },
+        "donor_B": {
+            ("big", "b1"): 25,
+            ("big", "b2"): 75,
+            ("small", "s1"): 8,
+            ("small", "s2"): 2,
+        },
     }
     obs_rows = []
     for donor, cells in composition.items():
@@ -203,10 +212,11 @@ def test_normalize_within(run_component, tmp_path):
 
 def test_normalize_within_differs_from_global(run_component, tmp_path):
     """Without --obs_normalize_within the same input gives the global proportions."""
-    obs_rows = (
-        [{"participant_id": "d", "cell_class": "big", "subpopulation": "b1"}] * 90
-        + [{"participant_id": "d", "cell_class": "small", "subpopulation": "s1"}] * 10
-    )
+    obs_rows = [
+        {"participant_id": "d", "cell_class": "big", "subpopulation": "b1"}
+    ] * 90 + [
+        {"participant_id": "d", "cell_class": "small", "subpopulation": "s1"}
+    ] * 10
     obs = pd.DataFrame(obs_rows)
     obs.index = [f"cell_{k}" for k in range(len(obs))]
     h5mu_path = tmp_path / "global.h5mu"
@@ -233,10 +243,11 @@ def test_normalize_within_differs_from_global(run_component, tmp_path):
 
 def test_normalize_within_requires_hierarchy(run_component, tmp_path):
     """A label that spans two classes is rejected, not silently double-counted."""
-    obs_rows = (
-        [{"participant_id": "d", "cell_class": "big", "subpopulation": "shared"}] * 10
-        + [{"participant_id": "d", "cell_class": "small", "subpopulation": "shared"}] * 10
-    )
+    obs_rows = [
+        {"participant_id": "d", "cell_class": "big", "subpopulation": "shared"}
+    ] * 10 + [
+        {"participant_id": "d", "cell_class": "small", "subpopulation": "shared"}
+    ] * 10
     obs = pd.DataFrame(obs_rows)
     obs.index = [f"cell_{k}" for k in range(len(obs))]
     h5mu_path = tmp_path / "ambiguous.h5mu"

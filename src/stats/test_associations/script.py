@@ -132,7 +132,9 @@ def _transform_responses(df, responses, method, pseudocount):
                 "found negative values."
             )
         df[responses] = np.sqrt(values)
-    logger.info("Applied '%s' transform to %d response columns.", method, len(responses))
+    logger.info(
+        "Applied '%s' transform to %d response columns.", method, len(responses)
+    )
     return df
 
 

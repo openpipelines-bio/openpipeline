@@ -54,9 +54,9 @@ def _read_dynamics(path, labels):
         )
     curves = {}
     for label, group in df.groupby("label"):
-        curves[str(label)] = (
-            group.sort_values("pseudotime")["proportion_fitted"].to_numpy(dtype=float)
-        )
+        curves[str(label)] = group.sort_values("pseudotime")[
+            "proportion_fitted"
+        ].to_numpy(dtype=float)
     absent = [lab for lab in labels if lab not in curves]
     if absent:
         logger.warning(

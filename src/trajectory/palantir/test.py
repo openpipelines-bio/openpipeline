@@ -259,7 +259,9 @@ def test_table_mode_start_group(run_component, tmp_path):
     assert pt.min() >= 0.0 and pt.max() <= 1.0
     # The table rows are ordered along the trajectory, so pseudotime must increase
     rank_corr = pd.Series(pt).corr(pd.Series(np.arange(len(pt))), method="spearman")
-    assert rank_corr > 0.9, f"Pseudotime does not follow the trajectory: rho={rank_corr:.3f}"
+    assert rank_corr > 0.9, (
+        f"Pseudotime does not follow the trajectory: rho={rank_corr:.3f}"
+    )
 
 
 def test_table_mode_start_cluster_from_metadata(run_component, tmp_path):
@@ -386,14 +388,18 @@ def test_metadata_rejected_with_h5mu(run_component, tmp_path):
                 "cell_0000",
             ]
         )
-    assert "--metadata only applies to --input_table" in err.value.stdout.decode("utf-8")
+    assert "--metadata only applies to --input_table" in err.value.stdout.decode(
+        "utf-8"
+    )
 
 
 @pytest.mark.parametrize(
     "args,message",
     [
-        (["--input", "H5MU", "--input_table", "TABLE", "--output_table", "OUT"],
-         "Exactly one of"),
+        (
+            ["--input", "H5MU", "--input_table", "TABLE", "--output_table", "OUT"],
+            "Exactly one of",
+        ),
         ([], "Exactly one of"),
         (["--input_table", "TABLE"], "--output_table is required"),
         (["--input", "H5MU"], "--output is required"),

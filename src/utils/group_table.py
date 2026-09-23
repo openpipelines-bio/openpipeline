@@ -45,9 +45,7 @@ def read_group_table(path, id_column=None, label="Input table"):
 
     values = df.drop(columns=[id_column])
     non_numeric = [
-        col
-        for col in values.columns
-        if not pd.api.types.is_numeric_dtype(values[col])
+        col for col in values.columns if not pd.api.types.is_numeric_dtype(values[col])
     ]
     if non_numeric:
         raise ValueError(

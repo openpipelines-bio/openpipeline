@@ -66,9 +66,7 @@ def _check_arguments():
             )
     else:
         if par["output_table"] is None:
-            raise ValueError(
-                "--output_table is required when --input_table is given."
-            )
+            raise ValueError("--output_table is required when --input_table is given.")
 
 
 def _label_source(par):

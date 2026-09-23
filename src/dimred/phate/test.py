@@ -54,9 +54,7 @@ def _make_mudata(tmp_path, n_obs=120, n_pcs=10, seed=42):
     X_pca, branch = _branching_manifold(n_obs, n_pcs, rng)
 
     # No X: the component only reads .obsm
-    obs = pd.DataFrame(
-        {"branch": branch}, index=[f"cell_{i}" for i in range(n_obs)]
-    )
+    obs = pd.DataFrame({"branch": branch}, index=[f"cell_{i}" for i in range(n_obs)])
     adata = AnnData(obs=obs)
     adata.obsm["X_pca"] = X_pca.astype(np.float32)
 
@@ -265,13 +263,13 @@ def test_branches_preserved(run_component, tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def _make_table(tmp_path, n_obs=120, n_features=10, seed=42, id_column="participant_id"):
+def _make_table(
+    tmp_path, n_obs=120, n_features=10, seed=42, id_column="participant_id"
+):
     """CSV with a branching manifold, one row per group."""
     rng = np.random.default_rng(seed)
     values, branch = _branching_manifold(n_obs, n_features, rng)
-    df = pd.DataFrame(
-        values, columns=[f"label_{i}" for i in range(n_features)]
-    )
+    df = pd.DataFrame(values, columns=[f"label_{i}" for i in range(n_features)])
     df.insert(0, id_column, [f"donor_{i}" for i in range(n_obs)])
     table_path = tmp_path / "input_table.csv"
     df.to_csv(table_path, index=False)
@@ -385,8 +383,10 @@ def test_table_mode_preserves_branches(run_component, tmp_path):
 @pytest.mark.parametrize(
     "args,message",
     [
-        (["--input_table", "TABLE", "--output_table", "OUT", "--input", "H5MU"],
-         "Exactly one of"),
+        (
+            ["--input_table", "TABLE", "--output_table", "OUT", "--input", "H5MU"],
+            "Exactly one of",
+        ),
         ([], "Exactly one of"),
         (["--input_table", "TABLE"], "--output_table is required"),
         (["--input", "H5MU"], "--output is required"),

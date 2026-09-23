@@ -143,7 +143,9 @@ def main():
         )
     prop_df = prop_df.loc[common]
     pt = pt.loc[common]
-    logger.info("Fitting splines for %d labels over %d groups.", prop_df.shape[1], len(common))
+    logger.info(
+        "Fitting splines for %d labels over %d groups.", prop_df.shape[1], len(common)
+    )
 
     curves = []
     stats = []
