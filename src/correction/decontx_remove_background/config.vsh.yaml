@@ -178,22 +178,21 @@ engines:
   - type: docker
     image: rocker/r2u:24.04
     setup:
+      - type: r
+        bioc: [ decontX, rhdf5 ]
+    test_setup:
       - type: docker
         env:
-          - RETICULATE_PYTHON=/usr/bin/python
           - PIP_BREAK_SYSTEM_PACKAGES=1
       - type: apt
-        packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
-      - type: r
-        cran: [ anndata, reticulate ]
-        bioc: [ decontX, anndataR, rhdf5 ]
+        packages: [ python3, python3-pip, python-is-python3 ]
       - type: python
+        # Upgrades pip in the user site, the apt-managed pip can't be replaced
         user: true
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/scanpy.yaml, . ]
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]
+    # Python is only needed for testing, so it must be installed before
+    # python_test_setup.yaml's pip packages.
+    __merge__: [ ., /src/base/requirements/python_test_setup.yaml ]
 
 runners:
   - type: executable
