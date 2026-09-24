@@ -466,9 +466,9 @@ RUN pip install --user --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform bpcells_regress_out"
-LABEL org.opencontainers.image.created="2026-09-23T07:55:53Z"
+LABEL org.opencontainers.image.created="2026-09-24T07:45:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="53003569cddce8518addaae3ce79f9f00e5b5259"
+LABEL org.opencontainers.image.revision="77782b14a7cecbaecbaa90758f66bbbe4454f56f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
