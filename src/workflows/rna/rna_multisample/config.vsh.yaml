@@ -192,13 +192,13 @@ argument_groups:
 dependencies:
   - name: wrappers/preprocessing/highly_variable_genes
     repository: openpipeline_rapids
-    alias: highly_variable_features
+    alias: highly_variable_features_cpu_or_gpu
   - name: workflows/qc/qc
     alias: rna_qc
   - name: metadata/add_id
   - name: wrappers/preprocessing/scale
     repository: openpipeline_rapids
-    alias: scale
+    alias: scale_cpu_or_gpu
   - name: workflows/rna/log_normalize
 resources:
   - type: nextflow_script

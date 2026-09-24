@@ -47,10 +47,10 @@ argument_groups:
 dependencies:
   - name: wrappers/preprocessing/normalize_total
     repository: openpipeline_rapids
-    alias: normalize_total
+    alias: normalize_total_cpu_or_gpu
   - name: wrappers/preprocessing/log1p
     repository: openpipeline_rapids
-    alias: log1p
+    alias: log1p_cpu_or_gpu
   - name: transform/delete_layer
 resources:
   - type: nextflow_script

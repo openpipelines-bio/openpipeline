@@ -90,7 +90,7 @@ workflow run_wf {
             toState: ["input": "output"]
         )
         | view {"After concatenation: $it"}
-        | highly_variable_features.run(
+        | highly_variable_features_cpu_or_gpu.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",
@@ -110,7 +110,7 @@ workflow run_wf {
         // The GPU (rapids-singlecell) PCA errors out on genes with zero expression,
         // which concatenating query and reference can leave behind. The CPU PCA
         // tolerates them, so only the GPU path needs this.
-        | filter_genes.run(
+        | filter_genes_gpu.run(
             runIf: {id, state -> state.device_type == "gpu"},
             fromState: {id, state ->
                 [
@@ -124,7 +124,7 @@ workflow run_wf {
             ],
             toState: ["input": "output"]
         )
-        | pca.run(
+        | pca_cpu_or_gpu.run(
             fromState: [
                 "input": "input",
                 "modality": "modality",

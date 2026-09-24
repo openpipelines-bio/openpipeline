@@ -212,7 +212,7 @@ dependencies:
   - name: feature_annotation/align_query_reference
   - name: wrappers/preprocessing/highly_variable_genes
     repository: openpipeline_rapids
-    alias: highly_variable_features
+    alias: highly_variable_features_cpu_or_gpu
   - name: transform/delete_layer
   - name: workflows/multiomics/split_modalities
   - name: dataflow/merge

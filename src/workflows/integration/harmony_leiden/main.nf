@@ -40,7 +40,7 @@ workflow run_wf {
       ]
     )
     // run Harmony integration
-    | harmony_integrate.run(
+    | harmony_integrate_cpu_or_gpu.run(
       fromState: [
           "input": "input",
           "modality": "modality",

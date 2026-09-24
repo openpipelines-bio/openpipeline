@@ -11,7 +11,7 @@ workflow run_wf {
     // The GPU (rapids-singlecell) PCA errors out on genes with zero expression,
     // which upstream cell filtering can leave behind. The CPU PCA tolerates them,
     // so only the GPU path needs this.
-    | filter_genes.run(
+    | filter_genes_gpu.run(
       runIf: {id, state -> state.device_type == "gpu"},
       fromState: {id, state ->
         [
@@ -23,7 +23,7 @@ workflow run_wf {
       args: ["min_counts": 1],
       toState: ["input": "output"]
     )
-    | pca.run(
+    | pca_cpu_or_gpu.run(
       fromState: [
         "input": "input", 
         "obsm_output": "obsm_pca",

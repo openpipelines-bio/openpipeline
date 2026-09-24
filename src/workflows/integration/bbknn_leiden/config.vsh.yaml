@@ -115,13 +115,13 @@ test_resources:
 dependencies:
   - name: wrappers/tools/leiden
     repository: openpipeline_rapids
-    alias: leiden
+    alias: leiden_cpu_or_gpu
   - name: wrappers/tools/umap
     repository: openpipeline_rapids
-    alias: umap
+    alias: umap_cpu_or_gpu
   - name: wrappers/preprocessing/bbknn
     repository: openpipeline_rapids
-    alias: bbknn
+    alias: bbknn_cpu_or_gpu
   - name: metadata/move_obsm_to_obs 
 runners:
   - type: nextflow

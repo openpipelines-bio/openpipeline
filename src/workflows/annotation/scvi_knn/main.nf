@@ -93,7 +93,7 @@ workflow run_wf {
       )
 
       // Calculate HVG across query and reference
-      | highly_variable_features.run(
+      | highly_variable_features_cpu_or_gpu.run(
         fromState: [
           "input": "input",
           "modality": "modality",

@@ -72,13 +72,13 @@ argument_groups:
 dependencies:
   - name: wrappers/tools/leiden
     repository: openpipeline_rapids
-    alias: leiden
+    alias: leiden_cpu_or_gpu
   - name: wrappers/tools/umap
     repository: openpipeline_rapids
-    alias: umap
+    alias: umap_cpu_or_gpu
   - name: wrappers/preprocessing/neighbors
     repository: openpipeline_rapids
-    alias: find_neighbors
+    alias: find_neighbors_cpu_or_gpu
   - name: metadata/move_obsm_to_obs
 resources:
   - type: nextflow_script

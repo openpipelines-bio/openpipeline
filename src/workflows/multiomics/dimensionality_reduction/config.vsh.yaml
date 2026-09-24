@@ -87,10 +87,10 @@ argument_groups:
 dependencies:
   - name: wrappers/preprocessing/pca
     repository: openpipeline_rapids
-    alias: pca
+    alias: pca_cpu_or_gpu
   - name: preprocessing/filter_genes
     repository: openpipeline_rapids
-    alias: filter_genes
+    alias: filter_genes_gpu
   - name: workflows/multiomics/neighbors_leiden_umap
 resources:
   - type: nextflow_script

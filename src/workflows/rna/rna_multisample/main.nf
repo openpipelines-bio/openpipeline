@@ -20,7 +20,7 @@ workflow run_wf {
         "input": "output"
       ]
     )
-    | scale.run(
+    | scale_cpu_or_gpu.run(
       runIf: {id, state -> state.enable_scaling},
       fromState: {id, state -> 
         [
@@ -35,7 +35,7 @@ workflow run_wf {
       },
       toState: ["input": "output"],
     )
-    | highly_variable_features.run(
+    | highly_variable_features_cpu_or_gpu.run(
       fromState: {id, state ->
         [
           "input": state.input,

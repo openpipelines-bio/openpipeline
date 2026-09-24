@@ -7,7 +7,7 @@ workflow run_wf {
         
     main:
     output_ch = input_ch
-      | normalize_total.run(
+      | normalize_total_cpu_or_gpu.run(
         fromState: [
           "input": "input",
           "modality": "modality",
@@ -22,7 +22,7 @@ workflow run_wf {
           "input": "output",
         ]
       )
-      | log1p.run(
+      | log1p_cpu_or_gpu.run(
         fromState: [
           "input": "input",
           "modality": "modality",
