@@ -28,7 +28,9 @@
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
 
-* `workflows/utils/gpu.config`: added an opt-in Nextflow config that passes the host's NVIDIA devices into GPU-labelled containers, for use with `--device_type gpu` (PR #1225).
+* `workflows/utils/gpu.config`: added a Nextflow config that passes the host's NVIDIA devices into GPU-labelled containers, for use with `--device_type gpu` (PR #1225).
+
+* `workflows/rna/log_normalize`, `workflows/rna/rna_multisample`, `workflows/multiomics/dimensionality_reduction`, `workflows/integration/bbknn_leiden`, `workflows/integration/harmony_leiden`: added a `test_gpu_wf` integration test that exercises the GPU implementations (PR #1225).
 
 ## BUG FIXES
 
