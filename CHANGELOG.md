@@ -99,10 +99,10 @@
     693682 nuclei x 34176 genes), distributed by CZ CELLxGENE Discover under **CC-BY
     4.0**, collection `84ce6837-548d-4a1f-919f-0bc0d9a3952f`, doi
     `10.1101/2024.10.31.24316513`. Its `class` (8) / `subclass` (27) / `subtype` (65)
-    annotation is the three-level hierarchy BEYOND is written for. The proportion table
-    is computed from all 693682 nuclei because subsampling cells destroys the
-    composition; `atlas.h5mu` carries a 32377-nucleus subsample (all 152 donors,
-    stratified by subtype) to exercise the proportion step.
+    annotation is the three-level hierarchy BEYOND is written for. `atlas.h5mu` carries
+    a 32377-nucleus subsample (all 152 donors, stratified by subtype within donor, which
+    approximately keeps each donor's composition) plus `traits.csv` with the donor
+    metadata.
 
   - `resources_test_scripts/beyond_trajectory_simulated_test_data.py`: the previous
     simulation, kept alongside the real fixture rather than replaced by it. The real

@@ -7,7 +7,6 @@ Source: PsychAD RADC_Cohort, 693682 nuclei x 34176 genes, CZ CELLxGENE Discover
 Produces resources_test/beyond_test_data/:
   atlas.h5mu                          ~200 nuclei per donor, stratified by subtype;
                                       ~300-gene panel (class markers + top expressed)
-  proportions.csv                     donor x subtype, within-class prevalence, all nuclei
   traits.csv                          donor x trait
 
 The 6.28 GB source is downloaded once to resources_test/beyond_test_data/; set
@@ -64,28 +63,6 @@ obs = full.obs[
         "ASCVD_status",
     ]
 ].reset_index(drop=True)
-
-# -- proportions: within-class prevalence over all nuclei -------------------------
-# Normalised within class, as in BEYOND 2. Cell-type analysis/3.create.proportion.matrix.R
-counts = (
-    obs.groupby(["class", "subtype", "donor_id"], observed=True)
-    .size()
-    .rename("n")
-    .reset_index()
-)
-counts["prevalence"] = counts["n"] / counts.groupby(
-    ["class", "donor_id"], observed=True
-)["n"].transform("sum")
-proportions = counts.pivot_table(
-    index="donor_id",
-    columns="subtype",
-    values="prevalence",
-    fill_value=0,
-    aggfunc="sum",
-    observed=True,
-)
-proportions.index.name = "participant_id"
-proportions.to_csv(out / "proportions.csv")
 
 # -- donor traits -------------------------------------------------------------------
 traits = obs.groupby("donor_id", observed=True).agg(lambda s: s.iloc[0])
