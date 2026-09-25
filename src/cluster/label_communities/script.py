@@ -44,21 +44,18 @@ def _read_dynamics(path, labels):
     df = pd.read_csv(path)
     required = {"label", "pseudotime", "proportion_fitted"}
     missing = required.difference(df.columns)
-    df = pd.read_csv(path)
-    required = {"label", "pseudotime", "proportion_fitted"}
-    missing = required.difference(df.columns)
     if missing:
         raise ValueError(
             f"--dynamics '{path}' is missing column(s) {sorted(missing)}. "
             f"Available: {list(df.columns)}"
         )
-    
+
     curves = {}
     for label, group in df.groupby("label"):
         curves[str(label)] = group.sort_values("pseudotime")[
             "proportion_fitted"
         ].to_numpy(dtype=float)
-    
+
     absent = [lab for lab in labels if lab not in curves]
     if absent:
         logger.warning(
@@ -67,7 +64,7 @@ def _read_dynamics(path, labels):
             len(absent),
             absent[:10],
         )
-    
+
     return curves
 
 

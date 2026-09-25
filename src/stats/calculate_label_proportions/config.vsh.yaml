@@ -9,6 +9,7 @@ description: |
   fraction of that group's cells carrying that label.  The resulting group x label
   proportion matrix is stored in:
 
+  * `.uns[<uns_output>]`  -  a DataFrame (rows = groups, columns = labels)
   * `--output_csv`  -  the same matrix as a table, for components that do not read
     `MuData`.
 
