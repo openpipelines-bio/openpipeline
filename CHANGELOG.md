@@ -79,6 +79,117 @@
 
 ## NEW FEATURES
 
+* BEYOND methodology - 7 new components and 2 new workflows implementing the
+  Habib-lab BEYOND pipeline for cellular community discovery in snRNA-seq data
+  (reference: naomihabiblab/BEYOND_DLPFC) (PR #1162):
+
+  **Components:**
+
+  - `stats/calculate_label_proportions` *(new namespace)*: computes a group x label cell
+    proportion matrix from a single-cell dataset (`--obs_group`, e.g. a participant or
+    sample, x `--obs_label`, e.g. a cell type); omitting `--obs_group` gives the overall
+    label proportions. `--obs_normalize_within` takes the proportion within a broader
+    class that the labels nest under (subpopulation prevalence within cell type, as the
+    BEYOND reference implementation does) instead of over all of a group's cells. Stores
+    the matrix as a DataFrame in `.uns["proportions"]` (`--output`) and/or as a table
+    (`--output_csv`); at least one of the two outputs is required.
+    This is the only step of the BEYOND trajectory workflow that reads cell-level data;
+    every step after it consumes that table.
+
+  - `dimred/phate`: computes a PHATE embedding. Two input modes: `--input` (h5mu,
+    embedding any `.obsm` matrix such as `X_pca`, result in `.obsm["X_phate"]`) or
+    `--input_table` (CSV with an identifier column plus one numeric column per feature,
+    result in `--output_table` as `phate_1` ... `phate_n`). The table mode is the
+    group-level mode used by BEYOND, where every row is a participant. Supports
+    configurable `knn`, `decay`, `t`, `gamma`, and `n_components`.
+
+  - `trajectory/palantir`: computes pseudotime and fate probabilities using Palantir
+    (1.3.3 API). Two input modes: `--input` (h5mu; results in
+    `obs["palantir_pseudotime"]`, `obs["palantir_entropy"]`,
+    `obsm["palantir_fate_probabilities"]` and `uns["palantir_waypoints"]`) or
+    `--input_table` (embedding CSV; results in one `--output_table` with the pseudotime,
+    entropy, a `fate_<terminal state>` column per terminal state and a
+    `palantir_waypoint` flag). In table mode the cluster labels for automatic root
+    selection come from an optional `--metadata` CSV. Supports automatic start selection
+    from a label (`--start_cluster` + `--start_cluster_column`) or an explicit
+    identifier (`--start_id`). `--knn` sets the diffusion-map neighbourhood and
+    `--waypoint_knn` the waypoint graph that pseudotime is computed on; the latter has to be reduced for the small cohorts of a group-level run.
+
+  - `trajectory/fit_proportion_dynamics`: fits a cubic spline (scipy.interpolate.UnivariateSpline)
+    of group proportion versus pseudotime per label. Table in, table out, no `MuData`:
+    takes the proportion table (`--input`) and the pseudotime table (`--pseudotime`),
+    joins them on their identifier column, and writes the fitted curves as a long-format
+    CSV (`--output`) plus per-label peak pseudotime, R^2 and p-value (`--output_stats`).
+
+  - `cluster/label_communities`: groups labels into communities by combining
+    co-occurrence similarity (correlation of group proportion vectors, Spearman by
+    default as in the reference implementation, `--correlation_method`) and dynamics
+    similarity (Pearson correlation of the fitted proportion curves); applies
+    hierarchical (`--linkage`, Ward by default) or spectral clustering. Table in, table
+    out, no `MuData`: writes the label -> community assignment (`--output`) and
+    optionally the full pairwise similarity matrices (`--output_similarity`). Join the
+    result onto `.obs` with `metadata/join_csv` to label cells.
+
+  - `interpret/gseapy`: performs pre-ranked GSEA or ORA on DESeq2 results using GSEApy.
+    CSV in, CSV out: takes a DE table, Enrichr library names via `--gene_sets` and local
+    GMT files via `--gene_sets_file`, and writes one long-format table of all libraries
+    with a `gene_set_library` column. No `MuData` involved. ORA with no significant
+    genes warns and writes an empty table instead of failing, so a workflow survives
+    a DE run without hits.
+
+  - `stats/test_associations`: tests the association between any set of
+    response columns and any set of predictor columns in a table (CSV in, long-format CSV
+    out, no `MuData` involved), using statsmodels MixedLM when `--random_effect_column` is
+    given and OLS otherwise. Supports covariates, a `--formula` escape hatch, `logit` /
+    `clr` / `sqrt` transforms for compositional responses, and BH/Bonferroni correction
+    over a configurable `--fdr_scope` (global, per predictor or per response). One
+    `--transform` applies to all responses; responses that need different transforms
+    are transformed upstream or tested in separate runs. An optional `--metadata` table
+    is inner-joined on `--input_join_column`, matched against `--metadata_join_column`
+    (same name by default).
+
+  **Workflows:**
+
+  - `workflows/beyond/subpopulation_clustering`: splits an annotated atlas by broad cell
+    type and clusters each cell type separately (split_h5mu -> pca -> neighbors_leiden_umap
+    -> concatenate_h5mu), producing the within-cell-type subpopulation labels that the
+    trajectory workflow needs. Everything upstream of it (QC, integration, annotation) is
+    left to the existing `multiomics/process_samples`, `integration/harmony_leiden` and
+    `annotation/celltypist` workflows.
+
+  - `workflows/beyond/trajectory_analysis`: full BEYOND trajectory inference from an
+    annotated atlas h5mu - runs 6 steps (proportions -> PHATE -> Palantir ->
+    proportion dynamics -> label communities -> trait associations). The BEYOND
+    cellular landscape is a landscape of participants, not of cells: step 1 converts the
+    atlas into a participant x subpopulation proportion table and steps 2-6 are table
+    in / table out. Emits the h5mu (with the proportion matrix in `.uns`) plus the
+    proportion, PHATE, pseudotime, dynamics, community and association tables as CSVs.
+    Trait-association p-values are corrected within each trait by default
+    (`--fdr_scope per_predictor`), as in the reference implementation.
+    Pathway enrichment is not part of it: it belongs with the DE results it runs on, so
+    `interpret/gseapy` is run on its own.
+
+  **Test data:**
+
+  - `resources_test_scripts/beyond_trajectory_test_data.py`: builds the fixture from a
+    real cohort - PsychAD `RADC_Cohort` (dorsolateral prefrontal cortex, 152 donors,
+    693682 nuclei x 34176 genes), distributed by CZ CELLxGENE Discover under **CC-BY
+    4.0**, collection `84ce6837-548d-4a1f-919f-0bc0d9a3952f`, doi
+    `10.1101/2024.10.31.24316513`. Its `class` (8) / `subclass` (27) / `subtype` (65)
+    annotation is the three-level hierarchy BEYOND is written for. `atlas.h5mu` carries
+    a 32377-nucleus subsample (all 152 donors, stratified by subtype within donor, which
+    approximately keeps each donor's composition) plus `traits.csv` with the donor
+    metadata.
+
+  - `resources_test_scripts/beyond_trajectory_simulated_test_data.py`: the previous
+    simulation, kept alongside the real fixture rather than replaced by it. The real
+    cohort carries no compositional association that survives multiple testing at 152
+    donors (scanned over 3 annotation levels x 5 donor traits; closest is
+    `AD_status` x `OPC` at class level, q = 0.053), so it can only be asserted on
+    structurally. The simulation plants a severity gradient, which is what lets the
+    workflow test check that the true trait associations are found and the null one is
+    not. The two fixtures answer different questions and the workflow test runs both.
+
 * `qc/calculate_qc_metrics`: added support for MuData encoded in Zarr format (PR #1140).
 
 * `dataflow/split_modalities`: added support for MuData encoded in Zarr format (PR #1152)

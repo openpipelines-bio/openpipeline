@@ -1,0 +1,204 @@
+name: test_associations
+namespace: "stats"
+scope: "public"
+description: |
+  Test the association between one or more response variables and one or more predictors
+  in a tabular dataset.
+
+  For each (response, predictor) pair a model is fit:
+
+      response ~ predictor + covariates [ + (1 | random_effect) ]
+
+  with `statsmodels`.  A random-effects column selects a mixed-effects model
+  (`mixedlm`); without one a fixed-effects OLS model is used.  `--formula` overrides the
+  right-hand side for full control.
+
+  Multiple-testing correction is applied with `--fdr_method` over the set of tests
+  selected by `--fdr_scope`.
+
+  Output: one CSV with one row per (response, predictor, term):
+  `response, predictor, term, beta, se, stat, p_value, fdr_q, n, model, converged`.
+keywords: [association, linear model, mixed model, statistics, FDR]
+links:
+  repository: https://github.com/openpipelines-bio/openpipeline
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        direction: input
+        required: true
+        description: |
+          CSV file with one row per unit of observation. Must contain the response
+          columns, and the predictor columns unless `--metadata` provides them.
+        example: proportions.csv
+
+      - name: "--metadata"
+        type: file
+        direction: input
+        required: false
+        description: |
+          Optional second CSV (e.g. donor metadata) joined onto `--input` before
+          modelling. Requires `--input_join_column`.
+        example: metadata.csv
+
+      - name: "--input_join_column"
+        type: string
+        required: false
+        description: |
+          Column of `--input` used for the inner join with `--metadata`.
+        example: "sample_id"
+
+      - name: "--metadata_join_column"
+        type: string
+        required: false
+        description: |
+          Column of `--metadata` matched against `--input_join_column`. Defaults to
+          `--input_join_column`, i.e. the same column name in both tables.
+        example: "participant_id"
+
+  - name: Model
+    arguments:
+      - name: "--response_columns"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          Column(s) modelled as the response, one model per response and predictor.
+          Defaults to the numeric columns of `--input` not used by any other argument.
+        example: ["Ast.1", "Ast.2"]
+
+      - name: "--predictor_columns"
+        type: string
+        multiple: true
+        required: true
+        description: |
+          Column(s) to test for association with each response. These are the terms
+          whose coefficients are reported.
+        example: ["amyloid_score", "age_at_death"]
+
+      - name: "--covariate_columns"
+        type: string
+        multiple: true
+        required: false
+        description: Column(s) included as fixed effects but not reported.
+        example: ["age_at_death", "sex"]
+
+      - name: "--random_effect_column"
+        type: string
+        required: false
+        description: |
+          Grouping column for random intercepts (e.g. cohort or batch). When given a
+          mixed-effects model is fit, otherwise OLS.
+        example: "cohort"
+
+      - name: "--formula"
+        type: string
+        required: false
+        description: |
+          Right-hand side of the model formula, overriding the predictor/covariate
+          terms. Use `{predictor}` as a placeholder for the predictor column, e.g.
+          `{predictor} + age + C(sex)`. The reported term is still the predictor.
+          Syntax: https://www.statsmodels.org/stable/example_formulas.html
+        example: "{predictor} + age + C(sex)"
+
+      - name: "--transform"
+        type: string
+        default: "none"
+        choices: [none, logit, clr, sqrt]
+        required: false
+        description: |
+          Transformation applied to the response values before modelling. One
+          transform applies to all response columns: `clr` is by definition computed
+          jointly over them. When the responses need different transforms (e.g.
+          proportions next to a continuous score), transform them upstream or run the
+          component once per set of responses.
+          `logit` = log(p / (1 - p)), for responses bounded in (0, 1).
+          `clr` = centered log-ratio across all responses of a row, for compositional
+          responses such as cell-type proportions. Both add a small pseudocount to
+          zeros; see `--pseudocount`.
+          `sqrt` = variance stabilisation for proportions, as used by the BEYOND
+          reference implementation. It needs no pseudocount.
+
+      - name: "--pseudocount"
+        type: double
+        default: 1.0e-6
+        min: 0
+        required: false
+        description: Value added to zero responses before a `logit` or `clr` transform.
+
+      - name: "--min_observations"
+        type: integer
+        default: 5
+        min: 2
+        required: false
+        description: |
+          Minimum number of complete observations required to fit a model for a given
+          (response, predictor) pair. Pairs below the threshold are skipped.
+
+  - name: Multiple testing
+    arguments:
+      - name: "--fdr_method"
+        type: string
+        default: "bh"
+        choices: [bh, bonferroni, none]
+        required: false
+        description: |
+          Multiple-testing correction. 'bh' = Benjamini-Hochberg FDR,
+          'bonferroni' = Bonferroni, 'none' = no correction (`fdr_q` = `p_value`).
+
+      - name: "--fdr_scope"
+        type: string
+        default: "global"
+        choices: [global, per_predictor, per_response]
+        required: false
+        description: |
+          Set of tests the correction is applied over: all tests at once ('global'),
+          within each predictor, or within each response.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        direction: output
+        required: true
+        description: Long-format CSV with one row per (response, predictor, term).
+        example: associations.csv
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        packages:
+          - pandas~=2.2.3
+          - numpy~=2.1.3
+          - statsmodels~=0.14.4
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, midmem, middisk]

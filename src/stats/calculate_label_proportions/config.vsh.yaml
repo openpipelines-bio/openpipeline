@@ -1,0 +1,138 @@
+name: calculate_label_proportions
+namespace: "stats"
+scope: "public"
+description: |
+  Calculate the proportion of each cell label within each group of cells.
+
+  For each group (`--obs_group`, e.g. a donor, participant, sample or condition) and each
+  label (`--obs_label`, e.g. a Leiden cluster, cell type or subpopulation), computes the
+  fraction of that group's cells carrying that label.  The resulting group x label
+  proportion matrix is stored in:
+
+  * `.uns[<uns_output>]`  -  a DataFrame (rows = groups, columns = labels)
+  * `--output_csv`  -  the same matrix as a table, for components that do not read
+    `MuData`.
+
+  When `--obs_group` is omitted, all cells are treated as a single group named `all`,
+  giving the overall label proportions of the dataset.
+
+  Missing combinations (a group has zero cells with a given label) are filled with 0.
+  Rows sum to 1, unless `--obs_normalize_within` is given.
+keywords: [proportions, composition, cell type, metadata, BEYOND]
+links:
+  repository: https://github.com/openpipelines-bio/openpipeline
+references:
+  doi: 10.1038/s41586-024-07871-6
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: "Input"
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Path to the input `.h5mu` file.
+        required: true
+        example: atlas.h5mu
+      - name: "--modality"
+        type: string
+        description: Modality from the MuData object to process.
+        default: "rna"
+        required: false
+      - name: "--obs_group"
+        type: string
+        description: |
+          `.obs` column that groups the cells (e.g. a participant, donor, sample or
+          condition identifier).  Used as the row index of the proportion matrix.
+          When not given, all cells form a single group named `all`, i.e. the overall
+          label proportions of the dataset.
+        required: false
+        example: "sample_id"
+      - name: "--obs_label"
+        type: string
+        description: |
+          `.obs` column containing the labels whose proportions are computed (e.g.
+          Leiden cluster IDs, cell types or named subpopulations).  Used as the column
+          index of the proportion matrix.
+        required: true
+        example: "cell_type"
+      - name: "--obs_normalize_within"
+        type: string
+        description: |
+          Optional `.obs` column with a coarser label that `--obs_label` subdivides,
+          e.g. cell type when `--obs_label` holds subtypes of it. When given, the
+          denominator of a proportion is the number of cells of the group with the
+          same coarser label, instead of all cells of the group.
+
+          Example: a donor has 100 astrocytes, 30 of them labelled `Ast.1`, and 900
+          other cells. Without this argument `Ast.1` is 30 / 1000 = 0.03; with it,
+          30 / 100 = 0.3. The labels of one coarser label then sum to 1 per group,
+          so a row sums to the number of coarser labels the group has cells in.
+
+          Each `--obs_label` value must occur with only one value of this column;
+          otherwise the component fails.
+        required: false
+        example: "cell_class"
+
+  - name: "Output"
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: |
+          Path to the output `.h5mu` file. Optional when only `--output_csv` is needed;
+          at least one of the two must be given.
+        direction: output
+        required: false
+        example: "atlas_with_proportions.h5mu"
+      - name: "--output_csv"
+        type: file
+        direction: output
+        required: false
+        description: |
+          Optional CSV copy of the proportion matrix (rows = groups, columns = labels),
+          for components that work on tables rather than on `MuData` objects, such as
+          `stats/test_associations`. The first column holds the group identifier and is
+          named after `--obs_group` (`group` when no grouping column is given).
+        example: proportions.csv
+      - name: "--uns_output"
+        type: string
+        description: |
+          Key under `.uns` where the proportion matrix is stored, as a DataFrame with the
+          groups as index and the labels as columns.
+        default: "proportions"
+        required: false
+        example: "proportions"
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /src/utils/setup_logger.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - pandas>=2.0
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]

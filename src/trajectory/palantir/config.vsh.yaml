@@ -1,0 +1,288 @@
+name: palantir
+namespace: "trajectory"
+scope: "public"
+description: |
+  Computes pseudotime and fate probabilities using Palantir.
+
+  Palantir models fate as a Markov chain on a k-nearest-neighbour graph built from a
+  low-dimensional embedding (typically PHATE or PCA). It produces:
+  - A pseudotime value for every observation.
+  - Branch fate probabilities for each terminal state.
+  - An optional set of waypoint observations summarising the trajectory.
+
+  The component runs the full Palantir workflow:
+    1. Diffusion maps on the chosen embedding.
+    2. `palantir.core.run_palantir` starting from `--start_id`.
+
+  If `--start_cluster_column` and `--start_cluster` are provided, the root is chosen
+  automatically as the observation with the highest early-pseudotime score in that
+  population (Palantir `utils.early_cell`). Otherwise `--start_id` must be an exact
+  identifier.
+
+  Two input modes, exactly one of which must be given:
+    - `--input`: an h5mu file, using the embedding in `.obsm[--obsm_input]` and the
+      cluster labels in `.obs`.
+    - `--input_table`: a CSV with an identifier column plus one numeric column per
+      embedding dimension (e.g. `--output_table` of `dimred/phate`), with cluster
+      labels supplied by the optional `--metadata` CSV, for observations that are not
+      cells (e.g. donors). `--start_id` and `--terminal_states` are then row
+      identifiers of the table.
+keywords: [ trajectory, pseudotime, fate probabilities, palantir ]
+links:
+  homepage: https://www.krishnaswamylab.org/projects/palantir
+  documentation: https://palantir.readthedocs.io
+  repository: https://github.com/dpeerlab/Palantir
+references:
+  doi: 10.1038/s41587-019-0068-4
+license: GPL-2.0
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: |
+          Input h5mu file. Mutually exclusive with `--input_table`; exactly one of
+          the two is required.
+        direction: input
+        required: false
+        example: input.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+        description: Modality to process.
+
+      - name: "--obsm_input"
+        type: string
+        default: "X_pca_integrated"
+        required: false
+        description: |
+          `.obsm` key of the low-dimensional embedding used to build the diffusion map.
+          Recommended: `X_phate` (output of `dimred/phate`) or `X_pca_integrated`
+          (output of `integrate/harmonypy`). Only used with `--input`.
+        example: X_phate
+
+      - name: "--input_table"
+        type: file
+        direction: input
+        required: false
+        description: |
+          Input CSV with one row per observation: an identifier column plus one numeric
+          column per embedding dimension. Mutually exclusive with `--input`.
+        example: phate.csv
+
+      - name: "--id_column"
+        type: string
+        required: false
+        description: Identifier column of `--input_table`. Defaults to its first column.
+        example: "participant_id"
+
+      - name: "--metadata"
+        type: file
+        direction: input
+        required: false
+        description: |
+          Optional CSV with the same identifier column as `--input_table` plus label
+          columns, supplying the values read by `--start_cluster_column` and
+          `--terminal_states_column` in table mode. Only used with `--input_table`.
+        example: traits.csv
+
+  - name: Trajectory root
+    arguments:
+      - name: "--start_id"
+        type: string
+        required: false
+        description: |
+          Identifier of the observation to use as the trajectory root: an `.obs_names`
+          value with `--input`, a row identifier of `--input_table` otherwise.
+          Required unless `--start_cluster` is provided.
+        example: "ACGTACGT-1"
+
+      - name: "--start_cluster"
+        type: string
+        required: false
+        description: |
+          Label identifying the root population. When provided, the observation with the
+          best early-trajectory score within that population is selected automatically.
+          Requires `--start_cluster_column`.
+        example: "ExN.1"
+
+      - name: "--start_cluster_column"
+        type: string
+        required: false
+        description: |
+          Column holding the labels used together with `--start_cluster`: an `.obs`
+          column with `--input`, a column of `--metadata` otherwise.
+        example: "subpopulation"
+
+  - name: Arguments
+    arguments:
+      - name: "--num_waypoints"
+        type: integer
+        default: 500
+        min: 10
+        required: false
+        description: |
+          Number of waypoint cells used to represent the trajectory. Larger values give
+          smoother pseudotime but increase runtime. The Palantir paper uses 1200; 500 is
+          sufficient for datasets < 50k cells. Must be larger than `--waypoint_knn` and
+          is capped at the number of observations.
+
+      - name: "--n_components"
+        type: integer
+        default: 10
+        min: 2
+        required: false
+        description: Number of diffusion-map components to compute.
+
+      - name: "--knn"
+        type: integer
+        default: 30
+        min: 5
+        required: false
+        description: |
+          Number of k-nearest neighbours for the diffusion map
+          (`palantir.utils.run_diffusion_maps`). Must be smaller than the number of
+          observations.
+
+      - name: "--waypoint_knn"
+        type: integer
+        default: 30
+        min: 2
+        required: false
+        description: |
+          Number of k-nearest neighbours for the waypoint graph that pseudotime is
+          computed on (`palantir.core.run_palantir`). Must be smaller than
+          `--num_waypoints`. Palantir's own default is 30, which is too large for the
+          group-level cohorts of `--input_table`; the BEYOND reference implementation
+          uses 15.
+
+      - name: "--scale_components"
+        type: boolean
+        default: true
+        required: false
+        description: Scale diffusion-map components by their eigenvalues before running Palantir.
+
+      - name: "--terminal_states"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          Identifiers of the observations to pin as terminal states (branch endpoints).
+          If neither this nor `--terminal_states_column` is given, Palantir selects
+          terminal states automatically.
+        example: ["CELL_A-1", "CELL_B-1"]
+
+      - name: "--terminal_states_column"
+        type: string
+        required: false
+        description: |
+          Column whose unique values identify terminal-state populations - an `.obs`
+          column with `--input`, a column of `--metadata` otherwise. One representative
+          observation (highest connectivity) is chosen per unique value. Mutually
+          exclusive with `--terminal_states`.
+
+      - name: "--seed"
+        type: integer
+        default: 42
+        required: false
+        description: Random seed for reproducibility.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file. Required with `--input`.
+        direction: output
+        required: false
+        example: output.h5mu
+
+      - name: "--output_table"
+        type: file
+        direction: output
+        required: false
+        description: |
+          Output CSV with the identifier column, `--pseudotime_column`,
+          `--entropy_column`,
+          one `fate_<terminal state>` column per terminal state and a boolean
+          `palantir_waypoint` column. Required with `--input_table`.
+        example: pseudotime.csv
+
+      - name: "--pseudotime_column"
+        type: string
+        default: "palantir_pseudotime"
+        required: false
+        description: |
+          Name of the column holding the pseudotime values: an `.obs` column with
+          `--input`, a column of `--output_table` otherwise.
+
+      - name: "--entropy_column"
+        type: string
+        default: "palantir_entropy"
+        required: false
+        description: |
+          Name of the column holding the differentiation-entropy values: an `.obs`
+          column with `--input`, a column of `--output_table` otherwise.
+
+      - name: "--obsm_fate_probabilities"
+        type: string
+        default: "palantir_fate_probabilities"
+        required: false
+        description: |
+          `.obsm` key for the observation x terminal-state fate-probability matrix.
+          Only used with `--input`; `--output_table` carries one `fate_<terminal state>`
+          column instead.
+
+      - name: "--uns_waypoints"
+        type: string
+        default: "palantir_waypoints"
+        required: false
+        description: |
+          `.uns` key under which the waypoint indices are stored. Only used with
+          `--input`; `--output_table` carries a boolean `palantir_waypoint` column
+          instead.
+
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/group_table.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/group_table.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        packages:
+          - palantir~=1.3.3
+          - joblib
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highcpu, highmem, highdisk]
