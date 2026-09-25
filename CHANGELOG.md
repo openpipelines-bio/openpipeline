@@ -14,7 +14,8 @@
     label proportions. `--obs_normalize_within` takes the proportion within a broader
     class that the labels nest under (subpopulation prevalence within cell type, as the
     BEYOND reference implementation does) instead of over all of a group's cells. Stores
-    the matrix as a DataFrame in `.uns["proportions"]` and as a table (`--output_csv`).
+    the matrix as a DataFrame in `.uns["proportions"]` (`--output`) and/or as a table
+    (`--output_csv`); at least one of the two outputs is required.
     This is the only step of the BEYOND trajectory workflow that reads cell-level data;
     every step after it consumes that table.
 
@@ -33,12 +34,9 @@
     entropy, a `fate_<terminal state>` column per terminal state and a
     `palantir_waypoint` flag). In table mode the cluster labels for automatic root
     selection come from an optional `--metadata` CSV. Supports automatic start selection
-    from a label (`--start_group_cluster` + `--start_group_column`) or an explicit
-    identifier (`--start_group`); the arguments are named after observations rather
-    than cells because a row can be a cell or a participant. `--knn` sets the
-    diffusion-map
-    neighbourhood and `--waypoint_knn` the waypoint graph that pseudotime is computed
-    on; the latter has to be reduced for the small cohorts of a group-level run.
+    from a label (`--start_cluster` + `--start_cluster_column`) or an explicit
+    identifier (`--start_id`). `--knn` sets the diffusion-map neighbourhood and
+    `--waypoint_knn` the waypoint graph that pseudotime is computed on; the latter has to be reduced for the small cohorts of a group-level run.
 
   - `trajectory/fit_proportion_dynamics`: fits a cubic spline (scipy.interpolate.UnivariateSpline)
     of group proportion versus pseudotime per label. Table in, table out, no `MuData`:
@@ -50,22 +48,28 @@
     co-occurrence similarity (correlation of group proportion vectors, Spearman by
     default as in the reference implementation, `--correlation_method`) and dynamics
     similarity (Pearson correlation of the fitted proportion curves); applies
-    hierarchical (Ward) or spectral clustering. Table in, table out, no `MuData`: writes
-    the label -> community assignment (`--output`) and optionally the full pairwise
-    similarity matrices (`--output_similarity`). Join the result onto `.obs` with
-    `metadata/join_csv` to label cells.
+    hierarchical (`--linkage`, Ward by default) or spectral clustering. Table in, table
+    out, no `MuData`: writes the label -> community assignment (`--output`) and
+    optionally the full pairwise similarity matrices (`--output_similarity`). Join the
+    result onto `.obs` with `metadata/join_csv` to label cells.
 
   - `interpret/gseapy`: performs pre-ranked GSEA or ORA on DESeq2 results using GSEApy.
     CSV in, CSV out: takes a DE table, Enrichr library names via `--gene_sets` and local
     GMT files via `--gene_sets_file`, and writes one long-format table of all libraries
-    with a `gene_set_library` column. No `MuData` involved.
+    with a `gene_set_library` column. No `MuData` involved. ORA with no significant
+    genes warns and writes an empty table instead of failing, so a workflow survives
+    a DE run without hits.
 
   - `stats/test_associations`: tests the association between any set of
     response columns and any set of predictor columns in a table (CSV in, long-format CSV
     out, no `MuData` involved), using statsmodels MixedLM when `--random_effect_column` is
     given and OLS otherwise. Supports covariates, a `--formula` escape hatch, `logit` /
     `clr` / `sqrt` transforms for compositional responses, and BH/Bonferroni correction
-    over a configurable `--fdr_scope` (global, per predictor or per response).
+    over a configurable `--fdr_scope` (global, per predictor or per response). One
+    `--transform` applies to all responses; responses that need different transforms
+    are transformed upstream or tested in separate runs. An optional `--metadata` table
+    is inner-joined on `--input_join_column`, matched against `--metadata_join_column`
+    (same name by default).
 
   **Workflows:**
 
@@ -77,17 +81,20 @@
     `annotation/celltypist` workflows.
 
   - `workflows/beyond/trajectory_analysis`: full BEYOND trajectory inference from an
-    annotated atlas h5mu - runs all 7 steps (proportions -> PHATE -> Palantir ->
-    proportion dynamics -> cellular communities -> trait associations -> pathway
-    enrichment). The BEYOND cellular landscape is a landscape of participants, not of
-    cells: step 1 converts the atlas into a participant x subpopulation proportion table
-    and steps 2-7 are table in / table out. Emits the h5mu (with the proportion matrix in
-    `.uns`) plus the proportion, PHATE, pseudotime, dynamics, community and association
-    tables as CSVs (and the enrichment CSV when DE results are given).
+    annotated atlas h5mu - runs 6 steps (proportions -> PHATE -> Palantir ->
+    proportion dynamics -> label communities -> trait associations). The BEYOND
+    cellular landscape is a landscape of participants, not of cells: step 1 converts the
+    atlas into a participant x subpopulation proportion table and steps 2-6 are table
+    in / table out. Emits the h5mu (with the proportion matrix in `.uns`) plus the
+    proportion, PHATE, pseudotime, dynamics, community and association tables as CSVs.
+    Trait-association p-values are corrected within each trait by default
+    (`--fdr_scope per_predictor`), as in the reference implementation.
+    Pathway enrichment is not part of it: it belongs with the DE results it runs on, so
+    `interpret/gseapy` is run on its own.
 
   **Test data:**
 
-  - `resources_test_scripts/beyond_trajectory_test_data.sh`: builds the fixture from a
+  - `resources_test_scripts/beyond_trajectory_test_data.py`: builds the fixture from a
     real cohort - PsychAD `RADC_Cohort` (dorsolateral prefrontal cortex, 152 donors,
     693682 nuclei x 34176 genes), distributed by CZ CELLxGENE Discover under **CC-BY
     4.0**, collection `84ce6837-548d-4a1f-919f-0bc0d9a3952f`, doi
@@ -95,10 +102,9 @@
     annotation is the three-level hierarchy BEYOND is written for. The proportion table
     is computed from all 693682 nuclei because subsampling cells destroys the
     composition; `atlas.h5mu` carries a 32377-nucleus subsample (all 152 donors,
-    stratified by subtype) to exercise the proportion step. DE tables are real donor
-    pseudobulk, AD vs non-AD, over the full cohort.
+    stratified by subtype) to exercise the proportion step.
 
-  - `resources_test_scripts/beyond_trajectory_simulated_test_data.sh`: the previous
+  - `resources_test_scripts/beyond_trajectory_simulated_test_data.py`: the previous
     simulation, kept alongside the real fixture rather than replaced by it. The real
     cohort carries no compositional association that survives multiple testing at 152
     donors (scanned over 3 annotation levels x 5 donor traits; closest is

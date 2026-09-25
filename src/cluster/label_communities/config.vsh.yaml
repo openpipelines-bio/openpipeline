@@ -2,11 +2,9 @@ name: label_communities
 namespace: "cluster"
 scope: "public"
 description: |
-  Detects cellular communities by combining co-occurrence and dynamics similarity
-  of subpopulations  -  the core clustering step of the BEYOND methodology.
-
-  This is a group-level component: it works on a group x label proportion table,
-  not on cells, and never opens a MuData.
+  Clusters labels (e.g. cell subpopulations), not cells, into communities: sets of
+  labels whose proportions co-vary across groups (e.g. participants) and change
+  together along pseudotime. The input is a group x label proportion table.
 
   Two label x label similarity matrices are computed:
 
@@ -20,13 +18,13 @@ description: |
      Labels with parallel temporal trajectories receive a high score.
 
   The combined similarity (weighted sum controlled by `--alpha`) is converted to a
-  distance matrix and Ward-linkage hierarchical clustering is applied to group
-  labels into `--n_communities` cellular communities.
+  distance matrix, and the labels are clustered into `--n_communities` communities
+  (`--method`, `--linkage`).
 
   To carry the community labels back onto cells, join `--output` onto `.obs` with
   `metadata/join_csv`.
 
-keywords: [ cellular communities, clustering, co-occurrence, dynamics, BEYOND ]
+keywords: [ label communities, clustering, co-occurrence, dynamics, BEYOND ]
 links:
   repository: https://github.com/naomihabiblab/BEYOND_DLPFC
 references:
@@ -72,7 +70,7 @@ argument_groups:
         type: integer
         required: true
         min: 2
-        description: Number of cellular communities to detect.
+        description: Number of label communities.
         example: 6
 
       - name: "--alpha"
@@ -101,7 +99,7 @@ argument_groups:
         default: "hierarchical"
         choices: [hierarchical, spectral]
         required: false
-        description: Clustering method. 'hierarchical' uses Ward linkage; 'spectral' uses spectral clustering.
+        description: Clustering method. 'hierarchical' uses the linkage set by `--linkage`; 'spectral' uses spectral clustering.
 
       - name: "--linkage"
         type: string

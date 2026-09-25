@@ -12,11 +12,11 @@ description: |
 
   The component runs the full Palantir workflow:
     1. Diffusion maps on the chosen embedding.
-    2. `palantir.core.run_palantir` starting from `--start_group`.
+    2. `palantir.core.run_palantir` starting from `--start_id`.
 
-  If `--start_group_column` and `--start_group_cluster` are provided, the root is chosen
+  If `--start_cluster_column` and `--start_cluster` are provided, the root is chosen
   automatically as the observation with the highest early-pseudotime score in that
-  population (Palantir `utils.early_cell`). Otherwise `--start_group` must be an exact
+  population (Palantir `utils.early_cell`). Otherwise `--start_id` must be an exact
   identifier.
 
   Two input modes, exactly one of which must be given:
@@ -24,10 +24,9 @@ description: |
       cluster labels in `.obs`.
     - `--input_table`: a CSV with an identifier column plus one numeric column per
       embedding dimension (e.g. `--output_table` of `dimred/phate`), with cluster
-      labels supplied by the optional `--metadata` CSV. This is the group-level mode
-      used by the BEYOND methodology, where every row is a participant rather than a
-      cell and no cell-level data is involved. `--start_group` and `--terminal_states`
-      are then row identifiers of the table.
+      labels supplied by the optional `--metadata` CSV, for observations that are not
+      cells (e.g. donors). `--start_id` and `--terminal_states` are then row
+      identifiers of the table.
 keywords: [ trajectory, pseudotime, fate probabilities, palantir ]
 links:
   homepage: https://www.krishnaswamylab.org/projects/palantir
@@ -90,35 +89,35 @@ argument_groups:
         required: false
         description: |
           Optional CSV with the same identifier column as `--input_table` plus label
-          columns, supplying the values read by `--start_group_column` and
+          columns, supplying the values read by `--start_cluster_column` and
           `--terminal_states_column` in table mode. Only used with `--input_table`.
         example: traits.csv
 
   - name: Trajectory root
     arguments:
-      - name: "--start_group"
+      - name: "--start_id"
         type: string
         required: false
         description: |
           Identifier of the observation to use as the trajectory root: an `.obs_names`
           value with `--input`, a row identifier of `--input_table` otherwise.
-          Required unless `--start_group_cluster` is provided.
+          Required unless `--start_cluster` is provided.
         example: "ACGTACGT-1"
 
-      - name: "--start_group_cluster"
+      - name: "--start_cluster"
         type: string
         required: false
         description: |
           Label identifying the root population. When provided, the observation with the
           best early-trajectory score within that population is selected automatically.
-          Requires `--start_group_column`.
+          Requires `--start_cluster_column`.
         example: "ExN.1"
 
-      - name: "--start_group_column"
+      - name: "--start_cluster_column"
         type: string
         required: false
         description: |
-          Column holding the labels used together with `--start_group_cluster`: an `.obs`
+          Column holding the labels used together with `--start_cluster`: an `.obs`
           column with `--input`, a column of `--metadata` otherwise.
         example: "subpopulation"
 

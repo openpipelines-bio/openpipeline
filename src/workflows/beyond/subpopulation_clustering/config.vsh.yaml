@@ -2,27 +2,13 @@ name: "subpopulation_clustering"
 namespace: "workflows/beyond"
 scope: "public"
 description: |
-  Splits an annotated atlas by broad cell type and clusters each cell type separately, so
-  that every cell carries a within-cell-type subpopulation label.
+  Splits an annotated atlas by cell type (`--obs_cell_type`), clusters each cell type
+  separately and merges the result back, so that every cell carries a within-cell-type
+  subpopulation label in `obs[--obs_label]`.
 
-  This is the one step of the BEYOND atlas preparation that existing OpenPipeline workflows
-  do not cover. Everything before it is already available:
-
-    1. `workflows/multiomics/process_samples`   -  per-sample QC, filtering, doublet
-       detection, concatenation, normalisation and HVF selection
-    2. `workflows/integration/harmony_leiden`   -  integration, neighbours, Leiden, UMAP
-    3. `workflows/annotation/celltypist`        -  broad cell-type labels
-
-  Run those first, then this workflow, then `workflows/beyond/trajectory_analysis`.
-
-  Steps:
-    1. `dataflow/split_h5mu` on `--obs_cell_type`
-    2. per cell type: `dimred/pca` -> `workflows/multiomics/neighbors_leiden_umap`
-       (Leiden labels written to `--obs_label`)
-    3. `dataflow/concatenate_h5mu` back into one object
-
-  Output: the same atlas with `obs[--obs_label]` added, which is the label input of
-  `stats/calculate_label_proportions` and therefore of the whole BEYOND trajectory workflow.
+  Expects a processed, integrated and annotated atlas, e.g. from the
+  `workflows/multiomics/process_samples`, `workflows/integration/harmony_leiden` and
+  `workflows/annotation/celltypist` workflows.
 
 authors:
   - __merge__: /src/authors/marilyn_degraeve.yaml

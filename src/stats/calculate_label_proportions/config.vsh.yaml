@@ -11,19 +11,13 @@ description: |
 
   * `.uns[<uns_output>]`  -  a DataFrame (rows = groups, columns = labels)
   * `--output_csv`  -  the same matrix as a table, for components that do not read
-    `MuData`. This is what the BEYOND trajectory workflow passes to every step after
-    this one.
+    `MuData`.
 
   When `--obs_group` is omitted, all cells are treated as a single group named `all`,
   giving the overall label proportions of the dataset.
 
   Missing combinations (a group has zero cells with a given label) are filled with 0.
-  Rows are normalised to sum to 1, or, with `--obs_normalize_within`, to the number of
-  classes a group has cells in.
-
-  Used as the first step of the BEYOND methodology (Green et al., "Cellular communities
-  reveal trajectories of brain ageing and Alzheimer's disease", Nature 2024), where the
-  groups are participants and the labels are cell subpopulations.
+  Rows sum to 1, unless `--obs_normalize_within` is given.
 keywords: [proportions, composition, cell type, metadata, BEYOND]
 links:
   repository: https://github.com/openpipelines-bio/openpipeline
@@ -68,16 +62,18 @@ argument_groups:
       - name: "--obs_normalize_within"
         type: string
         description: |
-          Optional `.obs` column the labels nest under - typically the broader cell
-          class that `--obs_label` subdivides. When given, each cell's proportion is
-          taken within its own (group, class) stratum rather than over all of the
-          group's cells, so a row sums to the number of classes the group has cells in
-          rather than to 1.
+          Optional `.obs` column with a coarser label that `--obs_label` subdivides,
+          e.g. cell type when `--obs_label` holds subtypes of it. When given, the
+          denominator of a proportion is the number of cells of the group with the
+          same coarser label, instead of all cells of the group.
 
-          This is what the BEYOND reference implementation does: subpopulation
-          prevalence is computed within cell type, so rare cell types are not drowned
-          out by abundant ones and a shift inside one cell type is not diluted by the
-          composition of the others.
+          Example: a donor has 100 astrocytes, 30 of them labelled `Ast.1`, and 900
+          other cells. Without this argument `Ast.1` is 30 / 1000 = 0.03; with it,
+          30 / 100 = 0.3. The labels of one coarser label then sum to 1 per group,
+          so a row sums to the number of coarser labels the group has cells in.
+
+          Each `--obs_label` value must occur with only one value of this column;
+          otherwise the component fails.
         required: false
         example: "cell_class"
 
@@ -86,9 +82,11 @@ argument_groups:
       - name: "--output"
         alternatives: ["-o"]
         type: file
-        description: Path to the output `.h5mu` file.
+        description: |
+          Path to the output `.h5mu` file. Optional when only `--output_csv` is needed;
+          at least one of the two must be given.
         direction: output
-        required: true
+        required: false
         example: "atlas_with_proportions.h5mu"
       - name: "--output_csv"
         type: file

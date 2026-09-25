@@ -2,27 +2,11 @@ name: "trajectory_analysis"
 namespace: "workflows/beyond"
 scope: "public"
 description: |
-  BEYOND trajectory analysis: takes a multi-donor atlas h5mu with broad cell-type labels
-  and within-cell-type subpopulation labels (see beyond/subpopulation_clustering) and
-  produces the full BEYOND outputs:
-
-    1. stats/calculate_label_proportions   -  participant x subpopulation proportion table
-    2. dimred/phate                        -  PHATE cellular landscape of the participants
-    3. trajectory/palantir                 -  pseudotime + fate probabilities
-    4. trajectory/fit_proportion_dynamics  -  spline-fitted proportion dynamics along pseudotime
-    5. cluster/label_communities           -  community detection (co-occurrence + dynamics)
-    6. stats/test_associations             -  linear / mixed models per subpopulation x trait
-    7. interpret/gseapy                    -  GSEA/ORA on DE results (optional)
-
-  The BEYOND cellular landscape is a landscape of *participants*, not of cells: every
-  point is one donor, positioned by their subpopulation composition. Step 1 is therefore
-  the only step that reads cell-level data; steps 2-7 take and return CSV tables and
-  never open a MuData.
-
-  Required obs columns in the input atlas:
-    obs["participant_id"]    -  donor of origin
-    obs["subpopulation"]     -  per-cell-type subpopulation label
-                                (from beyond/subpopulation_clustering)
+  BEYOND trajectory analysis of a multi-donor atlas with subpopulation labels.
+  Computes the donor x subpopulation proportions, places the donors on a PHATE
+  landscape, orders them along a Palantir pseudotime, fits how each subpopulation
+  changes along it, groups subpopulations into communities, and tests the
+  subpopulations for association with donor traits.
 
 references:
   doi:
@@ -44,9 +28,33 @@ argument_groups:
         type: file
         required: true
         description: |
-          Atlas h5mu file with obs["participant_id"] and obs["subpopulation"].
-          Typically the output of beyond/subpopulation_clustering.
+          Atlas h5mu file with the donor (`--obs_group`) and subpopulation
+          (`--obs_label`) columns in `.obs`, e.g. the output of
+          `workflows/beyond/subpopulation_clustering`.
         example: atlas.h5mu
+      - name: "--obs_group"
+        type: string
+        default: "participant_id"
+        required: false
+        description: |
+          .obs column that groups the cells for proportion calculation (a participant /
+          donor / sample identifier), e.g. the column written by metadata/add_id.
+          It also names the identifier column of every table this workflow writes.
+      - name: "--obs_label"
+        type: string
+        default: "subpopulation"
+        required: false
+        description: |
+          .obs column with the cell labels whose proportions are computed, e.g. the
+          subpopulation labels from beyond/subpopulation_clustering.
+      - name: "--obs_normalize_within"
+        type: string
+        required: false
+        description: |
+          .obs column with the cell type that --obs_label subdivides. When given,
+          subpopulation proportions are computed within cell type instead of over all
+          of a donor's cells.
+        example: "cell_class"
 
   - name: Outputs
     arguments:
@@ -58,6 +66,13 @@ argument_groups:
           Atlas h5mu with the participant x subpopulation proportion matrix added to
           uns[--uns_proportions]. The cells are otherwise unchanged.
         example: beyond_atlas.h5mu
+
+      - name: "--uns_proportions"
+        type: string
+        default: "proportions"
+        required: false
+        description: |
+          .uns key under which the proportion matrix is kept in --output.
 
       - name: "--output_proportions_csv"
         type: file
@@ -102,7 +117,7 @@ argument_groups:
         type: file
         required: false
         direction: output
-        description: Subpopulation -> cellular community assignment.
+        description: Subpopulation -> community assignment.
         example: communities.csv
 
       - name: "--output_trait_associations_csv"
@@ -113,47 +128,6 @@ argument_groups:
           Long-format CSV of the association results, one row per
           (subpopulation, trait, term). Written by stats/test_associations.
         example: trait_associations.csv
-
-      - name: "--output_pathway_csv"
-        type: file
-        required: false
-        direction: output
-        description: |
-          Long-format CSV with the enrichment results of every gene set library.
-          Only written when --de_results_csv is provided.
-        example: pathway_enrichment.csv
-
-  - name: Atlas metadata
-    arguments:
-      - name: "--obs_group"
-        type: string
-        default: "participant_id"
-        required: false
-        description: |
-          .obs column that groups the cells for proportion calculation (a participant /
-          donor / sample identifier), e.g. the column written by metadata/add_id.
-          It also names the identifier column of every table this workflow writes.
-      - name: "--obs_label"
-        type: string
-        default: "subpopulation"
-        required: false
-        description: |
-          .obs column with the cell labels whose proportions are computed, e.g. the
-          subpopulation labels from beyond/subpopulation_clustering.
-      - name: "--obs_normalize_within"
-        type: string
-        required: false
-        description: |
-          .obs column with the broader cell class that --obs_label subdivides. When
-          given, subpopulation prevalence is computed within cell type, as the BEYOND
-          reference implementation does, instead of over all of a participant's cells.
-        example: "cell_class"
-      - name: "--uns_proportions"
-        type: string
-        default: "proportions"
-        required: false
-        description: |
-          .uns key under which the proportion matrix is kept in --output.
 
   - name: Cellular landscape  -  PHATE
     arguments:
@@ -177,26 +151,26 @@ argument_groups:
 
   - name: Trajectory  -  Palantir
     arguments:
-      - name: "--start_group"
+      - name: "--start_id"
         type: string
         required: false
         description: |
           Identifier of the participant to use as the trajectory root.
-          Mutually exclusive with --start_group_cluster.
+          Mutually exclusive with --start_cluster.
         example: "Donor_135"
-      - name: "--start_group_cluster"
+      - name: "--start_cluster"
         type: string
         required: false
         description: |
-          Value of --start_group_column identifying the root population of
+          Value of --start_cluster_column identifying the root population of
           participants; Palantir picks the best representative automatically.
-          Requires --traits_csv to carry --start_group_column.
+          Requires --traits_csv to carry --start_cluster_column.
         example: "No"
-      - name: "--start_group_column"
+      - name: "--start_cluster_column"
         type: string
         required: false
         description: |
-          Column of --traits_csv used with --start_group_cluster to find the root,
+          Column of --traits_csv used with --start_cluster to find the root,
           e.g. a diagnosis column whose control level marks the start of the
           trajectory.
         example: "AD_status"
@@ -255,13 +229,13 @@ argument_groups:
         required: false
         description: Smoothing regularisation penalty for the spline (higher = smoother).
 
-  - name: Cellular communities
+  - name: Label communities
     arguments:
       - name: "--n_communities"
         type: integer
         required: true
         min: 2
-        description: Number of cellular communities to detect.
+        description: Number of subpopulation communities.
         example: 6
       - name: "--communities_alpha"
         type: double
@@ -291,13 +265,18 @@ argument_groups:
         description: |
           CSV file with participant metadata. Must contain a participant ID column
           (--obs_group) and at least one trait column (--trait_columns). It is also
-          the label source for --start_group_column / --terminal_states_column.
+          the label source for --start_cluster_column / --terminal_states_column.
         example: traits.csv
       - name: "--trait_columns"
         type: string
         multiple: true
         required: true
-        description: Trait column(s) in the traits CSV to test for association.
+        description: |
+          Trait column(s) in the traits CSV to test for association. Each
+          subpopulation proportion is modelled as `proportion ~ trait + covariates`.
+          The BEYOND reference fits the reverse, `trait ~ proportion + covariates`;
+          with OLS both give the same t statistic and p-value, the coefficients
+          differ.
         example: ["diagnosis", "amyloid_score"]
       - name: "--covariate_columns"
         type: string
@@ -328,50 +307,13 @@ argument_groups:
         description: Multiple-testing correction applied to the association p-values.
       - name: "--fdr_scope"
         type: string
-        default: "global"
+        default: "per_predictor"
         choices: [global, per_predictor, per_response]
         required: false
         description: |
           Set of tests the correction is applied over: all (subpopulation, trait)
-          pairs at once, within each trait, or within each subpopulation.
-
-  - name: Pathway enrichment (optional)
-    arguments:
-      - name: "--de_results_csv"
-        type: file
-        required: false
-        description: |
-          DE result CSV (e.g. from differential_expression/deseq2). When provided,
-          pathway enrichment is run and the results are written to
-          `--output_pathway_csv`. When omitted, the step is skipped.
-        example: de_results.csv
-      - name: "--gene_column"
-        type: string
-        required: false
-        description: Column in the DE CSV with gene symbols. If absent, the row index is used.
-        example: "gene"
-      - name: "--gene_sets"
-        type: string
-        multiple: true
-        required: false
-        description: |
-          Enrichr library names, downloaded at runtime. Local GMT files go to
-          `--gene_sets_file`. At least one of the two is required when
-          `--de_results_csv` is given.
-        example: ["MSigDB_Hallmark_2020", "GO_Biological_Process_2023"]
-      - name: "--gene_sets_file"
-        type: file
-        multiple: true
-        required: false
-        direction: input
-        description: Local GMT files with gene sets.
-        example: ["hallmark.gmt"]
-      - name: "--pathway_method"
-        type: string
-        default: "prerank"
-        choices: [prerank, ora]
-        required: false
-        description: Enrichment method (prerank GSEA or over-representation analysis).
+          pairs at once, within each trait (the default, as in the BEYOND reference
+          implementation), or within each subpopulation.
 
 dependencies:
   - name: stats/calculate_label_proportions
@@ -380,7 +322,6 @@ dependencies:
   - name: trajectory/fit_proportion_dynamics
   - name: cluster/label_communities
   - name: stats/test_associations
-  - name: interpret/gseapy
 
 resources:
   - type: nextflow_script

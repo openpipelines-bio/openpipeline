@@ -445,5 +445,48 @@ def test_overall_proportions_without_group(run_component, tmp_path):
     assert "_obs_group" not in adata_out.obs.columns
 
 
+def test_output_csv_only(run_component, tmp_path):
+    """--output can be left out when only the CSV is needed."""
+    _, h5mu_path = _make_mudata(tmp_path, n_donors=3, n_subpops=4, cells_per_group=10)
+    csv_path = tmp_path / "proportions_only.csv"
+
+    run_component(
+        [
+            "--input",
+            str(h5mu_path),
+            "--output_csv",
+            str(csv_path),
+            "--obs_group",
+            "participant_id",
+            "--obs_label",
+            "subpopulation",
+        ]
+    )
+
+    csv_df = pd.read_csv(str(csv_path), index_col=0)
+    assert csv_df.shape == (3, 4)
+    assert [p.name for p in tmp_path.glob("*.h5mu")] == ["input.h5mu"]
+
+
+def test_no_output_raises(run_component, tmp_path):
+    """Neither --output nor --output_csv is an error."""
+    _, h5mu_path = _make_mudata(tmp_path)
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                str(h5mu_path),
+                "--obs_group",
+                "participant_id",
+                "--obs_label",
+                "subpopulation",
+            ]
+        )
+    assert "at least one of --output or --output_csv" in err.value.stdout.decode(
+        "utf-8"
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

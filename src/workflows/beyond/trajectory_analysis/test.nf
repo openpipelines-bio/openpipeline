@@ -45,8 +45,8 @@ workflow test_wf {
       // Palantir: the root is picked from the donors without an AD diagnosis. The two
       // endpoints are pinned because Palantir's automatic terminal-state detection finds
       // none on this landscape - there is no branching structure in it to find.
-      start_group_column:       "AD_status",
-      start_group_cluster:      "No",
+      start_cluster_column:     "AD_status",
+      start_cluster:            "No",
       terminal_states:          ["Donor_1007", "Donor_1024"],
       num_waypoints:            50,
       palantir_waypoint_knn:    15,
@@ -64,12 +64,6 @@ workflow test_wf {
       traits_csv:            resources_test.resolve("beyond_test_data/traits.csv"),
       trait_columns:         ["AD_status", "sex", "age"],
       proportion_transform:  "sqrt",
-
-      // gene symbols are the row index of the DE CSV, so no --gene_column is needed
-      de_results_csv:          resources_test.resolve("beyond_test_data/de_EN.csv"),
-      gene_sets_file:          [resources_test.resolve("beyond_test_data/gene_sets.gmt")],
-      pathway_method:          "prerank",
-      output_pathway_csv:      "pathway_enrichment.csv",
     ],
     [
       id:    "beyond_simulated",
@@ -93,7 +87,7 @@ workflow test_wf {
       // Root is the healthy end of the simulated severity gradient, endpoints the severe
       // end. Pinned for the same reason as above, plus Palantir's automatic detection
       // solves a 10-eigenvector problem that 12 donors cannot support.
-      start_group:              "donor_01",
+      start_id:                 "donor_01",
       terminal_states:          ["donor_11", "donor_12"],
       num_waypoints:            12,
       palantir_waypoint_knn:    5,
@@ -113,11 +107,6 @@ workflow test_wf {
       traits_csv:            resources_test.resolve("beyond_simulated_test_data/traits.csv"),
       trait_columns:         ["amyloid", "braak", "age"],
       proportion_transform:  "clr",
-
-      de_results_csv:          resources_test.resolve("beyond_simulated_test_data/de_ExN.csv"),
-      gene_sets_file:          [resources_test.resolve("beyond_simulated_test_data/gene_sets.gmt")],
-      pathway_method:          "prerank",
-      output_pathway_csv:      "pathway_enrichment.csv",
     ]
   ])
   | map { state -> [state.id, state] }
@@ -194,17 +183,6 @@ workflow test_wf {
     assert assoc_lines.size() > 2 :
       "Association CSV should hold more than one result row. Found: ${assoc_lines.size() - 1}"
 
-    // Enrichment results are one table, not a directory of files
-    assert state.containsKey("output_pathway_csv") :
-      "State should contain key 'output_pathway_csv'. Found: ${state.keySet()}"
-    assert state.output_pathway_csv.isFile() :
-      "'output_pathway_csv' should be a file."
-    def pathway_lines = state.output_pathway_csv.readLines()
-    assert pathway_lines[0].startsWith("gene_set_library,method,") :
-      "Unexpected enrichment CSV header: ${pathway_lines[0]}"
-    assert pathway_lines.size() > 1 :
-      "Enrichment CSV should hold at least one result row."
-
     // -- what only the simulated fixture can check -------------------------------------
     //
     // The real cohort carries no compositional association that survives BH correction
@@ -227,17 +205,6 @@ workflow test_wf {
         "braak follows the simulated trajectory but was not detected (min fdr_q ${min_q['braak']})"
       assert min_q["age"] > 0.05 :
         "age is independent of the simulated trajectory but came out significant (min fdr_q ${min_q['age']})"
-
-      // The DE tables are computed from the simulated counts, so the planted DISEASE_UP
-      // set must come out enriched with a positive score.
-      def pw_header = pathway_lines[0].split(",")
-      def i_term    = pw_header.findIndexOf { it == "Term" }
-      def i_nes     = pw_header.findIndexOf { it == "NES" }
-      def disease_up = pathway_lines.drop(1).find { it.split(",")[i_term] == "DISEASE_UP" }
-      assert disease_up != null :
-        "DISEASE_UP missing from the enrichment results"
-      assert (disease_up.split(",")[i_nes] as Double) > 0 :
-        "DISEASE_UP should be positively enriched in the simulated DE results"
     }
 
     // -- what only the real fixture can check ------------------------------------------

@@ -5,12 +5,6 @@ description: |
   Test the association between one or more response variables and one or more predictors
   in a tabular dataset.
 
-  The component is deliberately table-in / table-out: it reads a CSV whose rows are the
-  units of observation (donors, samples, wells, ...) and writes a long-format CSV of
-  association statistics.  It never opens a `MuData` object, so it can be used for any
-  analysis at a level other than the single cell - cell-type proportions per donor,
-  pseudobulk scores, QC metrics per sample, and so on.
-
   For each (response, predictor) pair a model is fit:
 
       response ~ predictor + covariates [ + (1 | random_effect) ]
@@ -51,15 +45,23 @@ argument_groups:
         required: false
         description: |
           Optional second CSV (e.g. donor metadata) joined onto `--input` before
-          modelling. Requires `--join_on`.
+          modelling. Requires `--input_join_column`.
         example: metadata.csv
 
-      - name: "--join_on"
+      - name: "--input_join_column"
         type: string
         required: false
         description: |
-          Column present in both `--input` and `--metadata` used for an inner join.
+          Column of `--input` used for the inner join with `--metadata`.
         example: "sample_id"
+
+      - name: "--metadata_join_column"
+        type: string
+        required: false
+        description: |
+          Column of `--metadata` matched against `--input_join_column`. Defaults to
+          `--input_join_column`, i.e. the same column name in both tables.
+        example: "participant_id"
 
   - name: Model
     arguments:
@@ -69,9 +71,7 @@ argument_groups:
         required: false
         description: |
           Column(s) modelled as the response, one model per response and predictor.
-          When not given, every numeric column of `--input` that is not a predictor,
-          covariate, random-effect or join column is used. Columns that only appear in
-          `--metadata` are never taken as responses.
+          Defaults to the numeric columns of `--input` not used by any other argument.
         example: ["Ast.1", "Ast.2"]
 
       - name: "--predictor_columns"
@@ -105,6 +105,7 @@ argument_groups:
           Right-hand side of the model formula, overriding the predictor/covariate
           terms. Use `{predictor}` as a placeholder for the predictor column, e.g.
           `{predictor} + age + C(sex)`. The reported term is still the predictor.
+          Syntax: https://www.statsmodels.org/stable/example_formulas.html
         example: "{predictor} + age + C(sex)"
 
       - name: "--transform"
@@ -113,7 +114,11 @@ argument_groups:
         choices: [none, logit, clr, sqrt]
         required: false
         description: |
-          Transformation applied to the response values before modelling.
+          Transformation applied to the response values before modelling. One
+          transform applies to all response columns: `clr` is by definition computed
+          jointly over them. When the responses need different transforms (e.g.
+          proportions next to a continuous score), transform them upstream or run the
+          component once per set of responses.
           `logit` = log(p / (1 - p)), for responses bounded in (0, 1).
           `clr` = centered log-ratio across all responses of a row, for compositional
           responses such as cell-type proportions. Both add a small pseudocount to

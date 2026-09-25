@@ -65,8 +65,9 @@ def _check_numeric_column(de, column, argument):
         raise ValueError(f"{argument} '{column}' contains only NA values.")
 
 
-def _load_de_table(csv_path, gene_column):
-    """Load DESeq2 CSV and return a DataFrame indexed by gene name."""
+def _load_de_table(par):
+    """Load and validate the DE CSV; return a DataFrame indexed by gene name."""
+    csv_path, gene_column = par["input"], par["gene_column"]
     de = pd.read_csv(csv_path, index_col=0)
     if de.empty:
         raise ValueError(f"--input '{csv_path}' contains no rows.")
@@ -84,6 +85,11 @@ def _load_de_table(csv_path, gene_column):
             "for example: "
             f"{list(de.index[de.index.duplicated()][:5])}"
         )
+
+    _check_numeric_column(de, par["fc_column"], "--fc_column")
+    if par["method"] == "ora":
+        _check_numeric_column(de, par["pval_column"], "--pval_column")
+
     return de
 
 
@@ -91,8 +97,6 @@ def _run_prerank(de, gene_sets, par, n_jobs):
     """Run pre-ranked GSEA for each gene set library."""
     results = {}
     ranking = de[par["fc_column"]].dropna().sort_values(ascending=False)
-    if ranking.empty:
-        raise ValueError(f"Ranking column '{par['fc_column']}' has no non-NA values.")
     for gs in gene_sets:
         logger.info("prerank GSEA with gene set: %s", gs)
         label = os.path.splitext(os.path.basename(gs))[0] if os.path.isfile(gs) else gs
@@ -122,11 +126,16 @@ def _run_ora(de, gene_sets, par, n_jobs):
         sig_mask = sig_mask & (de[par["fc_column"]].abs() >= par["fc_threshold"])
     gene_list = de.index[sig_mask & de[par["pval_column"]].notna()].tolist()
     if not gene_list:
-        raise ValueError(
-            f"No significant genes with --pval_column '{par['pval_column']}' < "
-            f"{par['pval_threshold']} and |{par['fc_column']}| >= {par['fc_threshold']}. "
-            "ORA has nothing to test; loosen the thresholds or check the DE table."
+        # No DE hits is a valid outcome inside a workflow: warn, write an empty table
+        logger.warning(
+            "No significant genes with --pval_column '%s' < %s and |%s| >= %s; "
+            "ORA has nothing to test, writing an empty result.",
+            par["pval_column"],
+            par["pval_threshold"],
+            par["fc_column"],
+            par["fc_threshold"],
         )
+        return results
     logger.info("ORA with %d significant genes", len(gene_list))
     for gs in gene_sets:
         label = os.path.splitext(os.path.basename(gs))[0] if os.path.isfile(gs) else gs
@@ -147,10 +156,8 @@ def _run_ora(de, gene_sets, par, n_jobs):
 
 def main():
     logger.info("Reading DE results from %s", par["input"])
-    de = _load_de_table(par["input"], par["gene_column"])
+    de = _load_de_table(par)
     logger.info("  %d genes loaded", len(de))
-
-    _check_numeric_column(de, par["fc_column"], "--fc_column")
 
     gene_sets = _collect_gene_sets(par)
     n_jobs = max(1, (meta.get("cpus") or 1))
@@ -158,7 +165,6 @@ def main():
     if par["method"] == "prerank":
         enrichment_results = _run_prerank(de, gene_sets, par, n_jobs)
     elif par["method"] == "ora":
-        _check_numeric_column(de, par["pval_column"], "--pval_column")
         enrichment_results = _run_ora(de, gene_sets, par, n_jobs)
     else:
         raise ValueError(
@@ -166,15 +172,20 @@ def main():
         )
 
     # One long table for all libraries; the library is a column, not a file name
-    combined = pd.concat(
-        [
-            df.assign(gene_set_library=label, method=par["method"])
-            for label, df in enrichment_results.items()
-        ],
-        ignore_index=True,
-    )
     lead_cols = ["gene_set_library", "method"]
-    combined = combined[lead_cols + [c for c in combined.columns if c not in lead_cols]]
+    if enrichment_results:
+        combined = pd.concat(
+            [
+                df.assign(gene_set_library=label, method=par["method"])
+                for label, df in enrichment_results.items()
+            ],
+            ignore_index=True,
+        )
+        combined = combined[
+            lead_cols + [c for c in combined.columns if c not in lead_cols]
+        ]
+    else:
+        combined = pd.DataFrame(columns=lead_cols + ["Term"])
 
     combined.to_csv(par["output"], index=False)
     logger.info(

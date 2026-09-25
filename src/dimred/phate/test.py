@@ -18,12 +18,7 @@ meta = {
 
 
 def _branching_manifold(n_obs, n_pcs, rng):
-    """Y-shaped manifold: one trunk splitting into two branches.
-
-    PHATE is a trajectory-preserving embedding, so a branching structure is the
-    kind of input it is meant to resolve - a closed circle or a Gaussian blob
-    would let a broken embedding pass unnoticed. Returns (coordinates, branch label).
-    """
+    """Y-shaped manifold (trunk + two branches); returns (coordinates, branch label)."""
     n_trunk = n_obs // 2
     n_branch = (n_obs - n_trunk) // 2
     n_branch_b = n_obs - n_trunk - n_branch

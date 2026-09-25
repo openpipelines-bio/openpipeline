@@ -94,7 +94,7 @@ def test_basic(run_component, tmp_path):
 
 
 def test_join_metadata(run_component, tmp_path):
-    """Predictors can live in a second table joined on --join_on."""
+    """Predictors can live in a second table joined on --input_join_column."""
     resp_path, meta_path = _make_split_tables(tmp_path)
     output = tmp_path / "assoc_join.csv"
 
@@ -104,7 +104,7 @@ def test_join_metadata(run_component, tmp_path):
             str(resp_path),
             "--metadata",
             str(meta_path),
-            "--join_on",
+            "--input_join_column",
             "sample_id",
             "--predictor_columns",
             "trait_A",
@@ -121,6 +121,63 @@ def test_join_metadata(run_component, tmp_path):
     )
     assert "trait_B" not in set(res["response"])
     assert (res["n"] == 40).all()
+
+
+def test_join_different_column_names(run_component, tmp_path):
+    """--metadata_join_column matches a differently named column in --metadata."""
+    resp_path, meta_path = _make_split_tables(tmp_path)
+    meta = pd.read_csv(str(meta_path)).rename(columns={"sample_id": "donor"})
+    # drop half the donors so the inner join is visible in n
+    meta.iloc[:30].to_csv(str(meta_path), index=False)
+    output = tmp_path / "assoc_join_names.csv"
+
+    run_component(
+        [
+            "--input",
+            str(resp_path),
+            "--metadata",
+            str(meta_path),
+            "--input_join_column",
+            "sample_id",
+            "--metadata_join_column",
+            "donor",
+            "--predictor_columns",
+            "trait_A",
+            "--output",
+            str(output),
+        ]
+    )
+
+    res = pd.read_csv(str(output))
+    assert set(res["response"]) == {"resp_signal", "resp_null"}
+    assert (res["n"] == 30).all(), f"inner join should keep 30 rows:\n{res}"
+
+
+def test_join_column_missing_raises(run_component, tmp_path):
+    """Same-name default fails with the argument name when --metadata lacks it."""
+    resp_path, meta_path = _make_split_tables(tmp_path)
+    meta = pd.read_csv(str(meta_path)).rename(columns={"sample_id": "donor"})
+    meta.to_csv(str(meta_path), index=False)
+    output = tmp_path / "assoc_join_err.csv"
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                str(resp_path),
+                "--metadata",
+                str(meta_path),
+                "--input_join_column",
+                "sample_id",
+                "--predictor_columns",
+                "trait_A",
+                "--output",
+                str(output),
+            ]
+        )
+    assert "--metadata_join_column 'sample_id' not found" in err.value.stdout.decode(
+        "utf-8"
+    )
 
 
 def test_covariates_and_mixed_model(run_component, tmp_path):

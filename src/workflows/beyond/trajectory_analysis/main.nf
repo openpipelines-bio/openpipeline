@@ -63,16 +63,16 @@ workflow run_wf {
 
     // -- 3. Palantir pseudotime + fate probabilities on the landscape --------------
     //
-    // The trait table doubles as the label source for --start_group_cluster, so a root
+    // The trait table doubles as the label source for --start_cluster, so a root
     // can be named as e.g. "the non-demented donors" rather than a single identifier.
     | palantir.run(
         fromState: { id, state -> [
           "input_table":             state.output_phate_csv,
           "id_column":               state.obs_group,
           "metadata":                state.traits_csv,
-          "start_group":             state.start_group,
-          "start_group_cluster":     state.start_group_cluster,
-          "start_group_column":      state.start_group_column,
+          "start_id":                state.start_id,
+          "start_cluster":           state.start_cluster,
+          "start_cluster_column":    state.start_cluster_column,
           "terminal_states":         state.terminal_states,
           "terminal_states_column":  state.terminal_states_column,
           "num_waypoints":           state.num_waypoints,
@@ -106,7 +106,7 @@ workflow run_wf {
         }
       )
 
-    // -- 5. Cellular community detection (co-occurrence + dynamics) ----------------
+    // -- 5. Label communities (co-occurrence + dynamics) ----------------------------
     | label_communities.run(
         fromState: { id, state -> [
           "input":               state.output_proportions_csv,
@@ -128,7 +128,8 @@ workflow run_wf {
         fromState: { id, state -> [
           "input":                state.output_proportions_csv,
           "metadata":             state.traits_csv,
-          "join_on":              state.obs_group,
+          "input_join_column":    state.obs_group,
+          "metadata_join_column": state.obs_group,
           "predictor_columns":    state.trait_columns,
           "covariate_columns":    state.covariate_columns,
           "random_effect_column": state.random_effect_column,
@@ -142,28 +143,7 @@ workflow run_wf {
         }
       )
 
-    // -- 7. Pathway enrichment (skipped when no DE results are given) ---------------
-    //
-    // Also CSV in / CSV out, so it needs no branch/mix: runIf skips the step and leaves
-    // the state as it was.
-    | gseapy.run(
-        runIf: { id, state -> state.de_results_csv != null },
-        fromState: { id, state -> [
-          "input":          state.de_results_csv,
-          "gene_column":    state.gene_column,
-          "gene_sets":      state.gene_sets,
-          "gene_sets_file": state.gene_sets_file,
-          "method":         state.pathway_method,
-          "output":         state.output_pathway_csv,
-        ]},
-        toState: { id, output, state ->
-          state + [ "output_pathway_csv": output.output ]
-        }
-      )
-
     | map { id, state ->
-        // The h5mu and every table above always exist; the enrichment table only
-        // when gseapy ran.
         def out = [
           "output":                         state.input,
           "output_proportions_csv":         state.output_proportions_csv,
@@ -174,9 +154,6 @@ workflow run_wf {
           "output_communities_csv":         state.output_communities_csv,
           "output_trait_associations_csv":  state.output_trait_associations_csv,
         ]
-        if (state.de_results_csv != null) {
-          out = out + [ "output_pathway_csv": state.output_pathway_csv ]
-        }
         [ id, out ]
       }
 

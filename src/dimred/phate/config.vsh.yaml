@@ -12,9 +12,8 @@ description: |
   Two input modes, exactly one of which must be given:
     - `--input`: an h5mu file, embedding the matrix in `.obsm[--obsm_input]`.
     - `--input_table`: a CSV with an identifier column plus one numeric column per
-      feature. This is the group-level mode used by the BEYOND methodology, where
-      the matrix is a participant x subpopulation proportion matrix and no
-      cell-level data is involved.
+      feature, for observations that are not cells (e.g. a donor x label proportion
+      table).
 
   Reference: Moon et al., Visualizing structure and transitions in high-dimensional
   biological data. Nature Biotechnology, 2019.
@@ -63,8 +62,6 @@ argument_groups:
         description: |
           Input CSV with one row per observation: an identifier column plus one
           numeric column per feature. Mutually exclusive with `--input`.
-          For BEYOND this is the participant x subpopulation proportion matrix
-          written by `stats/calculate_label_proportions --output_csv`.
         direction: input
         required: false
         example: proportions.csv

@@ -33,11 +33,8 @@ logger = setup_logger()
 
 def _cooccurrence_similarity(prop_df, method):
     """Correlation matrix of group proportion vectors (label x label)."""
-    # prop_df: groups x labels
+    # prop_df: groups x labels; a zero-variance label gives NaN
     corr = prop_df.corr(method=method)
-    # Pearson/Spearman r is already bounded to [-1, 1]; only the NaN produced by a
-    # zero-variance label (constant proportion across groups) needs handling -
-    # treat it as "no co-occurrence signal".
     corr = corr.fillna(0)
     return corr
 
@@ -52,11 +49,13 @@ def _read_dynamics(path, labels):
             f"--dynamics '{path}' is missing column(s) {sorted(missing)}. "
             f"Available: {list(df.columns)}"
         )
+
     curves = {}
     for label, group in df.groupby("label"):
         curves[str(label)] = group.sort_values("pseudotime")[
             "proportion_fitted"
         ].to_numpy(dtype=float)
+
     absent = [lab for lab in labels if lab not in curves]
     if absent:
         logger.warning(
@@ -65,6 +64,7 @@ def _read_dynamics(path, labels):
             len(absent),
             absent[:10],
         )
+
     return curves
 
 
@@ -92,7 +92,7 @@ def _dynamics_similarity(curves, labels):
 
 
 def _cluster_hierarchical(dist_mat, n_communities, link_method):
-    """Ward linkage hierarchical clustering; returns integer cluster labels."""
+    """Hierarchical clustering; returns integer cluster labels."""
     condensed = squareform(dist_mat, checks=False)
     condensed = np.clip(condensed, 0, None)  # numerical noise may give tiny negatives
     Z = linkage(condensed, method=link_method)

@@ -49,8 +49,8 @@ def _make_mudata(tmp_path, n_cells=300, n_dims=10, seed=42):
     return path
 
 
-def test_palantir_start_group_barcode(run_component, tmp_path):
-    """Run Palantir using an explicit --start_group barcode."""
+def test_palantir_start_id_barcode(run_component, tmp_path):
+    """Run Palantir using an explicit --start_id barcode."""
     input_path = _make_mudata(tmp_path)
     output = tmp_path / "output.h5mu"
 
@@ -60,7 +60,7 @@ def test_palantir_start_group_barcode(run_component, tmp_path):
             str(input_path),
             "--obsm_input",
             "X_pca_integrated",
-            "--start_group",
+            "--start_id",
             "cell_0000",
             "--num_waypoints",
             "50",
@@ -88,7 +88,7 @@ def test_palantir_start_group_barcode(run_component, tmp_path):
     assert len(adata.uns["palantir_waypoints"]) > 0, "Waypoints list is empty"
 
 
-def test_palantir_start_group_cluster(run_component, tmp_path):
+def test_palantir_start_cluster(run_component, tmp_path):
     """Start cell is resolved automatically from a cluster label."""
     input_path = _make_mudata(tmp_path)
     output = tmp_path / "output_cluster.h5mu"
@@ -99,9 +99,9 @@ def test_palantir_start_group_cluster(run_component, tmp_path):
             str(input_path),
             "--obsm_input",
             "X_pca_integrated",
-            "--start_group_cluster",
+            "--start_cluster",
             "A",
-            "--start_group_column",
+            "--start_cluster_column",
             "cluster",
             "--num_waypoints",
             "50",
@@ -131,7 +131,7 @@ def test_palantir_custom_output_keys(run_component, tmp_path):
             str(input_path),
             "--obsm_input",
             "X_pca_integrated",
-            "--start_group",
+            "--start_id",
             "cell_0000",
             "--num_waypoints",
             "50",
@@ -170,7 +170,7 @@ def test_palantir_input_preserved(run_component, tmp_path):
             str(input_path),
             "--obsm_input",
             "X_pca_integrated",
-            "--start_group",
+            "--start_id",
             "cell_0000",
             "--num_waypoints",
             "50",
@@ -222,8 +222,8 @@ def _make_tables(tmp_path, n_groups=120, n_dims=4, seed=42, id_column="participa
     return emb_path, meta_path, ids
 
 
-def test_table_mode_start_group(run_component, tmp_path):
-    """Explicit --start_group identifier on a table; pseudotime follows the gradient."""
+def test_table_mode_start_id(run_component, tmp_path):
+    """Explicit --start_id identifier on a table; pseudotime follows the gradient."""
     emb_path, _, ids = _make_tables(tmp_path)
     output = tmp_path / "pseudotime.csv"
 
@@ -233,7 +233,7 @@ def test_table_mode_start_group(run_component, tmp_path):
             str(emb_path),
             "--output_table",
             str(output),
-            "--start_group",
+            "--start_id",
             ids[0],
             "--num_waypoints",
             "40",
@@ -265,7 +265,7 @@ def test_table_mode_start_group(run_component, tmp_path):
 
 
 def test_table_mode_start_cluster_from_metadata(run_component, tmp_path):
-    """--start_group_cluster resolves against a column of --metadata."""
+    """--start_cluster resolves against a column of --metadata."""
     emb_path, meta_path, ids = _make_tables(tmp_path)
     output = tmp_path / "pseudotime_cluster.csv"
 
@@ -277,9 +277,9 @@ def test_table_mode_start_cluster_from_metadata(run_component, tmp_path):
             str(meta_path),
             "--output_table",
             str(output),
-            "--start_group_column",
+            "--start_cluster_column",
             "stage",
-            "--start_group_cluster",
+            "--start_cluster",
             "control",
             "--num_waypoints",
             "40",
@@ -311,7 +311,7 @@ def test_table_mode_terminal_states(run_component, tmp_path):
             str(emb_path),
             "--output_table",
             str(output),
-            "--start_group",
+            "--start_id",
             ids[0],
             "--terminal_states",
             ids[-1],
@@ -353,9 +353,9 @@ def test_table_mode_metadata_missing_id(run_component, tmp_path):
                 str(truncated_path),
                 "--output_table",
                 str(tmp_path / "out.csv"),
-                "--start_group_column",
+                "--start_cluster_column",
                 "stage",
-                "--start_group_cluster",
+                "--start_cluster",
                 "control",
                 "--num_waypoints",
                 "15",
@@ -384,7 +384,7 @@ def test_metadata_rejected_with_h5mu(run_component, tmp_path):
                 str(meta_path),
                 "--output",
                 str(tmp_path / "out.h5mu"),
-                "--start_group",
+                "--start_id",
                 "cell_0000",
             ]
         )
@@ -432,7 +432,7 @@ def test_waypoint_knn_too_large(run_component, tmp_path):
                 str(emb_path),
                 "--output_table",
                 str(tmp_path / "out.csv"),
-                "--start_group",
+                "--start_id",
                 ids[0],
                 "--num_waypoints",
                 "12",
@@ -459,7 +459,7 @@ def test_waypoints_capped_at_n_obs(run_component, tmp_path):
                 str(emb_path),
                 "--output_table",
                 str(tmp_path / "out.csv"),
-                "--start_group",
+                "--start_id",
                 ids[0],
                 "--num_waypoints",
                 "500",

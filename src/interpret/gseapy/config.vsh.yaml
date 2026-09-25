@@ -8,8 +8,7 @@ description: |
   - `ora`: over-representation analysis on the set of significant DE genes
 
   Gene sets can be specified as Enrichr library names (downloaded at runtime) or as local GMT
-  files. CSV in, CSV out: the component takes a DE table and writes one long-format table of
-  enrichment results, with a `gene_set_library` column, and does not touch a `MuData` object.
+  files.
 keywords: [ pathway enrichment, GSEA, ORA, gseapy, differential expression ]
 links:
   homepage: https://gseapy.readthedocs.io
@@ -61,6 +60,20 @@ argument_groups:
           Column in the DE CSV used to select significant genes for ORA. Must be numeric.
           Ignored when `--method prerank`.
 
+      - name: "--gene_sets"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          One or more Enrichr library names (e.g. `MSigDB_Hallmark_2020`,
+          `GO_Biological_Process_2023`, `KEGG_2021_Human`), downloaded from Enrichr at
+          runtime. Local GMT files go to `--gene_sets_file` instead.
+          Enrichr libraries use uppercase HGNC gene symbols for `--organism Human` and
+          MGI symbols for `--organism Mouse`; the gene names in `--input` must use
+          the same namespace or no gene will match (Ensembl IDs will not work).
+          At least one of `--gene_sets` or `--gene_sets_file` must be given.
+        example: [ "MSigDB_Hallmark_2020", "GO_Biological_Process_2023" ]
+
       - name: "--gene_sets_file"
         type: file
         multiple: true
@@ -84,20 +97,6 @@ argument_groups:
           - `prerank`: all genes are ranked by `--fc_column`; classical pre-ranked GSEA.
           - `ora`: over-representation analysis on genes passing `--pval_threshold` and
             `--fc_threshold`.
-
-      - name: "--gene_sets"
-        type: string
-        multiple: true
-        required: false
-        description: |
-          One or more Enrichr library names (e.g. `MSigDB_Hallmark_2020`,
-          `GO_Biological_Process_2023`, `KEGG_2021_Human`), downloaded from Enrichr at
-          runtime. Local GMT files go to `--gene_sets_file` instead.
-          Enrichr libraries use uppercase HGNC gene symbols for `--organism Human` and
-          MGI symbols for `--organism Mouse`; the gene names in `--input_degenes` must use
-          the same namespace or no gene will match (Ensembl IDs will not work).
-          At least one of `--gene_sets` or `--gene_sets_file` must be given.
-        example: [ "MSigDB_Hallmark_2020", "GO_Biological_Process_2023" ]
 
       - name: "--pval_threshold"
         type: double

@@ -12,7 +12,7 @@ workflow test_wf {
       id:             "beyond_atlas",
       input:          resources_test.resolve("beyond_test_data/atlas.h5mu"),
       output:         "atlas_with_subpopulations.h5mu",
-      obs_cell_type:  "celltypist_pred",
+      obs_cell_type:  "cell_class",
       obs_label:      "leiden_subpopulation",
       leiden_resolution: [0.3],
     ]

@@ -6,7 +6,8 @@ import pandas as pd
 par = {
     "input": "proportions.csv",
     "metadata": "traits.csv",
-    "join_on": "sample_id",
+    "input_join_column": "sample_id",
+    "metadata_join_column": None,
     "response_columns": None,
     "predictor_columns": ["trait_A"],
     "covariate_columns": None,
@@ -41,27 +42,41 @@ def _read_table(path, label):
 
 def _join_tables(df, par):
     """Inner-join the optional metadata table onto the input table."""
-    if par["metadata"] is None and par["join_on"] is None:
+    input_col = par["input_join_column"]
+    if par["metadata"] is None and input_col is None:
+        if par["metadata_join_column"] is not None:
+            raise ValueError("--metadata_join_column requires --metadata.")
         return df
-    if par["metadata"] is None or par["join_on"] is None:
-        raise ValueError("--metadata and --join_on must be given together.")
+    if par["metadata"] is None or input_col is None:
+        raise ValueError("--metadata and --input_join_column must be given together.")
 
     meta_df = _read_table(par["metadata"], "Metadata table")
-    join_col = par["join_on"]
-    for name, table in (("--input", df), ("--metadata", meta_df)):
-        if join_col not in table.columns:
+    meta_col = par["metadata_join_column"] or input_col
+    for arg, col, table in (
+        ("--input_join_column", input_col, df),
+        ("--metadata_join_column", meta_col, meta_df),
+    ):
+        if col not in table.columns:
             raise ValueError(
-                f"Join column '{join_col}' not found in {name}. "
+                f"{arg} '{col}' not found in its table. "
                 f"Available: {list(table.columns)}"
             )
-    merged = df.merge(meta_df, on=join_col, how="inner", suffixes=("", "_metadata"))
+    merged = df.merge(
+        meta_df,
+        left_on=input_col,
+        right_on=meta_col,
+        how="inner",
+        suffixes=("", "_metadata"),
+    )
     if merged.empty:
         raise ValueError(
-            f"No rows in common between --input and --metadata on '{join_col}'."
+            f"No rows in common between --input '{input_col}' and "
+            f"--metadata '{meta_col}'."
         )
     logger.info(
-        "Joined on '%s': %d rows kept (of %d and %d).",
-        join_col,
+        "Joined --input '%s' on --metadata '%s': %d rows kept (of %d and %d).",
+        input_col,
+        meta_col,
         len(merged),
         len(df),
         len(meta_df),
@@ -82,8 +97,8 @@ def _resolve_responses(df, candidates, par):
     reserved.update(par["covariate_columns"] or [])
     if par["random_effect_column"]:
         reserved.add(par["random_effect_column"])
-    if par["join_on"]:
-        reserved.add(par["join_on"])
+    if par["input_join_column"]:
+        reserved.add(par["input_join_column"])
 
     responses = [
         c

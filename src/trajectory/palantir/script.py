@@ -13,9 +13,9 @@ par = {
     "input_table": None,
     "id_column": None,
     "metadata": None,
-    "start_group": None,
-    "start_group_cluster": None,
-    "start_group_column": "subpopulation",
+    "start_id": None,
+    "start_cluster": None,
+    "start_cluster_column": "subpopulation",
     "num_waypoints": 500,
     "n_components": 10,
     "knn": 30,
@@ -74,20 +74,20 @@ def _label_source(par):
     return ".obs" if par["input"] is not None else "--metadata"
 
 
-def _resolve_start_group(adata, par):
+def _resolve_start_id(adata, par):
     """Return a single observation identifier to use as the trajectory root."""
-    if par["start_group"] is not None and par["start_group_cluster"] is not None:
+    if par["start_id"] is not None and par["start_cluster"] is not None:
         raise ValueError(
-            "--start_group and --start_group_cluster are mutually exclusive; "
-            f"got --start_group '{par['start_group']}' and --start_group_cluster "
-            f"'{par['start_group_cluster']}'. Provide exactly one."
+            "--start_id and --start_cluster are mutually exclusive; "
+            f"got --start_id '{par['start_id']}' and --start_cluster "
+            f"'{par['start_cluster']}'. Provide exactly one."
         )
-    if par["start_group_cluster"] is not None:
-        obs_key = par["start_group_column"]
-        cluster = par["start_group_cluster"]
+    if par["start_cluster"] is not None:
+        obs_key = par["start_cluster_column"]
+        cluster = par["start_cluster"]
         if obs_key not in adata.obs.columns:
             raise ValueError(
-                f"--start_group_column '{obs_key}' not found in {_label_source(par)}. "
+                f"--start_cluster_column '{obs_key}' not found in {_label_source(par)}. "
                 f"Available columns: {list(adata.obs.columns)}"
             )
         if not (adata.obs[obs_key] == cluster).any():
@@ -96,25 +96,23 @@ def _resolve_start_group(adata, par):
                 f"{_label_source(par)} column '{obs_key}'."
             )
         # early_cell(ad, celltype, celltype_column) - requires DM_EigenVectors_multiscaled
-        start_group = palantir.utils.early_cell(adata, cluster, celltype_column=obs_key)
+        start_id = palantir.utils.early_cell(adata, cluster, celltype_column=obs_key)
         logger.info(
             "Auto-selected root '%s' from population '%s' (column '%s')",
-            start_group,
+            start_id,
             cluster,
             obs_key,
         )
-        return start_group
-    elif par["start_group"] is not None:
-        if par["start_group"] not in adata.obs_names:
+        return start_id
+    elif par["start_id"] is not None:
+        if par["start_id"] not in adata.obs_names:
             raise ValueError(
-                f"--start_group '{par['start_group']}' is not one of the "
+                f"--start_id '{par['start_id']}' is not one of the "
                 f"{adata.n_obs} observation identifiers."
             )
-        return par["start_group"]
+        return par["start_id"]
     else:
-        raise ValueError(
-            "Either --start_group or --start_group_cluster must be provided."
-        )
+        raise ValueError("Either --start_id or --start_cluster must be provided.")
 
 
 def _resolve_terminal_states(adata, par):
@@ -268,8 +266,8 @@ def main():
     palantir.utils.determine_multiscale_space(adata)
 
     # -- 3. Resolve trajectory root ------------------------------------------------
-    start_group = _resolve_start_group(adata, par)
-    logger.info("Trajectory root: %s", start_group)
+    start_id = _resolve_start_id(adata, par)
+    logger.info("Trajectory root: %s", start_id)
 
     # -- 4. Resolve terminal states -------------------------------------------
     terminal_states = _resolve_terminal_states(adata, par)
@@ -301,7 +299,7 @@ def main():
     )
     palantir.core.run_palantir(
         adata,
-        early_cell=start_group,
+        early_cell=start_id,
         terminal_states=terminal_states,
         knn=par["waypoint_knn"],
         num_waypoints=par["num_waypoints"],

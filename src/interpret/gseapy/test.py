@@ -144,26 +144,31 @@ def test_ora(run_component, tmp_path, test_data):
     assert len(res) > 0
 
 
-def test_ora_no_significant_genes_fails(run_component, tmp_path, test_data):
-    """An empty significant gene list must fail loudly, not write an empty result."""
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input",
-                test_data["csv"],
-                "--method",
-                "ora",
-                "--gene_sets_file",
-                test_data["gmt"],
-                "--pval_threshold",
-                "0.0",
-                "--min_size",
-                "5",
-                "--output",
-                str(tmp_path / "enrichment_empty.csv"),
-            ]
-        )
-    assert "No significant genes" in err.value.stdout.decode("utf-8")
+def test_ora_no_significant_genes_warns(run_component, tmp_path, test_data):
+    """No significant genes warns and writes an empty table instead of failing."""
+    output = tmp_path / "enrichment_empty.csv"
+
+    stdout = run_component(
+        [
+            "--input",
+            test_data["csv"],
+            "--method",
+            "ora",
+            "--gene_sets_file",
+            test_data["gmt"],
+            "--pval_threshold",
+            "0.0",
+            "--min_size",
+            "5",
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert "No significant genes" in stdout.decode("utf-8")
+    res = pd.read_csv(str(output))
+    assert len(res) == 0
+    assert list(res.columns[:2]) == ["gene_set_library", "method"]
 
 
 def test_missing_fc_column_fails(run_component, tmp_path, test_data):
