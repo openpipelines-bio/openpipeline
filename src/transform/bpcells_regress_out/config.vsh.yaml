@@ -72,7 +72,7 @@ engines:
       - type: apt
         packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
       - type: r
-        cran: [ anndata, reticulate ]
+        cran: [ reticulate ]
         # Until viash r requirements supports passing secrets
         # --mount only applies to ONE single docker RUN instruction  
         # github: bnprks/BPCells/r
