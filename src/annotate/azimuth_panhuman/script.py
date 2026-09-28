@@ -32,6 +32,8 @@ par = {
     "umap_spread": 1.0,
     "umap_init": "spectral",
     "umap_verbose": False,
+    "output_obs_predictions": "azimuth_pred",
+    "output_obs_probability": "azimuth_probability",
     "output_obsm_embedding": "X_azimuth",
     "output_obsm_umap": "X_azimuth_umap",
     "output_compression": None,
@@ -41,6 +43,7 @@ meta = {"resources_dir": "src/utils"}
 
 sys.path.append(meta["resources_dir"])
 from cross_check_genes import cross_check_genes
+from is_lognormalized import is_lognormalized
 from set_var_index import set_var_index
 from setup_logger import setup_logger
 
@@ -75,20 +78,33 @@ def main(par):
     X_query = csr_matrix(count_matrix)
     query_features = query_adata.var.index.astype(str).tolist()
 
-    # panhumanpy itself never raises on this: it only heuristically guesses
-    # whether the data is already normalized and silently proceeds either
-    # way. Fail loudly instead, matching celltypist/singler's convention,
-    # unless the user explicitly asked to skip the check.
-    if not par["normalization_override"] and check_normalization(
-        X_query, par["normalization_override"], par["norm_check_batch_size"]
-    ):
-        raise ValueError(
-            "Invalid expression matrix: detected non-integer values in "
-            "--input_layer (or .X if not set), suggesting the data is "
-            "already normalized. Azimuth expects raw counts and performs "
-            "its own normalization internally. Pass --normalization_override "
-            "if you are certain this is a false positive."
-        )
+    if par["normalization_override"]:
+        # Azimuth's internal normalization is skipped when this flag is set,
+        # so verify the data was already normalized the way Azimuth expects
+        # (log1p to a target sum of 10000 counts per cell)
+        if not is_lognormalized(X_query, target_sum=10000):
+            raise ValueError(
+                "Invalid expression matrix: --normalization_override was "
+                "set, but --input_layer (or .X if not set) does not look "
+                "like it was log1p-normalized to a target sum of 10000 "
+                "counts per cell, which is what Azimuth expects when its "
+                "internal normalization is skipped."
+            )
+    else:
+        # panhumanpy itself never raises on this: it only heuristically
+        # guesses whether the data is already normalized and silently
+        # proceeds either way. Fail loudly instead.
+        if check_normalization(
+            X_query, par["normalization_override"], par["norm_check_batch_size"]
+        ):
+            raise ValueError(
+                "Invalid expression matrix: detected non-integer values in "
+                "--input_layer (or .X if not set), suggesting the data is "
+                "already normalized. Azimuth expects raw counts and performs "
+                "its own normalization internally. Pass "
+                "--normalization_override if the data is already "
+                "log1p-normalized to a target sum of 10000 counts per cell."
+            )
 
     # Only reads the (package-bundled) reference gene panel, not the
     # downloaded neural network weights, so this stays cheap even though
@@ -138,6 +154,15 @@ def main(par):
     umap_dict = core_outputs["umap_dict"]
 
     logger.info("Writing annotations to output object")
+    # Only the final-level prediction and its confidence are renamed; the
+    # other hierarchical/refined label columns Azimuth adds keep their
+    # panhumanpy-assigned names.
+    cells_meta_out = cells_meta_out.rename(
+        columns={
+            "final_level_labels": par["output_obs_predictions"],
+            "final_level_confidence": par["output_obs_probability"],
+        }
+    )
     for col in cells_meta_out.columns:
         input_adata.obs[col] = cells_meta_out[col].values
 

@@ -76,8 +76,17 @@ argument_groups:
       - name: "--normalization_override"
         type: boolean_true
         description: |
-          Skip normalization when `--input_layer` already contains log-normalized 
-          counts. If set, counts must be normalized to a target sum of 10000
+          Skip Azimuth's internal normalization and treat `--input_layer`
+          (or `.X`) as already log-normalized, instead of raw counts.
+          Counts must be normalized to a target sum of 10000 per cell
+          (i.e. `sc.pp.normalize_total(target_sum=1e4)` followed by
+          `sc.pp.log1p()`); the component verifies this and raises an error
+          if the data does not match. Without this flag, the component
+          instead verifies that the data looks like raw (integer) counts,
+          rather than silently normalizing already-normalized data a
+          second time. Only set this flag if your data is already
+          normalized in this way.
+      - name: "--norm_check_batch_size"
         type: integer
         default: 100
         min: 1
@@ -187,6 +196,22 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
+      - name: "--output_obs_predictions"
+        type: string
+        default: "azimuth_pred"
+        required: false
+        description: |
+          In which `.obs` column to store the most granular ('final level')
+          predicted cell type label. Azimuth also always adds several other
+          hierarchical/refined label columns (see `--output_mode` and
+          `--refine_labels`) whose names are not configurable.
+      - name: "--output_obs_probability"
+        type: string
+        default: "azimuth_probability"
+        required: false
+        description: |
+          In which `.obs` column to store the (calibrated) confidence score
+          of the `--output_obs_predictions` label.
       - name: "--output_obsm_embedding"
         type: string
         default: "X_azimuth"
@@ -209,6 +234,7 @@ resources:
   - path: /src/utils/setup_logger.py
   - path: /src/utils/cross_check_genes.py
   - path: /src/utils/set_var_index.py
+  - path: /src/utils/is_lognormalized.py
 
 test_resources:
   - type: python_script
@@ -229,4 +255,4 @@ runners:
   - type: executable
   - type: nextflow
     directives:
-      label: [midcpu, highmem, highdisk]
+      label: [midcpu, highmem, highdisk, gpu]
