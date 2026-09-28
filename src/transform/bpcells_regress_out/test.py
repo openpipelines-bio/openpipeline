@@ -2,30 +2,16 @@ import sys
 import pytest
 import mudata as mu
 import numpy as np
+from scipy.sparse import issparse
+
+## VIASH START
+meta = {"name": "bpcells_regress_out", "resources_dir": "resources_test/"}
+## VIASH END
 
 
 @pytest.fixture
-def input_path():
-    return f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
-
-
-@pytest.fixture
-def input_data(input_path):
-    return mu.read_h5mu(input_path)
-
-
-@pytest.fixture
-def input_h5mu(input_data):
-    input_data.obs["var"] = np.random.rand(input_data.n_obs)
-    input_data.mod["rna"].obs["var"] = input_data.obs["var"]
-    input_data.mod["prot"].obs["var"] = input_data.obs["var"]
-    input_data.mod["rna"].layers["input"] = input_data.mod["rna"].X
-    return input_data
-
-
-@pytest.fixture
-def input_h5mu_path(write_mudata_to_file, input_h5mu):
-    return write_mudata_to_file(input_h5mu)
+def input_h5mu_path():
+    return f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 
 
 @pytest.fixture
@@ -41,7 +27,7 @@ def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
         "--output",
         output_h5mu_path,
         "--obs_keys",
-        "var",
+        "total_counts",
         "--output_compression",
         "gzip",
     ]
@@ -52,7 +38,7 @@ def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
     mu_input = mu.read_h5mu(input_h5mu_path)
     mu_output = mu.read_h5mu(output_h5mu_path)
 
-    assert "rna" in mu_output.mod, 'Output should contain data.mod["prot"].'
+    assert "rna" in mu_output.mod, 'Output should contain data.mod["rna"].'
     assert "prot" in mu_output.mod, 'Output should contain data.mod["prot"].'
 
     rna_in = mu_input.mod["rna"]
@@ -78,8 +64,6 @@ def test_no_regress_out_without_obs_keys(
         input_h5mu_path,
         "--output",
         output_h5mu_path,
-        "--output_compression",
-        "gzip",
     ]
     run_component(cmd_pars)
 
@@ -102,24 +86,58 @@ def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_pat
         "--output",
         output_h5mu_path,
         "--obs_keys",
-        "var",
+        "total_counts",
         "--input_layer",
-        "input",
+        "log_normalized",
         "--output_layer",
         "output",
-        "--output_compression",
-        "gzip",
     ]
     run_component(cmd_pars)
 
-    mu_input = mu.read_h5mu(input_h5mu_path)
-    mu_output = mu.read_h5mu(output_h5mu_path)
+    rna_in = mu.read_h5ad(input_h5mu_path, mod="rna")
+    rna_out = mu.read_h5ad(output_h5mu_path, mod="rna")
 
-    rna_in = mu_input.mod["rna"]
-    rna_out = mu_output.mod["rna"]
+    assert np.mean(rna_in.layers["log_normalized"]) != np.mean(
+        rna_out.layers["output"]
+    ), "RNA expression should have changed"
 
-    assert np.mean(rna_in.layers["input"]) != np.mean(rna_out.layers["output"]), (
-        "RNA expression should have changed"
+
+def test_regress_out_hvg(run_component, input_h5mu_path, output_h5mu_path, tmp_path):
+    base_pars = [
+        "--input",
+        input_h5mu_path,
+        "--obs_keys",
+        "total_counts",
+        "--input_layer",
+        "log_normalized",
+        "--output_layer",
+        "output",
+    ]
+    run_component(
+        base_pars + ["--output", output_h5mu_path, "--var_input", "filter_with_hvg"]
+    )
+    all_genes_path = tmp_path / "all_genes.h5mu"
+    run_component(base_pars + ["--output", all_genes_path])
+
+    rna_in = mu.read_h5mu(input_h5mu_path).mod["rna"]
+    rna_out = mu.read_h5mu(output_h5mu_path).mod["rna"]
+    rna_all_genes = mu.read_h5mu(all_genes_path).mod["rna"]
+    hvg = rna_in.var["filter_with_hvg"].to_numpy()
+
+    assert rna_in.shape == rna_out.shape, "Should have same shape as before"
+
+    output_layer = rna_out.layers["output"]
+    assert issparse(output_layer), "Output layer should be a sparse matrix"
+    output_matrix = output_layer.toarray()
+
+    assert not np.any(output_matrix[:, ~hvg]), "Non-selected genes should be set to 0"
+    assert output_layer.nnz <= rna_in.n_obs * hvg.sum(), (
+        "Only values of selected genes should be stored"
+    )
+    np.testing.assert_allclose(
+        output_matrix[:, hvg],
+        rna_all_genes.layers["output"].toarray()[:, hvg],
+        err_msg="Selected genes should be regressed as when using all genes",
     )
 
 
