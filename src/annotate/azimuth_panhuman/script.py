@@ -14,7 +14,6 @@ par = {
     "sanitize_ensembl_ids": False,
     "input_reference_gene_overlap": 100,
     "model_version": "v1",
-    "annotation_pipeline": "supervised",
     "eval_batch_size": 8192,
     "normalization_override": False,
     "norm_check_batch_size": 100,
@@ -48,10 +47,20 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 import panhumanpy as ph
+import tensorflow as tf
 from panhumanpy.ANNotate_tools import InferenceTools, check_normalization
+
+# Currently the only annotation pipeline implemented by panhumanpy.
+ANNOTATION_PIPELINE = "supervised"
 
 
 def main(par):
+    gpu_devices = tf.config.list_physical_devices("GPU")
+    logger.info(
+        "GPU devices visible to TensorFlow: %s",
+        gpu_devices if gpu_devices else "none, running on CPU",
+    )
+
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])
     input_adata = input_mudata.mod[par["modality"]]
@@ -86,7 +95,7 @@ def main(par):
     # annotate_core() below loads the full model a second time.
     logger.info("Checking gene overlap with the Azimuth reference gene panel")
     feature_panel = InferenceTools(
-        annotation_pipeline=par["annotation_pipeline"],
+        annotation_pipeline=ANNOTATION_PIPELINE,
         model_version=par["model_version"],
     ).load_inference_feature_panel()
     cross_check_genes(
@@ -102,7 +111,7 @@ def main(par):
         X_query,
         query_features,
         cells_meta,
-        annotation_pipeline=par["annotation_pipeline"],
+        annotation_pipeline=ANNOTATION_PIPELINE,
         eval_batch_size=par["eval_batch_size"],
         normalization_override=par["normalization_override"],
         norm_check_batch_size=par["norm_check_batch_size"],
