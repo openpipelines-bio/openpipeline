@@ -145,7 +145,6 @@ def test_duplicate_categorical_index_entry(
             dup_input_file,
             "--input_var_gene_names",
             "dup_idx",
-            "False",
             "--output",
             output_file,
         ]
