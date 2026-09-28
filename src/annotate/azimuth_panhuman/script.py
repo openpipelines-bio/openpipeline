@@ -11,7 +11,6 @@ par = {
     "modality": "rna",
     "input_layer": None,
     "input_var_gene_names": "gene_symbol",
-    "sanitize_ensembl_ids": False,
     "input_reference_gene_overlap": 100,
     "model_version": "v1",
     "eval_batch_size": 8192,
@@ -68,8 +67,10 @@ def main(par):
     input_mudata = mu.read_h5mu(par["input"])
     input_adata = input_mudata.mod[par["modality"]]
 
+    # Azimuth expects gene symbols, not Ensembl IDs (see --input_var_gene_names),
+    # so there is nothing to sanitize.
     query_adata = set_var_index(
-        input_adata.copy(), par["input_var_gene_names"], par["sanitize_ensembl_ids"]
+        input_adata.copy(), par["input_var_gene_names"], sanitize_ensembl_ids=False
     )
 
     count_matrix = (
