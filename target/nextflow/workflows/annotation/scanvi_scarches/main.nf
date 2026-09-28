@@ -3704,7 +3704,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scanvi_scarches",
     "viash_version" : "0.9.7",
-    "git_commit" : "88d7b7585a47aa7ca3722bf5457a4c487686924c",
+    "git_commit" : "106d86936cf481356fea2a0a8b9106f33dea15f0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3772,22 +3772,24 @@ workflow run_wf {
         }
         // Make sure parameters are filled out correctly
         | map { id, state->
-          // Check that either a reference dataset or model is provided
-          if (!state.reference && !state.reference_model) {
-            error("At least one of --reference or --reference_model must be provided.")
-          }
-          if (state.reference && state.reference_model) {
-            log.warn(
-              "Both --reference_model and --reference were provided. " +
-              "The pre-trained scANVI --reference_model will be used for annotation, the --reference dataset will be ignored."
-            )
-          }
-          // Make sure all required parameters are provided if a reference dataset is to be used
-          if (state.reference && !state.reference_model && !state.reference_obs_target) {
-            error("--reference_obs_target must be provided if --reference is used for scANVI model training.")
-          }
-          if (state.reference && !state.reference_model && !state.reference_obs_batch_label) {
-            error("--reference_obs_batch_label must be provided if --reference is used for scANVI model training.")
+          if (!workflow.stubRun) {
+            // Check that either a reference dataset or model is provided
+            if (!state.reference && !state.reference_model) {
+              error("At least one of --reference or --reference_model must be provided.")
+            }
+            if (state.reference && state.reference_model) {
+              log.warn(
+                "Both --reference_model and --reference were provided. " +
+                "The pre-trained scANVI --reference_model will be used for annotation, the --reference dataset will be ignored."
+              )
+            }
+            // Make sure all required parameters are provided if a reference dataset is to be used
+            if (state.reference && !state.reference_model && !state.reference_obs_target) {
+              error("--reference_obs_target must be provided if --reference is used for scANVI model training.")
+            }
+            if (state.reference && !state.reference_model && !state.reference_obs_batch_label) {
+              error("--reference_obs_batch_label must be provided if --reference is used for scANVI model training.")
+            }
           }
           [id, state]
         }
