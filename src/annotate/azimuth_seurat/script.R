@@ -9,7 +9,10 @@ rhdf5::h5disableFileLocking()
 
 ### VIASH START
 par <- list(
-  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+  input = paste0(
+    "resources_test/pbmc_1k_protein_v3/",
+    "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+  ),
   modality = "rna",
   assay = "RNA",
   reference = "pbmcref",
@@ -93,7 +96,8 @@ cat("Writing output data\n")
 # reduction here before converting.
 for (reduction_name in Reductions(query)) {
   embeddings <- Embeddings(query[[reduction_name]])
-  query[[reduction_name]]@cell.embeddings <- embeddings[Cells(query), , drop = FALSE]
+  reordered <- embeddings[Cells(query), , drop = FALSE]
+  query[[reduction_name]]@cell.embeddings <- reordered
 }
 
 annotated_h5ad <- as_AnnData(
