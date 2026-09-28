@@ -20,6 +20,10 @@
 
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
+* `transform/regress_out`, `transform/bpcells_regress_out`: add `--var_input` to only regress out the genes selected by a boolean `.var` column (e.g. highly variable genes) (PR #1237).
+
+* `transform/bpcells_regress_out`: improve resource usage by reading the input and writing the regressed data on disk (PR #1237).
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
