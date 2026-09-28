@@ -196,6 +196,22 @@ argument_groups:
         description: Output h5mu file.
         direction: output
         example: output.h5mu
+      - name: "--output_obs_predictions"
+        type: string
+        default: "azimuth_pred"
+        required: false
+        description: |
+          In which `.obs` column to store the most granular ('final level')
+          predicted cell type label. Azimuth also always adds several other
+          hierarchical/refined label columns (see `--output_mode` and
+          `--refine_labels`) whose names are not configurable.
+      - name: "--output_obs_probability"
+        type: string
+        default: "azimuth_probability"
+        required: false
+        description: |
+          In which `.obs` column to store the (calibrated) confidence score
+          of the `--output_obs_predictions` label.
       - name: "--output_obsm_embedding"
         type: string
         default: "X_azimuth"

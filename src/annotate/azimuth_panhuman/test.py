@@ -52,10 +52,12 @@ def test_simple_execution(run_component, random_h5mu_path):
 
     # Note: "level_zero_labels" is replaced by "azimuth_broad" once label
     # refinement runs (the default), rather than existing alongside it.
+    # "final_level_labels"/"final_level_confidence" are renamed to the
+    # --output_obs_predictions/--output_obs_probability defaults.
     expected_obs_cols = {
         "full_hierarchical_labels",
-        "final_level_labels",
-        "final_level_confidence",
+        "azimuth_pred",
+        "azimuth_probability",
         "azimuth_broad",
         "azimuth_medium",
         "azimuth_fine",
@@ -67,9 +69,9 @@ def test_simple_execution(run_component, random_h5mu_path):
     predictions = output_rna.obs["azimuth_broad"]
     assert not all(predictions.isna()), "Not all predictions should be NA"
 
-    confidence = output_rna.obs["final_level_confidence"]
+    confidence = output_rna.obs["azimuth_probability"]
     assert all(0 <= value <= 1 for value in confidence), (
-        ".obs at final_level_confidence has values outside the range [0, 1]"
+        ".obs at azimuth_probability has values outside the range [0, 1]"
     )
 
     assert "X_azimuth" in output_rna.obsm, "Embeddings were not stored in .obsm"
@@ -168,6 +170,10 @@ def test_model_version_v0_and_custom_outputs(run_component, random_h5mu_path):
             "10",
             "--umap_metric",
             "euclidean",
+            "--output_obs_predictions",
+            "my_pred",
+            "--output_obs_probability",
+            "my_probability",
             "--output_obsm_embedding",
             "my_embedding",
             "--output_obsm_umap",
@@ -183,6 +189,15 @@ def test_model_version_v0_and_custom_outputs(run_component, random_h5mu_path):
 
     output_rna = mu.read_h5mu(output_file).mod["rna"]
     assert "azimuth_broad" in output_rna.obs
+
+    assert "my_pred" in output_rna.obs, (
+        "Predictions were not stored under the custom obs key"
+    )
+    assert "my_probability" in output_rna.obs, (
+        "Probability was not stored under the custom obs key"
+    )
+    assert "final_level_labels" not in output_rna.obs
+    assert "final_level_confidence" not in output_rna.obs
 
     assert "my_embedding" in output_rna.obsm, (
         "Embeddings were not stored under the custom obsm key"
