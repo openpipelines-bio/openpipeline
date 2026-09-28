@@ -14,25 +14,6 @@ def input_h5mu_path():
     return f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 
 
-# @pytest.fixture
-# def input_data(input_path):
-#     return mu.read_h5mu(input_path)
-
-
-# @pytest.fixture
-# def input_h5mu(input_data):
-#     input_data.obs["var"] = np.random.rand(input_data.n_obs)
-#     input_data.mod["rna"].obs["var"] = input_data.obs["var"]
-#     input_data.mod["prot"].obs["var"] = input_data.obs["var"]
-#     input_data.mod["rna"].layers["input"] = input_data.mod["rna"].X
-#     return input_data
-
-
-# @pytest.fixture
-# def input_h5mu_path(write_mudata_to_file, input_h5mu):
-#     return write_mudata_to_file(input_h5mu)
-
-
 @pytest.fixture
 def output_h5mu_path(tmp_path):
     return tmp_path / "output.h5mu"
@@ -81,7 +62,7 @@ def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_pat
         "--obs_keys",
         "total_counts",
         "--input_layer",
-        "input",
+        "log_normalized",
         "--output_layer",
         "output",
         "--output_compression",
@@ -95,32 +76,32 @@ def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_pat
     rna_in = mu_input.mod["rna"]
     rna_out = mu_output.mod["rna"]
 
-    assert np.mean(rna_in.layers["input"]) != np.mean(rna_out.layers["output"]), (
-        "RNA expression should have changed"
-    )
+    assert np.mean(rna_in.layers["log_normalized"]) != np.mean(
+        rna_out.layers["output"]
+    ), "RNA expression should have changed"
 
 
-def test_regress_out_var_input(
-    run_component, input_h5mu_path, output_h5mu_path, tmp_path
-):
+def test_regress_out_hvg(run_component, input_h5mu_path, output_h5mu_path, tmp_path):
     base_pars = [
         "--input",
         input_h5mu_path,
         "--obs_keys",
-        "var",
+        "total_counts",
         "--input_layer",
-        "input",
+        "log_normalized",
         "--output_layer",
         "output",
     ]
-    run_component(base_pars + ["--output", output_h5mu_path, "--var_input", "hvg"])
+    run_component(
+        base_pars + ["--output", output_h5mu_path, "--var_input", "filter_with_hvg"]
+    )
     all_genes_path = tmp_path / "all_genes.h5mu"
     run_component(base_pars + ["--output", all_genes_path])
 
     rna_in = mu.read_h5mu(input_h5mu_path).mod["rna"]
     rna_out = mu.read_h5mu(output_h5mu_path).mod["rna"]
     rna_all_genes = mu.read_h5mu(all_genes_path).mod["rna"]
-    hvg = rna_in.var["hvg"].to_numpy()
+    hvg = rna_in.var["filter_with_hvg"].to_numpy()
 
     assert rna_in.shape == rna_out.shape, "Should have same shape as before"
 
@@ -135,8 +116,6 @@ def test_regress_out_var_input(
     np.testing.assert_allclose(
         output_matrix[:, hvg],
         np.asarray(rna_all_genes.layers["output"])[:, hvg],
-        rtol=1e-5,
-        atol=1e-6,
         err_msg="Selected genes should be regressed as when using all genes",
     )
 
