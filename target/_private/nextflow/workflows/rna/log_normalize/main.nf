@@ -3294,7 +3294,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/workflows/rna/log_normalize",
     "viash_version" : "0.9.7",
-    "git_commit" : "bc398752dc52f9ea7bdf5466514fd5d879be1073",
+    "git_commit" : "c88d2afc89ceb548bbf543dbf6de38ecc7f453ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
