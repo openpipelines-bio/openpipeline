@@ -51,6 +51,7 @@ workflow run_wf {
         "leiden_resolution": "rna_leiden_resolution",
         "uns_neighbors": "rna_uns_neighbors",
         "obsm_umap": "obsm_umap",
+        "device_type": "device_type",
       ],
       toState: ["input": "output"],
     )
@@ -68,6 +69,7 @@ workflow run_wf {
         "uns_neighbors": "prot_uns_neighbors",
         "obsm_umap": "obsm_umap",
         "output": "workflow_output",
+        "device_type": "device_type",
       ],
       toState: ["output": "output"],
     )

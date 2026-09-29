@@ -1,0 +1,21 @@
+name: Compute
+description: Options controlling which implementation of each step runs.
+arguments:
+  - name: "--device_type"
+    type: string
+    choices: [cpu, gpu]
+    default: cpu
+    description: |
+      Which implementation to use for the steps that have both a CPU and a GPU
+      variant (normalization, log1p, scaling, highly variable features, PCA,
+      neighbors, BBKNN, Harmony, Leiden clustering and UMAP):
+
+        * `cpu` (default): the scanpy implementation.
+        * `gpu`: the rapids-singlecell implementation from the
+          `openpipeline_rapids` package.
+
+      Selecting `gpu` requires a CUDA-capable NVIDIA GPU on every executor that
+      runs a GPU-labelled process; there is no automatic fallback to CPU. The
+      GPU processes also need the container runtime to be given access to the
+      devices, which is done by adding `-c src/workflows/utils/gpu.config` to
+      the Nextflow command.
