@@ -1,5 +1,7 @@
 import sys
+import subprocess
 import pytest
+import h5py
 import mudata as mu
 import numpy as np
 from scipy.sparse import issparse
@@ -28,8 +30,10 @@ def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
         output_h5mu_path,
         "--obs_keys",
         "total_counts",
+        "--output_layer",
+        "regressed",
         "--output_compression",
-        "gzip",
+        "4",
     ]
     run_component(cmd_pars)
 
@@ -49,10 +53,35 @@ def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
     assert rna_in.shape == rna_out.shape, "Should have same shape as before"
     assert prot_in.shape == prot_out.shape, "Should have same shape as before"
 
-    assert np.mean(rna_in.X) != np.mean(rna_out.X), "RNA expression should have changed"
+    assert np.mean(rna_in.X) != np.mean(rna_out.layers["regressed"]), (
+        "RNA expression should have changed"
+    )
     assert np.mean(prot_in.X) == np.mean(prot_out.X), (
         "Protein expression should remain the same"
     )
+
+
+def test_regress_out_output_compression(
+    run_component, input_h5mu_path, output_h5mu_path
+):
+    cmd_pars = [
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--obs_keys",
+        "total_counts",
+        "--output_layer",
+        "regressed",
+        "--output_compression",
+        "9",
+    ]
+    run_component(cmd_pars)
+
+    with h5py.File(output_h5mu_path, "r") as h5:
+        data = h5["mod/rna/layers/regressed/data"]
+        assert data.compression == "gzip", "Output layer should be gzip compressed"
+        assert data.compression_opts == 9, "Output layer should use gzip level 9"
 
 
 def test_no_regress_out_without_obs_keys(
@@ -64,6 +93,8 @@ def test_no_regress_out_without_obs_keys(
         input_h5mu_path,
         "--output",
         output_h5mu_path,
+        "--output_layer",
+        "regressed",
     ]
     run_component(cmd_pars)
 
@@ -138,6 +169,26 @@ def test_regress_out_hvg(run_component, input_h5mu_path, output_h5mu_path, tmp_p
         output_matrix[:, hvg],
         rna_all_genes.layers["output"].toarray()[:, hvg],
         err_msg="Selected genes should be regressed as when using all genes",
+    )
+
+
+def test_regress_out_existing_output_layer(
+    run_component, input_h5mu_path, output_h5mu_path
+):
+    cmd_pars = [
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--obs_keys",
+        "total_counts",
+        "--output_layer",
+        "log_normalized",
+    ]
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(cmd_pars)
+    assert "Output layer log_normalized already exists" in err.value.stdout.decode(
+        "utf-8"
     )
 
 

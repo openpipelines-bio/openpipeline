@@ -30,6 +30,7 @@ arguments:
   - name: "--obs_keys"
     type: string
     multiple: true
+    required: true
     description: The .obs keys to regress on.
   - name: "--input_layer"
     type: string
@@ -49,11 +50,18 @@ arguments:
   - name: "--output_layer"
     type: string
     example: X_regressed
-    required: false
+    required: true
     description: |
-      The layer of the adata object containing the regressed count data.
-      If not provided, the X attribute of the adata object will be used.
-__merge__: [., /src/base/h5_compression_argument.yaml]
+      The new layer of the adata object in which the regressed data is stored.
+  - name: "--output_compression" 
+   # BPCells writes the output layer itself and only supports gzip
+    description: |
+      GZIP compression level to use for the output.
+      By default no compression is applied.
+    type: integer
+    min: 1
+    max: 9
+    required: false
 resources:
   - type: r_script
     path: script.R

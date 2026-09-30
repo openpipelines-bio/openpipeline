@@ -18,104 +18,104 @@ par <- list(
 )
 ## VIASH END
 
-# Start from a copy of the input, the regressed data is written into it
-invisible(file.copy(par$input, par$output, overwrite = TRUE))
+# Start from a copy of the input, the regressed data is written directly to disk
+file.copy(par$input, par$output, overwrite = TRUE)
 
 # Regress out
-if (!is.null(par$obs_keys) && length(par$obs_keys) > 0) {
-  cat("Regress out variables ", par$obs_keys, " on modality ",
-    par$modality, "\n",
-    sep = ""
-  )
+cat("Regress out variables ", par$obs_keys, " on modality ",
+  par$modality, "\n",
+  sep = ""
+)
 
-  mod_path <- file.path("mod", par$modality)
+mod_path <- file.path("mod", par$modality)
 
-  # Fetch the input layer
-  input_path <-
-    if (is.null(par$input_layer)) {
-      cat("Using .X as input layer\n")
-      file.path(mod_path, "X")
-    } else {
-      cat("Using .layers ", par$input_layer, " as input layer\n", sep = "")
-      file.path(mod_path, "layers", par$input_layer)
-    }
-
-  # Read the input layer lazily from disk (genes x cells)
-  imat <- open_matrix_anndata_hdf5(par$input, group = input_path)
-  dimnames(imat) <- NULL
-  cat("Input matrix: ", ncol(imat), " cells x ", nrow(imat), " genes\n",
-    sep = ""
-  )
-
-  # Only read obs and var from the modality
-  h5 <- h5py$File(par$input, "r")
-  obs <- anndata$io$read_elem(h5[[file.path(mod_path, "obs")]])
-  var <- anndata$io$read_elem(h5[[file.path(mod_path, "var")]])
-  h5$close()
-
-  # obs_keys is not NULL and not empty
-  latent_data <- as.data.frame(obs[, par$obs_keys, drop = FALSE])
-  # regress_out builds a formula from the column names
-  colnames(latent_data) <- make.names(colnames(latent_data), unique = TRUE)
-
-  mask_var <- NULL
-  if (!is.null(par$var_input)) {
-    mask_var <- as.logical(var[[par$var_input]])
-    cat("Regressing out on ", sum(mask_var), " genes selected by .var column ",
-      par$var_input, "\n",
-      sep = ""
-    )
-    imat <- imat[mask_var, ]
+# Fetch the input layer
+input_layer <-
+  if (is.null(par$input_layer)) {
+    cat("Using .X as input layer\n")
+    file.path(mod_path, "X")
+  } else {
+    cat("Using .layers ", par$input_layer, " as input layer\n", sep = "")
+    file.path(mod_path, "layers", par$input_layer)
   }
 
-  # Regress out using BPCells
-  regressed_data <- regress_out(imat, latent_data, prediction_axis = "row")
+cat("Using .layers ", par$output_layer, " as output layer\n", sep = "")
+output_layer <- file.path(mod_path, "layers", par$output_layer)
 
-  # Non-selected genes are set to 0
-  if (!is.null(mask_var)) {
-    zeros <- as(
-      Matrix::sparseMatrix(
-        i = integer(0), j = integer(0), x = numeric(0),
-        dims = c(sum(!mask_var), ncol(regressed_data))
-      ),
-      "IterableMatrix"
-    )
-    regressed_data <- rbind(regressed_data, zeros)
-    regressed_data <- regressed_data[
-      order(c(which(mask_var), which(!mask_var))),
-    ]
-  }
+# Read the input layer lazily from disk (genes x cells)
+imat <- open_matrix_anndata_hdf5(par$input, group = input_layer)
+dimnames(imat) <- NULL
+cat("Input matrix: ", ncol(imat), " cells x ", nrow(imat), " genes\n",
+  sep = ""
+)
 
-  output_path <-
-    if (is.null(par$output_layer)) {
-      cat("Using .X as output layer\n")
-      file.path(mod_path, "X")
-    } else {
-      cat("Using .layers ", par$output_layer, " as output layer\n", sep = "")
-      file.path(mod_path, "layers", par$output_layer)
-    }
-
-  # Remove the layer that will be overwritten
-  h5 <- h5py$File(par$output, "r+")
-  if (h5$`__contains__`(output_path)) h5$`__delitem__`(output_path)
-  h5$close()
-
-  # BPCells only supports gzip compression
-  gzip_level <- if (is.null(par$output_compression)) 0L else 4L
-  cat("Writing ", ncol(regressed_data), " cells x ", nrow(regressed_data),
-    " genes with ",
-    format(as.numeric(ncol(regressed_data)) * nrow(imat),
-      big.mark = ",", scientific = FALSE
-    ),
-    " stored values, gzip level ", gzip_level, "\n",
-    sep = ""
+h5 <- h5py$File(par$input, "r")
+# Only read obs and var from the modality
+obs <- anndata$io$read_elem(h5[[file.path(mod_path, "obs")]])
+var <- anndata$io$read_elem(h5[[file.path(mod_path, "var")]])
+# Make sure output layer does not exist in the data yet
+output_exists <- h5$`__contains__`(output_layer)
+h5$close()
+if (output_exists) {
+  stop("Output layer ", par$output_layer, " already exists in modality ",
+    par$modality, ", please choose a new layer name.",
+    call. = FALSE
   )
-
-  # Regressed values are computed while they are written to disk
-  invisible(write_matrix_anndata_hdf5(
-    regressed_data, par$output,
-    group = output_path, gzip_level = gzip_level
-  ))
-} else {
-  cat("No obs_keys provided, skipping regression\n")
 }
+
+# select and sanitize obs names to for regression formula
+obs <- as.data.frame(obs[, par$obs_keys, drop = FALSE])
+colnames(obs) <- make.names(colnames(obs), unique = TRUE)
+
+# subset to HVG if requested
+mask_var <- NULL
+if (!is.null(par$var_input)) {
+  mask_var <- as.logical(var[[par$var_input]])
+  cat("Regressing out on ", sum(mask_var), " genes selected by .var column ",
+    par$var_input, "\n",
+    sep = ""
+  )
+  imat <- imat[mask_var, ]
+} else {
+  cat("No .var column provided, regressing out on all ", nrow(imat),
+    " genes\n",
+    sep = ""
+  )
+}
+
+# Regress out using BPCells
+cat("Setting up regression with covariates: ",
+  paste(colnames(obs), collapse = ", "), "\n",
+  sep = ""
+)
+regressed_data <- regress_out(imat, obs, prediction_axis = "row")
+
+# Non-selected genes are set to 0
+if (!is.null(mask_var)) {
+  cat("Setting ", sum(!mask_var), " non-selected genes to 0\n", sep = "")
+  zeros <- as(
+    Matrix::sparseMatrix(
+      i = integer(0), j = integer(0), x = numeric(0),
+      dims = c(sum(!mask_var), ncol(regressed_data))
+    ),
+    "IterableMatrix"
+  )
+  regressed_data <- rbind(regressed_data, zeros)
+  regressed_data <- regressed_data[
+    order(c(which(mask_var), which(!mask_var))),
+  ]
+}
+
+# BPCells only supports gzip compression
+gzip_level <-
+  if (is.null(par$output_compression)) 0L else par$output_compression
+cat("Writing regressed data to ", output_layer, " with gzip level ",
+  gzip_level, "\n",
+  sep = ""
+)
+
+# Regressed values are computed while they are written to disk
+write_matrix_anndata_hdf5(
+  regressed_data, par$output,
+  group = output_layer, gzip_level = gzip_level
+)
