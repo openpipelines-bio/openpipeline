@@ -108,7 +108,11 @@ if (!is.null(mask_var)) {
 
 # BPCells only supports gzip compression
 gzip_level <-
-  if (is.null(par$output_compression)) 0L else par$output_compression
+  if (is.null(par$output_layer_compression)) {
+    0L
+  } else {
+    par$output_layer_compression
+  }
 cat("Writing regressed data to ", output_layer, " with gzip level ",
   gzip_level, "\n",
   sep = ""
