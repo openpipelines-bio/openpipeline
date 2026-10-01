@@ -20,7 +20,9 @@ par <- list(
   contrast_values = c("ctrl", "stim"),
   p_adj_threshold = 0.05,
   log2fc_threshold = 0.0,
-  var_gene_names = "feature_name"
+  var_gene_names = "feature_name",
+  var_gene_symbols = NULL,
+  export_normalized_counts = FALSE
 )
 meta <- list(resources_dir = "src/utils")
 ## VIASH END
@@ -171,7 +173,9 @@ prepare_counts_matrix <- function(layer, var_names, obs_names) {
 }
 
 # Create and configure DESeq2 dataset
-create_deseq2_dataset <- function(counts, metadata, design_formula) {
+create_deseq2_dataset <- function(
+  counts, metadata, design_formula, gene_symbols = NULL
+) {
   cat("Creating DESeq2 dataset\n")
 
   # Ensure matching samples between counts and metadata
@@ -189,15 +193,14 @@ create_deseq2_dataset <- function(counts, metadata, design_formula) {
     colData = metadata,
     design = as.formula(design_formula)
   )
+  if (!is.null(gene_symbols)) {
+    S4Vectors::mcols(dds)$gene_name <- gene_symbols
+  }
   dds
 }
 
-# Perform DESeq2 differential expression analysis
+# Extract DESeq2 results for each contrast from a fitted DESeqDataSet
 deseq2_analysis <- function(dds, contrast_specs) {
-  cat("Running DESeq2 analysis\n")
-
-  dds <- DESeq2::DESeq(dds)
-
   # Ensure contrast_specs is a list
   if (!is.list(contrast_specs)) {
     contrast_specs <- list(contrast_specs)
@@ -219,6 +222,9 @@ deseq2_analysis <- function(dds, contrast_specs) {
     # Convert to data frame and add metadata
     results_df <- as.data.frame(res)
     results_df$gene_id <- rownames(results_df)
+    if (!is.null(S4Vectors::mcols(dds)$gene_name)) {
+      results_df$gene_name <- S4Vectors::mcols(dds)$gene_name
+    }
     results_df$contrast <- paste0(contrast_spec[2], "_vs_", contrast_spec[3])
     results_df$comparison_group <- contrast_spec[2]
     results_df$control_group <- contrast_spec[3]
@@ -248,6 +254,117 @@ deseq2_analysis <- function(dds, contrast_specs) {
   }
 
   combined_results
+}
+
+# Fit the DESeq2 model
+fit_deseq2 <- function(dds) {
+  cat("Running DESeq2 analysis\n")
+  DESeq2::DESeq(dds)
+}
+
+# Write the per-sample table, normalized counts, variance-stabilized counts
+# (VST, blind to the design) and run metadata of a fitted DESeqDataSet as
+# "{file_prefix}_samples.csv", "{file_prefix}_normalized_counts.csv",
+# "{file_prefix}_vst.csv" and "{file_prefix}_metadata.json".
+export_normalized_counts <- function(
+  dds, file_prefix, design_formula, contrast_specs, cell_group = NULL
+) {
+  cat("Exporting normalized and variance-stabilized counts\n")
+  vst_function <- "vst"
+  vst <- tryCatch(
+    DESeq2::vst(dds, blind = TRUE),
+    error = function(e) {
+      # vst() fits the dispersion trend on a subset of 1000 genes, which fails
+      # for small datasets; the full transformation does not have that limit
+      cat(
+        "vst() failed, using varianceStabilizingTransformation():",
+        conditionMessage(e), "\n"
+      )
+      vst_function <<- "varianceStabilizingTransformation"
+      DESeq2::varianceStabilizingTransformation(dds, blind = TRUE)
+    }
+  )
+
+  # Samples: the metadata the design is built on, plus size factor and
+  # library size (total raw counts)
+  sample_columns <- intersect(
+    unique(c(
+      all.vars(as.formula(par$design_formula)),
+      par$contrast_column,
+      par$obs_cell_group
+    )),
+    colnames(SummarizedExperiment::colData(dds))
+  )
+  samples <- data.frame(
+    sample = colnames(dds),
+    lapply(
+      as.data.frame(SummarizedExperiment::colData(dds))[sample_columns],
+      as.character
+    ),
+    size_factor = DESeq2::sizeFactors(dds),
+    library_size = colSums(DESeq2::counts(dds)),
+    check.names = FALSE
+  )
+  write.csv(samples, paste0(file_prefix, "_samples.csv"), row.names = FALSE)
+
+  # Genes x samples tables
+  gene_columns <- data.frame(gene_id = rownames(dds))
+  if (!is.null(S4Vectors::mcols(dds)$gene_name)) {
+    gene_columns$gene_name <- S4Vectors::mcols(dds)$gene_name
+  }
+  write_gene_table <- function(mat, suffix) {
+    table <- data.frame(gene_columns, mat, check.names = FALSE)
+    write.csv(
+      table, paste0(file_prefix, "_", suffix, ".csv"),
+      row.names = FALSE
+    )
+  }
+  write_gene_table(DESeq2::counts(dds, normalized = TRUE), "normalized_counts")
+  write_gene_table(SummarizedExperiment::assay(vst), "vst")
+
+  # Run metadata
+  if (!is.list(contrast_specs)) {
+    contrast_specs <- list(contrast_specs)
+  }
+  metadata <- list(
+    input = basename(par$input),
+    modality = par$modality,
+    input_layer = par$input_layer,
+    cell_group = if (is.null(cell_group)) {
+      NULL
+    } else {
+      list(
+        column = par$obs_cell_group, value = as.character(cell_group)
+      )
+    },
+    design_formula = design_formula,
+    contrast_column = par$contrast_column,
+    contrasts = lapply(contrast_specs, function(spec) {
+      list(
+        name = paste0(spec[2], "_vs_", spec[3]),
+        comparison_group = spec[2],
+        control_group = spec[3]
+      )
+    }),
+    test = "Wald",
+    p_adjust_method = "BH",
+    p_adj_threshold = par$p_adj_threshold,
+    log2fc_threshold = par$log2fc_threshold,
+    lfc_shrinkage = FALSE,
+    variance_stabilization = list(function_name = vst_function, blind = TRUE),
+    n_samples = ncol(dds),
+    n_genes = nrow(dds),
+    var_gene_names = par$var_gene_names,
+    var_gene_symbols = par$var_gene_symbols,
+    versions = list(
+      DESeq2 = as.character(utils::packageVersion("DESeq2")),
+      R = paste(R.version$major, R.version$minor, sep = ".")
+    )
+  )
+  jsonlite::write_json(
+    metadata, paste0(file_prefix, "_metadata.json"),
+    auto_unbox = TRUE, pretty = TRUE, null = "null"
+  )
 }
 
 # Save results and print summary statistics
@@ -311,6 +428,16 @@ main <- function() {
   } else {
     mod$var_names
   }
+  gene_symbols <- NULL
+  if (!is.null(par$var_gene_symbols)) {
+    if (!par$var_gene_symbols %in% colnames(mod$var)) {
+      stop(sprintf(
+        "var_gene_symbols '%s' not found in mod$var columns: %s",
+        par$var_gene_symbols, paste(colnames(mod$var), collapse = ", ")
+      ))
+    }
+    gene_symbols <- as.character(mod$var[[par$var_gene_symbols]])
+  }
   obs_names <- mod$obs_names
   counts <- prepare_counts_matrix(layer, var_names, obs_names)
 
@@ -326,9 +453,11 @@ main <- function() {
         !is.null(par$obs_cell_group) &&
           par$obs_cell_group %in% colnames(metadata)
       ) {
-        run_per_cell_group_analysis(counts, metadata, contrast_specs)
+        run_per_cell_group_analysis(
+          counts, metadata, contrast_specs, gene_symbols
+        )
       } else {
-        run_overall_analysis(counts, metadata, contrast_specs)
+        run_overall_analysis(counts, metadata, contrast_specs, gene_symbols)
       }
       cat("DESeq2 analysis completed successfully\n")
     },
@@ -344,7 +473,9 @@ main <- function() {
 }
 
 # Run analysis per cell group
-run_per_cell_group_analysis <- function(counts, metadata, contrast_specs) {
+run_per_cell_group_analysis <- function(
+  counts, metadata, contrast_specs, gene_symbols
+) {
   cat("Running DESeq2 analysis per cell group\n")
 
   # Remove cell group from design formula
@@ -374,32 +505,47 @@ run_per_cell_group_analysis <- function(counts, metadata, contrast_specs) {
 
     # Run analysis
     dds <- create_deseq2_dataset(
-      counts_subset, metadata_subset, design_no_celltype
+      counts_subset, metadata_subset, design_no_celltype, gene_symbols
     )
+    dds <- fit_deseq2(dds)
     results <- deseq2_analysis(dds, contrast_specs)
     results[[par$obs_cell_group]] <- cell_group
 
     # Save results
     safe_name <- gsub("[/ \\(\\)]", "_", as.character(cell_group))
     safe_name <- gsub("_+", "_", safe_name)
-    output_file <- file.path(
+    file_prefix <- file.path(
       par$output_dir,
-      paste0(par$output_prefix, "_", safe_name, ".csv")
+      paste0(par$output_prefix, "_", safe_name)
     )
-    save_results_and_log_summary(results, output_file, cell_group)
+    save_results_and_log_summary(
+      results, paste0(file_prefix, ".csv"), cell_group
+    )
+    if (par$export_normalized_counts) {
+      export_normalized_counts(
+        dds, file_prefix, design_no_celltype, contrast_specs, cell_group
+      )
+    }
   }
 }
 
 # Run overall analysis (all samples together)
-run_overall_analysis <- function(counts, metadata, contrast_specs) {
-  dds <- create_deseq2_dataset(counts, metadata, par$design_formula)
+run_overall_analysis <- function(
+  counts, metadata, contrast_specs, gene_symbols
+) {
+  dds <- create_deseq2_dataset(
+    counts, metadata, par$design_formula, gene_symbols
+  )
+  dds <- fit_deseq2(dds)
   results <- deseq2_analysis(dds, contrast_specs)
 
-  output_file <- file.path(
-    par$output_dir,
-    paste0(par$output_prefix, ".csv")
-  )
-  save_results_and_log_summary(results, output_file)
+  file_prefix <- file.path(par$output_dir, par$output_prefix)
+  save_results_and_log_summary(results, paste0(file_prefix, ".csv"))
+  if (par$export_normalized_counts) {
+    export_normalized_counts(
+      dds, file_prefix, par$design_formula, contrast_specs
+    )
+  }
 }
 
 # Run main function if script is executed directly

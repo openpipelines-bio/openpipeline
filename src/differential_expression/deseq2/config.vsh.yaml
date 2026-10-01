@@ -3,6 +3,7 @@ namespace: differential_expression
 description: |
   Performs differential expression analysis using DESeq2 on bulk samples or pseudobulk samples aggregated from single-cell data.
   Note that this component only considers factors as explanatory variables, and excludes covariates from the analysis.
+  Optionally exports per-sample metadata with size factors, normalized and variance-stabilized counts, and run metadata for visualization and reporting.
 
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml
@@ -33,6 +34,14 @@ argument_groups:
         type: string
         description: |
           Name of the .var field that contains gene symbols. If not provided, .var.index will be used.
+        required: false
+        example: "gene_symbol"
+      - name: "--var_gene_symbols"
+        type: string
+        description: |
+          Name of the .var field with gene symbols to add as a "gene_name" column to the results
+          (and to the exported count tables), next to "gene_id". Unlike `--var_gene_names`, this does not
+          change the gene identifiers, so it can be used with symbols that are not unique.
         required: false
         example: "gene_symbol"
       - name: "--obs_cell_group"
@@ -102,6 +111,18 @@ argument_groups:
           If cell groups are specified, files will be named "{prefix}_{cell_group}.csv".
         default: "deseq2_analysis"
         required: false
+      - name: "--export_normalized_counts"
+        type: boolean_true
+        description: |
+          Also write the files needed for downstream visualization (PCA, sample correlation, expression heatmaps)
+          and reporting to the output directory. Next to each results CSV "{name}.csv", writes:
+            * "{name}_samples.csv": one row per sample with the design formula, contrast and cell group columns,
+              the DESeq2 size factor ("size_factor") and the total raw counts ("library_size").
+            * "{name}_normalized_counts.csv": DESeq2 normalized counts.
+            * "{name}_vst.csv": variance-stabilized counts (VST, blind to the design).
+            * "{name}_metadata.json": design formula, contrasts, thresholds and software versions.
+          The count tables have one row per gene: "gene_id" (and "gene_name" with `--var_gene_symbols`),
+          then one column per sample.
 
 resources:
   - type: r_script
@@ -119,7 +140,7 @@ engines:
     - type: apt
       packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
     - type: r
-      cran: [ hdf5r ]
+      cran: [ hdf5r, jsonlite ]
       bioc: [ DESeq2, anndataR, rhdf5 ]
   test_setup:
     - type: docker
