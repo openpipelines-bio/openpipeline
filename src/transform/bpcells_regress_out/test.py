@@ -32,7 +32,7 @@ def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
         "total_counts",
         "--output_layer",
         "regressed",
-        "--output_compression",
+        "--output_layer_compression",
         "4",
     ]
     run_component(cmd_pars)
@@ -73,15 +73,15 @@ def test_regress_out_output_compression(
         "total_counts",
         "--output_layer",
         "regressed",
-        "--output_compression",
-        "9",
+        "--output_layer_compression",
+        "4",
     ]
     run_component(cmd_pars)
 
     with h5py.File(output_h5mu_path, "r") as h5:
         data = h5["mod/rna/layers/regressed/data"]
         assert data.compression == "gzip", "Output layer should be gzip compressed"
-        assert data.compression_opts == 9, "Output layer should use gzip level 9"
+        assert data.compression_opts == 4, "Output layer should use gzip level 4"
 
 
 def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_path):
@@ -164,6 +164,177 @@ def test_regress_out_existing_output_layer(
         run_component(cmd_pars)
     assert "Output layer log_normalized already exists" in err.value.stdout.decode(
         "utf-8"
+    )
+
+
+def reference_pca(regressed, num_components, max_value=None):
+    # Same steps as sc.pp.scale(max_value=...) followed by sc.tl.pca
+    std = regressed.std(axis=0, ddof=1)
+    std[std == 0] = 1
+    scaled = (regressed - regressed.mean(axis=0)) / std
+    if max_value is not None:
+        scaled = np.clip(scaled, -max_value, max_value)
+    centered = scaled - scaled.mean(axis=0)
+    u, s, vt = np.linalg.svd(centered, full_matrices=False)
+    variance = s**2 / (centered.shape[0] - 1)
+    total_variance = centered.var(axis=0, ddof=1).sum()
+    return (
+        u[:, :num_components] * s[:num_components],
+        vt[:num_components].T,
+        variance[:num_components],
+        variance[:num_components] / total_variance,
+    )
+
+
+def assert_equal_up_to_sign(actual, expected, err_msg):
+    signs = np.sign(np.sum(actual * expected, axis=0))
+    np.testing.assert_allclose(
+        actual * signs, expected, rtol=1e-5, atol=1e-8, err_msg=err_msg
+    )
+
+
+@pytest.mark.parametrize("max_value", [None, 2.0])
+def test_regress_out_pca(
+    run_component, input_h5mu_path, output_h5mu_path, tmp_path, max_value
+):
+    base_pars = [
+        "--input",
+        input_h5mu_path,
+        "--obs_keys",
+        "total_counts",
+        "--input_layer",
+        "log_normalized",
+        "--var_input",
+        "filter_with_hvg",
+    ]
+    pca_pars = [
+        "--obsm_output",
+        "X_pca_regressed",
+        "--varm_output",
+        "pca_regressed_loadings",
+        "--uns_output",
+        "pca_regressed_variance",
+        "--num_components",
+        "5",
+    ]
+    if max_value is not None:
+        pca_pars += ["--scale_max_value", str(max_value)]
+    run_component(base_pars + pca_pars + ["--output", output_h5mu_path])
+    regressed_path = tmp_path / "regressed.h5mu"
+    run_component(
+        base_pars + ["--output", regressed_path, "--output_layer", "regressed"]
+    )
+
+    rna_out = mu.read_h5ad(output_h5mu_path, mod="rna")
+    rna_regressed = mu.read_h5ad(regressed_path, mod="rna")
+    hvg = rna_out.var["filter_with_hvg"].to_numpy()
+
+    assert "regressed" not in rna_out.layers, (
+        "No output layer should be written when --output_layer is not provided"
+    )
+
+    embedding = rna_out.obsm["X_pca_regressed"]
+    loadings = rna_out.varm["pca_regressed_loadings"]
+    pca_variance = rna_out.uns["pca_regressed_variance"]
+    assert embedding.shape == (rna_out.n_obs, 5)
+    assert loadings.shape == (rna_out.n_vars, 5)
+    assert not np.any(loadings[~hvg]), "Non-selected genes should have zero loadings"
+
+    exp_embedding, exp_loadings, exp_variance, exp_variance_ratio = reference_pca(
+        rna_regressed.layers["regressed"].toarray()[:, hvg], 5, max_value
+    )
+    assert_equal_up_to_sign(embedding, exp_embedding, "Embedding should match")
+    assert_equal_up_to_sign(loadings[hvg], exp_loadings, "Loadings should match")
+    np.testing.assert_allclose(pca_variance["variance"], exp_variance, rtol=1e-5)
+    np.testing.assert_allclose(
+        pca_variance["variance_ratio"], exp_variance_ratio, rtol=1e-5
+    )
+
+
+def test_regress_out_pca_and_output_layer(
+    run_component, input_h5mu_path, output_h5mu_path, tmp_path
+):
+    base_pars = [
+        "--input",
+        input_h5mu_path,
+        "--obs_keys",
+        "total_counts",
+        "--input_layer",
+        "log_normalized",
+        "--var_input",
+        "filter_with_hvg",
+        "--output_layer",
+        "regressed",
+    ]
+    run_component(
+        base_pars
+        + [
+            "--output",
+            output_h5mu_path,
+            "--obsm_output",
+            "X_pca",
+            "--num_components",
+            "5",
+            "--overwrite",
+        ]
+    )
+    regressed_only_path = tmp_path / "regressed_only.h5mu"
+    run_component(base_pars + ["--output", regressed_only_path])
+
+    rna_out = mu.read_h5ad(output_h5mu_path, mod="rna")
+    rna_regressed_only = mu.read_h5ad(regressed_only_path, mod="rna")
+
+    assert rna_out.obsm["X_pca"].shape == (rna_out.n_obs, 5), (
+        "Existing .obsm slot should be overwritten"
+    )
+    assert rna_out.varm["pca_loadings"].shape == (rna_out.n_vars, 5), (
+        "Existing .varm slot should be overwritten"
+    )
+    assert len(rna_out.uns["pca_variance"]["variance"]) == 5, (
+        "Existing .uns slot should be overwritten"
+    )
+    np.testing.assert_allclose(
+        rna_out.layers["regressed"].toarray(),
+        rna_regressed_only.layers["regressed"].toarray(),
+        err_msg="Output layer should not be affected by running the PCA",
+    )
+
+
+def test_regress_out_pca_existing_slot(
+    run_component, input_h5mu_path, output_h5mu_path
+):
+    cmd_pars = [
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--obs_keys",
+        "total_counts",
+        "--obsm_output",
+        "X_pca",
+    ]
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(cmd_pars)
+    assert "already exists" in err.value.stdout.decode("utf-8")
+    assert "--overwrite" in err.value.stdout.decode("utf-8")
+
+
+def test_regress_out_no_output_requested(
+    run_component, input_h5mu_path, output_h5mu_path
+):
+    cmd_pars = [
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--obs_keys",
+        "total_counts",
+    ]
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(cmd_pars)
+    assert (
+        "At least one of --output_layer or --obsm_output must be provided"
+        in err.value.stdout.decode("utf-8")
     )
 
 

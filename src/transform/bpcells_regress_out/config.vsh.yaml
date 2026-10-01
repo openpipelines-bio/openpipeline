@@ -53,8 +53,8 @@ arguments:
     required: true
     description: |
       The new layer of the adata object in which the regressed data is stored.
-  - name: "--output_layer_compression" 
-   # BPCells writes the output layer itself and only supports gzip
+  - name: "--output_layer_compression"
+    # BPCells writes the output layer itself and only supports gzip
     description: |
       GZIP compression level to use for the regressed output layer.
       By default no compression is applied.
