@@ -7,7 +7,7 @@ par <- list(
   modality = "rna",
   input_layer = NULL,
   input_obs_clusters = NULL,
-  input_obs_batch = NULL,
+  input_obs_batsch = NULL,
   background = NULL,
   background_layer = NULL,
   background_obs_batch = NULL,
