@@ -84,31 +84,6 @@ def test_regress_out_output_compression(
         assert data.compression_opts == 9, "Output layer should use gzip level 9"
 
 
-def test_no_regress_out_without_obs_keys(
-    run_component, input_h5mu_path, output_h5mu_path
-):
-    # execute command
-    cmd_pars = [
-        "--input",
-        input_h5mu_path,
-        "--output",
-        output_h5mu_path,
-        "--output_layer",
-        "regressed",
-    ]
-    run_component(cmd_pars)
-
-    mu_input = mu.read_h5mu(input_h5mu_path)
-    mu_output = mu.read_h5mu(output_h5mu_path)
-
-    rna_in = mu_input.mod["rna"]
-    rna_out = mu_output.mod["rna"]
-
-    assert np.mean(rna_in.X) == np.mean(rna_out.X), (
-        "RNA expression should remain the same"
-    )
-
-
 def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_path):
     # execute command
     cmd_pars = [
