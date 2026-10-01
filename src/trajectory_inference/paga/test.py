@@ -117,17 +117,17 @@ def test_paga_invalid_uns_neighbors_raises(run_component):
     )
 
 
-def test_paga_use_rna_velocity_without_graph_raises(run_component):
+def test_paga_rna_velocity_without_graph_raises(run_component):
     assert_component_raises(
         run_component,
         build_paga_args(
             "output.h5mu",
             obs_groups=OBS_GROUPS,
             uns_neighbors=NEIGHBORS_KEY,
-            use_rna_velocity=True,
+            uns_velocity_graph="velocity_graph",
         ),
-        "The passed AnnData needs to have an `uns` annotation with key "
-        "'velocity_graph' - a sparse matrix from RNA velocity.",
+        "ValueError: Requested to use .uns key velocity_graph for the RNA "
+        "velocity graph, but the key is not available for modality rna.",
     )
 
 
@@ -175,7 +175,7 @@ def test_paga_rna_velocity(run_component, random_h5mu_path):
             input=velocity_input_path,
             obs_groups=OBS_GROUPS,
             uns_neighbors=NEIGHBORS_KEY,
-            use_rna_velocity=True,
+            uns_velocity_graph="velocity_graph",
         )
     )
     assert output_path.is_file()
@@ -207,7 +207,6 @@ def test_paga_rna_velocity_custom_uns_key(run_component, random_h5mu_path):
             input=velocity_input_path,
             obs_groups=OBS_GROUPS,
             uns_neighbors=NEIGHBORS_KEY,
-            use_rna_velocity=True,
             uns_velocity_graph="my_velocity_graph",
         )
     )
@@ -219,14 +218,13 @@ def test_paga_rna_velocity_custom_uns_key(run_component, random_h5mu_path):
     assert "velocity_graph" not in output_data.mod["rna"].uns
 
 
-def test_paga_use_rna_velocity_custom_uns_key_missing_raises(run_component):
+def test_paga_rna_velocity_custom_uns_key_missing_raises(run_component):
     assert_component_raises(
         run_component,
         build_paga_args(
             "output.h5mu",
             obs_groups=OBS_GROUPS,
             uns_neighbors=NEIGHBORS_KEY,
-            use_rna_velocity=True,
             uns_velocity_graph="does_not_exist",
         ),
         "ValueError: Requested to use .uns key does_not_exist for the RNA "

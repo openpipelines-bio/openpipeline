@@ -8,8 +8,7 @@ par = {
     "modality": "rna",
     "obs_groups": "harmony_integration_leiden_1.0",
     "uns_neighbors": "harmonypy_integration_neighbors",
-    "use_rna_velocity": False,
-    "uns_velocity_graph": "velocity_graph",
+    "uns_velocity_graph": None,
     "model": "v1.2",
     "output": "output.h5mu",
     "uns_output": "paga",
@@ -41,21 +40,23 @@ if par["uns_neighbors"] not in data.uns:
     )
 
 velocity_graph_key = par["uns_velocity_graph"]
+use_rna_velocity = velocity_graph_key is not None
 velocity_graph_aliased = False
-if par["use_rna_velocity"] and velocity_graph_key != "velocity_graph":
+if use_rna_velocity:
     if velocity_graph_key not in data.uns:
         raise ValueError(
             f"Requested to use .uns key {velocity_graph_key} for the RNA velocity "
             f"graph, but the key is not available for modality {par['modality']}."
         )
-    data.uns["velocity_graph"] = data.uns[velocity_graph_key]
-    velocity_graph_aliased = True
+    if velocity_graph_key != "velocity_graph":
+        data.uns["velocity_graph"] = data.uns[velocity_graph_key]
+        velocity_graph_aliased = True
 
 logger.info("Running PAGA")
 result = sc.tl.paga(
     data,
     groups=par["obs_groups"],
-    use_rna_velocity=par["use_rna_velocity"],
+    use_rna_velocity=use_rna_velocity,
     model=par["model"],
     neighbors_key=par["uns_neighbors"],
 )

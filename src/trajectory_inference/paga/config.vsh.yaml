@@ -1,4 +1,4 @@
-name: paga
+name: paga_scanpy
 namespace: "trajectory_inference"
 scope: "public"
 description: |
@@ -45,19 +45,12 @@ argument_groups:
 
   - name: Arguments
     arguments:
-      - name: "--use_rna_velocity"
-        type: boolean
-        default: false
-        description: |
-          Use RNA velocity to orient edges in the abstracted graph and estimate transitions,
-          instead of using connectivities. Requires a directed single-cell graph stored under
-          .uns, at the location pointed to by --uns_velocity_graph.
       - name: "--uns_velocity_graph"
         type: string
-        default: "velocity_graph"
         description: |
           The .uns key under which the directed single-cell RNA velocity graph is stored.
-          Only used when --use_rna_velocity is set.
+          When set, RNA velocity is used to orient edges in the abstracted graph and estimate
+          transitions, instead of using connectivities.
         required: false
       - name: "--model"
         type: string
