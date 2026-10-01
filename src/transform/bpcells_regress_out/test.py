@@ -30,10 +30,6 @@ def test_regress_out(run_component, input_h5mu_path, output_h5mu_path):
         output_h5mu_path,
         "--obs_keys",
         "total_counts",
-        "--output_layer",
-        "regressed",
-        "--output_layer_compression",
-        "4",
     ]
     run_component(cmd_pars)
 
@@ -71,8 +67,6 @@ def test_regress_out_output_compression(
         output_h5mu_path,
         "--obs_keys",
         "total_counts",
-        "--output_layer",
-        "regressed",
         "--output_layer_compression",
         "4",
     ]
@@ -95,8 +89,6 @@ def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_pat
         "total_counts",
         "--input_layer",
         "log_normalized",
-        "--output_layer",
-        "output",
     ]
     run_component(cmd_pars)
 
@@ -104,7 +96,7 @@ def test_regress_out_with_layers(run_component, input_h5mu_path, output_h5mu_pat
     rna_out = mu.read_h5ad(output_h5mu_path, mod="rna")
 
     assert np.mean(rna_in.layers["log_normalized"]) != np.mean(
-        rna_out.layers["output"]
+        rna_out.layers["regressed"]
     ), "RNA expression should have changed"
 
 
@@ -116,8 +108,6 @@ def test_regress_out_hvg(run_component, input_h5mu_path, output_h5mu_path, tmp_p
         "total_counts",
         "--input_layer",
         "log_normalized",
-        "--output_layer",
-        "output",
     ]
     run_component(
         base_pars + ["--output", output_h5mu_path, "--var_input", "filter_with_hvg"]
@@ -132,7 +122,7 @@ def test_regress_out_hvg(run_component, input_h5mu_path, output_h5mu_path, tmp_p
 
     assert rna_in.shape == rna_out.shape, "Should have same shape as before"
 
-    output_layer = rna_out.layers["output"]
+    output_layer = rna_out.layers["regressed"]
     assert issparse(output_layer), "Output layer should be a sparse matrix"
     output_matrix = output_layer.toarray()
 
@@ -142,7 +132,7 @@ def test_regress_out_hvg(run_component, input_h5mu_path, output_h5mu_path, tmp_p
     )
     np.testing.assert_allclose(
         output_matrix[:, hvg],
-        rna_all_genes.layers["output"].toarray()[:, hvg],
+        rna_all_genes.layers["regressed"].toarray()[:, hvg],
         err_msg="Selected genes should be regressed as when using all genes",
     )
 
@@ -187,61 +177,50 @@ def reference_pca(regressed, num_components, max_value=None):
 
 
 def assert_equal_up_to_sign(actual, expected, err_msg):
+    # Components are compared by their relative error: the iterative SVD solver
+    # converges less tightly elementwise on the last component when its
+    # singular value is close to the next one
     signs = np.sign(np.sum(actual * expected, axis=0))
-    np.testing.assert_allclose(
-        actual * signs, expected, rtol=1e-5, atol=1e-8, err_msg=err_msg
+    relative_error = np.linalg.norm(actual * signs - expected, axis=0) / np.linalg.norm(
+        expected, axis=0
     )
+    assert np.all(relative_error < 1e-5), f"{err_msg}: {relative_error}"
 
 
 @pytest.mark.parametrize("max_value", [None, 2.0])
-def test_regress_out_pca(
-    run_component, input_h5mu_path, output_h5mu_path, tmp_path, max_value
-):
-    base_pars = [
+def test_regress_out_pca(run_component, input_h5mu_path, output_h5mu_path, max_value):
+    cmd_pars = [
         "--input",
         input_h5mu_path,
+        "--output",
+        output_h5mu_path,
         "--obs_keys",
         "total_counts",
         "--input_layer",
         "log_normalized",
         "--var_input",
         "filter_with_hvg",
-    ]
-    pca_pars = [
-        "--obsm_output",
-        "X_pca_regressed",
-        "--varm_output",
-        "pca_regressed_loadings",
-        "--uns_output",
-        "pca_regressed_variance",
+        "--obsm_pca_output",
+        "regressed_pca",
         "--num_components",
         "5",
     ]
     if max_value is not None:
-        pca_pars += ["--scale_max_value", str(max_value)]
-    run_component(base_pars + pca_pars + ["--output", output_h5mu_path])
-    regressed_path = tmp_path / "regressed.h5mu"
-    run_component(
-        base_pars + ["--output", regressed_path, "--output_layer", "regressed"]
-    )
+        cmd_pars += ["--scale_max_value", str(max_value)]
+    run_component(cmd_pars)
 
     rna_out = mu.read_h5ad(output_h5mu_path, mod="rna")
-    rna_regressed = mu.read_h5ad(regressed_path, mod="rna")
     hvg = rna_out.var["filter_with_hvg"].to_numpy()
 
-    assert "regressed" not in rna_out.layers, (
-        "No output layer should be written when --output_layer is not provided"
-    )
-
-    embedding = rna_out.obsm["X_pca_regressed"]
-    loadings = rna_out.varm["pca_regressed_loadings"]
-    pca_variance = rna_out.uns["pca_regressed_variance"]
+    embedding = rna_out.obsm["regressed_pca"]
+    loadings = rna_out.varm["regressed_pca_loadings"]
+    pca_variance = rna_out.uns["regressed_pca_variance"]
     assert embedding.shape == (rna_out.n_obs, 5)
     assert loadings.shape == (rna_out.n_vars, 5)
     assert not np.any(loadings[~hvg]), "Non-selected genes should have zero loadings"
 
     exp_embedding, exp_loadings, exp_variance, exp_variance_ratio = reference_pca(
-        rna_regressed.layers["regressed"].toarray()[:, hvg], 5, max_value
+        rna_out.layers["regressed"].toarray()[:, hvg], 5, max_value
     )
     assert_equal_up_to_sign(embedding, exp_embedding, "Embedding should match")
     assert_equal_up_to_sign(loadings[hvg], exp_loadings, "Loadings should match")
@@ -251,7 +230,7 @@ def test_regress_out_pca(
     )
 
 
-def test_regress_out_pca_and_output_layer(
+def test_regress_out_pca_overwrite(
     run_component, input_h5mu_path, output_h5mu_path, tmp_path
 ):
     base_pars = [
@@ -263,16 +242,18 @@ def test_regress_out_pca_and_output_layer(
         "log_normalized",
         "--var_input",
         "filter_with_hvg",
-        "--output_layer",
-        "regressed",
     ]
     run_component(
         base_pars
         + [
             "--output",
             output_h5mu_path,
-            "--obsm_output",
+            "--obsm_pca_output",
             "X_pca",
+            "--varm_pca_output",
+            "pca_loadings",
+            "--uns_pca_output",
+            "pca_variance",
             "--num_components",
             "5",
             "--overwrite",
@@ -284,12 +265,14 @@ def test_regress_out_pca_and_output_layer(
     rna_out = mu.read_h5ad(output_h5mu_path, mod="rna")
     rna_regressed_only = mu.read_h5ad(regressed_only_path, mod="rna")
 
-    assert rna_out.obsm["X_pca"].shape == (rna_out.n_obs, 5), (
-        "Existing .obsm slot should be overwritten"
-    )
-    assert rna_out.varm["pca_loadings"].shape == (rna_out.n_vars, 5), (
-        "Existing .varm slot should be overwritten"
-    )
+    assert rna_out.obsm["X_pca"].shape == (
+        rna_out.n_obs,
+        5,
+    ), "Existing .obsm slot should be overwritten"
+    assert rna_out.varm["pca_loadings"].shape == (
+        rna_out.n_vars,
+        5,
+    ), "Existing .varm slot should be overwritten"
     assert len(rna_out.uns["pca_variance"]["variance"]) == 5, (
         "Existing .uns slot should be overwritten"
     )
@@ -310,13 +293,40 @@ def test_regress_out_pca_existing_slot(
         output_h5mu_path,
         "--obs_keys",
         "total_counts",
-        "--obsm_output",
+        "--obsm_pca_output",
         "X_pca",
     ]
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(cmd_pars)
-    assert "already exists" in err.value.stdout.decode("utf-8")
+    assert "mod/rna/obsm/X_pca already exist" in err.value.stdout.decode("utf-8")
     assert "--overwrite" in err.value.stdout.decode("utf-8")
+
+
+def test_regress_out_pca_without_output_layer(
+    run_component, input_h5mu_path, output_h5mu_path
+):
+    cmd_pars = [
+        "--input",
+        input_h5mu_path,
+        "--output",
+        output_h5mu_path,
+        "--obs_keys",
+        "total_counts",
+        "--output_layer",
+        "",
+        "--obsm_pca_output",
+        "regressed_pca",
+        "--num_components",
+        "5",
+    ]
+    run_component(cmd_pars)
+
+    rna_in = mu.read_h5ad(input_h5mu_path, mod="rna")
+    rna_out = mu.read_h5ad(output_h5mu_path, mod="rna")
+    assert set(rna_out.layers.keys()) == set(rna_in.layers.keys()), (
+        "No output layer should be written when --output_layer is empty"
+    )
+    assert rna_out.obsm["regressed_pca"].shape == (rna_out.n_obs, 5)
 
 
 def test_regress_out_no_output_requested(
@@ -329,11 +339,13 @@ def test_regress_out_no_output_requested(
         output_h5mu_path,
         "--obs_keys",
         "total_counts",
+        "--output_layer",
+        "",
     ]
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(cmd_pars)
     assert (
-        "At least one of --output_layer or --obsm_output must be provided"
+        "At least one of --output_layer or --obsm_pca_output must be provided"
         in err.value.stdout.decode("utf-8")
     )
 

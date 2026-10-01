@@ -9,59 +9,96 @@ authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ contributor, author ]
 
-arguments:
-  - name: "--input"
-    type: file
-    description: Input h5mu file
-    direction: input
-    required: true
-    example: input.h5mu
-  - name: "--output"
-    alternatives: ["-o"]
-    type: file
-    description: Output h5mu file.
-    direction: output
-    required: true
-    default: output.h5mu
-  - name: "--modality"
-    type: string
-    description: "The modality to run this component on."
-    default: "rna"
-  - name: "--obs_keys"
-    type: string
-    multiple: true
-    required: true
-    description: The .obs keys to regress on.
-  - name: "--input_layer"
-    type: string
-    required: false
-    example: X_normalized
-    description: |
-      The layer of the adata object to regress on.
-      If not provided, the X attribute of the adata object will be used.
-  - name: "--var_input"
-    type: string
-    required: false
-    example: filter_with_hvg
-    description: |
-      Boolean column in .var used to select which genes to regress out (e.g. highly variable genes).
-      The output is stored as a sparse matrix in which the non-selected genes are set to 0.
-      If not provided, all genes are used.
-  - name: "--output_layer"
-    type: string
-    example: X_regressed
-    required: true
-    description: |
-      The new layer of the adata object in which the regressed data is stored.
-  - name: "--output_layer_compression"
-    # BPCells writes the output layer itself and only supports gzip
-    description: |
-      GZIP compression level to use for the regressed output layer.
-      By default no compression is applied.
-    type: integer
-    min: 1
-    max: 9
-    required: false
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        description: "The modality to run this component on."
+        default: "rna"
+      - name: "--obs_keys"
+        type: string
+        multiple: true
+        required: true
+        description: The .obs keys to regress on.
+      - name: "--input_layer"
+        type: string
+        required: false
+        example: X_normalized
+        description: |
+          The layer of the adata object to regress on.
+          If not provided, the X attribute of the adata object will be used.
+      - name: "--var_input"
+        type: string
+        required: false
+        example: filter_with_hvg
+        description: |
+          Boolean column in .var used to select which genes to regress out (e.g. highly variable genes).
+          The output is stored as a sparse matrix in which the non-selected genes are set to 0.
+          If not provided, all genes are used.
+  - name: PCA arguments
+    arguments:
+      - name: "--num_components"
+        type: integer
+        default: 50
+        min: 1
+        description: Number of principal components to compute.
+      - name: "--scale_max_value"
+        type: double
+        required: false
+        min: 0
+        description: Clip the scaled data to the interval [-scale_max_value, scale_max_value] before running the PCA. Does not clip by default.
+      - name: "--overwrite"
+        type: boolean_true
+        description: "Allow overwriting the .obsm, .varm and .uns PCA slots."
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        default: output.h5mu
+      - name: "--output_layer"
+        type: string
+        default: regressed
+        required: false
+        description: |
+          The new layer of the adata object in which the regressed data is stored.
+          Pass an empty value (or null from Nextflow) to not store the regressed data, e.g. when only the PCA is needed.
+          At least one of --output_layer or --obsm_pca_output must be provided.
+      - name: "--output_layer_compression"
+        # BPCells writes the output layer itself and only supports gzip
+        description: |
+          GZIP compression level to use for the regressed output layer.
+          By default no compression is applied.
+        type: integer
+        min: 1
+        max: 9
+        required: false
+      - name: "--obsm_pca_output"
+        type: string
+        example: regressed_pca
+        required: false
+        description: |
+          If provided, the regressed data is scaled and a PCA is computed with BPCells,
+          without loading the regressed data into memory. The resulting embedding is stored in this .obsm slot.
+          Scaling centers each gene and divides it by its standard deviation, as in transform/scale.
+      - name: "--varm_pca_output"
+        type: string
+        default: "regressed_pca_loadings"
+        description: "In which .varm slot to store the PCA loadings. Genes not selected by --var_input get zero loadings."
+      - name: "--uns_pca_output"
+        type: string
+        default: "regressed_pca_variance"
+        description: "In which .uns slot to store the PCA variance and variance ratio."
 resources:
   - type: r_script
     path: script.R

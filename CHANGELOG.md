@@ -24,6 +24,8 @@
 
 * `transform/bpcells_regress_out`: add a an `--output_layer_compression` argument to optionally set a gzip level (1-9). The `--output_compression` argument was removed, the resulting file maintains the same level of compression as the input file (PR #1237)
 
+* `transform/bpcells_regress_out`: add an optional PCA on the regressed data, enabled by `--obsm_pca_output`. The PCA is computed with BPCells while streaming from disk, so the dense regressed matrix is never held in memory (PR #1237).
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
