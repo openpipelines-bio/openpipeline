@@ -1,0 +1,35 @@
+{
+  "input": "pseudobulk_subset.h5mu",
+  "modality": "rna",
+  "input_layer": null,
+  "cell_group": {
+    "column": "cell_type",
+    "value": "erythrocyte"
+  },
+  "design_formula": "~ treatment",
+  "contrast_column": "treatment",
+  "contrasts": [
+    {
+      "name": "stim_vs_ctrl",
+      "comparison_group": "stim",
+      "control_group": "ctrl"
+    }
+  ],
+  "test": "Wald",
+  "p_adjust_method": "BH",
+  "p_adj_threshold": 0.05,
+  "log2fc_threshold": 0,
+  "lfc_shrinkage": false,
+  "variance_stabilization": {
+    "function_name": "varianceStabilizingTransformation",
+    "blind": true
+  },
+  "n_samples": 4,
+  "n_genes": 500,
+  "var_gene_names": null,
+  "var_gene_symbol_column": null,
+  "versions": {
+    "DESeq2": "1.52.0",
+    "R": "4.6.1"
+  }
+}

@@ -8,6 +8,8 @@
 
 ## NEW FEATURES
 
+* `report/deseq2_report`: added a component that creates a self-contained, interactive HTML report (Quarto) of a DESeq2 differential expression analysis from the output of `differential_expression/deseq2 --export_normalized_counts` (PR #1239).
+
 * `differential_expression/deseq2`: add `--export_normalized_counts` to also write a per-sample table (design columns, size factors, library sizes), DESeq2 normalized counts, variance-stabilized counts and run metadata for downstream visualization and reporting (PR #1238).
 
 * `differential_expression/deseq2`: add `--var_gene_symbol_column` to add a `gene_symbol` column with the gene symbols to the results, without changing the gene identifiers (PR #1238).

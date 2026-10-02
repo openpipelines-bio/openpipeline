@@ -1,0 +1,20 @@
+/*-- scss:defaults --*/
+// Data Intuitive colors, light mode
+$primary: #7C4BAC;
+$secondary: #00B4A0;
+$body-bg: #F7F8FB;
+$body-color: #0B1D3A;
+$link-color: #7C4BAC;
+$border-color: rgba(11, 29, 58, 0.12);
+$font-family-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+// Do not import web fonts: rendering must work offline and the fonts would be embedded
+$web-font-path: false;
+
+/*-- scss:rules --*/
+:root {
+  --report-surface: #FFFFFF;
+  --report-muted: #5A6890;
+  --report-accent-soft: rgba(124, 75, 172, 0.10);
+  --report-up: #e34948;
+  --report-down: #2a78d6;
+}

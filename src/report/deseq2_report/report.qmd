@@ -1,0 +1,470 @@
+---
+title: "Differential expression report"
+format:
+  html:
+    embed-resources: true
+    theme:
+      light: [cosmo, theme-light.scss]
+      dark: [cosmo, theme-dark.scss]
+    css: report.css
+    # plotly.js, written next to this document by script.py
+    include-in-header: plotly.html
+    toc: true
+    toc-depth: 2
+    page-layout: full
+    html-math-method: plain
+execute:
+  echo: false
+  warning: false
+jupyter: python3
+---
+
+```{python}
+import json
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+from IPython.display import HTML, Markdown, display
+from itables import init_notebook_mode, show
+from plotly.subplots import make_subplots
+
+# Include DataTables in the report itself, so it works offline
+init_notebook_mode(all_interactive=False, connected=False)
+
+# Written next to this document by script.py (see report_data.py)
+with open("report_data.json") as f:
+    D = json.load(f)
+K = D["kpis"]
+
+# Colors: up/down/not significant, and the condition groups (CVD-checked order)
+COLORS = {"up": "#e34948", "down": "#2a78d6", "ns": "#b9c1c6"}
+GROUP_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300"]
+INK = "#7a869a"
+GRID = "rgba(128, 128, 128, 0.18)"
+CONFIG = {"displayModeBar": False, "responsive": True}
+
+sig_rule = f"padj &lt; {K['padj_threshold']:g}" + (
+    f" and |log2FC| &gt; {K['log2fc_threshold']:g}" if K["log2fc_threshold"] else ""
+)
+
+
+def style(fig, height=340, **layout):
+    """Shared layout that reads well in both the light and the dark theme."""
+    defaults = dict(
+        height=height,
+        margin=dict(l=55, r=15, t=15, b=45),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=INK, size=12),
+        hovermode="closest",
+        showlegend=False,
+    )
+    fig.update_layout(**{**defaults, **layout})
+    fig.update_xaxes(gridcolor=GRID, zeroline=False, linecolor=GRID)
+    fig.update_yaxes(gridcolor=GRID, zeroline=False, linecolor=GRID)
+    return fig
+
+
+def show_fig(fig):
+    """Show a figure; plotly.js itself is in the document header (plotly.html)."""
+    display(
+        HTML(
+            fig.to_html(
+                full_html=False,
+                include_plotlyjs=False,
+                include_mathjax=False,
+                config=CONFIG,
+            )
+        )
+    )
+
+
+def group_colors(groups):
+    names = list(dict.fromkeys(groups))
+    return {g: GROUP_COLORS[i % len(GROUP_COLORS)] for i, g in enumerate(names)}
+
+
+def hint(text):
+    display(HTML(f'<p class="hint">{text}</p>'))
+```
+
+```{python}
+#| output: asis
+# Lead sentence, highlight chips and summary tiles
+S = D["summary"]
+print(
+    f'<p class="lead">Across <b>{K["samples"]} samples</b>, <b>{K["genes_quantified"]:,}</b> '
+    f"genes were quantified. At {sig_rule}, <b>{K['de_genes']:,}</b> genes are "
+    f"differentially expressed ({K['up']:,} up, {K['down']:,} down).</p>"
+)
+chips = []
+if K["de_genes"] and S["top"]:
+    chips.append(f"Most significant <b>{S['top']['gene']}</b> padj {S['top']['padj']:.1e}")
+if S["strongest"]:
+    st = S["strongest"]
+    chips.append(
+        f"Largest change <b>{st['gene']}</b> log2FC {st['log2fc']:+.2f} "
+        f"(mean &ge; {st['min_basemean']:g})"
+    )
+chips.append(f"PC1 explains <b>{D['pca']['var'][0]}%</b> of variance")
+chips.append(f"&asymp; <b>{S['n_nonnull']:,}</b> genes estimated to respond")
+print('<div class="highlights">' + "".join(f"<span>{c}</span>" for c in chips) + "</div>")
+
+tiles = "".join(
+    f'<div class="kpi{" accent" if t.get("accent") else ""}">'
+    f'<div class="kpi-label">{t["l"]}</div><div class="kpi-value">{t["v"]}</div>'
+    + (f'<div class="kpi-sub">{t["sub"]}</div>' if t.get("sub") else "")
+    + "</div>"
+    for t in D["tiles"]
+)
+print(f'<div class="kpi-grid">{tiles}</div>')
+```
+
+## Samples
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-lg-6 .panel}
+### Sample similarity (PCA)
+
+```{python}
+p = D["pca"]
+hint(p["hint"])
+colors = group_colors(p["group"])
+fig = go.Figure()
+for g, color in colors.items():
+    idx = [i for i, x in enumerate(p["group"]) if x == g]
+    fig.add_scatter(
+        x=[p["pc1"][i] for i in idx],
+        y=[p["pc2"][i] for i in idx],
+        text=[p["sample"][i] for i in idx],
+        name=g,
+        mode="markers",
+        marker=dict(size=12, color=color, line=dict(width=1.5, color="white")),
+        hovertemplate="<b>%{text}</b><br>" + g + "<br>PC1 %{x}, PC2 %{y}<extra></extra>",
+    )
+style(
+    fig,
+    showlegend=True,
+    legend=dict(orientation="h", y=1.12, x=0),
+    xaxis_title=f"PC1 ({p['var'][0]}%)",
+    yaxis_title=f"PC2 ({p['var'][1]}%)",
+)
+show_fig(fig)
+```
+:::
+
+::: {.g-col-12 .g-col-lg-6 .panel}
+### Sample-to-sample correlation
+
+```{python}
+c = D["corr"]
+hint("Spearman correlation of the variance-stabilized expression between samples.")
+z = np.array(c["z"])
+off_diagonal = z[~np.eye(len(z), dtype=bool)]
+zmin = max(0.0, np.floor(off_diagonal.min() * 20) / 20 - 0.05) if off_diagonal.size else 0
+fig = go.Figure(
+    go.Heatmap(
+        z=z,
+        x=c["labels"],
+        y=c["labels"],
+        zmin=zmin,
+        zmax=1,
+        colorscale=[[0, "#f2f6fc"], [0.4, "#bcd6f4"], [0.7, "#5a97e0"], [1, "#1c5cab"]],
+        xgap=1,
+        ygap=1,
+        colorbar=dict(thickness=10, len=0.85),
+        hovertemplate="%{y} x %{x}<br>r = %{z}<extra></extra>",
+    )
+)
+style(fig, margin=dict(l=90, r=15, t=15, b=90))
+fig.update_yaxes(autorange="reversed", showgrid=False, tickfont=dict(size=9))
+fig.update_xaxes(tickangle=-45, showgrid=False, tickfont=dict(size=9))
+show_fig(fig)
+```
+:::
+
+:::
+
+## Differential expression
+
+```{python}
+#| output: asis
+print(
+    f"Each point is a gene; red is up and blue is down at {sig_rule}"
+    + (" (shrunken fold changes)" if K["shrunk"] else "")
+    + ". Hover a point for the gene."
+)
+```
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-lg-6 .panel}
+### Volcano plot
+
+```{python}
+v = D["volcano"]
+
+
+def de_traces(x, y, hover):
+    traces = []
+    for cls, name in [("ns", "n.s."), ("down", "Down"), ("up", "Up")]:
+        idx = [i for i, c in enumerate(v["cls"]) if c == cls]
+        traces.append(
+            go.Scatter(
+                x=[x[i] for i in idx],
+                y=[y[i] for i in idx],
+                text=[v["gene"][i] for i in idx],
+                name=name,
+                mode="markers",
+                marker=dict(
+                    size=4 if cls == "ns" else 6,
+                    color=COLORS[cls],
+                    opacity=0.5 if cls == "ns" else 0.85,
+                ),
+                hovertemplate=hover,
+            )
+        )
+    return traces
+
+
+fig = go.Figure(
+    de_traces(v["x"], v["y"], "<b>%{text}</b><br>log2FC %{x}<br>-log10 p %{y}<extra></extra>")
+)
+style(fig, xaxis_title="log2 fold change", yaxis_title="-log10 p-value")
+fig.update_xaxes(zeroline=True, zerolinecolor=GRID)
+show_fig(fig)
+```
+:::
+
+::: {.g-col-12 .g-col-lg-6 .panel}
+### Fold change vs expression (MA plot)
+
+```{python}
+hint("Large fold changes at low expression are the least reliable.")
+fig = go.Figure(
+    de_traces(
+        v["base_mean"], v["x"], "<b>%{text}</b><br>mean %{x:.0f}<br>log2FC %{y}<extra></extra>"
+    )
+)
+style(fig, xaxis_title="mean of normalized counts", yaxis_title="log2 fold change")
+fig.update_xaxes(type="log")
+fig.update_yaxes(zeroline=True, zerolinecolor=INK)
+show_fig(fig)
+```
+:::
+
+:::
+
+## Top genes
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-lg-6 .panel}
+### Top differential genes
+
+```{python}
+h = D["heatmap"]
+if not h["genes"]:
+    hint(f"No significant genes at {sig_rule}.")
+else:
+    hint(
+        "Row-scaled (z-score) variance-stabilized expression of the genes with the "
+        "lowest padj, up then down."
+    )
+    fig = go.Figure(
+        go.Heatmap(
+            z=h["z"],
+            x=h["samples"],
+            y=list(range(len(h["genes"]))),
+            text=[[g] * len(h["samples"]) for g in h["genes"]],
+            zmin=-2,
+            zmax=2,
+            colorscale=[[0, COLORS["down"]], [0.5, "#eceff4"], [1, COLORS["up"]]],
+            xgap=1,
+            ygap=1,
+            colorbar=dict(thickness=10, len=0.85, title="z"),
+            hovertemplate="%{text} in %{x}<br>z = %{z}<extra></extra>",
+        )
+    )
+    style(fig, height=max(340, 16 * len(h["genes"]) + 110), margin=dict(l=90, r=15, t=15, b=90))
+    fig.update_yaxes(
+        autorange="reversed",
+        tickmode="array",
+        tickvals=list(range(len(h["genes"]))),
+        ticktext=h["genes"],
+        showgrid=False,
+        tickfont=dict(size=9),
+    )
+    fig.update_xaxes(tickangle=-45, showgrid=False, tickfont=dict(size=9))
+    show_fig(fig)
+```
+:::
+
+::: {.g-col-12 .g-col-lg-6 .panel}
+### Key genes per sample
+
+```{python}
+G = D["genes"]
+items = G["items"]
+if not items:
+    hint(f"No key genes: no significant genes at {sig_rule} with a mean of at least the highlight threshold.")
+else:
+    hint(
+        "Normalized counts per sample (log scale)"
+        + (f"; lines join samples from the same {G['pair_label']}." if G["pairs"] else ".")
+    )
+    names = list(dict.fromkeys(G["groups"]))
+    colors = group_colors(G["groups"])
+    cols = 2 if len(items) > 1 else 1
+    rows = int(np.ceil(len(items) / cols))
+    fig = make_subplots(
+        rows=rows,
+        cols=cols,
+        subplot_titles=[
+            f"<b>{it['gene']}</b>  log2FC {it['log2fc']:+.2f}"
+            for it in items
+        ],
+        horizontal_spacing=0.18,
+        vertical_spacing=0.25 if rows > 1 else 0.1,
+    )
+    for k, it in enumerate(items):
+        row, col = k // cols + 1, k % cols + 1
+        if G["pairs"]:
+            for pair in dict.fromkeys(G["pairs"]):
+                idx = [i for i, x in enumerate(G["pairs"]) if x == pair]
+                fig.add_scatter(
+                    x=[G["groups"][i] for i in idx],
+                    y=[it["values"][i] for i in idx],
+                    mode="lines",
+                    line=dict(width=1.5, color=COLORS["ns"]),
+                    hoverinfo="skip",
+                    showlegend=False,
+                    row=row,
+                    col=col,
+                )
+        for g in names:
+            idx = [i for i, x in enumerate(G["groups"]) if x == g]
+            fig.add_scatter(
+                x=[g] * len(idx),
+                y=[it["values"][i] for i in idx],
+                text=[G["samples"][i] for i in idx],
+                name=g,
+                legendgroup=g,
+                showlegend=k == 0,
+                mode="markers",
+                marker=dict(size=10, color=colors[g], line=dict(width=1.5, color="white")),
+                hovertemplate=f"<b>{it['gene']}</b> in %{{text}}<br>%{{y:.0f}} normalized counts"
+                f"<br>padj {it['padj']:.1e}<extra></extra>",
+                row=row,
+                col=col,
+            )
+        fig.update_yaxes(type="log", dtick=1, tickformat="~s", row=row, col=col)
+        fig.update_xaxes(
+            categoryorder="array",
+            categoryarray=names,
+            range=[-0.4, len(names) - 0.6],
+            tickfont=dict(size=10),
+            row=row,
+            col=col,
+        )
+    style(
+        fig,
+        height=260 * rows + 60,
+        showlegend=True,
+        legend=dict(orientation="h", y=-0.12, x=0),
+        margin=dict(l=55, r=15, t=40, b=40),
+    )
+    fig.update_annotations(font_size=11)
+    show_fig(fig)
+```
+:::
+
+:::
+
+## P-value distribution
+
+```{python}
+P = D["pvalues"]
+hint(
+    f"Raw p-values of the {P['n']:,} tested genes. A flat floor means the test is well "
+    "calibrated; the spike near 0 is the real signal: about "
+    f"<b>{P['n_nonnull']:,}</b> genes ({round((1 - P['pi0']) * 100)}%) are estimated to respond."
+)
+w = P["bin_width"]
+centers = [(i + 0.5) * w for i in range(len(P["counts"]))]
+null_level = P["pi0"] * P["n"] * w
+fig = go.Figure(
+    go.Bar(
+        x=centers,
+        y=P["counts"],
+        width=w * 0.92,
+        marker_color="#7C4BAC",
+        customdata=[f"{x - w / 2:.3f}-{x + w / 2:.3f}" for x in centers],
+        hovertemplate="p %{customdata}<br>%{y} genes<extra></extra>",
+    )
+)
+fig.add_hline(
+    y=null_level,
+    line=dict(color=INK, width=1.5, dash="dash"),
+    annotation_text=f"expected if no gene responded (pi0 = {P['pi0']:.2f})",
+    annotation_position="top right",
+)
+style(fig, height=260, xaxis_title="p-value", yaxis_title="genes")
+fig.update_xaxes(range=[0, 1])
+show_fig(fig)
+```
+
+## Results
+
+```{python}
+#| output: asis
+print(f"The {len(D['table']):,} genes with the lowest adjusted p-value.")
+```
+
+```{python}
+table = pd.DataFrame(D["table"])
+if table.empty:
+    hint("No tested genes.")
+else:
+    padj, lfc = K["padj_threshold"], K["log2fc_threshold"]
+    table["direction"] = np.where(
+        (table["padj"] >= padj) | (table["log2fc"].abs() <= lfc),
+        "n.s.",
+        np.where(table["log2fc"] > 0, "up", "down"),
+    )
+    table = table.rename(columns={"log2fc": "log2FoldChange"})[
+        ["gene", "gene_id", "baseMean", "log2FoldChange", "pvalue", "padj", "direction"]
+    ]
+    show(
+        table,
+        order=[[5, "asc"]],
+        pageLength=15,
+        buttons=["pageLength", "csvHtml5"],
+        classes="display compact",
+        showIndex=False,
+    )
+```
+
+## Methods
+
+```{python}
+#| output: asis
+rows = list(D["methods"])
+versions = D["provenance"]["versions"]
+software = ", ".join(f"{k} {v}" for k, v in versions.items() if k != "python")
+rows.append(["Software", software + f"; Python {versions['python']}"])
+rows.append(["Generated", D["provenance"]["generated"].replace("T", " ") + " by " + D["provenance"]["tool"]])
+print(
+    '<div class="methods-grid">'
+    + "".join(f'<div><div class="m-k">{k}</div><div>{v}</div></div>' for k, v in rows)
+    + "</div>"
+)
+meta = D["meta"]
+footer = "  &middot;  ".join(x for x in [meta["pipeline"], meta["ref"], meta["attribution"]] if x)
+print(
+    f'<div class="report-footer">{footer + "  &middot;  " if footer else ""}'
+    "Generated with OpenPipeline <code>report/deseq2_report</code></div>"
+)
+```
