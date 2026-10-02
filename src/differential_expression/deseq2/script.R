@@ -21,7 +21,7 @@ par <- list(
   p_adj_threshold = 0.05,
   log2fc_threshold = 0.0,
   var_gene_names = "feature_name",
-  var_gene_symbols = NULL,
+  var_gene_symbol_column = NULL,
   export_normalized_counts = FALSE
 )
 meta <- list(resources_dir = "src/utils")
@@ -122,9 +122,9 @@ prepare_contrast_matrix <- function(
 
   # Handle different contrast scenarios
   if (length(contrast_values) == 2) {
-    # Pairwise comparison
-    comparison_group <- contrast_values[1]
-    control_group <- contrast_values[2]
+    # Pairwise comparison: first value is the control group
+    control_group <- contrast_values[1]
+    comparison_group <- contrast_values[2]
     contrast_spec <- c(contrast_column, comparison_group, control_group)
     cat(
       "Performing pairwise contrast:", contrast_column,
@@ -194,7 +194,7 @@ create_deseq2_dataset <- function(
     design = as.formula(design_formula)
   )
   if (!is.null(gene_symbols)) {
-    S4Vectors::mcols(dds)$gene_name <- gene_symbols
+    S4Vectors::mcols(dds)$gene_symbol <- gene_symbols
   }
   dds
 }
@@ -222,8 +222,8 @@ deseq2_analysis <- function(dds, contrast_specs) {
     # Convert to data frame and add metadata
     results_df <- as.data.frame(res)
     results_df$gene_id <- rownames(results_df)
-    if (!is.null(S4Vectors::mcols(dds)$gene_name)) {
-      results_df$gene_name <- S4Vectors::mcols(dds)$gene_name
+    if (!is.null(S4Vectors::mcols(dds)$gene_symbol)) {
+      results_df$gene_symbol <- S4Vectors::mcols(dds)$gene_symbol
     }
     results_df$contrast <- paste0(contrast_spec[2], "_vs_", contrast_spec[3])
     results_df$comparison_group <- contrast_spec[2]
@@ -270,6 +270,11 @@ export_normalized_counts <- function(
   dds, file_prefix, design_formula, contrast_specs, cell_group = NULL
 ) {
   cat("Exporting normalized and variance-stabilized counts\n")
+  # A single contrast is a vector c(column, comparison, control)
+  if (!is.list(contrast_specs)) {
+    contrast_specs <- list(contrast_specs)
+  }
+  contrast_column <- contrast_specs[[1]][1]
   vst_function <- "vst"
   vst <- tryCatch(
     DESeq2::vst(dds, blind = TRUE),
@@ -289,9 +294,9 @@ export_normalized_counts <- function(
   # library size (total raw counts)
   sample_columns <- intersect(
     unique(c(
-      all.vars(as.formula(par$design_formula)),
-      par$contrast_column,
-      par$obs_cell_group
+      all.vars(as.formula(design_formula)),
+      contrast_column,
+      if (!is.null(cell_group)) par$obs_cell_group
     )),
     colnames(SummarizedExperiment::colData(dds))
   )
@@ -309,8 +314,8 @@ export_normalized_counts <- function(
 
   # Genes x samples tables
   gene_columns <- data.frame(gene_id = rownames(dds))
-  if (!is.null(S4Vectors::mcols(dds)$gene_name)) {
-    gene_columns$gene_name <- S4Vectors::mcols(dds)$gene_name
+  if (!is.null(S4Vectors::mcols(dds)$gene_symbol)) {
+    gene_columns$gene_symbol <- S4Vectors::mcols(dds)$gene_symbol
   }
   write_gene_table <- function(mat, suffix) {
     table <- data.frame(gene_columns, mat, check.names = FALSE)
@@ -323,9 +328,6 @@ export_normalized_counts <- function(
   write_gene_table(SummarizedExperiment::assay(vst), "vst")
 
   # Run metadata
-  if (!is.list(contrast_specs)) {
-    contrast_specs <- list(contrast_specs)
-  }
   metadata <- list(
     input = basename(par$input),
     modality = par$modality,
@@ -338,7 +340,7 @@ export_normalized_counts <- function(
       )
     },
     design_formula = design_formula,
-    contrast_column = par$contrast_column,
+    contrast_column = contrast_column,
     contrasts = lapply(contrast_specs, function(spec) {
       list(
         name = paste0(spec[2], "_vs_", spec[3]),
@@ -355,7 +357,7 @@ export_normalized_counts <- function(
     n_samples = ncol(dds),
     n_genes = nrow(dds),
     var_gene_names = par$var_gene_names,
-    var_gene_symbols = par$var_gene_symbols,
+    var_gene_symbol_column = par$var_gene_symbol_column,
     versions = list(
       DESeq2 = as.character(utils::packageVersion("DESeq2")),
       R = paste(R.version$major, R.version$minor, sep = ".")
@@ -429,14 +431,14 @@ main <- function() {
     mod$var_names
   }
   gene_symbols <- NULL
-  if (!is.null(par$var_gene_symbols)) {
-    if (!par$var_gene_symbols %in% colnames(mod$var)) {
+  if (!is.null(par$var_gene_symbol_column)) {
+    if (!par$var_gene_symbol_column %in% colnames(mod$var)) {
       stop(sprintf(
-        "var_gene_symbols '%s' not found in mod$var columns: %s",
-        par$var_gene_symbols, paste(colnames(mod$var), collapse = ", ")
+        "var_gene_symbol_column '%s' not found in mod$var columns: %s",
+        par$var_gene_symbol_column, paste(colnames(mod$var), collapse = ", ")
       ))
     }
-    gene_symbols <- as.character(mod$var[[par$var_gene_symbols]])
+    gene_symbols <- as.character(mod$var[[par$var_gene_symbol_column]])
   }
   obs_names <- mod$obs_names
   counts <- prepare_counts_matrix(layer, var_names, obs_names)
