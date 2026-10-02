@@ -8,6 +8,8 @@
 
 ## NEW FEATURES
 
+* `report/deseq2_report`: added a component that creates a self-contained, interactive HTML report (Quarto) of a DESeq2 differential expression analysis from the output of `differential_expression/deseq2 --export_normalized_counts` (PR #1239).
+
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
 
 * `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
