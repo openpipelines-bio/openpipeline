@@ -122,9 +122,9 @@ prepare_contrast_matrix <- function(
 
   # Handle different contrast scenarios
   if (length(contrast_values) == 2) {
-    # Pairwise comparison
-    comparison_group <- contrast_values[1]
-    control_group <- contrast_values[2]
+    # Pairwise comparison: first value is the control group
+    control_group <- contrast_values[1]
+    comparison_group <- contrast_values[2]
     contrast_spec <- c(contrast_column, comparison_group, control_group)
     cat(
       "Performing pairwise contrast:", contrast_column,

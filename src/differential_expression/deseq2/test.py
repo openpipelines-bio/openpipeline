@@ -36,9 +36,9 @@ def test_simple_deseq2_execution(run_component, tmp_path, pseudobulk_test_data_p
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -110,9 +110,9 @@ def test_simple_deseq2_with_cell_group(
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -185,9 +185,9 @@ def test_complex_design_formula(run_component, tmp_path, pseudobulk_test_data_pa
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
             "--p_adj_threshold",
             "0.1",
             "--log2fc_threshold",
@@ -223,9 +223,9 @@ def test_complex_design_formula_with_cell_groups(
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -322,9 +322,9 @@ def test_custom_output_prefix(run_component, tmp_path, pseudobulk_test_data_path
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -367,9 +367,9 @@ def test_custom_output_prefix_with_cell_groups(
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -417,9 +417,9 @@ def test_export_normalized_counts(run_component, tmp_path, pseudobulk_test_data_
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
             "--export_normalized_counts",
         ]
     )
@@ -511,9 +511,9 @@ def test_export_normalized_counts_with_cell_groups(
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
             "--export_normalized_counts",
         ]
     )
@@ -575,9 +575,9 @@ def test_var_gene_symbols(run_component, tmp_path, pseudobulk_test_data_path):
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
             "--export_normalized_counts",
         ]
     )
@@ -614,9 +614,9 @@ def test_invalid_var_gene_symbols(run_component, tmp_path, pseudobulk_test_data_
                 "--contrast_column",
                 "treatment",
                 "--contrast_values",
-                "stim",
-                "--contrast_values",
                 "ctrl",
+                "--contrast_values",
+                "stim",
             ]
         )
 
@@ -641,13 +641,52 @@ def test_no_export_by_default(run_component, tmp_path, pseudobulk_test_data_path
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
     assert [f.name for f in output_dir.iterdir()] == ["deseq2_analysis.csv"]
+
+
+def test_contrast_direction(run_component, tmp_path, pseudobulk_test_data_path):
+    """Test that the first contrast value is the control group"""
+    results = {}
+    for order in [["ctrl", "stim"], ["stim", "ctrl"]]:
+        output_dir = tmp_path / "_".join(order)
+        run_component(
+            [
+                "--input",
+                pseudobulk_test_data_path,
+                "--output_dir",
+                str(output_dir),
+                "--design_formula",
+                "~ treatment",
+                "--contrast_column",
+                "treatment",
+                "--contrast_values",
+                order[0],
+                "--contrast_values",
+                order[1],
+            ]
+        )
+        results["_".join(order)] = pd.read_csv(output_dir / "deseq2_analysis.csv")
+
+    ctrl_first = results["ctrl_stim"]
+    assert set(ctrl_first["contrast"]) == {"stim_vs_ctrl"}
+    assert set(ctrl_first["control_group"]) == {"ctrl"}
+    assert set(ctrl_first["comparison_group"]) == {"stim"}
+
+    stim_first = results["stim_ctrl"]
+    assert set(stim_first["contrast"]) == {"ctrl_vs_stim"}
+
+    # Swapping the groups flips the sign of the fold changes
+    merged = ctrl_first.merge(stim_first, on="gene_id", suffixes=("_ctrl", "_stim"))
+    merged = merged.dropna(subset=["log2FoldChange_ctrl", "log2FoldChange_stim"])
+    np.testing.assert_allclose(
+        merged["log2FoldChange_ctrl"], -merged["log2FoldChange_stim"], atol=1e-8
+    )
 
 
 if __name__ == "__main__":
