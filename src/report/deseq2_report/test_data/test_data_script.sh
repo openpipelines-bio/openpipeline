@@ -56,8 +56,8 @@ viash run src/differential_expression/deseq2/config.vsh.yaml --engine docker -- 
   --input "$TMP_DIR/pseudobulk_subset.h5mu" \
   --design_formula "~ cell_type + treatment" \
   --contrast_column treatment \
-  --contrast_values stim \
   --contrast_values ctrl \
+  --contrast_values stim \
   --output_dir "$OUT/overall" \
   --export_normalized_counts
 
@@ -67,8 +67,8 @@ viash run src/differential_expression/deseq2/config.vsh.yaml --engine docker -- 
   --obs_cell_group cell_type \
   --design_formula "~ treatment" \
   --contrast_column treatment \
-  --contrast_values stim \
   --contrast_values ctrl \
+  --contrast_values stim \
   --output_dir "$TMP_DIR/per_cell_type" \
   --export_normalized_counts
 mkdir -p "$OUT/per_cell_type"

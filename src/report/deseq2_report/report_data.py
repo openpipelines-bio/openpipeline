@@ -93,9 +93,9 @@ def build_report_data(par, logger, tool="OpenPipeline report/deseq2_report"):
 
     # ---- genes and counts ----
     gene_ids = pd.Index(normalized.pop("gene_id").astype(str))
-    names = normalized.pop("gene_name") if "gene_name" in normalized else None
+    names = normalized.pop("gene_symbol") if "gene_symbol" in normalized else None
     vst.index = vst.pop("gene_id").astype(str)
-    vst = vst.drop(columns="gene_name", errors="ignore")
+    vst = vst.drop(columns="gene_symbol", errors="ignore")
     symbols = pd.Series(gene_ids, index=gene_ids)
     if names is not None:
         names = pd.Series(names.astype(str).to_numpy(), index=gene_ids)

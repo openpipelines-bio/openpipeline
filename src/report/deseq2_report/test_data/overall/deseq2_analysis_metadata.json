@@ -24,7 +24,7 @@
   "n_samples": 16,
   "n_genes": 500,
   "var_gene_names": null,
-  "var_gene_symbols": null,
+  "var_gene_symbol_column": null,
   "versions": {
     "DESeq2": "1.52.0",
     "R": "4.6.1"
