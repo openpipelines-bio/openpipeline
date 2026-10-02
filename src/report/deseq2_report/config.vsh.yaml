@@ -2,14 +2,15 @@ name: deseq2_report
 namespace: report
 scope: public
 description: |
-  Creates a self-contained, interactive HTML report of a DESeq2 differential expression analysis.
+  Creates a self-contained, interactive HTML report of a DESeq2 differential expression analysis from the data 
+  computed in report_data.py.
   Takes the output of `differential_expression/deseq2` run with `--export_normalized_counts` and shows
   summary metrics, a PCA and a sample correlation heatmap on the variance-stabilized counts, volcano and MA plots,
   a heatmap of the top differential genes, normalized counts of key genes per sample, the p-value distribution,
   a methods summary and a searchable table of the top results.
   The report contains a single contrast; with cell groups, create one report per cell group.
 authors:
-  - __merge__: /src/authors/mirte_de_temmerman.yaml
+  - __merge__: /src/authors/mirte_detemmerman.yaml
     roles: [ author ]
 
 argument_groups:
@@ -126,7 +127,7 @@ argument_groups:
         type: integer
         min: 0
         default: 10
-        description: Minimum total count of a gene over all samples to include it in the PCA, correlation and heatmap.
+        description: Minimum total count of a gene across all samples to include it in the PCA, correlation and heatmap.
       - name: "--min_basemean_highlight"
         type: double
         min: 0
@@ -176,8 +177,11 @@ argument_groups:
 resources:
   - type: python_script
     path: script.py
-  - path: template.html
-  - path: report.js
+  - path: report_data.py
+  - path: report.qmd
+  - path: theme-light.scss
+  - path: theme-dark.scss
+  - path: report.css
   - path: /src/utils/setup_logger.py
 
 test_resources:
@@ -193,18 +197,33 @@ engines:
   - type: docker
     image: python:3.12-slim
     setup:
+      - type: apt
+        packages:
+          - procps # Required by the Nextflow runner
+          - wget # Required to install Quarto
+      # Quarto CLI for amd64 and arm64, with a wrapper that picks the binary
+      # matching the host at run time
+      - type: docker
+        run: |
+          export QUARTO_VERSION="1.9.38" && \
+          QUARTO_BASE_URL="https://github.com/quarto-dev/quarto-cli/releases/download" && \
+          mkdir -p /opt/quarto/linux-amd64 /opt/quarto/linux-arm64 && \
+          wget -qO- "${QUARTO_BASE_URL}/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | tar -xz -C /opt/quarto/linux-amd64 --strip-components=1 && \
+          wget -qO- "${QUARTO_BASE_URL}/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-arm64.tar.gz" | tar -xz -C /opt/quarto/linux-arm64 --strip-components=1 && \
+          printf '#!/bin/sh\nARCH=$(uname -m)\nif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then\n  exec /opt/quarto/linux-arm64/bin/quarto "$@"\nelse\n  exec /opt/quarto/linux-amd64/bin/quarto "$@"\nfi\n' >/usr/local/bin/quarto && \
+          chmod +x /usr/local/bin/quarto && \
+          quarto --version
       - type: python
         packages:
           - numpy>=2
           - pandas~=3.0
-      # plotly.js is inlined in the report, so the report works offline
-      - type: docker
-        env:
-          - PLOTLY_JS=/opt/plotly/plotly-cartesian.min.js
-        run: |
-          mkdir -p /opt/plotly && \
-          python -c "import urllib.request; urllib.request.urlretrieve('https://cdn.jsdelivr.net/npm/plotly.js-cartesian-dist-min@2.35.2/plotly-cartesian.min.js', '/opt/plotly/plotly-cartesian.min.js')" && \
-          echo "72409fd95b505d17772f2dd9bb81a8672ce6d5b61dcf61ba1fd8442c9ea3e180  /opt/plotly/plotly-cartesian.min.js" | sha256sum -c -
+          - plotly~=6.0
+          - itables~=2.0
+          # Required by Quarto's Jupyter engine
+          - ipykernel
+          - nbclient
+          - nbformat
+          - pyyaml
     __merge__: /src/base/requirements/python_test_setup.yaml
 
 runners:

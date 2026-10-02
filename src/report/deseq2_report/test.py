@@ -17,12 +17,14 @@ OVERALL_DIR = f"{DESEQ2_DIR}/overall"
 PER_CELL_TYPE_DIR = f"{DESEQ2_DIR}/per_cell_type"
 
 
-def read_report_data(html_path):
-    """Extract the data object embedded in the report."""
-    html = html_path.read_text()
-    match = re.search(r"window\.REPORT_DATA = (\{.*?\});</script>", html, re.S)
-    assert match, "Report data not found in the HTML"
-    return json.loads(match.group(1).replace("<\\/", "</"))
+def check_self_contained(html):
+    """The report must open offline: no scripts, styles or images loaded from elsewhere."""
+    assert "Plotly.newPlot" in html, "No plotly figures in the report"
+    assert re.search(r"plotly\.js v\d", html), "plotly.js is not included"
+    for tag in re.findall(r"<(?:script|img|link)\b[^>]*>", html):
+        assert not re.search(r'(?:src|href)="(?:https?:)?//', tag), (
+            f"External resource: {tag[:120]}"
+        )
 
 
 def test_report_overall(run_component, tmp_path):
@@ -43,12 +45,21 @@ def test_report_overall(run_component, tmp_path):
 
     assert output.exists(), "Report was not created"
     html = output.read_text()
-    assert "/*__" not in html, "Not all template placeholders were filled"
-    assert "plotly.js (cartesian - minified) v2.35.2" in html, "plotly.js not inlined"
-    assert not re.search(r"<script[^>]+src=", html), "Report should not load scripts"
+    check_self_contained(html)
+    assert "<title>Differential expression report</title>" in html
+    for section in [
+        "Samples",
+        "Differential expression",
+        "Top genes",
+        "Results",
+        "Methods",
+    ]:
+        assert re.search(rf"<h2[^>]*>.*{section}.*</h2>", html), (
+            f"Section {section} missing"
+        )
+    assert "No significant genes at" in html, "Empty heatmap message missing"
 
     data = json.loads(output_data.read_text())
-    assert data == read_report_data(output), "HTML and JSON data differ"
 
     samples = pd.read_csv(f"{OVERALL_DIR}/deseq2_analysis_samples.csv")
     results = pd.read_csv(f"{OVERALL_DIR}/deseq2_analysis.csv")
@@ -128,6 +139,13 @@ def test_report_cell_group_with_options(run_component, tmp_path):
             "20",
         ]
     )
+
+    html = output.read_text()
+    check_self_contained(html)
+    assert "<title>Erythrocytes</title>" in html
+    assert "Test project" in html, "Subtitle missing"
+    assert "No significant genes at" not in html
+    assert "Key genes per sample" in html
 
     data = json.loads(output_data.read_text())
     assert data["meta"]["title"] == "Erythrocytes"
