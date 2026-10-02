@@ -552,8 +552,8 @@ def test_export_normalized_counts_with_cell_groups(
     )
 
 
-def test_var_gene_symbols(run_component, tmp_path, pseudobulk_test_data_path):
-    """Test that --var_gene_symbols adds a gene_name column and keeps gene_id unique"""
+def test_var_gene_symbol_column(run_component, tmp_path, pseudobulk_test_data_path):
+    """Test that --var_gene_symbol_column adds a gene_symbol column and keeps gene_id unique"""
     mdata = mu.read_h5mu(pseudobulk_test_data_path)
     # Non-unique symbols, as in real annotations
     symbols = [f"SYMBOL{i % 1000}" for i in range(mdata["rna"].n_vars)]
@@ -568,7 +568,7 @@ def test_var_gene_symbols(run_component, tmp_path, pseudobulk_test_data_path):
             str(input_path),
             "--output_dir",
             str(output_dir),
-            "--var_gene_symbols",
+            "--var_gene_symbol_column",
             "symbol",
             "--design_formula",
             "~ treatment",
@@ -587,19 +587,21 @@ def test_var_gene_symbols(run_component, tmp_path, pseudobulk_test_data_path):
     results = pd.read_csv(output_dir / "deseq2_analysis.csv")
     assert results["gene_id"].is_unique
     assert set(results["gene_id"]) == set(mdata["rna"].var_names)
-    assert list(results["gene_name"]) == list(expected_symbols[results["gene_id"]])
+    assert list(results["gene_symbol"]) == list(expected_symbols[results["gene_id"]])
 
     for suffix in ["normalized_counts", "vst"]:
         table = pd.read_csv(output_dir / f"deseq2_analysis_{suffix}.csv")
-        assert list(table.columns[:2]) == ["gene_id", "gene_name"]
-        assert list(table["gene_name"]) == symbols
+        assert list(table.columns[:2]) == ["gene_id", "gene_symbol"]
+        assert list(table["gene_symbol"]) == symbols
 
     with open(output_dir / "deseq2_analysis_metadata.json") as f:
-        assert json.load(f)["var_gene_symbols"] == "symbol"
+        assert json.load(f)["var_gene_symbol_column"] == "symbol"
 
 
-def test_invalid_var_gene_symbols(run_component, tmp_path, pseudobulk_test_data_path):
-    """Test that a missing --var_gene_symbols column raises an error"""
+def test_invalid_var_gene_symbol_column(
+    run_component, tmp_path, pseudobulk_test_data_path
+):
+    """Test that a missing --var_gene_symbol_column column raises an error"""
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
@@ -607,7 +609,7 @@ def test_invalid_var_gene_symbols(run_component, tmp_path, pseudobulk_test_data_
                 pseudobulk_test_data_path,
                 "--output_dir",
                 str(tmp_path / "deseq2_output"),
-                "--var_gene_symbols",
+                "--var_gene_symbol_column",
                 "nonexistent_column",
                 "--design_formula",
                 "~ treatment",
@@ -621,7 +623,7 @@ def test_invalid_var_gene_symbols(run_component, tmp_path, pseudobulk_test_data_
         )
 
     assert re.search(
-        r"var_gene_symbols 'nonexistent_column' not found",
+        r"var_gene_symbol_column 'nonexistent_column' not found",
         err.value.stdout.decode("utf-8"),
     ), f"Expected error message not found: {err.value.stdout.decode('utf-8')}"
 
