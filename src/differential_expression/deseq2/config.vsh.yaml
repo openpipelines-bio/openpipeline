@@ -33,15 +33,17 @@ argument_groups:
       - name: "--var_gene_names"
         type: string
         description: |
-          Name of the .var field that contains gene symbols. If not provided, .var.index will be used.
+          Name of the .var field to use as gene identifiers ("gene_id" in the output) instead of .var.index.
+          The values should be unique. To keep .var.index as identifiers and only add gene symbols,
+          use `--var_gene_symbol_column` instead.
         required: false
         example: "gene_symbol"
-      - name: "--var_gene_symbols"
+      - name: "--var_gene_symbol_column"
         type: string
         description: |
-          Name of the .var field with gene symbols to add as a "gene_name" column to the results
-          (and to the exported count tables), next to "gene_id". Unlike `--var_gene_names`, this does not
-          change the gene identifiers, so it can be used with symbols that are not unique.
+          Name of the .var field with gene symbols. They are added as an extra "gene_symbol" column next to
+          "gene_id" in the results and the exported count tables, for display. The gene identifiers are not
+          changed, so the symbols do not need to be unique.
         required: false
         example: "gene_symbol"
       - name: "--obs_cell_group"
@@ -121,7 +123,7 @@ argument_groups:
             * "{name}_normalized_counts.csv": DESeq2 normalized counts.
             * "{name}_vst.csv": variance-stabilized counts (VST, blind to the design).
             * "{name}_metadata.json": design formula, contrasts, thresholds and software versions.
-          The count tables have one row per gene: "gene_id" (and "gene_name" with `--var_gene_symbols`),
+          The count tables have one row per gene: "gene_id" (and "gene_symbol" with `--var_gene_symbol_column`),
           then one column per sample.
 
 resources:
