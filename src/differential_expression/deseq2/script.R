@@ -270,6 +270,11 @@ export_normalized_counts <- function(
   dds, file_prefix, design_formula, contrast_specs, cell_group = NULL
 ) {
   cat("Exporting normalized and variance-stabilized counts\n")
+  # A single contrast is a vector c(column, comparison, control)
+  if (!is.list(contrast_specs)) {
+    contrast_specs <- list(contrast_specs)
+  }
+  contrast_column <- contrast_specs[[1]][1]
   vst_function <- "vst"
   vst <- tryCatch(
     DESeq2::vst(dds, blind = TRUE),
@@ -290,8 +295,8 @@ export_normalized_counts <- function(
   sample_columns <- intersect(
     unique(c(
       all.vars(as.formula(design_formula)),
-      contrast_specs[[1]][2],
-      contrast_specs[[1]][3]
+      contrast_column,
+      if (!is.null(cell_group)) par$obs_cell_group
     )),
     colnames(SummarizedExperiment::colData(dds))
   )
@@ -323,9 +328,6 @@ export_normalized_counts <- function(
   write_gene_table(SummarizedExperiment::assay(vst), "vst")
 
   # Run metadata
-  if (!is.list(contrast_specs)) {
-    contrast_specs <- list(contrast_specs)
-  }
   metadata <- list(
     input = basename(par$input),
     modality = par$modality,
@@ -338,7 +340,7 @@ export_normalized_counts <- function(
       )
     },
     design_formula = design_formula,
-    contrast_column = par$contrast_column,
+    contrast_column = contrast_column,
     contrasts = lapply(contrast_specs, function(spec) {
       list(
         name = paste0(spec[2], "_vs_", spec[3]),
