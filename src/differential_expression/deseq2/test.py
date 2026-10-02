@@ -1,6 +1,9 @@
+import json
 import subprocess
 import sys
 import pytest
+import mudata as mu
+import numpy as np
 import pandas as pd
 import re
 
@@ -33,9 +36,9 @@ def test_simple_deseq2_execution(run_component, tmp_path, pseudobulk_test_data_p
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -107,9 +110,9 @@ def test_simple_deseq2_with_cell_group(
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -182,10 +185,10 @@ def test_complex_design_formula(run_component, tmp_path, pseudobulk_test_data_pa
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
-            "--padj_threshold",
+            "--contrast_values",
+            "stim",
+            "--p_adj_threshold",
             "0.1",
             "--log2fc_threshold",
             "0.5",
@@ -220,9 +223,9 @@ def test_complex_design_formula_with_cell_groups(
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -319,9 +322,9 @@ def test_custom_output_prefix(run_component, tmp_path, pseudobulk_test_data_path
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -364,9 +367,9 @@ def test_custom_output_prefix_with_cell_groups(
             "--contrast_column",
             "treatment",
             "--contrast_values",
-            "stim",
-            "--contrast_values",
             "ctrl",
+            "--contrast_values",
+            "stim",
         ]
     )
 
@@ -397,6 +400,295 @@ def test_custom_output_prefix_with_cell_groups(
         assert results["cell_type"].nunique() == 1, (
             f"Multiple cell types found in {csv_file}"
         )
+
+
+def test_export_normalized_counts(run_component, tmp_path, pseudobulk_test_data_path):
+    """Test that --export_normalized_counts writes the sample table, count tables and metadata"""
+    output_dir = tmp_path / "deseq2_output"
+
+    run_component(
+        [
+            "--input",
+            pseudobulk_test_data_path,
+            "--output_dir",
+            str(output_dir),
+            "--design_formula",
+            "~ disease + treatment",
+            "--contrast_column",
+            "treatment",
+            "--contrast_values",
+            "ctrl",
+            "--contrast_values",
+            "stim",
+            "--export_normalized_counts",
+        ]
+    )
+
+    expected_files = {
+        "deseq2_analysis.csv",
+        "deseq2_analysis_samples.csv",
+        "deseq2_analysis_normalized_counts.csv",
+        "deseq2_analysis_vst.csv",
+        "deseq2_analysis_metadata.json",
+    }
+    found_files = {f.name for f in output_dir.iterdir()}
+    assert found_files == expected_files, (
+        f"Expected {expected_files}, found {found_files}"
+    )
+
+    mod = mu.read_h5mu(pseudobulk_test_data_path)["rna"]
+    counts = pd.DataFrame(
+        np.round(np.asarray(mod.X)), index=mod.obs_names, columns=mod.var_names
+    )
+
+    samples = pd.read_csv(output_dir / "deseq2_analysis_samples.csv")
+    assert list(samples.columns) == [
+        "sample",
+        "disease",
+        "treatment",
+        "size_factor",
+        "library_size",
+    ]
+    assert list(samples["sample"]) == list(mod.obs_names)
+    assert list(samples["treatment"]) == list(mod.obs["treatment"].astype(str))
+    assert np.all(np.isfinite(samples["size_factor"]))
+    assert np.all(samples["size_factor"] > 0)
+    np.testing.assert_array_equal(samples["library_size"], counts.sum(axis=1))
+
+    normalized = pd.read_csv(output_dir / "deseq2_analysis_normalized_counts.csv")
+    vst = pd.read_csv(output_dir / "deseq2_analysis_vst.csv")
+    for table in [normalized, vst]:
+        assert list(table.columns) == ["gene_id"] + list(mod.obs_names)
+        assert list(table["gene_id"]) == list(mod.var_names)
+
+    expected_normalized = counts.T / samples["size_factor"].to_numpy()
+    np.testing.assert_allclose(
+        normalized.drop(columns="gene_id").to_numpy(),
+        expected_normalized.to_numpy(),
+        rtol=1e-6,
+    )
+
+    vst_values = vst.drop(columns="gene_id").to_numpy()
+    assert np.all(np.isfinite(vst_values)), "VST values should be finite"
+    # VST is a monotonic transformation of the normalized counts within a sample
+    first_sample = normalized.columns[1]
+    order = np.argsort(normalized[first_sample].to_numpy())
+    assert np.all(np.diff(vst[first_sample].to_numpy()[order]) >= -1e-8)
+
+    with open(output_dir / "deseq2_analysis_metadata.json") as f:
+        metadata = json.load(f)
+    assert metadata["design_formula"] == "~ disease + treatment"
+    assert metadata["contrasts"] == [
+        {
+            "name": "stim_vs_ctrl",
+            "comparison_group": "stim",
+            "control_group": "ctrl",
+        }
+    ]
+    assert metadata["cell_group"] is None
+    assert metadata["n_samples"] == mod.n_obs
+    assert metadata["n_genes"] == mod.n_vars
+    assert metadata["variance_stabilization"]["blind"] is True
+    assert metadata["versions"]["DESeq2"], "DESeq2 version should be recorded"
+
+
+def test_export_normalized_counts_with_cell_groups(
+    run_component, tmp_path, pseudobulk_test_data_path
+):
+    """Test that each cell group gets its own sample table, count tables and metadata"""
+    output_dir = tmp_path / "deseq2_output"
+
+    run_component(
+        [
+            "--input",
+            pseudobulk_test_data_path,
+            "--output_dir",
+            str(output_dir),
+            "--obs_cell_group",
+            "cell_type",
+            "--design_formula",
+            "~ treatment",
+            "--contrast_column",
+            "treatment",
+            "--contrast_values",
+            "ctrl",
+            "--contrast_values",
+            "stim",
+            "--export_normalized_counts",
+        ]
+    )
+
+    mod = mu.read_h5mu(pseudobulk_test_data_path)["rna"]
+    results_files = [
+        f
+        for f in output_dir.glob("deseq2_analysis_*.csv")
+        if not f.stem.endswith(("_samples", "_normalized_counts", "_vst"))
+    ]
+    assert len(results_files) == mod.obs["cell_type"].nunique()
+
+    all_samples = []
+    for results_file in results_files:
+        stem = results_file.stem
+        cell_type = pd.read_csv(results_file)["cell_type"].iloc[0]
+        group_samples = list(mod.obs_names[mod.obs["cell_type"] == cell_type])
+
+        samples = pd.read_csv(output_dir / f"{stem}_samples.csv")
+        assert list(samples["sample"]) == group_samples
+        assert set(samples["cell_type"]) == {cell_type}
+        all_samples += group_samples
+
+        for suffix in ["normalized_counts", "vst"]:
+            table = pd.read_csv(output_dir / f"{stem}_{suffix}.csv")
+            assert list(table.columns) == ["gene_id"] + group_samples
+            assert len(table) == mod.n_vars
+
+        with open(output_dir / f"{stem}_metadata.json") as f:
+            metadata = json.load(f)
+        assert metadata["cell_group"] == {"column": "cell_type", "value": cell_type}
+        assert metadata["n_samples"] == len(group_samples)
+
+    assert sorted(all_samples) == sorted(mod.obs_names), (
+        "Every sample is in one cell group"
+    )
+
+
+def test_var_gene_symbol_column(run_component, tmp_path, pseudobulk_test_data_path):
+    """Test that --var_gene_symbol_column adds a gene_symbol column and keeps gene_id unique"""
+    mdata = mu.read_h5mu(pseudobulk_test_data_path)
+    # Non-unique symbols, as in real annotations
+    symbols = [f"SYMBOL{i % 1000}" for i in range(mdata["rna"].n_vars)]
+    mdata["rna"].var["symbol"] = symbols
+    input_path = tmp_path / "input_with_symbols.h5mu"
+    mdata.write_h5mu(input_path)
+    output_dir = tmp_path / "deseq2_output"
+
+    run_component(
+        [
+            "--input",
+            str(input_path),
+            "--output_dir",
+            str(output_dir),
+            "--var_gene_symbol_column",
+            "symbol",
+            "--design_formula",
+            "~ treatment",
+            "--contrast_column",
+            "treatment",
+            "--contrast_values",
+            "ctrl",
+            "--contrast_values",
+            "stim",
+            "--export_normalized_counts",
+        ]
+    )
+
+    expected_symbols = pd.Series(symbols, index=mdata["rna"].var_names)
+
+    results = pd.read_csv(output_dir / "deseq2_analysis.csv")
+    assert results["gene_id"].is_unique
+    assert set(results["gene_id"]) == set(mdata["rna"].var_names)
+    assert list(results["gene_symbol"]) == list(expected_symbols[results["gene_id"]])
+
+    for suffix in ["normalized_counts", "vst"]:
+        table = pd.read_csv(output_dir / f"deseq2_analysis_{suffix}.csv")
+        assert list(table.columns[:2]) == ["gene_id", "gene_symbol"]
+        assert list(table["gene_symbol"]) == symbols
+
+    with open(output_dir / "deseq2_analysis_metadata.json") as f:
+        assert json.load(f)["var_gene_symbol_column"] == "symbol"
+
+
+def test_invalid_var_gene_symbol_column(
+    run_component, tmp_path, pseudobulk_test_data_path
+):
+    """Test that a missing --var_gene_symbol_column column raises an error"""
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                pseudobulk_test_data_path,
+                "--output_dir",
+                str(tmp_path / "deseq2_output"),
+                "--var_gene_symbol_column",
+                "nonexistent_column",
+                "--design_formula",
+                "~ treatment",
+                "--contrast_column",
+                "treatment",
+                "--contrast_values",
+                "ctrl",
+                "--contrast_values",
+                "stim",
+            ]
+        )
+
+    assert re.search(
+        r"var_gene_symbol_column 'nonexistent_column' not found",
+        err.value.stdout.decode("utf-8"),
+    ), f"Expected error message not found: {err.value.stdout.decode('utf-8')}"
+
+
+def test_no_export_by_default(run_component, tmp_path, pseudobulk_test_data_path):
+    """Test that without --export_normalized_counts only the results CSV is written"""
+    output_dir = tmp_path / "deseq2_output"
+
+    run_component(
+        [
+            "--input",
+            pseudobulk_test_data_path,
+            "--output_dir",
+            str(output_dir),
+            "--design_formula",
+            "~ treatment",
+            "--contrast_column",
+            "treatment",
+            "--contrast_values",
+            "ctrl",
+            "--contrast_values",
+            "stim",
+        ]
+    )
+
+    assert [f.name for f in output_dir.iterdir()] == ["deseq2_analysis.csv"]
+
+
+def test_contrast_direction(run_component, tmp_path, pseudobulk_test_data_path):
+    """Test that the first contrast value is the control group"""
+    results = {}
+    for order in [["ctrl", "stim"], ["stim", "ctrl"]]:
+        output_dir = tmp_path / "_".join(order)
+        run_component(
+            [
+                "--input",
+                pseudobulk_test_data_path,
+                "--output_dir",
+                str(output_dir),
+                "--design_formula",
+                "~ treatment",
+                "--contrast_column",
+                "treatment",
+                "--contrast_values",
+                order[0],
+                "--contrast_values",
+                order[1],
+            ]
+        )
+        results["_".join(order)] = pd.read_csv(output_dir / "deseq2_analysis.csv")
+
+    ctrl_first = results["ctrl_stim"]
+    assert set(ctrl_first["contrast"]) == {"stim_vs_ctrl"}
+    assert set(ctrl_first["control_group"]) == {"ctrl"}
+    assert set(ctrl_first["comparison_group"]) == {"stim"}
+
+    stim_first = results["stim_ctrl"]
+    assert set(stim_first["contrast"]) == {"ctrl_vs_stim"}
+
+    # Swapping the groups flips the sign of the fold changes
+    merged = ctrl_first.merge(stim_first, on="gene_id", suffixes=("_ctrl", "_stim"))
+    merged = merged.dropna(subset=["log2FoldChange_ctrl", "log2FoldChange_stim"])
+    np.testing.assert_allclose(
+        merged["log2FoldChange_ctrl"], -merged["log2FoldChange_stim"], atol=1e-8
+    )
 
 
 if __name__ == "__main__":

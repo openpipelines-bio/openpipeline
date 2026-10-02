@@ -8,6 +8,10 @@
 
 ## NEW FEATURES
 
+* `differential_expression/deseq2`: add `--export_normalized_counts` to also write a per-sample table (design columns, size factors, library sizes), DESeq2 normalized counts, variance-stabilized counts and run metadata for downstream visualization and reporting (PR #1238).
+
+* `differential_expression/deseq2`: add `--var_gene_symbol_column` to add a `gene_symbol` column with the gene symbols to the results, without changing the gene identifiers (PR #1238).
+
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
 
 * `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -28,6 +32,8 @@
 
 
 ## BUG FIXES
+
+* `differential_expression/deseq2`: fix a test passing the non-existent `--padj_threshold` argument instead of `--p_adj_threshold` (PR #xxxx).
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
