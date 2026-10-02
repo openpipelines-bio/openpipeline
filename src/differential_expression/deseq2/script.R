@@ -289,9 +289,9 @@ export_normalized_counts <- function(
   # library size (total raw counts)
   sample_columns <- intersect(
     unique(c(
-      all.vars(as.formula(par$design_formula)),
-      par$contrast_column,
-      par$obs_cell_group
+      all.vars(as.formula(design_formula)),
+      contrast_specs[[1]][2],
+      contrast_specs[[1]][3]
     )),
     colnames(SummarizedExperiment::colData(dds))
   )
