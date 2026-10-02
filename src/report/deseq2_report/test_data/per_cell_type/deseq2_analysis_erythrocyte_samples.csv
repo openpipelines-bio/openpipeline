@@ -1,0 +1,5 @@
+"sample","treatment","cell_type","size_factor","library_size"
+"erythrocyte_TSP14_ctrl_diseased_0","ctrl","erythrocyte",0.919802281528738,315906
+"erythrocyte_TSP14_ctrl_healthy_0","ctrl","erythrocyte",1.38046786967884,518400
+"erythrocyte_TSP14_stim_diseased_0","stim","erythrocyte",0.921044892568883,385558
+"erythrocyte_TSP14_stim_healthy_0","stim","erythrocyte",0.887314503366117,362691

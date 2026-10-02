@@ -1,0 +1,17 @@
+"sample","cell_type","treatment","size_factor","library_size"
+"erythrocyte_TSP14_ctrl_diseased_0","erythrocyte","ctrl",0.296059727023693,315906
+"erythrocyte_TSP14_ctrl_healthy_0","erythrocyte","ctrl",0.433725226147651,518400
+"erythrocyte_TSP14_stim_diseased_0","erythrocyte","stim",0.29139341903296,385558
+"erythrocyte_TSP14_stim_healthy_0","erythrocyte","stim",0.281660540275,362691
+"classical monocyte_TSP14_ctrl_diseased_0","classical monocyte","ctrl",2.35921948708993,159499
+"classical monocyte_TSP14_ctrl_healthy_0","classical monocyte","ctrl",2.32036324135624,166234
+"classical monocyte_TSP14_stim_diseased_0","classical monocyte","stim",2.50465111579556,172869
+"classical monocyte_TSP14_stim_healthy_0","classical monocyte","stim",2.99770018773347,198875
+"plasma cell_TSP14_ctrl_diseased_0","plasma cell","ctrl",2.69410268193213,377949
+"plasma cell_TSP14_ctrl_healthy_0","plasma cell","ctrl",3.00688250749727,390627
+"plasma cell_TSP14_stim_diseased_0","plasma cell","stim",2.82330551639118,353595
+"plasma cell_TSP14_stim_healthy_0","plasma cell","stim",2.27339333212319,289961
+"neutrophil_TSP14_ctrl_diseased_0","neutrophil","ctrl",0.721826429507384,81056
+"neutrophil_TSP14_ctrl_healthy_0","neutrophil","ctrl",0.700154693535197,80892
+"neutrophil_TSP14_stim_diseased_0","neutrophil","stim",0.56862151385963,64887
+"neutrophil_TSP14_stim_healthy_0","neutrophil","stim",0.423204938879513,50259

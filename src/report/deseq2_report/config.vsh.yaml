@@ -1,0 +1,214 @@
+name: deseq2_report
+namespace: report
+scope: public
+description: |
+  Creates a self-contained, interactive HTML report of a DESeq2 differential expression analysis.
+  Takes the output of `differential_expression/deseq2` run with `--export_normalized_counts` and shows
+  summary metrics, a PCA and a sample correlation heatmap on the variance-stabilized counts, volcano and MA plots,
+  a heatmap of the top differential genes, normalized counts of key genes per sample, the p-value distribution,
+  a methods summary and a searchable table of the top results.
+  The report contains a single contrast; with cell groups, create one report per cell group.
+authors:
+  - __merge__: /src/authors/mirte_de_temmerman.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: |
+          Output directory of `differential_expression/deseq2`, run with `--export_normalized_counts`.
+        direction: input
+        required: true
+        example: deseq2_output/
+      - name: "--input_prefix"
+        type: string
+        description: |
+          Name of the DESeq2 results to report on, without extension: the `--output_prefix` of the DESeq2 run,
+          followed by "_{cell_group}" if cell groups were used. The report reads "{input_prefix}.csv",
+          "{input_prefix}_samples.csv", "{input_prefix}_normalized_counts.csv", "{input_prefix}_vst.csv" and
+          "{input_prefix}_metadata.json".
+        default: deseq2_analysis
+        example: deseq2_analysis_classical_monocyte
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Self-contained HTML report.
+        direction: output
+        required: true
+        example: report.html
+      - name: "--output_data"
+        type: file
+        description: Optional JSON file with the data shown in the report.
+        direction: output
+        required: false
+        example: report_data.json
+
+  - name: Report text
+    arguments:
+      - name: "--title"
+        type: string
+        description: Report title.
+        default: Differential expression report
+      - name: "--project"
+        type: string
+        description: Short description of the experiment, shown below the title.
+        example: Airway smooth muscle cells treated with dexamethasone
+      - name: "--design_description"
+        type: string
+        description: Plain-language description of the design, shown in the header and methods.
+        example: dexamethasone vs untreated, 4 donors paired
+      - name: "--pipeline"
+        type: string
+        description: Pipeline that produced the counts, shown in the header.
+        example: bulk RNA-seq (STAR + Salmon) + OpenPipeline DESeq2
+      - name: "--reference"
+        type: string
+        description: Reference genome and annotation, shown in the header.
+        example: GRCh38, GENCODE 50
+      - name: "--attribution"
+        type: string
+        description: Data source or license, shown in the footer.
+      - name: "--counts_description"
+        type: string
+        description: Where the counts come from, for the methods. By default the input file of the DESeq2 run is named.
+
+  - name: Samples and genes
+    arguments:
+      - name: "--obs_sample_label"
+        type: string
+        multiple: true
+        description: |
+          Columns of the DESeq2 sample table to join into the sample labels. By default the sample names are used.
+        example: [donor, treatment]
+      - name: "--group_labels"
+        type: string
+        multiple: true
+        description: |
+          Display names for the levels of the contrast column, as "level=label".
+        example: ["trt=Dexamethasone", "untrt=Untreated"]
+      - name: "--obs_pair"
+        type: string
+        description: |
+          Column of the DESeq2 sample table that pairs samples across conditions, for example the donor.
+          Paired samples are joined by a line in the key gene plots, and the PCA reports how well it explains each PC.
+        example: donor
+      - name: "--pair_label"
+        type: string
+        description: Display name of `--obs_pair`. By default the column name is used.
+        example: donor
+      - name: "--highlight_genes"
+        type: string
+        multiple: true
+        description: |
+          Genes (names or ids) to plot per sample. By default the significant genes with the largest absolute
+          fold change and a mean normalized count of at least `--min_basemean_highlight` are used.
+        example: [FKBP5, KLF15]
+
+  - name: Thresholds
+    arguments:
+      - name: "--p_adj_threshold"
+        type: double
+        min: 0
+        max: 1
+        description: Adjusted p-value threshold for significance. By default the threshold of the DESeq2 run is used.
+      - name: "--log2fc_threshold"
+        type: double
+        min: 0
+        description: |
+          Minimum absolute log2 fold change for significance. By default the threshold of the DESeq2 run is used.
+      - name: "--min_count"
+        type: integer
+        min: 0
+        default: 10
+        description: Minimum total count of a gene over all samples to include it in the PCA, correlation and heatmap.
+      - name: "--min_basemean_highlight"
+        type: double
+        min: 0
+        default: 100
+        description: |
+          Minimum mean normalized count for the "largest change" highlight and the default key genes, so that
+          weakly expressed genes with unstable fold changes are not picked.
+
+  - name: Sizes
+    arguments:
+      - name: "--n_pca_genes"
+        type: integer
+        min: 2
+        default: 500
+        description: Number of most variable genes used for the PCA.
+      - name: "--n_heatmap_genes"
+        type: integer
+        min: 1
+        default: 28
+        description: Number of significant genes with the lowest adjusted p-value shown in the heatmap.
+      - name: "--n_table_genes"
+        type: integer
+        min: 1
+        default: 300
+        description: Number of genes with the lowest adjusted p-value listed in the results table.
+      - name: "--n_highlight_genes"
+        type: integer
+        min: 1
+        default: 4
+        description: Number of key genes plotted per sample when `--highlight_genes` is not given.
+      - name: "--max_volcano_ns_genes"
+        type: integer
+        min: 0
+        default: 2500
+        description: |
+          Maximum number of non-significant genes in the volcano and MA plots (sampled at random) to keep the report light.
+      - name: "--pvalue_bins"
+        type: integer
+        min: 2
+        default: 40
+        description: Number of bins of the p-value histogram.
+      - name: "--seed"
+        type: integer
+        default: 0
+        description: Random seed for sampling the non-significant genes.
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: template.html
+  - path: report.js
+  - path: /src/utils/setup_logger.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  # generated with test_data/test_data_script.sh
+  - path: test_data/overall
+    dest: test_data/overall
+  - path: test_data/per_cell_type
+    dest: test_data/per_cell_type
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: python
+        packages:
+          - numpy>=2
+          - pandas~=3.0
+      # plotly.js is inlined in the report, so the report works offline
+      - type: docker
+        env:
+          - PLOTLY_JS=/opt/plotly/plotly-cartesian.min.js
+        run: |
+          mkdir -p /opt/plotly && \
+          python -c "import urllib.request; urllib.request.urlretrieve('https://cdn.jsdelivr.net/npm/plotly.js-cartesian-dist-min@2.35.2/plotly-cartesian.min.js', '/opt/plotly/plotly-cartesian.min.js')" && \
+          echo "72409fd95b505d17772f2dd9bb81a8672ce6d5b61dcf61ba1fd8442c9ea3e180  /opt/plotly/plotly-cartesian.min.js" | sha256sum -c -
+    __merge__: /src/base/requirements/python_test_setup.yaml
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]
