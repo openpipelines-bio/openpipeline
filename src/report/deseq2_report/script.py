@@ -52,7 +52,6 @@ REPORT_FILES = [
     "theme-light.scss",
     "theme-dark.scss",
     "report.css",
-    "logo.html",
 ]
 
 
