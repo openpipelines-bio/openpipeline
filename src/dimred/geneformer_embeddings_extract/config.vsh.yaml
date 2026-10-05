@@ -1,0 +1,103 @@
+name: geneformer_embeddings_extract
+namespace: "dimred"
+scope: "public"
+description: |
+  Extract Geneformer cell embeddings from tokenized cells and store them in
+  `.obsm`.
+
+  Reads the rank value encodings written by `transform/geneformer_tokenize`,
+  runs the forward pass of a pretrained Geneformer model and stores one
+  embedding vector per cell. The forward pass uses a GPU when one is visible and
+  the CPU otherwise; the CPU is orders of magnitude slower, so only use it for
+  small datasets.
+
+  The model is a directory holding a pretrained Geneformer model, for example
+  `Geneformer-V2-316M` from https://huggingface.co/ctheodoris/Geneformer. Its
+  `--model_version` must match the one the cells were tokenized for.
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file with tokenized cells.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality from the input MuData file to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--obsm_input"
+        type: string
+        default: "geneformer_tokens"
+        description: "`.obsm` key holding the padded model input tokens."
+      - name: "--uns_input"
+        type: string
+        default: "geneformer_tokenize"
+        description: "`.uns` key holding the tokenizer settings written by `transform/geneformer_tokenize`."
+      - name: "--model"
+        type: file
+        required: true
+        description: Directory holding a pretrained Geneformer model.
+        example: Geneformer-V2-316M
+  - name: Model options
+    arguments:
+      - name: "--model_version"
+        type: string
+        default: "V2"
+        choices: ["V1", "V2"]
+        description: Geneformer model series of `--model`.
+      - name: "--emb_mode"
+        type: string
+        default: "cell"
+        choices: ["cell", "cls"]
+        description: |
+          `cell` averages the gene embeddings of a cell, `cls` takes the
+          embedding of the `<cls>` token, which only V2 models have.
+      - name: "--emb_layer"
+        type: integer
+        default: 0
+        choices: [-1, 0]
+        description: |
+          Layer to take the embeddings from: 0 for the last layer, -1 for the
+          second to last layer.
+      - name: "--forward_batch_size"
+        type: integer
+        default: 32
+        min: 1
+        description: Number of cells per forward pass. Lower it when the GPU runs out of memory.
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--obsm_output"
+        type: string
+        default: "X_geneformer"
+        description: "`.obsm` key for the cell embeddings."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3
+  - path: /resources_test/geneformer
+engines:
+  - type: docker
+    __merge__: [/src/base/geneformer_engine.yaml, /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, highmem, middisk, gpu]
