@@ -1,0 +1,52 @@
+# Shared docker engine for the components that import the geneformer package
+# (transform/geneformer_tokenize, dimred/geneformer_embeddings_extract).
+#
+# Geneformer is installed from the HuggingFace repository at a pinned commit,
+# with --no-deps; the python packages below are its own requirements.txt,
+# needed because `import geneformer` imports every submodule (classifier,
+# mtl_classifier, in_silico_perturber, ...).
+#
+# The sed after the install makes EmbExtractor device-agnostic: upstream
+# hardcodes "cuda" in the forward loop (emb_extractor.py) while the model
+# loader already falls back to CPU (perturber_utils.py), so on a CPU-only node
+# the model loads and the first minibatch fails. The trailing `! grep` fails the
+# image build when upstream adds a "cuda" literal the sed does not cover, and
+# the final grep fails it when the patch did not land in the installed file. The
+# checkout is removed before locating the installed package, otherwise
+# `find_spec` resolves to the checkout and the installed copy stays unpatched.
+# build-essential is needed to build the accumulation-tree wheel of tdigest.
+# Comments cannot go inside the `run: |` block.
+image: pytorch/pytorch:2.5.1-cuda12.1-cudnn9-runtime
+setup:
+  - type: apt
+    packages:
+      - procps
+      - git
+      - git-lfs
+      - build-essential
+  - type: python
+    __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+    packages:
+      - transformers~=4.46.0
+      - datasets~=4.0
+      - bitsandbytes>=0.45.5
+      - hyperopt>=0.2
+      - loompy>=3.0
+      - matplotlib>=3.7
+      - optuna>=3.6
+      - optuna-integration>=3.6
+      - packaging>=23.0
+      - peft>=0.11.1
+      - pyarrow>=12.0
+      - pytz>=2023.0
+      - ray>=2.6
+      - scikit-learn>=1.2
+      - seaborn>=0.12
+      - setuptools>=65.6
+      - statsmodels>=0.14
+      - tdigest>=0.5.2
+      - tensorboard>=2.15
+      - tqdm>=4.65
+  - type: docker
+    run: |
+      GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/ctheodoris/Geneformer /opt/Geneformer && cd /opt/Geneformer && git checkout 1f7fbae4e469a5f4f1af8c111a529cfe1b3829f5 && git lfs pull --include "geneformer/*" && pip install --no-deps /opt/Geneformer && cd / && rm -rf /opt/Geneformer && GF_DIR=$(python -c "import os, importlib.util; print(os.path.dirname(importlib.util.find_spec('geneformer').origin))") && sed -i -e 's/device="cuda"/device=("cuda" if torch.cuda.is_available() else "cpu")/' -e 's/\.to("cuda")/.to("cuda" if torch.cuda.is_available() else "cpu")/' "$GF_DIR/emb_extractor.py" && ! grep -nP '"cuda"(?! if torch\.cuda\.is_available\(\))' "$GF_DIR/emb_extractor.py" && grep -q 'device=("cuda" if torch.cuda.is_available() else "cpu")' "$GF_DIR/emb_extractor.py"

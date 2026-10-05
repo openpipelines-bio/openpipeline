@@ -1,0 +1,99 @@
+name: rank_genes
+namespace: "perturbation"
+scope: "public"
+description: |
+  Rank knocked out genes by how far they move cells towards the healthy state.
+
+  Reads the similarity shift tables of `perturbation/similarity_shift`, one per
+  batch, and keeps the genes knocked out in more than `--min_coverage` cells.
+  Genes are ranked by the median of `--shift_column` over those cells. Each
+  gene's shifts are tested against a baseline of `--n_random` shifts drawn at
+  random from all knockouts, with a one-sided Wilcoxon rank-sum (Mann-Whitney U)
+  test for a larger shift.
+
+  `--output_ranked` holds every gene passing the coverage filter.
+  `--output_top` holds the top of that table: the first `--top_n` genes, or,
+  without `--top_n`, the uninterrupted run of genes from rank 1 with a p-value
+  below `--pvalue_cutoff`.
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        multiple: true
+        description: Similarity shift CSV files of `perturbation/similarity_shift`.
+        direction: input
+        required: true
+        example: [shift_batch_0001.csv, shift_batch_0002.csv]
+      - name: "--shift_column"
+        type: string
+        default: "shift_healthy"
+        description: Column holding the shift to rank by.
+  - name: Options
+    arguments:
+      - name: "--min_coverage"
+        type: integer
+        default: 350
+        min: 0
+        description: Keep only genes knocked out in more than this number of cells.
+      - name: "--n_random"
+        type: integer
+        default: 1000
+        min: 1
+        description: Number of shifts drawn at random from all knockouts as the baseline of the test.
+      - name: "--seed"
+        type: integer
+        default: 41
+        description: Seed of the random baseline.
+      - name: "--pvalue_cutoff"
+        type: double
+        default: 0.05
+        min: 0
+        max: 1
+        description: P-value below which a gene counts as significant for `--output_top`.
+      - name: "--top_n"
+        type: integer
+        required: false
+        min: 1
+        description: Put this number of top ranked genes in `--output_top`, regardless of their p-value.
+  - name: Outputs
+    arguments:
+      - name: "--output_ranked"
+        type: file
+        description: |
+          CSV file with the columns `rank`, `gene_id`, `gene_name`,
+          `median_shift`, `pvalue` and `n_cells`.
+        direction: output
+        required: true
+        example: ranked_genes.csv
+      - name: "--output_top"
+        type: file
+        description: CSV file with the top of `--output_ranked`.
+        direction: output
+        required: true
+        example: top_genes.csv
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, midmem, lowdisk]

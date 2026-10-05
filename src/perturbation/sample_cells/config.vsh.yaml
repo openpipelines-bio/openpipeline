@@ -1,0 +1,161 @@
+name: sample_cells
+namespace: "perturbation"
+scope: "public"
+description: |
+  Select the cells of an in silico perturbation: QC filter both groups, keep
+  the deeply sequenced disease cells, sample them and split them into batches.
+
+  Starts from the labels written by `perturbation/label_cells`. Cells that are
+  outliers in total counts, detected genes or the fraction of counts in the top
+  20 genes (more than `--nmads` median absolute deviations from the median), or
+  in mitochondrial fraction (`--nmads_mt`, or above `--pct_mt_max` percent), are
+  dropped from both groups. Disease cells must in addition express more than
+  `--min_genes` genes, since a knockout can only be scored for an expressed
+  gene. `--n_disease_cells` of those are sampled with `--seed`.
+
+  Writes three `.obs` columns:
+    --obs_output_selected  QC-passing healthy cells and the sampled disease cells,
+                           the cells the healthy and disease centroids are
+                           computed from
+    --obs_output_perturb   the sampled disease cells, the cells to perturb
+    --obs_output_batch     the batch of each cell to perturb, empty otherwise
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file with raw counts and the labels of `perturbation/label_cells`.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality from the input MuData file to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        required: false
+        description: "`.layers` key holding the raw counts. Defaults to `.X`."
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: |
+          `.var` column holding the gene symbols, used to find the mitochondrial
+          (`MT-`), ribosomal (`RPS`, `RPL`) and hemoglobin genes. Defaults to
+          the `.var` index. Without `--skip_qc`, the component fails when no
+          gene starts with `MT-`.
+      - name: "--obs_group"
+        type: string
+        default: "perturbation_group"
+        description: "`.obs` column holding the labels of `perturbation/label_cells`."
+      - name: "--disease_label"
+        type: string
+        default: "disease"
+        description: Label of the disease cells in `--obs_group`.
+      - name: "--healthy_label"
+        type: string
+        default: "healthy"
+        description: Label of the healthy cells in `--obs_group`.
+  - name: QC options
+    arguments:
+      - name: "--skip_qc"
+        type: boolean_true
+        description: Skip the outlier filter. The `--min_genes` filter still applies.
+      - name: "--nmads"
+        type: double
+        default: 5
+        min: 0
+        description: |
+          Number of median absolute deviations from the median above which a
+          cell is an outlier in log1p total counts, log1p detected genes or
+          percentage of counts in the top 20 genes.
+      - name: "--nmads_mt"
+        type: double
+        default: 3
+        min: 0
+        description: Same as `--nmads`, for the percentage of mitochondrial counts.
+      - name: "--pct_mt_max"
+        type: double
+        default: 8.0
+        min: 0
+        max: 100
+        description: Cells with a higher percentage of mitochondrial counts are outliers.
+      - name: "--min_genes"
+        type: integer
+        default: 5000
+        min: 0
+        description: Disease cells must express more than this number of genes.
+  - name: Sampling options
+    arguments:
+      - name: "--n_disease_cells"
+        type: integer
+        required: false
+        min: 1
+        description: Number of disease cells to sample. Defaults to all disease cells that pass the filters.
+      - name: "--seed"
+        type: integer
+        default: 45
+        description: Seed of the disease cell sampling.
+      - name: "--batch_size"
+        type: integer
+        default: 10
+        min: 1
+        description: Number of disease cells per batch.
+      - name: "--min_disease_cells"
+        type: integer
+        default: 1
+        min: 1
+        description: Fail when fewer disease cells are selected.
+      - name: "--min_healthy_cells"
+        type: integer
+        default: 1
+        min: 1
+        description: Fail when fewer healthy cells are selected.
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--obs_output_selected"
+        type: string
+        default: "perturbation_selected"
+        description: "Boolean `.obs` column marking the QC-passing healthy cells and the sampled disease cells."
+      - name: "--obs_output_perturb"
+        type: string
+        default: "perturbation_perturb"
+        description: "Boolean `.obs` column marking the sampled disease cells."
+      - name: "--obs_output_batch"
+        type: string
+        default: "perturbation_batch"
+        description: "`.obs` column with the batch of each sampled disease cell, an empty string for the other cells."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, midmem, lowdisk]

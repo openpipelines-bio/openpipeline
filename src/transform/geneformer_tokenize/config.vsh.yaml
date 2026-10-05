@@ -1,0 +1,146 @@
+name: geneformer_tokenize
+namespace: "transform"
+scope: "public"
+description: |
+  Tokenize raw counts into Geneformer rank value encodings and store them in
+  `.obsm`.
+
+  Each cell is normalized by its total counts and by the Geneformer gene
+  medians, its genes are ranked by the normalized value and the ranked gene
+  tokens are cropped to the model input size. For V2 models a `<cls>` and
+  `<eos>` token are added. The tokenization itself is done by the
+  `TranscriptomeTokenizer` of the geneformer package, so the encoding is
+  identical to the one the models were pretrained on.
+
+  The token matrix in `--obsm_output` is padded with the `<pad>` token, which is
+  what `dimred/geneformer_embeddings_extract` reads. The resolved Ensembl id and
+  the token of every gene are written to `.var`, and the tokenizer settings to
+  `.uns`, so that downstream steps can work in token space without the
+  geneformer dictionaries.
+
+  Geneformer needs Ensembl gene ids. They are read from `.var` (index or
+  `--var_gene_ids`) or, when only gene symbols are available, mapped from
+  `--gene_map`.
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file with raw counts.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality from the input MuData file to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_layer"
+        type: string
+        required: false
+        description: "`.layers` key holding the raw counts. Defaults to `.X`."
+      - name: "--var_gene_ids"
+        type: string
+        required: false
+        description: |
+          `.var` column holding the Ensembl gene ids. Defaults to the `.var`
+          index. Ignored when `--gene_map` is provided.
+      - name: "--sanitize_ensembl_ids"
+        type: boolean
+        default: true
+        description: Whether to remove version numbers from the Ensembl gene ids.
+      - name: "--allow_non_integer"
+        type: boolean_true
+        description: |
+          Accept a count matrix holding non-integer values. By default the
+          component fails on such a matrix, because it usually means the counts
+          were normalized, while Geneformer needs raw counts.
+  - name: Gene symbol mapping
+    description: |
+      Only needed when `.var` holds gene symbols but no Ensembl ids.
+    arguments:
+      - name: "--gene_map"
+        type: file
+        required: false
+        description: CSV file mapping gene symbols to Ensembl gene ids.
+        example: gene_map.csv
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: |
+          `.var` column holding the gene symbols to look up in `--gene_map`.
+          Defaults to the `.var` index.
+      - name: "--gene_map_symbol_column"
+        type: string
+        default: "gene_symbol"
+        description: Column of `--gene_map` holding the gene symbols.
+      - name: "--gene_map_ensembl_column"
+        type: string
+        default: "ensembl_id"
+        description: Column of `--gene_map` holding the Ensembl gene ids.
+  - name: Tokenization options
+    arguments:
+      - name: "--model_version"
+        type: string
+        default: "V2"
+        choices: ["V1", "V2"]
+        description: |
+          Geneformer model series the tokens are meant for. V1 uses the 30M
+          gene dictionaries, an input size of 2048 and no special tokens. V2
+          uses the 104M dictionaries, an input size of 4096 and a `<cls>` and
+          `<eos>` token.
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--obsm_output"
+        type: string
+        default: "geneformer_tokens"
+        description: |
+          `.obsm` key for the model input tokens: one row per cell, cropped to
+          the model input size and padded with the `<pad>` token.
+      - name: "--obsm_output_uncropped"
+        type: string
+        required: false
+        description: |
+          When set, also store the full ranked gene tokens of every cell in this
+          `.obsm` key, without cropping and without special tokens, padded with
+          the `<pad>` token. Needed by `perturbation/geneformer_virtual_cells`.
+      - name: "--var_output_gene_ids"
+        type: string
+        default: "geneformer_ensembl_id"
+        description: "`.var` column for the Ensembl id each gene was mapped to by the tokenizer."
+      - name: "--var_output_tokens"
+        type: string
+        default: "geneformer_token"
+        description: "`.var` column for the token of each gene, or -1 for genes outside the token dictionary."
+      - name: "--uns_output"
+        type: string
+        default: "geneformer_tokenize"
+        description: "`.uns` key for the tokenizer settings and the special token ids."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+  - path: /src/utils/set_var_index.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3
+engines:
+  - type: docker
+    __merge__: [/src/base/geneformer_engine.yaml, /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, midmem, middisk]
