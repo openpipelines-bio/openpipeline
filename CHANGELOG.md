@@ -28,6 +28,8 @@
 
 * `workflows/integration/geneformer_leiden`: added a workflow to embed cells with a pretrained Geneformer model, followed by neighbour calculations, leiden clustering and UMAP (PR #1243).
 
+* `workflows/perturbation/geneformer_insilico`: added a workflow to rank the single-gene knockouts that move disease cells towards the healthy state, scattered over batches of disease cells (PR #1245).
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).

@@ -1,0 +1,256 @@
+name: "geneformer_insilico"
+namespace: "workflows/perturbation"
+scope: "public"
+description: |
+  In silico single-gene knockout with Geneformer: which gene deletions move
+  disease cells towards the healthy state.
+
+  Starts from the output of `workflows/integration/geneformer_leiden`: raw
+  counts, the Geneformer embedding in `--obsm_embedding` and the clusterings.
+  The disease and healthy clusters are read off the UMAP of that run; they are
+  specific to one dataset and clustering, and cannot be derived.
+
+  Steps:
+    1. label the disease and healthy cells from one or two clusterings
+       (`perturbation/label_cells`)
+    2. QC filter, keep the deeply sequenced disease cells, sample them and
+       assign batches (`perturbation/sample_cells`)
+    3. compute the healthy and disease centroids of the embedding
+       (`perturbation/compute_centroids`)
+    4. tokenize the sampled disease cells and split them per batch
+    5. per batch: build the knockout virtual cells in token space, embed them
+       and score the cosine similarity shift towards both centroids
+    6. gather the batches and rank the genes (`perturbation/rank_genes`)
+
+  `--batch_size` sets the number of parallel branches. The Geneformer options
+  must match the ones used for the embedding in `--obsm_embedding`.
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Output of `workflows/integration/geneformer_leiden`, with raw counts.
+        example: dataset.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--layer"
+        type: string
+        required: false
+        description: Layer holding the raw counts. Defaults to `.X`.
+      - name: "--model"
+        type: file
+        required: true
+        description: Directory holding the pretrained Geneformer model used for `--obsm_embedding`.
+        example: Geneformer-V2-316M
+      - name: "--obsm_embedding"
+        type: string
+        default: "X_geneformer"
+        description: "`.obsm` slot holding the Geneformer embedding of the cells."
+  - name: Gene ids
+    arguments:
+      - name: "--var_gene_ids"
+        type: string
+        required: false
+        description: "`.var` column holding the Ensembl gene ids. Defaults to the `.var` index."
+      - name: "--sanitize_ensembl_ids"
+        type: boolean
+        default: true
+        description: Whether to remove version numbers from the Ensembl gene ids.
+      - name: "--gene_map"
+        type: file
+        required: false
+        description: CSV file mapping gene symbols to Ensembl gene ids, for data that only holds gene symbols.
+        example: gene_map.csv
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: |
+          `.var` column holding the gene symbols. Used for the mitochondrial,
+          ribosomal and hemoglobin genes of the QC, to name the knocked out
+          genes and to look up `--gene_map`. Defaults to the `.var` index.
+          Set it when the index holds Ensembl ids: without `--skip_qc` the run
+          fails when no gene starts with `MT-`.
+  - name: Cell labels
+    arguments:
+      - name: "--obs_cluster"
+        type: string
+        required: true
+        description: "`.obs` column holding the clustering the rules select from."
+        example: "geneformer_integration_leiden_1.0"
+      - name: "--obs_reference"
+        type: string
+        required: false
+        description: "`.obs` column holding a second clustering, used by the reference cluster rules."
+      - name: "--disease_clusters"
+        type: string
+        required: true
+        multiple: true
+        description: Values of `--obs_cluster` that select disease cells.
+        example: ["7"]
+      - name: "--disease_reference_clusters"
+        type: string
+        required: false
+        multiple: true
+        description: Values of `--obs_reference` the disease cells must also have.
+      - name: "--healthy_clusters"
+        type: string
+        required: true
+        multiple: true
+        description: Values of `--obs_cluster` that select healthy cells.
+        example: ["1"]
+      - name: "--healthy_reference_clusters"
+        type: string
+        required: false
+        multiple: true
+        description: Values of `--obs_reference` the healthy cells must also have.
+  - name: Cell selection
+    arguments:
+      - name: "--skip_qc"
+        type: boolean_true
+        description: Skip the outlier filter. The `--min_genes` filter still applies.
+      - name: "--nmads"
+        type: double
+        default: 5
+        description: Number of median absolute deviations beyond which a cell is a QC outlier.
+      - name: "--nmads_mt"
+        type: double
+        default: 3
+        description: Same as `--nmads`, for the percentage of mitochondrial counts.
+      - name: "--pct_mt_max"
+        type: double
+        default: 8.0
+        description: Cells with a higher percentage of mitochondrial counts are QC outliers.
+      - name: "--min_genes"
+        type: integer
+        default: 5000
+        description: Disease cells must express more than this number of genes.
+      - name: "--n_disease_cells"
+        type: integer
+        required: false
+        description: Number of disease cells to perturb. Defaults to all that pass the filters.
+      - name: "--sample_seed"
+        type: integer
+        default: 45
+        description: Seed of the disease cell sampling.
+      - name: "--batch_size"
+        type: integer
+        default: 10
+        min: 1
+        description: Number of disease cells per parallel branch.
+  - name: Perturbation options
+    arguments:
+      - name: "--top_n_genes"
+        type: integer
+        required: false
+        min: 1
+        description: |
+          Knock out only the first genes of the model input of each cell, in
+          rank order. Defaults to all genes of the model input.
+      - name: "--model_version"
+        type: string
+        default: "V2"
+        choices: ["V1", "V2"]
+        description: Geneformer model series of `--model`.
+      - name: "--emb_mode"
+        type: string
+        default: "cell"
+        choices: ["cell", "cls"]
+        description: Must match the embedding in `--obsm_embedding`.
+      - name: "--emb_layer"
+        type: integer
+        default: 0
+        choices: [-1, 0]
+        description: Must match the embedding in `--obsm_embedding`.
+      - name: "--forward_batch_size"
+        type: integer
+        default: 32
+        min: 1
+        description: Number of virtual cells per forward pass.
+  - name: Ranking options
+    arguments:
+      - name: "--shift_column"
+        type: string
+        default: "shift_healthy"
+        choices: ["shift_healthy", "shift_disease"]
+        description: Shift to rank the genes by.
+      - name: "--min_coverage"
+        type: integer
+        default: 350
+        description: Keep only genes knocked out in more than this number of cells.
+      - name: "--n_random"
+        type: integer
+        default: 1000
+        description: Number of random shifts in the baseline of the rank test.
+      - name: "--rank_seed"
+        type: integer
+        default: 41
+        description: Seed of the random baseline.
+      - name: "--pvalue_cutoff"
+        type: double
+        default: 0.05
+        description: P-value below which a gene counts as significant for `--output_top`.
+      - name: "--top_n"
+        type: integer
+        required: false
+        description: Put this number of top ranked genes in `--output_top`, regardless of their p-value.
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: |
+          The input with the labels and selection in `.obs` (`perturbation_*`)
+          and the centroids in `.uns["perturbation_centroids"]`.
+        example: output.h5mu
+      - name: "--output_ranked"
+        type: file
+        required: true
+        direction: output
+        description: Every gene passing the coverage filter, ranked.
+        example: ranked_genes.csv
+      - name: "--output_top"
+        type: file
+        required: true
+        direction: output
+        description: The top of `--output_ranked`.
+        example: top_genes.csv
+      - name: "--output_shifts"
+        type: file
+        required: true
+        multiple: true
+        direction: output
+        description: The similarity shift CSV of every batch.
+        example: shift_*.csv
+dependencies:
+  - name: perturbation/label_cells
+  - name: perturbation/sample_cells
+  - name: perturbation/compute_centroids
+  - name: filter/do_filter
+  - name: transform/geneformer_tokenize
+  - name: dataflow/split_h5mu
+  - name: perturbation/geneformer_virtual_cells
+  - name: dimred/geneformer_embeddings_extract
+  - name: perturbation/similarity_shift
+  - name: perturbation/rank_genes
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+  - type: file
+    path: /src/workflows/utils/
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/pbmc_1k_protein_v3
+  - path: /resources_test/geneformer
+runners:
+  - type: nextflow
