@@ -24,6 +24,8 @@
 
 * `dimred/geneformer_embeddings_extract`: added a component to extract Geneformer cell embeddings from tokenized cells into `.obsm`, on a GPU when available (PR #1242).
 
+* `workflows/integration/geneformer_leiden`: added a workflow to embed cells with a pretrained Geneformer model, followed by neighbour calculations, leiden clustering and UMAP (PR #1243).
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
