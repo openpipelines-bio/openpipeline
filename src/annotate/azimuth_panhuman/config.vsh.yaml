@@ -115,11 +115,9 @@ argument_groups:
         default: true
         description: |
           Whether to post-process the raw hierarchical predictions into
-          `azimuth_broad`, `azimuth_medium` and `azimuth_fine` label columns
-          with consistent granularity across cell types; `azimuth_broad`
-          replaces the raw `level_zero_labels` column in this case. If false,
-          only the raw hierarchical output columns (including
-          `level_zero_labels`) are added.
+          broad, medium and fine labels with consistent granularity across
+          cell types, stored in `--output_obs_predictions_broad`,
+          `--output_obs_predictions_medium` and `--output_obs_predictions_fine`.
 
   - name: Cell Ontology mapping
     description: |
