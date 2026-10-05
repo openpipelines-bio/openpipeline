@@ -31,7 +31,7 @@
 
 ## BUG FIXES
 
-* `differential_expression/deseq2`: fix a test passing the non-existent `--padj_threshold` argument instead of `--p_adj_threshold` (PR #xxxx).
+* `differential_expression/deseq2`: fix a test passing the non-existent `--padj_threshold` argument instead of `--p_adj_threshold` (PR #1238).
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
