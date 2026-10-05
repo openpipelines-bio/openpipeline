@@ -1,0 +1,107 @@
+name: similarity_shift
+namespace: "perturbation"
+scope: "public"
+description: |
+  Score how far each knockout moves a cell towards the healthy and the disease
+  centroid.
+
+  For every virtual cell, the cosine similarity of its embedding to the healthy
+  and to the disease centroid is compared to that of the cell it was made
+  from:
+
+    shift_healthy = cos(perturbed, healthy) - cos(original, healthy)
+    shift_disease = cos(perturbed, disease) - cos(original, disease)
+
+  A positive `shift_healthy` means the knockout moves the cell towards the
+  healthy state. The virtual cells come from
+  `perturbation/geneformer_virtual_cells` and
+  `dimred/geneformer_embeddings_extract`; the original cells and the centroids
+  from `dimred/geneformer_embeddings_extract` and
+  `perturbation/compute_centroids`.
+
+  The output is a CSV file with one row per virtual cell.
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: h5mu file with the embedded virtual cells.
+        direction: input
+        required: true
+        example: virtual_cells.h5mu
+      - name: "--original"
+        type: file
+        description: h5mu file with the embedded original cells and the centroids.
+        direction: input
+        required: true
+        example: original_cells.h5mu
+      - name: "--modality"
+        description: Which modality of both MuData files to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--obsm_input"
+        type: string
+        default: "X_geneformer"
+        description: "`.obsm` key holding the embeddings, in both files."
+      - name: "--obs_cell_id"
+        type: string
+        default: "perturbation_cell_id"
+        description: "`.obs` column of `--input` holding the original cell of each virtual cell."
+      - name: "--obs_gene_id"
+        type: string
+        default: "perturbation_gene_id"
+        description: "`.obs` column of `--input` holding the knocked out gene id."
+      - name: "--obs_gene_name"
+        type: string
+        default: "perturbation_gene_name"
+        description: "`.obs` column of `--input` holding the knocked out gene symbol."
+      - name: "--uns_centroids"
+        type: string
+        default: "perturbation_centroids"
+        description: "`.uns` key of `--original` holding the centroids, one row per group."
+      - name: "--healthy_label"
+        type: string
+        default: "healthy"
+        description: Row of the centroids holding the healthy centroid.
+      - name: "--disease_label"
+        type: string
+        default: "disease"
+        description: Row of the centroids holding the disease centroid.
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: |
+          CSV file with the columns `cell_id`, `gene_id`, `gene_name`,
+          `cos_original_healthy`, `cos_original_disease`,
+          `cos_perturbed_healthy`, `cos_perturbed_disease`, `shift_healthy`
+          and `shift_disease`.
+        direction: output
+        required: true
+        example: similarity_shift.csv
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, lowmem, lowdisk]

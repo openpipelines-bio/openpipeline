@@ -1,0 +1,125 @@
+name: geneformer_virtual_cells
+namespace: "perturbation"
+scope: "public"
+description: |
+  Create Geneformer single-gene knockout virtual cells in token space.
+
+  For every input cell, the genes of its model input (the gene tokens that
+  Geneformer sees, in rank order, or the first `--top_n_genes` of them) are
+  knocked out one at a time, as the deletion mode of Geneformer's
+  `InSilicoPerturber`. Each knockout becomes one virtual cell: the full ranked
+  gene token list of the cell without the knocked out gene, cropped to the
+  model input size and, for V2, wrapped in `<cls>` and `<eos>`.
+
+  Genes without a Geneformer token, and genes ranked below the model input,
+  are not knocked out: removing them leaves the model input unchanged, so
+  their similarity shift would be numerical noise. Unlike `InSilicoPerturber`,
+  which deletes from the already cropped input, a knockout here moves the next
+  gene into the model input, as tokenizing the cell with the gene at zero
+  counts would.
+
+  This is the same rank value encoding as tokenizing the cell with the gene set
+  to zero counts: the tokenizer divides all counts of a cell by the same total,
+  so removing one gene leaves the order of the others unchanged. Working in
+  token space avoids building and re-tokenizing a count matrix per knockout. It
+  needs the uncropped tokens, because a knockout above the crop moves the next
+  gene into the model input.
+
+  Expects the output of `transform/geneformer_tokenize` run with
+  `--obsm_output_uncropped`. The output holds one modality with the virtual
+  cells and their tokens, ready for `dimred/geneformer_embeddings_extract`.
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file with the cells to perturb.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality from the input MuData file to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--obsm_input_uncropped"
+        type: string
+        default: "geneformer_tokens_uncropped"
+        description: "`.obsm` key holding the uncropped ranked tokens of `transform/geneformer_tokenize`."
+      - name: "--uns_input"
+        type: string
+        default: "geneformer_tokenize"
+        description: "`.uns` key holding the tokenizer settings of `transform/geneformer_tokenize`."
+      - name: "--var_tokens"
+        type: string
+        default: "geneformer_token"
+        description: "`.var` column holding the token of each gene, -1 for genes without one."
+      - name: "--var_gene_ids"
+        type: string
+        default: "geneformer_ensembl_id"
+        description: "`.var` column holding the Ensembl id of each gene, used to name the knockouts."
+      - name: "--var_gene_names"
+        type: string
+        required: false
+        description: "`.var` column holding the gene symbols. Defaults to the `.var` index."
+  - name: Options
+    arguments:
+      - name: "--top_n_genes"
+        type: integer
+        required: false
+        min: 1
+        description: |
+          Knock out only the first genes of the model input, in rank order.
+          Defaults to all genes of the model input.
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: |
+          Output h5mu file with one modality, named after `--modality`, holding
+          one observation per virtual cell.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--obsm_output"
+        type: string
+        default: "geneformer_tokens"
+        description: "`.obsm` key for the model input tokens of the virtual cells."
+      - name: "--obs_output_cell_id"
+        type: string
+        default: "perturbation_cell_id"
+        description: "`.obs` column for the input cell a virtual cell was made from."
+      - name: "--obs_output_gene_id"
+        type: string
+        default: "perturbation_gene_id"
+        description: "`.obs` column for the Ensembl id of the knocked out gene."
+      - name: "--obs_output_gene_name"
+        type: string
+        default: "perturbation_gene_name"
+        description: "`.obs` column for the symbol of the knocked out gene."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+test_resources:
+  - type: python_script
+    path: test.py
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, midmem, middisk]

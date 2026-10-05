@@ -1,0 +1,119 @@
+name: label_cells
+namespace: "perturbation"
+scope: "public"
+description: |
+  Label cells as `disease`, `healthy` or `unused` for an in silico
+  perturbation, from one or two clusterings.
+
+  A cell is labelled `disease` when its value in `--obs_cluster` is one of
+  `--disease_clusters` and, if `--disease_reference_clusters` is given, its
+  value in `--obs_reference` is one of those. The `healthy` rule works the same
+  way. All other cells are labelled `unused`. The two rules must not match the
+  same cell.
+
+  The cluster values are typically read off a UMAP of the clustered embedding
+  space, so they are specific to one dataset and one clustering run.
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author, maintainer ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file with the clusterings in `.obs`.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality from the input MuData file to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--obs_cluster"
+        type: string
+        required: true
+        description: "`.obs` column holding the clustering the rules select from."
+        example: "geneformer_leiden_0.5"
+      - name: "--obs_reference"
+        type: string
+        required: false
+        description: |
+          `.obs` column holding a second clustering. Required when
+          `--disease_reference_clusters` or `--healthy_reference_clusters` is set.
+        example: "harmony_integration_leiden_0.5"
+  - name: Disease rule
+    arguments:
+      - name: "--disease_clusters"
+        type: string
+        required: true
+        multiple: true
+        description: Values of `--obs_cluster` that select disease cells.
+        example: ["7"]
+      - name: "--disease_reference_clusters"
+        type: string
+        required: false
+        multiple: true
+        description: Values of `--obs_reference` the disease cells must also have.
+        example: ["1", "6"]
+  - name: Healthy rule
+    arguments:
+      - name: "--healthy_clusters"
+        type: string
+        required: true
+        multiple: true
+        description: Values of `--obs_cluster` that select healthy cells.
+        example: ["1"]
+      - name: "--healthy_reference_clusters"
+        type: string
+        required: false
+        multiple: true
+        description: Values of `--obs_reference` the healthy cells must also have.
+        example: ["2"]
+  - name: Options
+    arguments:
+      - name: "--min_cells_per_group"
+        type: integer
+        default: 1
+        min: 1
+        description: Fail when either rule selects fewer cells than this.
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--obs_output"
+        type: string
+        default: "perturbation_group"
+        description: "`.obs` column for the labels `disease`, `healthy` and `unused`."
+      - name: "--uns_output"
+        type: string
+        default: "perturbation_label_cells"
+        description: "`.uns` key for the rules that were applied and the number of cells per label."
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [singlecpu, lowmem, lowdisk]
