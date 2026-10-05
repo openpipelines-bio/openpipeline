@@ -36,6 +36,9 @@ par = {
     "umap_verbose": False,
     "output_obs_predictions": "azimuth_pred",
     "output_obs_probability": "azimuth_probability",
+    "output_obs_predictions_broad": "azimuth_broad",
+    "output_obs_predictions_medium": "azimuth_medium",
+    "output_obs_predictions_fine": "azimuth_fine",
     "output_obsm_embedding": "X_azimuth",
     "output_obsm_umap": "X_azimuth_umap",
     "output_compression": None,
@@ -178,13 +181,18 @@ def main(par):
     umap_dict = core_outputs["umap_dict"]
 
     logger.info("Writing annotations to output object")
-    # Only the final-level prediction and its confidence are renamed; the
-    # other hierarchical/refined label columns Azimuth adds keep their
-    # panhumanpy-assigned names.
+    # The final-level prediction, its confidence and the refined
+    # broad/medium/fine labels are renamed (the latter three only exist when
+    # --refine_labels is set; rename ignores absent columns). The other
+    # hierarchical label columns Azimuth adds keep their panhumanpy-assigned
+    # names.
     cells_meta_out = cells_meta_out.rename(
         columns={
             "final_level_labels": par["output_obs_predictions"],
             "final_level_confidence": par["output_obs_probability"],
+            "azimuth_broad": par["output_obs_predictions_broad"],
+            "azimuth_medium": par["output_obs_predictions_medium"],
+            "azimuth_fine": par["output_obs_predictions_fine"],
         }
     )
     for col in cells_meta_out.columns:

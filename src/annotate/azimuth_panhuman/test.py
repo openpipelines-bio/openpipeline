@@ -172,6 +172,12 @@ def test_model_version_v0_and_custom_outputs(run_component, random_h5mu_path):
             "my_pred",
             "--output_obs_probability",
             "my_probability",
+            "--output_obs_predictions_broad",
+            "my_broad",
+            "--output_obs_predictions_medium",
+            "my_medium",
+            "--output_obs_predictions_fine",
+            "my_fine",
             "--output_obsm_embedding",
             "my_embedding",
             "--output_obsm_umap",
@@ -194,6 +200,13 @@ def test_model_version_v0_and_custom_outputs(run_component, random_h5mu_path):
     assert "my_probability" in output_rna.obs, (
         "Probability was not stored under the custom obs key"
     )
+    for custom, original in [
+        ("my_broad", "azimuth_broad"),
+        ("my_medium", "azimuth_medium"),
+        ("my_fine", "azimuth_fine"),
+    ]:
+        assert custom in output_rna.obs, f"{custom} missing from .obs"
+        assert original not in output_rna.obs, f"{original} should be renamed"
     assert "final_level_labels" not in output_rna.obs
     assert "final_level_confidence" not in output_rna.obs
 

@@ -133,8 +133,10 @@ argument_groups:
         description: |
           One or more `.obs` column names (produced by this component,
           e.g. `azimuth_broad`, `azimuth_fine`, `level_zero_labels`) to map
-          to Cell Ontology terms. For each column `<col>`, a `<col>_CL`
-          column is added. If not provided, no Cell Ontology mapping is
+          to Cell Ontology terms. Use the original Azimuth column names, not
+          the names set with the `--output_obs_*` arguments. For each column
+          `<col>`, a `<col>_CL` column is added (also keeping the original
+          name). If not provided, no Cell Ontology mapping is
           performed.
         example: [azimuth_broad, azimuth_fine]
       - name: "--include_cl_id"
@@ -214,8 +216,8 @@ argument_groups:
         description: |
           In which `.obs` column to store the most granular ('final level')
           predicted cell type label. Azimuth also always adds several other
-          hierarchical/refined label columns (see `--output_mode` and
-          `--refine_labels`) whose names are not configurable.
+          hierarchical label columns (see `--output_mode`) whose names are
+          not configurable.
       - name: "--output_obs_probability"
         type: string
         default: "azimuth_probability"
@@ -223,6 +225,27 @@ argument_groups:
         description: |
           In which `.obs` column to store the (calibrated) confidence score
           of the `--output_obs_predictions` label.
+      - name: "--output_obs_predictions_broad"
+        type: string
+        default: "azimuth_broad"
+        required: false
+        description: |
+          In which `.obs` column to store the refined broad-granularity cell
+          type label. Only used if `--refine_labels` is set.
+      - name: "--output_obs_predictions_medium"
+        type: string
+        default: "azimuth_medium"
+        required: false
+        description: |
+          In which `.obs` column to store the refined medium-granularity cell
+          type label. Only used if `--refine_labels` is set.
+      - name: "--output_obs_predictions_fine"
+        type: string
+        default: "azimuth_fine"
+        required: false
+        description: |
+          In which `.obs` column to store the refined fine-granularity cell
+          type label. Only used if `--refine_labels` is set.
       - name: "--output_obsm_embedding"
         type: string
         default: "X_azimuth"
