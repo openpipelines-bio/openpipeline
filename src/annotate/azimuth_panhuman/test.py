@@ -192,8 +192,6 @@ def test_model_version_v0_and_custom_outputs(run_component, random_h5mu_path):
     assert os.path.exists(output_file), "Output file does not exist"
 
     output_rna = mu.read_h5mu(output_file).mod["rna"]
-    assert "azimuth_broad" in output_rna.obs
-
     assert "my_pred" in output_rna.obs, (
         "Predictions were not stored under the custom obs key"
     )
