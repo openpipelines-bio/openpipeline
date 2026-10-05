@@ -11,11 +11,11 @@ from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
-    "executable": "./target/docker/annotate/azimuth/azimuth",
+    "executable": "./target/docker/annotate/azimuth_panhuman/azimuth_panhuman",
     "resources_dir": "resources_test/",
     "cpus": 4,
     "memory_gb": 20,
-    "config": "src/annotate/azimuth/config.vsh.yaml",
+    "config": "src/annotate/azimuth_panhuman/config.vsh.yaml",
 }
 ## VIASH END
 
