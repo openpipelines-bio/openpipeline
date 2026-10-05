@@ -1,4 +1,6 @@
 import sys
+import tempfile
+from pathlib import Path
 
 import mudata as mu
 import pandas as pd
@@ -12,6 +14,7 @@ par = {
     "input_layer": None,
     "input_var_gene_names": "gene_symbol",
     "input_reference_gene_overlap": 100,
+    "model": None,
     "model_version": "v1",
     "eval_batch_size": 8192,
     "normalization_override": False,
@@ -49,11 +52,27 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 import panhumanpy as ph
+import panhumanpy.ANNotate_tools as ANNotate_tools
 import tensorflow as tf
 from panhumanpy.ANNotate_tools import InferenceTools, check_normalization
 
 # Currently the only annotation pipeline implemented by panhumanpy.
 ANNOTATION_PIPELINE = "supervised"
+
+
+def stage_model(model_path, model_version):
+    """Place the model where panhumanpy's loader looks for it, so it is not downloaded.
+
+    panhumanpy cannot be given a model path directly: it loads
+    <CACHE_DIR>/<model_version>/inference_model/inference_model.keras and only
+    downloads the weights when that file is missing. Point CACHE_DIR at a
+    temporary directory containing a symlink to the provided model.
+    """
+    cache_dir = Path(tempfile.mkdtemp())
+    model_dir = cache_dir / model_version / "inference_model"
+    model_dir.mkdir(parents=True)
+    (model_dir / "inference_model.keras").symlink_to(Path(model_path).resolve())
+    ANNotate_tools.CACHE_DIR = cache_dir
 
 
 def main(par):
@@ -62,6 +81,10 @@ def main(par):
         "GPU devices visible to TensorFlow: %s",
         gpu_devices if gpu_devices else "none, running on CPU",
     )
+
+    if par["model"]:
+        logger.info("Using provided model %s", par["model"])
+        stage_model(par["model"], par["model_version"])
 
     logger.info("Reading input data")
     input_mudata = mu.read_h5mu(par["input"])

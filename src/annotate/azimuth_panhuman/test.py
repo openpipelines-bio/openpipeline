@@ -205,6 +205,31 @@ def test_model_version_v0_and_custom_outputs(run_component, random_h5mu_path):
     assert "X_azimuth_umap" not in output_rna.obsm
 
 
+def test_provided_model_is_used_instead_of_download(
+    run_component, random_h5mu_path, tmp_path
+):
+    # A corrupt model can only make the run fail if the provided file is
+    # actually loaded; had panhumanpy downloaded the weights instead, the
+    # run would have succeeded.
+    fake_model = tmp_path / "fake_model.keras"
+    fake_model.write_text("not a keras model")
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_file,
+                "--input_var_gene_names",
+                "gene_symbol",
+                "--model",
+                str(fake_model),
+                "--output",
+                random_h5mu_path(),
+            ]
+        )
+    assert "Using provided model" in err.value.stdout.decode("utf-8")
+
+
 def test_fail_normalized_input(run_component, random_h5mu_path, write_mudata_to_file):
     output_file = random_h5mu_path()
 

@@ -57,8 +57,19 @@ argument_groups:
     description: |
       Arguments controlling the pre-trained Azimuth neural network. There is
       no reference/training step: the model is fixed and its weights are
-      downloaded automatically on first use.
+      downloaded automatically on first use, unless a local copy is
+      provided with `--model`.
     arguments:
+      - name: "--model"
+        type: file
+        required: false
+        example: panhumanpy_inference_model_v1.keras
+        description: |
+          Path to a pre-downloaded Azimuth inference model (a `.keras` file,
+          as published on Zenodo: https://zenodo.org/records/20401417). When
+          provided, the model is used instead of downloading it, for
+          offline component run. The file must match `--model_version`. 
+          If not provided, the weights are downloaded automatically on first use.
       - name: "--model_version"
         type: string
         default: "v1"
