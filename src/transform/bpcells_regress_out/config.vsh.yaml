@@ -91,6 +91,7 @@ argument_groups:
           If provided, the regressed data is scaled and a PCA is computed with BPCells,
           without loading the regressed data into memory. The resulting embedding is stored in this .obsm slot.
           Scaling centers each gene and divides it by its standard deviation, as in transform/scale.
+          At least one of --output_layer or --obsm_pca_output must be provided.
       - name: "--varm_pca_output"
         type: string
         default: "regressed_pca_loadings"
