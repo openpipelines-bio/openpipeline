@@ -1,6 +1,6 @@
 name: azimuth_seurat
 namespace: annotate
-scope: "public"
+scope: "private"
 description: |
   Reference-based cell type annotation using Seurat's Azimuth (RunAzimuth()).
   Unlike annotate/azimuth (which uses a single fixed pan-human neural network
