@@ -181,22 +181,23 @@ def main(par):
     umap_dict = core_outputs["umap_dict"]
 
     logger.info("Writing annotations to output object")
-    # The final-level prediction, its confidence and the refined
-    # broad/medium/fine labels are renamed (the latter three only exist when
-    # --refine_labels is set; rename ignores absent columns). The other
-    # hierarchical label columns Azimuth adds keep their panhumanpy-assigned
-    # names.
-    cells_meta_out = cells_meta_out.rename(
-        columns={
-            "final_level_labels": par["output_obs_predictions"],
-            "final_level_confidence": par["output_obs_probability"],
-            "azimuth_broad": par["output_obs_predictions_broad"],
-            "azimuth_medium": par["output_obs_predictions_medium"],
-            "azimuth_fine": par["output_obs_predictions_fine"],
-        }
-    )
-    for col in cells_meta_out.columns:
-        input_adata.obs[col] = cells_meta_out[col].values
+    # Map the Azimuth output columns to their parametrized .obs column names.
+    # Only these columns are copied to the input data, so no other existing
+    # .obs columns can be overwritten.
+    output_obs_columns = {
+        "final_level_labels": par["output_obs_predictions"],
+        "final_level_confidence": par["output_obs_probability"],
+    }
+    if par["refine_labels"]:
+        output_obs_columns.update(
+            {
+                "azimuth_broad": par["output_obs_predictions_broad"],
+                "azimuth_medium": par["output_obs_predictions_medium"],
+                "azimuth_fine": par["output_obs_predictions_fine"],
+            }
+        )
+    for azimuth_col, output_col in output_obs_columns.items():
+        input_adata.obs[output_col] = cells_meta_out[azimuth_col].values
 
     if par["extract_embeddings"] and "azimuth_embed" in embeddings_dict:
         input_adata.obsm[par["output_obsm_embedding"]] = embeddings_dict[
