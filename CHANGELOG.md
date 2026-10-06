@@ -16,7 +16,7 @@
 
 * `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
 
-* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR#1104).
+* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR #1104, #1236).
 
 * `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in a source MuData file into a modality in the input MuData file (PR #1166).
 
