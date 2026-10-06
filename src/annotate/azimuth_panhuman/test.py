@@ -50,21 +50,17 @@ def test_simple_execution(run_component, random_h5mu_path):
 
     output_rna = output_mudata.mod["rna"]
 
-    # Note: "level_zero_labels" is replaced by "azimuth_broad" once label
-    # refinement runs (the default), rather than existing alongside it.
-    # "final_level_labels"/"final_level_confidence" are renamed to the
-    # --output_obs_predictions/--output_obs_probability defaults.
+    # Only the parametrized columns are added to .obs (the input has none):
+    # the final-level prediction/confidence and the refined broad/medium/fine
+    # labels, under their --output_obs_* default names.
     expected_obs_cols = {
-        "full_hierarchical_labels",
         "azimuth_pred",
         "azimuth_probability",
         "azimuth_broad",
         "azimuth_medium",
         "azimuth_fine",
     }
-    assert expected_obs_cols.issubset(output_rna.obs.keys()), (
-        f"Missing expected .obs columns: {expected_obs_cols - set(output_rna.obs.keys())}"
-    )
+    assert set(output_rna.obs.columns) == expected_obs_cols
 
     predictions = output_rna.obs["azimuth_broad"]
     assert not all(predictions.isna()), "Not all predictions should be NA"
@@ -80,7 +76,7 @@ def test_simple_execution(run_component, random_h5mu_path):
     assert output_rna.obsm["X_azimuth_umap"].shape == (output_rna.n_obs, 2)
 
 
-def test_no_refine_detailed_output_and_cell_ontology(run_component, random_h5mu_path):
+def test_no_refine_labels_and_no_embeddings(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
     run_component(
@@ -91,11 +87,6 @@ def test_no_refine_detailed_output_and_cell_ontology(run_component, random_h5mu_
             "gene_symbol",
             "--refine_labels",
             "false",
-            "--output_mode",
-            "detailed",
-            "--map_to_cl",
-            "level_zero_labels",
-            "--include_cl_id",
             "--extract_embeddings",
             "false",
             "--umap_embeddings",
@@ -109,17 +100,8 @@ def test_no_refine_detailed_output_and_cell_ontology(run_component, random_h5mu_
 
     output_rna = mu.read_h5mu(output_file).mod["rna"]
 
-    # refine_labels=false: no azimuth_broad/medium/fine columns
-    assert "azimuth_broad" not in output_rna.obs
-    assert "azimuth_medium" not in output_rna.obs
-    assert "azimuth_fine" not in output_rna.obs
-
-    # output_mode=detailed: per-level label columns are present
-    assert "level_1_labels" in output_rna.obs
-
-    # map_to_cl + include_cl_id: CL columns derived from level_zero_labels
-    assert "level_zero_labels_CL" in output_rna.obs
-    assert "level_zero_labels_CL_ID" in output_rna.obs
+    # refine_labels=false: no broad/medium/fine columns
+    assert set(output_rna.obs.columns) == {"azimuth_pred", "azimuth_probability"}
 
     # extract_embeddings=false / umap_embeddings=false: no obsm entries added
     assert "X_azimuth" not in output_rna.obsm
@@ -198,15 +180,16 @@ def test_model_version_v0_and_custom_outputs(run_component, random_h5mu_path):
     assert "my_probability" in output_rna.obs, (
         "Probability was not stored under the custom obs key"
     )
-    for custom, original in [
-        ("my_broad", "azimuth_broad"),
-        ("my_medium", "azimuth_medium"),
-        ("my_fine", "azimuth_fine"),
-    ]:
+    for custom in ["my_broad", "my_medium", "my_fine"]:
         assert custom in output_rna.obs, f"{custom} missing from .obs"
-        assert original not in output_rna.obs, f"{original} should be renamed"
-    assert "final_level_labels" not in output_rna.obs
-    assert "final_level_confidence" not in output_rna.obs
+    # No columns stored under the default names
+    assert set(output_rna.obs.columns) == {
+        "my_pred",
+        "my_probability",
+        "my_broad",
+        "my_medium",
+        "my_fine",
+    }
 
     assert "my_embedding" in output_rna.obsm, (
         "Embeddings were not stored under the custom obsm key"

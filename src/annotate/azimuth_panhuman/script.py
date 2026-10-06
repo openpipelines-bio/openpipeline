@@ -19,10 +19,7 @@ par = {
     "eval_batch_size": 8192,
     "normalization_override": False,
     "norm_check_batch_size": 100,
-    "output_mode": "minimal",
     "refine_labels": True,
-    "map_to_cl": None,
-    "include_cl_id": False,
     "extract_embeddings": True,
     "umap_embeddings": True,
     "umap_n_neighbors": 30,
@@ -158,10 +155,13 @@ def main(par):
         eval_batch_size=par["eval_batch_size"],
         normalization_override=par["normalization_override"],
         norm_check_batch_size=par["norm_check_batch_size"],
-        output_mode=par["output_mode"],
+        # Only the columns whitelisted below are stored, so the extra columns
+        # added by output_mode="detailed" or Cell Ontology mapping would be
+        # discarded anyway.
+        output_mode="minimal",
         refine_labels=par["refine_labels"],
-        map_to_cl=par["map_to_cl"],
-        include_cl_id=par["include_cl_id"],
+        map_to_cl=None,
+        include_cl_id=False,
         extract_embeddings=par["extract_embeddings"],
         umap_embeddings=par["umap_embeddings"],
         n_neighbors=par["umap_n_neighbors"],
