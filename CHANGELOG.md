@@ -6,6 +6,8 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of `boolean_false` (PR #1216).
 
+* `transform/bpcells_regress_out`: add a an `--output_layer_compression` argument to optionally set a gzip level (1-9). The `--output_compression` argument was removed, the resulting file maintains the same level of compression as the input file (PR #1237)
+
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -20,12 +22,17 @@
 
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
+* `transform/regress_out`, `transform/bpcells_regress_out`: add `--var_input` to only regress out the genes selected by a boolean `.var` column (e.g. highly variable genes) (PR #1237).
+
+* `transform/bpcells_regress_out`: add an optional PCA on the regressed data, enabled by `--obsm_pca_output`. The PCA is computed with BPCells while streaming from disk, so the dense regressed matrix is never held in memory (PR #1237).
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
 
+* `transform/bpcells_regress_out`: improve resource usage by reading the input lazily from disk and streaming the regressed values straight to the output, so the full MuData and dense result are not held in memory (PR #1237).
 
 ## BUG FIXES
 
