@@ -111,25 +111,25 @@ engines:
   - type: docker
     image: rocker/r2u:24.04
     setup:
-      - type: docker
-        env: 
-          - PIP_BREAK_SYSTEM_PACKAGES=1
-          - RETICULATE_PYTHON=/usr/bin/python
       - type: apt
-        packages: [ libhdf5-dev, python3, python3-pip, python3-dev, python-is-python3 ]
+        packages: [ libhdf5-dev ]
       - type: r
-        cran: [ reticulate ]
-        # Until viash r requirements supports passing secrets
-        # --mount only applies to ONE single docker RUN instruction  
-        # github: bnprks/BPCells/r
+        bioc: [ rhdf5 ]
+        # anndataR is pinned because the script uses its internal element
+        # readers and writers, which can change between releases
+        github: [ bnprks/BPCells/r, scverse/anndataR@v1.2.2 ]
+    test_setup:
       - type: docker
-        run:
-          - --mount=type=secret,id=GITHUB_TOKEN,env=GTIHUB_TOKEN
-          - Rscript -e 'options(warn = 2); remotes::install_github(c("bnprks/BPCells/r"), repos = "https://cran.rstudio.com")'
+        env:
+          - PIP_BREAK_SYSTEM_PACKAGES=1
+      - type: apt
+        packages: [ python3, python3-pip, python3-dev, python-is-python3, git ]
       - type: python
         user: true
-        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+        __merge__:
+          - /src/base/requirements/anndata_mudata.yaml
+          - /src/base/requirements/viashpy.yaml
+          - /src/base/requirements/openpipeline_testutils.yaml
 runners:
   - type: executable
   - type: nextflow
