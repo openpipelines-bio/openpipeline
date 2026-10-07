@@ -22,22 +22,32 @@ argument_groups:
         alternatives: [-i]
         type: file
         description: |
-          The input (query) data to be annotated. Should be a .h5mu file
-          containing raw (unnormalized) counts in `.X`.
+          The input (query) data to be annotated. Should be an .rds file
+          containing a Seurat object with raw (unnormalized) counts in the
+          layer specified by `--input_layer`.
         direction: input
         required: true
-        example: input.h5mu
-      - name: "--modality"
-        description: Which modality to process.
-        type: string
-        default: "rna"
-        required: false
+        example: input.rds
       - name: "--assay"
         type: string
         default: "RNA"
         description: |
-          Name of the Seurat assay to create from the input modality, and
-          to run the annotation on.
+          Name of the Seurat assay in the input object to run the annotation on.
+      - name: "--input_layer"
+        type: string
+        default: "counts"
+        description: |
+          Layer of `--assay` containing the raw (unnormalized) counts.
+          RunAzimuth() normalizes these internally using SCTransform.
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          Column in the feature metadata of `--assay` containing gene symbols.
+          If not provided, the feature names of the assay are used. Azimuth
+          references use gene symbols; when the query features are Ensembl IDs,
+          Azimuth converts them using a homolog table downloaded at runtime.
+        example: gene_symbol
 
   - name: Reference
     description: |
@@ -99,39 +109,44 @@ argument_groups:
     arguments:
       - name: "--output"
         type: file
-        description: Output h5mu file.
+        description: |
+          Output .rds file containing the input Seurat object, extended with
+          the Azimuth results: `predicted.<level>`, `predicted.<level>.score`
+          and `mapping.score` columns in the cell metadata, the reference
+          projected UMAP (`--umap_name`) and `integrated_dr` reductions, and a
+          `prediction.score.<level>` assay per annotation level (plus an
+          `impADT` assay when `--do_adt` is set).
         direction: output
-        example: output.h5mu
-    __merge__: [., /src/base/h5_compression_argument.yaml]
+        required: true
+        example: output.rds
+      - name: "--output_compression"
+        type: string
+        choices: [gzip, bzip2, xz, none]
+        default: gzip
+        description: Compression used when writing the output .rds file.
 
 resources:
   - type: r_script
     path: script.R
 
 test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
+  - type: r_script
+    path: test.R
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.rds
 
 engines:
   - type: docker
     image: rocker/r2u:24.04
     setup:
-      - type: docker
-        env:
-          - RETICULATE_PYTHON=/usr/bin/python
-          - PIP_BREAK_SYSTEM_PACKAGES=1
       - type: apt
-        packages: [ libhdf5-dev, libgeos-dev, hdf5-tools, python3, python3-pip, python3-dev, python-is-python3 ]
+        packages: [ libhdf5-dev, libgeos-dev ]
       - type: r
-        cran: [ anndata, hdf5r, Seurat, SeuratObject, remotes ]
-        bioc: [ anndataR, rhdf5 ]
+        cran: [ hdf5r, Seurat, SeuratObject, remotes ]
       - type: r
         github: [ satijalab/azimuth@master ]
-      - type: python
-        user: true
-        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]
+    test_setup:
+      - type: r
+        cran: [ testthat, processx ]
 
 runners:
   - type: executable
