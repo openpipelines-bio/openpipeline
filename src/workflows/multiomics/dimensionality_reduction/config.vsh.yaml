@@ -86,7 +86,6 @@ argument_groups:
   - __merge__: /src/base/device_type_argument.yaml
 dependencies:
   - name: wrappers/preprocessing/pca
-    repository: openpipeline_rapids
     alias: pca_cpu_or_gpu
   - name: preprocessing/filter_genes
     repository: openpipeline_rapids

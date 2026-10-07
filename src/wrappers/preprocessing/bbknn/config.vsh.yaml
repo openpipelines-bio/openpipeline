@@ -1,0 +1,140 @@
+name: bbknn
+namespace: "wrappers/preprocessing"
+scope: "private"
+description: |
+  Compute a batch-balanced nearest-neighbor graph of observations, running
+  either the GPU (rapids-singlecell) or the CPU (bbknn) variant of
+  bbknn, selected with --device_type.
+
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        direction: input
+        description: Input h5mu file.
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        default: "rna"
+        description: Which modality from the input MuData file to process.
+      - name: "--obsm_input"
+        type: string
+        default: "X_pca"
+        description: Which .obsm slot to use as a starting embedding (use_rep).
+      - name: "--batch_key"
+        type: string
+        required: true
+        description: |
+          Which .obs column holds the batch assignment. Neighbors are searched
+          within each batch separately and then merged.
+
+  - __merge__: /src/base/device_type_argument.yaml
+
+  - name: Outputs
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Output h5mu file containing the found neighbors.
+        example: output.h5mu
+      - name: "--uns_output"
+        type: string
+        default: "neighbors"
+        description: In which .uns slot to store the neighbor graph metadata.
+      - name: "--obsp_distances"
+        type: string
+        default: "distances"
+        description: In which .obsp slot to store the distance matrix between the resulting neighbors.
+      - name: "--obsp_connectivities"
+        type: string
+        default: "connectivities"
+        description: In which .obsp slot to store the connectivities matrix between the resulting neighbors.
+
+  - name: Options
+    arguments:
+      - name: "--neighbors_within_batch"
+        type: integer
+        default: 3
+        min: 1
+        description: |
+          How many top neighbors to report for each batch. Total number of
+          neighbors per cell is this value times the number of batches.
+      - name: "--n_pcs"
+        type: integer
+        required: false
+        min: 1
+        description: |
+          Number of dimensions of the `--obsm_input` representation to use.
+          If not set, all available dimensions are used.
+      - name: "--trim"
+        type: integer
+        required: false
+        min: 1
+        description: |
+          Trim the neighbors of each cell to these many top connectivities.
+          May help with population independence and improve the tidiness of
+          clustering. If not set, defaults to ten times the total number of
+          neighbors per cell.
+
+  - name: rapids-singlecell options
+    description: Exposed only by the GPU (rapids-singlecell) variant (--device_type gpu).
+    arguments:
+      - name: "--overwrite"
+        type: boolean
+        default: false
+        description: |
+          Allow overwriting the .uns/.obsp output slots if they already exist.
+      - name: "--metric"
+        type: string
+        default: "euclidean"
+        description: The distance metric to use.
+        choices: [
+          "l2", "chebyshev", "manhattan", "taxicab", "correlation",
+          "inner_product", "euclidean", "canberra", "lp", "minkowski",
+          "cosine", "jensenshannon", "linf", "cityblock", "l1", "haversine",
+          "sqeuclidean", "hellinger", "jaccard"
+        ]
+      - name: "--algorithm"
+        type: string
+        default: "brute"
+        choices: [ "brute", "cagra", "ivfflat", "ivfpq", "mg_ivfflat", "mg_ivfpq" ]
+        description: |
+          The KNN query algorithm to use (provided by cuVS).
+          See https://docs.rapids.ai/api/cuvs/stable/ for details.
+      - name: "--random_state"
+        type: integer
+        default: 0
+        min: 0
+        description: A random seed.
+
+dependencies:
+  - name: preprocessing/bbknn
+    repository: openpipeline_rapids
+    alias: bbknn_gpu
+  - name: neighbors/bbknn
+    alias: bbknn_cpu
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_gpu_wf
+  - path: /resources_test/pbmc_1k_protein_v3
+
+runners:
+  - type: nextflow

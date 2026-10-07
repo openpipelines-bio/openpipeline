@@ -61,6 +61,26 @@ info:
       entrypoint: test_gpu_wf
     - component: workflows/integration/harmony_leiden
       entrypoint: test_gpu_wf
+    - component: wrappers/preprocessing/normalize_total
+      entrypoint: test_gpu_wf
+    - component: wrappers/preprocessing/log1p
+      entrypoint: test_gpu_wf
+    - component: wrappers/preprocessing/scale
+      entrypoint: test_gpu_wf
+    - component: wrappers/preprocessing/highly_variable_genes
+      entrypoint: test_gpu_wf
+    - component: wrappers/preprocessing/pca
+      entrypoint: test_gpu_wf
+    - component: wrappers/preprocessing/neighbors
+      entrypoint: test_gpu_wf
+    - component: wrappers/preprocessing/harmony_integrate
+      entrypoint: test_gpu_wf
+    - component: wrappers/preprocessing/bbknn
+      entrypoint: test_gpu_wf
+    - component: wrappers/tools/leiden
+      entrypoint: test_gpu_wf
+    - component: wrappers/tools/umap
+      entrypoint: test_gpu_wf
 
 config_mods: |
   .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}

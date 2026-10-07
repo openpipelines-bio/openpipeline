@@ -114,13 +114,10 @@ test_resources:
   - path: /resources_test/pbmc_1k_protein_v3
 dependencies:
   - name: wrappers/tools/leiden
-    repository: openpipeline_rapids
     alias: leiden_cpu_or_gpu
   - name: wrappers/tools/umap
-    repository: openpipeline_rapids
     alias: umap_cpu_or_gpu
   - name: wrappers/preprocessing/bbknn
-    repository: openpipeline_rapids
     alias: bbknn_cpu_or_gpu
   - name: metadata/move_obsm_to_obs 
 runners:

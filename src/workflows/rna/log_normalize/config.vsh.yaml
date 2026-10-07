@@ -46,10 +46,8 @@ argument_groups:
   - __merge__: /src/base/device_type_argument.yaml
 dependencies:
   - name: wrappers/preprocessing/normalize_total
-    repository: openpipeline_rapids
     alias: normalize_total_cpu_or_gpu
   - name: wrappers/preprocessing/log1p
-    repository: openpipeline_rapids
     alias: log1p_cpu_or_gpu
   - name: transform/delete_layer
 resources:

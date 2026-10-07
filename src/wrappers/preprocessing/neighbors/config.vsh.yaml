@@ -1,0 +1,132 @@
+name: neighbors
+namespace: "wrappers/preprocessing"
+scope: "private"
+description: |
+  Compute a nearest-neighbor graph of observations, running either the GPU
+  (rapids-singlecell) or the CPU (scanpy) variant of neighbors, selected
+  with --device_type.
+
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        direction: input
+        description: Input h5mu file.
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        default: "rna"
+        description: Which modality from the input MuData file to process.
+      - name: "--obsm_input"
+        type: string
+        default: "X_pca"
+        description: Which .obsm slot to use as a starting embedding (use_rep).
+
+  - __merge__: /src/base/device_type_argument.yaml
+
+  - name: Outputs
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Output h5mu file containing the found neighbors.
+        example: output.h5mu
+      - name: "--uns_output"
+        type: string
+        default: "neighbors"
+        description: In which .uns slot to store the neighbor graph metadata.
+      - name: "--obsp_distances"
+        type: string
+        default: "distances"
+        description: In which .obsp slot to store the distance matrix between the resulting neighbors.
+      - name: "--obsp_connectivities"
+        type: string
+        default: "connectivities"
+        description: In which .obsp slot to store the connectivities matrix between the resulting neighbors.
+
+  - name: Options
+    arguments:
+      - name: "--num_neighbors"
+        type: integer
+        default: 15
+        description: |
+          The size of the local neighborhood (in terms of number of
+          neighboring data points) used for manifold approximation. Larger
+          values result in more global views of the manifold, while smaller
+          values result in more local data being preserved. In general
+          values should be in the range 2 to 100.
+      - name: "--metric"
+        type: string
+        default: "euclidean"
+        choices: [
+          "euclidean", "l1", "l2", "manhattan", "cityblock", "cosine",
+          "correlation", "chebyshev", "canberra", "minkowski", "sqeuclidean",
+          "jaccard"
+        ]
+        description: |
+          The distance metric to use. Restricted to the metrics supported by
+          both the CPU (scanpy) and GPU (rapids-singlecell) backends, so the
+          value is valid regardless of --device_type. Each backend supports
+          further metrics on its own, but only this common set is exposed here
+          to keep the two variants interchangeable.
+      - name: "--random_state"
+        type: integer
+        default: 0
+        description: A random seed.
+
+  - name: rapids-singlecell options
+    description: Exposed only by the GPU (rapids-singlecell) variant (--device_type gpu).
+    arguments:
+      - name: "--n_pcs"
+        type: integer
+        required: false
+        description: |
+          Number of dimensions of the `--obsm_input` representation to use. If
+          not set, all available dimensions are used.
+      - name: "--algorithm"
+        type: string
+        default: "brute"
+        choices: [ "brute", "cagra", "ivfflat", "ivfpq", "nn_descent" ]
+        description: |
+          The KNN query algorithm to use (provided by cuVS).
+          See https://docs.rapids.ai/api/cuvs/stable/ for details.
+      - name: "--method"
+        type: string
+        default: "umap"
+        choices: [ "umap", "gauss", "jaccard" ]
+        description: |
+          Method for computing connectivities. 'umap' uses
+          the UMAP fuzzy simplicial set, 'gauss' uses an adaptive Gaussian
+          kernel, 'jaccard' uses the PhenoGraph Jaccard index.
+
+dependencies:
+  - name: preprocessing/neighbors
+    repository: openpipeline_rapids
+    alias: neighbors_gpu
+  - name: neighbors/find_neighbors
+    alias: neighbors_cpu
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_gpu_wf
+  - path: /resources_test/pbmc_1k_protein_v3
+
+runners:
+  - type: nextflow

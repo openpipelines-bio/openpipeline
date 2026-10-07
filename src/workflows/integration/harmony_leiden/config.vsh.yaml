@@ -123,7 +123,6 @@ argument_groups:
   - __merge__: /src/base/device_type_argument.yaml
 dependencies:
   - name: wrappers/preprocessing/harmony_integrate
-    repository: openpipeline_rapids
     alias: harmony_integrate_cpu_or_gpu
   - name: workflows/multiomics/neighbors_leiden_umap
   - name: convert/from_tiledb_to_h5mu
