@@ -40,13 +40,8 @@ if (!par$input_layer %in% Layers(obj[[par$assay]])) {
   )
 }
 
-# RunAzimuth() cannot be run on the input object directly: when the query
-# feature names are not of the same type as the reference's (e.g. Ensembl
-# IDs vs. gene symbols), its internal ConvertGeneNames() step rebuilds the
-# object from the "counts" layer of the "RNA" assay only, discarding all
-# other assays, layers, graphs, etc. Instead, run Azimuth on a minimal query
-# object containing just the raw counts, and transfer the results back onto
-# the original object afterwards.
+# Run Azimuth on a minimal query object containing just the raw counts,
+# and transfer the results back onto the original object afterwards.
 cat("Creating query object from layer '", par$input_layer, "' of assay '",
   par$assay, "'\n",
   sep = ""
@@ -136,5 +131,9 @@ for (assay_name in setdiff(Assays(query), "RNA")) {
 }
 
 cat("Writing output file\n")
-compress <- if (par$output_compression == "none") FALSE else par$output_compression
+compress <- if (par$output_compression == "none") {
+  FALSE
+} else {
+  par$output_compression
+}
 saveRDS(obj, file = par$output, compress = compress)

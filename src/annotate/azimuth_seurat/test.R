@@ -1,5 +1,6 @@
 library(testthat, warn.conflicts = FALSE)
 suppressMessages(library(Seurat))
+suppressMessages(library(SeuratObject))
 
 ## VIASH START
 meta <- list(
@@ -21,20 +22,36 @@ run_component <- function(args) {
   )
 }
 
+# Functions are namespaced here, as lintr's object_usage_linter checks
+# function bodies and cannot resolve package functions in CI.
 expect_input_preserved <- function(output) {
-  expect_s4_class(output, "Seurat")
-  expect_equal(Cells(output), Cells(input))
-  expect_equal(DefaultAssay(output), DefaultAssay(input))
-  expect_equal(
-    LayerData(output, assay = "RNA", layer = "X"),
-    LayerData(input, assay = "RNA", layer = "X")
+  testthat::expect_s4_class(output, "Seurat")
+  testthat::expect_equal(
+    SeuratObject::Cells(output),
+    SeuratObject::Cells(input)
   )
-  expect_equal(Layers(output[["RNA"]]), Layers(input[["RNA"]]))
-  expect_equal(output[["RNA"]][[]], input[["RNA"]][[]])
-  expect_equal(output[[]][, colnames(input[[]])], input[[]])
-  expect_true(all(Reductions(input) %in% Reductions(output)))
-  expect_equal(Graphs(output), Graphs(input))
-  expect_equal(names(output@misc), names(input@misc))
+  testthat::expect_equal(
+    SeuratObject::DefaultAssay(output),
+    SeuratObject::DefaultAssay(input)
+  )
+  testthat::expect_equal(
+    SeuratObject::LayerData(output, assay = "RNA", layer = "X"),
+    SeuratObject::LayerData(input, assay = "RNA", layer = "X")
+  )
+  testthat::expect_equal(
+    SeuratObject::Layers(output[["RNA"]]),
+    SeuratObject::Layers(input[["RNA"]])
+  )
+  testthat::expect_equal(output[["RNA"]][[]], input[["RNA"]][[]])
+  testthat::expect_equal(output[[]][, colnames(input[[]])], input[[]])
+  testthat::expect_true(all(
+    SeuratObject::Reductions(input) %in% SeuratObject::Reductions(output)
+  ))
+  testthat::expect_equal(
+    SeuratObject::Graphs(output),
+    SeuratObject::Graphs(input)
+  )
+  testthat::expect_equal(names(output@misc), names(input@misc))
 }
 
 test_that("Annotation using gene symbols from the feature metadata", {
@@ -53,10 +70,11 @@ test_that("Annotation using gene symbols from the feature metadata", {
   expect_input_preserved(output)
 
   predicted_cols <- grep("^predicted\\.", colnames(output[[]]), value = TRUE)
-  expect_true(
-    all(c("predicted.celltype.l1", "predicted.celltype.l1.score") %in% predicted_cols)
+  expected_cols <- c(
+    "predicted.celltype.l1", "predicted.celltype.l1.score",
+    "predicted.celltype.l2", "predicted.celltype.l3"
   )
-  expect_true(all(c("predicted.celltype.l2", "predicted.celltype.l3") %in% predicted_cols))
+  expect_true(all(expected_cols %in% predicted_cols))
   expect_false(any(is.na(output$predicted.celltype.l1)))
   # pbmcref annotations contain at least B, T and mono cell types
   expect_gt(length(unique(output$predicted.celltype.l1)), 3)
@@ -70,7 +88,10 @@ test_that("Annotation using gene symbols from the feature metadata", {
   expect_equal(rownames(umap), Cells(output))
 
   expect_true("prediction.score.celltype.l1" %in% Assays(output))
-  scores <- LayerData(output, assay = "prediction.score.celltype.l1", layer = "data")
+  scores <- LayerData(
+    output,
+    assay = "prediction.score.celltype.l1", layer = "data"
+  )
   expect_equal(colnames(scores), Cells(output))
 })
 
