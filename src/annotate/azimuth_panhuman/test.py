@@ -25,6 +25,8 @@ meta = {
 input_file = (
     f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 )
+# Pre-downloaded v1 model, identical to the one panhumanpy downloads itself.
+model_file = f"{meta['resources_dir']}/panhumanpy_inference_model_v1.keras"
 
 
 def test_simple_execution(run_component, random_h5mu_path):
@@ -199,29 +201,55 @@ def test_model_version_v0_and_custom_outputs(run_component, random_h5mu_path):
     assert "X_azimuth_umap" not in output_rna.obsm
 
 
-def test_provided_model_is_used_instead_of_download(
-    run_component, random_h5mu_path, tmp_path
-):
-    # A corrupt model can only make the run fail if the provided file is
-    # actually loaded; had panhumanpy downloaded the weights instead, the
-    # run would have succeeded.
-    fake_model = tmp_path / "fake_model.keras"
-    fake_model.write_text("not a keras model")
+def test_provided_model(run_component, random_h5mu_path):
+    output_file = random_h5mu_path()
 
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input",
-                input_file,
-                "--input_var_gene_names",
-                "gene_symbol",
-                "--model",
-                str(fake_model),
-                "--output",
-                random_h5mu_path(),
-            ]
-        )
-    assert "Using provided model" in err.value.stdout.decode("utf-8")
+    component_output = run_component(
+        [
+            "--input",
+            input_file,
+            "--input_var_gene_names",
+            "gene_symbol",
+            "--model",
+            model_file,
+            "--model_version",
+            "v1",
+            "--output",
+            output_file,
+        ]
+    ).decode("utf-8")
+
+    # The provided model is loaded instead of being downloaded by panhumanpy
+    assert "Using provided model" in component_output
+    assert "Downloading model" not in component_output
+
+    assert os.path.exists(output_file), "Output file does not exist"
+
+    input_mudata = mu.read_h5mu(input_file)
+    output_mudata = mu.read_h5mu(output_file)
+
+    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
+
+    output_rna = output_mudata.mod["rna"]
+
+    assert set(output_rna.obs.columns) == {
+        "azimuth_pred",
+        "azimuth_probability",
+        "azimuth_broad",
+        "azimuth_medium",
+        "azimuth_fine",
+    }
+
+    predictions = output_rna.obs["azimuth_broad"]
+    assert not all(predictions.isna()), "Not all predictions should be NA"
+
+    confidence = output_rna.obs["azimuth_probability"]
+    assert all(0 <= value <= 1 for value in confidence), (
+        ".obs at azimuth_probability has values outside the range [0, 1]"
+    )
+
+    assert output_rna.obsm["X_azimuth"].shape[0] == output_rna.n_obs
+    assert output_rna.obsm["X_azimuth_umap"].shape == (output_rna.n_obs, 2)
 
 
 def test_fail_normalized_input(run_component, random_h5mu_path, write_mudata_to_file):
