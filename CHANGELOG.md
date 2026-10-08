@@ -12,7 +12,7 @@
     Keep in mind that processing data from experiments using CMO multiplexing will now always result in a `NotImplementedError` when using default parameters.
   - The original behavior (i.e. outputting filtered data) can be invoked by using the `output_filtered_data` argument.
 
-* Remove deprecated and disabled components:
+* Remove deprecated and disabled components (PR #1248):
  - `compression/tar_extract`
  - `convert/from_h5mu_to_seurat`
  - `download/download_file`
