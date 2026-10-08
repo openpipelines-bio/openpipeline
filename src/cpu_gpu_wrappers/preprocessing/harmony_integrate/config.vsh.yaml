@@ -1,0 +1,124 @@
+name: harmony_integrate
+namespace: "cpu_gpu_wrappers/preprocessing"
+scope: "private"
+description: |
+  Integrate observations over one or more batch/covariate columns using Harmony,
+  running either the GPU (rapids-singlecell) or the CPU (harmonypy) variant of
+  harmony_integrate, selected with --device_type.
+
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        direction: input
+        description: Input h5mu file.
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        default: "rna"
+        description: Which modality from the input MuData file to process.
+      - name: "--obsm_input"
+        type: string
+        default: "X_pca"
+        description: Which .obsm slot to use as the PCA embedding to integrate (basis).
+      - name: "--obs_covariates"
+        type: string
+        required: true
+        multiple: true
+        multiple_sep: ","
+        description: |
+          The .obs columns to integrate over (the batch/covariate keys passed to
+          Harmony). Provide one or more comma-separated column names. When
+          multiple keys are provided, a combined batch variable is created from
+          all columns.
+
+  - __merge__: /src/base/device_type_argument.yaml
+
+  - name: Outputs
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Output h5mu file containing the integrated embedding.
+        example: output.h5mu
+      - name: "--obsm_output"
+        type: string
+        default: "X_pca_integrated"
+        description: In which .obsm slot to store the Harmony-corrected embedding.
+
+  - name: Options
+    arguments:
+      - name: "--theta"
+        type: double
+        default: 2.0
+        min: 0
+        multiple: true
+        multiple_sep: ","
+        description: |
+          Diversity clustering penalty parameter. theta=0 does not encourage any
+          diversity; larger values result in more aggressive
+          diversity-encouraging correction over the covariates. Provide a single
+          value for all covariates, or one value per --obs_covariates entry.
+
+  - name: rapids-singlecell options
+    description: Exposed only by the GPU (rapids-singlecell) variant (--device_type gpu).
+    arguments:
+      - name: "--overwrite"
+        type: boolean
+        default: false
+        description: Allow overwriting the .obsm output slot if it already exists.
+      - name: "--flavor"
+        type: string
+        choices: ["harmony2", "harmony1"]
+        default: "harmony2"
+        description: |
+          Which Harmony implementation to use. 'harmony2' is the faster
+          reimplementation; 'harmony1' reproduces the original algorithm.
+      - name: "--n_clusters"
+        type: integer
+        min: 1
+        description: |
+          Number of clusters used by Harmony. If not set, the value is chosen
+          automatically.
+      - name: "--max_iter_harmony"
+        type: integer
+        default: 10
+        min: 1
+        description: Maximum number of rounds to run Harmony.
+      - name: "--random_state"
+        type: integer
+        default: 0
+        min: 0
+        description: A random seed.
+
+dependencies:
+  - name: preprocessing/harmony_integrate
+    repository: openpipeline_rapids
+    alias: harmony_integrate_gpu
+  - name: integrate/harmonypy
+    alias: harmony_integrate_cpu
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_gpu_wf
+  - path: /resources_test/pbmc_1k_protein_v3
+
+runners:
+  - type: nextflow

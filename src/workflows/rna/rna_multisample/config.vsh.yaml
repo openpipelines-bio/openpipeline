@@ -190,12 +190,12 @@ argument_groups:
   - __merge__: /src/base/device_type_argument.yaml
 
 dependencies:
-  - name: wrappers/preprocessing/highly_variable_genes
+  - name: cpu_gpu_wrappers/preprocessing/highly_variable_genes
     alias: highly_variable_features_cpu_or_gpu
   - name: workflows/qc/qc
     alias: rna_qc
   - name: metadata/add_id
-  - name: wrappers/preprocessing/scale
+  - name: cpu_gpu_wrappers/preprocessing/scale
     alias: scale_cpu_or_gpu
   - name: workflows/rna/log_normalize
 resources:

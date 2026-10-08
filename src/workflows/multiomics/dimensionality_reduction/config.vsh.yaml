@@ -85,7 +85,7 @@ argument_groups:
         description: "In which .obsm slot to store the resulting UMAP embedding."
   - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: wrappers/preprocessing/pca
+  - name: cpu_gpu_wrappers/preprocessing/pca
     alias: pca_cpu_or_gpu
   - name: preprocessing/filter_genes
     repository: openpipeline_rapids

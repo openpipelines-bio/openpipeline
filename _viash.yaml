@@ -61,25 +61,25 @@ info:
       entrypoint: test_gpu_wf
     - component: workflows/integration/harmony_leiden
       entrypoint: test_gpu_wf
-    - component: wrappers/preprocessing/normalize_total
+    - component: cpu_gpu_wrappers/preprocessing/normalize_total
       entrypoint: test_gpu_wf
-    - component: wrappers/preprocessing/log1p
+    - component: cpu_gpu_wrappers/preprocessing/log1p
       entrypoint: test_gpu_wf
-    - component: wrappers/preprocessing/scale
+    - component: cpu_gpu_wrappers/preprocessing/scale
       entrypoint: test_gpu_wf
-    - component: wrappers/preprocessing/highly_variable_genes
+    - component: cpu_gpu_wrappers/preprocessing/highly_variable_genes
       entrypoint: test_gpu_wf
-    - component: wrappers/preprocessing/pca
+    - component: cpu_gpu_wrappers/preprocessing/pca
       entrypoint: test_gpu_wf
-    - component: wrappers/preprocessing/neighbors
+    - component: cpu_gpu_wrappers/preprocessing/neighbors
       entrypoint: test_gpu_wf
-    - component: wrappers/preprocessing/harmony_integrate
+    - component: cpu_gpu_wrappers/preprocessing/harmony_integrate
       entrypoint: test_gpu_wf
-    - component: wrappers/preprocessing/bbknn
+    - component: cpu_gpu_wrappers/preprocessing/bbknn
       entrypoint: test_gpu_wf
-    - component: wrappers/tools/leiden
+    - component: cpu_gpu_wrappers/tools/leiden
       entrypoint: test_gpu_wf
-    - component: wrappers/tools/umap
+    - component: cpu_gpu_wrappers/tools/umap
       entrypoint: test_gpu_wf
 
 config_mods: |

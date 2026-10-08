@@ -45,9 +45,9 @@ argument_groups:
         example: output.h5mu
   - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: wrappers/preprocessing/normalize_total
+  - name: cpu_gpu_wrappers/preprocessing/normalize_total
     alias: normalize_total_cpu_or_gpu
-  - name: wrappers/preprocessing/log1p
+  - name: cpu_gpu_wrappers/preprocessing/log1p
     alias: log1p_cpu_or_gpu
   - name: transform/delete_layer
 resources:

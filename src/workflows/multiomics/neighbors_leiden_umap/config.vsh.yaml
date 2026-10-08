@@ -70,11 +70,11 @@ argument_groups:
           When not specified, UMAP will not be executed.
   - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: wrappers/tools/leiden
+  - name: cpu_gpu_wrappers/tools/leiden
     alias: leiden_cpu_or_gpu
-  - name: wrappers/tools/umap
+  - name: cpu_gpu_wrappers/tools/umap
     alias: umap_cpu_or_gpu
-  - name: wrappers/preprocessing/neighbors
+  - name: cpu_gpu_wrappers/preprocessing/neighbors
     alias: find_neighbors_cpu_or_gpu
   - name: metadata/move_obsm_to_obs
 resources:

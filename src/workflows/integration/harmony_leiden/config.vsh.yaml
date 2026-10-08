@@ -122,7 +122,7 @@ argument_groups:
         description: "In which .obsm slot to store the resulting UMAP embedding."
   - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: wrappers/preprocessing/harmony_integrate
+  - name: cpu_gpu_wrappers/preprocessing/harmony_integrate
     alias: harmony_integrate_cpu_or_gpu
   - name: workflows/multiomics/neighbors_leiden_umap
   - name: convert/from_tiledb_to_h5mu
