@@ -1,10 +1,15 @@
 import sys
 import pytest
 import math
+import re
 import fileinput
+import warnings
+import scanpy
+from scipy.sparse import csr_matrix
 from mudata import read_h5mu
 from shutil import copytree, ignore_patterns
 from pathlib import Path
+from subprocess import CalledProcessError
 import json
 
 ## VIASH START
@@ -88,6 +93,73 @@ def input_4plex_dtc(request):
         "v10": "10x_4plex_dtc_v10",
     }
     return f"{meta['resources_dir']}/{base[request.param]}/processed/10x_4plex_dtc.cellranger_multi.output"
+
+
+def get_per_sample_matrix(input_dir, sample_name, raw_or_filtered):
+    """
+    Return the path to the per-sample count matrix for a sample. Cell Ranger v9
+    stores it in a 'count' subfolder, v10 directly in the per-sample folder.
+    """
+    sample_dir = Path(input_dir) / "per_sample_outs" / sample_name
+    matrix_name = f"sample_{raw_or_filtered}_feature_bc_matrix.h5"
+    matrix_file = sample_dir / "count" / matrix_name
+    if not matrix_file.is_file():
+        # Cell Ranger v10
+        matrix_file = sample_dir / matrix_name
+    assert matrix_file.is_file(), (
+        f"Expected a {raw_or_filtered} count matrix for sample {sample_name}."
+    )
+    return matrix_file
+
+
+def get_aggregated_matrix(input_dir, raw_or_filtered):
+    """
+    Return the path to the aggregated (i.e. not per-sample) count matrix. Cell Ranger
+    v9 stores it in the 'multi/count' subfolder, v10 in the top level output folder.
+    """
+    input_dir = Path(input_dir)
+    matrix_name = f"{raw_or_filtered}_feature_bc_matrix.h5"
+    matrix_file = input_dir / "multi" / "count" / matrix_name
+    if not matrix_file.is_file():
+        # Cell Ranger v10
+        matrix_file = input_dir / matrix_name
+    assert matrix_file.is_file(), (
+        f"Expected an aggregated {raw_or_filtered} count matrix."
+    )
+    return matrix_file
+
+
+def read_10x_matrix(matrix_file):
+    """
+    Read a 10x .h5 count matrix the same way the component does, i.e. using the
+    (unique) gene IDs as var names instead of the (non-unique) gene symbols.
+    """
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore", category=UserWarning, message="Variable names are not unique"
+        )
+        adata = scanpy.read_10x_h5(matrix_file, gex_only=False)
+    adata.var = adata.var.rename_axis("gene_symbol").reset_index().set_index("gene_ids")
+    return adata
+
+
+def assert_counts_originate_from(
+    converted_data, expected_data, feature_type_per_modality
+):
+    """
+    Check that the counts of the requested modalities are identical to the ones
+    from the provided 10x count matrix.
+    """
+    for modality, feature_type in feature_type_per_modality.items():
+        expected_modality = expected_data[
+            :, expected_data.var["feature_types"] == feature_type
+        ]
+        observed_modality = converted_data.mod[modality]
+        assert observed_modality.obs_names.equals(expected_modality.obs_names)
+        assert observed_modality.var_names.equals(expected_modality.var_names)
+        observed_counts = csr_matrix(observed_modality.X)
+        expected_counts = csr_matrix(expected_modality.X)
+        assert (observed_counts != expected_counts).nnz == 0
 
 
 def test_cellranger_multi_basic(run_component, tmp_path, input_anticmv):
@@ -360,9 +432,28 @@ def test_cellranger_multi_output_filtered_data(run_component, tmp_path, input_an
     assert output_dir.is_dir()
     samples = [item for item in output_dir.iterdir() if item.is_file()]
     assert len(samples) == 1
-    filtered_data = read_h5mu(samples[0])
+    output_path = samples[0]
+    sample_name = output_path.name.removesuffix(".h5mu")
+    filtered_data = read_h5mu(output_path)
     assert list(filtered_data.mod.keys()) == ["rna", "prot", "vdj_t"]
     assert filtered_data.mod["rna"].n_obs == 3798
+
+    # The counts must originate from the filtered count matrix, not the raw one.
+    feature_type_per_modality = {
+        "rna": "Gene Expression",
+        "prot": "Antibody Capture",
+    }
+    expected_data = read_10x_matrix(
+        get_per_sample_matrix(input_anticmv, sample_name, "filtered")
+    )
+    assert_counts_originate_from(
+        filtered_data, expected_data, feature_type_per_modality
+    )
+
+    # Sanity check: the filtered matrix must differ from the raw matrix, otherwise
+    # the assertions above would also hold when the raw counts were written.
+    raw_data = read_10x_matrix(get_aggregated_matrix(input_anticmv, "raw"))
+    assert not raw_data.obs_names.equals(expected_data.obs_names)
 
 
 def test_cellranger_multi_output_filtered_data_multiplexed(
@@ -417,6 +508,94 @@ def test_cellranger_multi_output_filtered_data_multiplexed(
         sample_name = output_path.name.removesuffix(".h5mu")
         actual_n_obs[sample_name] = converted_data.mod["rna"].n_obs
     assert actual_n_obs == expected_n_obs
+
+
+def test_output_raw_data_multiplexed_without_per_sample_raw_matrices(
+    run_component, tmp_path, input_fixed_rna
+):
+    """
+    Requesting raw counts for a multiplexed experiment is not supported when
+    Cell Ranger did not output a raw count matrix per sample (which is for example
+    the case for CMO multiplexing).
+    """
+    # Create a copy of the input without the per-sample raw count matrices
+    input_without_raw_matrices = tmp_path / "input_without_raw_matrices"
+    copytree(
+        input_fixed_rna,
+        input_without_raw_matrices,
+        ignore=ignore_patterns("sample_raw_feature_bc_matrix*"),
+    )
+    assert not list(input_without_raw_matrices.rglob("sample_raw_feature_bc_matrix*"))
+
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    with pytest.raises(CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_without_raw_matrices,
+                "--output",
+                str(output_path_template),
+                "--output_compression",
+                "gzip",
+                "--sample_csv",
+                samples_csv,
+            ]
+        )
+    assert re.search(
+        r"NotImplementedError: Requested to output raw counts for a multiplexed experiment "
+        r"\(multiplexing_analysis folder present\), but a raw count matrix per sample is not "
+        r"available in the Cell Ranger output\.",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
+def test_output_raw_data_multiplexed(run_component, tmp_path, input_4plex_dtc):
+    """
+    Cell Ranger outputs a raw count matrix per sample when multiplexing with
+    probe barcodes. Check that these raw matrices (and not the filtered ones)
+    end up in the output when raw counts are requested (the default).
+    """
+    output_dir = tmp_path / "converted"
+    output_path_template = output_dir / "*.h5mu"
+    samples_csv = tmp_path / "samples.csv"
+    run_component(
+        [
+            "--input",
+            input_4plex_dtc,
+            "--output",
+            str(output_path_template),
+            "--output_compression",
+            "gzip",
+            "--sample_csv",
+            samples_csv,
+        ]
+    )
+    assert output_dir.is_dir()
+
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
+    assert {item.name.removesuffix(".h5mu") for item in samples} == {
+        "Breast_Cancer_BC3_AB3",
+        "Kidney_Cancer1_BC1_AB1",
+        "Kidney_Cancer2_BC2_AB2",
+        "Lung_Cancer_BC4_AB4",
+    }
+
+    feature_type_per_modality = {
+        "rna": "Gene Expression",
+        "prot": "Antibody Capture",
+    }
+    for output_path in samples:
+        sample_name = output_path.name.removesuffix(".h5mu")
+        expected_data = read_10x_matrix(
+            get_per_sample_matrix(input_4plex_dtc, sample_name, "raw")
+        )
+        converted_data = read_h5mu(output_path)
+        assert list(converted_data.mod.keys()) == list(feature_type_per_modality)
+        assert_counts_originate_from(
+            converted_data, expected_data, feature_type_per_modality
+        )
 
 
 def test_vdj_no_cells(run_component, tmp_path, input_no_vdj_cells):
