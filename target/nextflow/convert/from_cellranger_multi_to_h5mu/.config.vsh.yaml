@@ -65,8 +65,13 @@ argument_groups:
     multiple_sep: ";"
   - type: "boolean_true"
     name: "--output_filtered_data"
-    description: "If enabled, read the per-sample filtered count matrices\n(per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5)\n\
-      instead of the aggregated raw count matrix\n(multi/count/raw_feature_bc_matrix.h5).\n"
+    description: "If enabled, read the per-sample filtered count matrices\n(sample_filtered_feature_bc_matrix.h5)\n\
+      instead of the aggregated or per-sample raw count matrices\n(raw_feature_bc_matrix.h5\
+      \ or sample_raw_feature_bc_matrix.h5).\nNote that Cell Ranger does not create\
+      \ per-sample raw count matrices when\nmultiplexing with CMOs, because barcodes\
+      \ that do not contain a cell cannot\nbe assigned to a sample. Requesting the\
+      \ raw count matrices of such an\nexperiment is not supported and raises an error;\
+      \ use this flag to read the\nper-sample filtered count matrices instead.\n"
     info: null
     direction: "input"
   - type: "string"
@@ -242,7 +247,7 @@ build_info:
   output: "target/nextflow/convert/from_cellranger_multi_to_h5mu"
   executable: "target/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
   viash_version: "0.9.7"
-  git_commit: "2b1b5160b72fffb4203f5e801cd8f589378ac56e"
+  git_commit: "c162c65ca5c6685cddd5c5af79e9f9d601766266"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
