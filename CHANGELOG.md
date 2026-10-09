@@ -35,6 +35,8 @@
 * `convert/from_cellranger_multi_to_h5mu`: When processing non-multiplexed data, the value provided to Cell Ranger's `--id` parameter (as registered in the Cell Ranger multi output folder name) is now used as the sample name. For Cell Ranger output from openpipelines this is still `run`, but for externally generated data this implies a matching output file name  for the MuData object (PR #1227)
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
+* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234).
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
