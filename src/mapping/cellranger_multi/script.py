@@ -312,7 +312,7 @@ def get_fastq_to_library_id_mapping(
     for fastq_file in fastq_files:
         fastq_library_id = infer_library_id_from_path(fastq_file.name)
         # Cellranger takes the directories as input. FASTQs for a library
-        # might be split across multiple directories and one directoy may contain
+        # might be split across multiple directories and one directory may contain
         # multiple FASTQ files. Take the set.
         fastq_library_ids.setdefault(fastq_library_id, set()).add(fastq_file.parent)
     all_fastq_libraries = (
@@ -433,7 +433,7 @@ def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     # Transfer the input to par
     # TODO: This is a bit ugly, it is probably better to
     # let this function return the all_input dataframe
-    # and use it as input for generting the Cell Ranger config
+    # and use it as input for generating the Cell Ranger config
     par["fastqs"] = all_input["fastqs"].to_list()
     par["library_type"] = all_input["library_type"].to_list()
     par["library_id"] = all_input.index.to_list()
