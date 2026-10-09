@@ -15,7 +15,7 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    | find_neighbors.run(
+    | find_neighbors_cpu_or_gpu.run(
       fromState: [
         "input": "input",
         "uns_output": "uns_neighbors",
@@ -23,11 +23,12 @@ workflow run_wf {
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obsm_input": "obsm_input",
         "output": "workflow_output",
-        "modality": "modality"
+        "modality": "modality",
+        "device_type": "device_type"
       ],
       toState: ["input": "output"]
     )
-    | leiden.run(
+    | leiden_cpu_or_gpu.run(
       runIf: {id, state -> state.leiden_resolution},
       fromState: [
         "input": "input",
@@ -35,6 +36,7 @@ workflow run_wf {
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
         "modality": "modality",
+        "device_type": "device_type",
       ],
       toState: ["input": "output"]
     )
@@ -49,7 +51,7 @@ workflow run_wf {
       args: ["output_compression": "gzip"],
       toState: ["input": "output"]
     )
-    | umap.run(
+    | umap_cpu_or_gpu.run(
       runIf: {id, state -> !state.obsm_umap?.trim()?.isEmpty()},
       fromState: [
           "input": "input",
@@ -57,6 +59,7 @@ workflow run_wf {
           "uns_neighbors": "uns_neighbors",
           "obsm_output": "obsm_umap",
           "modality": "modality",
+          "device_type": "device_type",
         ],
       args: ["output_compression": "gzip"],
       toState: ["input": "output"]
