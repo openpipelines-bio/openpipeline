@@ -1,9 +1,0 @@
-# Arguments
-input: # please fill in - example: "input.tar.gz"
-# output: "$id.$key.output"
-# strip_components: 1
-# exclude: "docs/figures"
-
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"
