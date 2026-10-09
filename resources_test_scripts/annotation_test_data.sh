@@ -93,6 +93,11 @@ viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml --engine docker -- \
     --modality "rna"
 
 
+echo "> Downloading pretrained Pan-human Azimuth (panhumanpy) model"
+wget "https://zenodo.org/records/20401417/files/panhumanpy_inference_model_v1.keras?download=1" \
+    -O "${OUT}/panhumanpy_inference_model_v1.keras"
+
+
 echo "> Fetching OnClass data and models"
 OUT_ONTOLOGY="${OUT}/ontology"
 [ -d "$OUT_ONTOLOGY" ] || mkdir -p "$OUT_ONTOLOGY"
