@@ -12,6 +12,14 @@
     Keep in mind that processing data from experiments using CMO multiplexing will now always result in a `NotImplementedError` when using default parameters.
   - The original behavior (i.e. outputting filtered data) can be invoked by using the `output_filtered_data` argument.
 
+* Remove deprecated and disabled components (PR #1248):
+ - `compression/tar_extract`
+ - `convert/from_h5mu_to_seurat`
+ - `download/download_file`
+ - `files/make_params`
+ - `integrate/harmony`
+ - `mapping/samtools_sort`
+
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
