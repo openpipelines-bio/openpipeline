@@ -1,0 +1,44 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+input_var_gene_names: "gene_symbol"
+input_reference_gene_overlap: 100
+
+# Model
+# model: "panhumanpy_inference_model_v1.keras"
+model_version: "v1"
+eval_batch_size: 8192
+normalization_override: false
+norm_check_batch_size: 100
+refine_labels: true
+
+# Embeddings and UMAP
+extract_embeddings: true
+umap_embeddings: true
+umap_n_neighbors: 30
+umap_n_components: 2
+umap_metric: "cosine"
+umap_min_dist: 0.3
+umap_lr: 1.0
+umap_seed: 42
+umap_spread: 1.0
+umap_init: "spectral"
+umap_verbose: false
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+output_obs_predictions: "azimuth_pred"
+output_obs_probability: "azimuth_probability"
+output_obs_predictions_broad: "azimuth_broad"
+output_obs_predictions_medium: "azimuth_medium"
+output_obs_predictions_fine: "azimuth_fine"
+output_obsm_embedding: "X_azimuth"
+output_obsm_umap: "X_azimuth_umap"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments
