@@ -56,7 +56,10 @@ def test_predictions(annotated):
         assert np.issubdtype(values.dtype, np.floating), (
             f"Column '{col}' should be a float, found: {values.dtype}."
         )
-        assert values.between(0, 1).all(), f"Column '{col}' should be between 0 and 1."
+        # Prediction scores can exceed 1 by a floating point rounding error
+        assert values.between(0, 1 + 1e-8).all(), (
+            f"Column '{col}' should be between 0 and 1."
+        )
 
 
 def test_embeddings(annotated):
