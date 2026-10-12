@@ -4408,7 +4408,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody",
     "viash_version" : "0.9.7",
-    "git_commit" : "2ef3cc3111ea7066b7177ac4d6a733166ba2c71f",
+    "git_commit" : "3ea378bcc5416a7aacd66210d71bc20aefbc4c74",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
