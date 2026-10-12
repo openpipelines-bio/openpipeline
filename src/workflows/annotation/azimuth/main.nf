@@ -4,7 +4,6 @@ workflow run_wf {
 
   main:
     prep_ch = input_ch
-      // Validate the arguments before running any of the (expensive) steps
       | map {id, state ->
         assert state.input || state.input_seurat :
           "Either --input (h5mu) or --input_seurat (rds) must be provided."
@@ -25,8 +24,7 @@ workflow run_wf {
         if (output_seurat && output_seurat.toString().contains('$key')) {
           output_seurat = null
         }
-        // For h5mu input, .X of the selected modality is stored in a Seurat layer named "X",
-        // other layers keep their name. When converting back, this layer is stored in .X again.
+
         def seurat_layer = from_h5mu ? (state.input_layer ?: "X") : (state.input_layer ?: "counts")
         def new_state = state + [
           // Set aside the output for this workflow to avoid conflicts
@@ -138,8 +136,6 @@ workflow run_wf {
       )
 
     // The imputed protein expression (--do_adt) is stored as a separate modality.
-    // A filter is used instead of runIf, because events for which the conversion
-    // is skipped should not be added to the channel.
     imputed_adt_ch = annotated_ch
       | filter {id, state -> state.do_adt}
       | from_seurat_to_h5mu.run(

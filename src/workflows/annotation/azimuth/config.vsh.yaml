@@ -9,8 +9,6 @@ description: |
   to a Seurat object and mapped onto the Azimuth reference, and the annotated modality is converted
   back and merged with the other (untouched) modalities. For Seurat input, the selected assay is
   annotated and converted to an H5MU file containing a single modality.
-  When `--do_adt` is set, the protein expression imputed from the reference is added as a
-  separate modality (`--output_modality_imputed_adt`).
 info:
   name: "Azimuth reference mapping"
   test_dependencies:
