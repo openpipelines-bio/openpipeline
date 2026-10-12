@@ -69,21 +69,33 @@ test_that("Annotation using gene symbols from the feature metadata", {
   output <- readRDS(output_file)
   expect_input_preserved(output)
 
-  predicted_cols <- grep("^predicted\\.", colnames(output[[]]), value = TRUE)
+  # Without --annotation_levels, all levels of pbmcref are transferred and
+  # stored under the default output names
   expected_cols <- c(
-    "predicted.celltype.l1", "predicted.celltype.l1.score",
-    "predicted.celltype.l2", "predicted.celltype.l3"
+    paste0("azimuth_pred_celltype_", c("l1", "l2", "l3")),
+    paste0("azimuth_probability_celltype_", c("l1", "l2", "l3")),
+    "azimuth_mapping_score"
   )
-  expect_true(all(expected_cols %in% predicted_cols))
-  expect_false(any(is.na(output$predicted.celltype.l1)))
+  expect_true(all(expected_cols %in% colnames(output[[]])))
+  expect_false(any(grepl("^predicted\\.", colnames(output[[]]))))
+  expect_false("mapping.score" %in% colnames(output[[]]))
+  expect_false(any(is.na(output$azimuth_pred_celltype_l1)))
   # pbmcref annotations contain at least B, T and mono cell types
-  expect_gt(length(unique(output$predicted.celltype.l1)), 3)
+  expect_gt(length(unique(output$azimuth_pred_celltype_l1)), 3)
+  # Prediction scores can exceed 1 by a floating point rounding error
+  expect_true(all(
+    output$azimuth_probability_celltype_l1 >= 0 &
+      output$azimuth_probability_celltype_l1 <= 1 + 1e-8
+  ))
+  expect_true(all(
+    output$azimuth_mapping_score >= 0 & output$azimuth_mapping_score <= 1
+  ))
 
-  expect_true("mapping.score" %in% colnames(output[[]]))
-  expect_true(all(output$mapping.score >= 0 & output$mapping.score <= 1))
-
-  expect_true(all(c("ref.umap", "integrated_dr") %in% Reductions(output)))
-  umap <- Embeddings(output, "ref.umap")
+  expect_true(all(
+    c("X_azimuth_umap", "X_integrated_azimuth") %in% Reductions(output)
+  ))
+  expect_false(any(c("ref.umap", "integrated_dr") %in% Reductions(output)))
+  umap <- Embeddings(output, "X_azimuth_umap")
   expect_equal(dim(umap), c(ncol(output), 2))
   expect_equal(rownames(umap), Cells(output))
 
@@ -103,7 +115,11 @@ test_that("Annotation using Ensembl IDs with a subset of annotation levels", {
     "--reference", "pbmcref",
     "--annotation_levels", "celltype.l1",
     "--do_adt",
-    "--umap_name", "azimuth_umap",
+    "--output_obs_predictions", "custom_pred",
+    "--output_obs_probability", "custom_probability",
+    "--output_obs_mapping_score", "custom_mapping_score",
+    "--output_obsm_umap", "custom_umap",
+    "--output_obsm_integrated", "custom_integrated",
     "--output_compression", "none",
     "--output", output_file
   ))
@@ -113,10 +129,18 @@ test_that("Annotation using Ensembl IDs with a subset of annotation levels", {
   output <- readRDS(output_file)
   expect_input_preserved(output)
 
-  expect_true("predicted.celltype.l1" %in% colnames(output[[]]))
-  expect_false("predicted.celltype.l2" %in% colnames(output[[]]))
-  expect_true("azimuth_umap" %in% Reductions(output))
-  expect_false("ref.umap" %in% Reductions(output))
+  expected_cols <- c(
+    "custom_pred", "custom_probability", "custom_mapping_score"
+  )
+  expect_true(all(expected_cols %in% colnames(output[[]])))
+  expect_false(any(grepl("^azimuth_", colnames(output[[]]))))
+  expect_false(any(grepl("^predicted\\.", colnames(output[[]]))))
+  expect_true(all(
+    c("custom_umap", "custom_integrated") %in% Reductions(output)
+  ))
+  expect_false(any(
+    c("X_azimuth_umap", "ref.umap", "integrated_dr") %in% Reductions(output)
+  ))
   expect_true("impADT" %in% Assays(output))
   expect_false("prediction.score.celltype.l2" %in% Assays(output))
 })
@@ -143,5 +167,55 @@ test_that("Fails on an invalid reference", {
   ))
   expect_false(out$status == 0)
   expect_match(out$stdout, "Could not find a reference for")
+  expect_false(file.exists(output_file))
+})
+
+test_that("Fails on output names without annotation levels", {
+  output_file <- tempfile(fileext = ".rds")
+  out <- run_component(c(
+    "--input", input_file,
+    "--input_layer", "X",
+    "--reference", "pbmcref",
+    "--output_obs_predictions", "custom_pred",
+    "--output", output_file
+  ))
+  expect_false(out$status == 0)
+  expect_match(
+    out$stdout,
+    "--output_obs_predictions can only be used together with"
+  )
+  expect_false(file.exists(output_file))
+})
+
+test_that("Fails on output names not matching the annotation levels", {
+  output_file <- tempfile(fileext = ".rds")
+  out <- run_component(c(
+    "--input", input_file,
+    "--input_layer", "X",
+    "--reference", "pbmcref",
+    "--annotation_levels", "celltype.l1;celltype.l2",
+    "--output_obs_probability", "custom_probability",
+    "--output", output_file
+  ))
+  expect_false(out$status == 0)
+  expect_match(
+    out$stdout,
+    "--output_obs_probability should have the same length as"
+  )
+  expect_false(file.exists(output_file))
+})
+
+test_that("Fails on identical reduction names", {
+  output_file <- tempfile(fileext = ".rds")
+  out <- run_component(c(
+    "--input", input_file,
+    "--input_layer", "X",
+    "--reference", "pbmcref",
+    "--output_obsm_umap", "X_azimuth",
+    "--output_obsm_integrated", "X_azimuth",
+    "--output", output_file
+  ))
+  expect_false(out$status == 0)
+  expect_match(out$stdout, "should be different")
   expect_false(file.exists(output_file))
 })

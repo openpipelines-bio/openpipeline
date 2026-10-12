@@ -13,12 +13,16 @@ par <- list(
   reference = "pbmcref",
   annotation_levels = NULL,
   do_adt = FALSE,
-  umap_name = "ref.umap",
   k_weight = 50,
   n_trees = 20,
   mapping_score_k = 100,
   output = "output.rds",
-  output_compression = "gzip"
+  output_compression = "gzip",
+  output_obs_predictions = NULL,
+  output_obs_probability = NULL,
+  output_obs_mapping_score = "azimuth_mapping_score",
+  output_obsm_umap = "X_azimuth_umap",
+  output_obsm_integrated = "X_integrated_azimuth"
 )
 ### VIASH END
 
@@ -38,6 +42,26 @@ if (!par$input_layer %in% Layers(obj[[par$assay]])) {
     "Layer '", par$input_layer, "' not found in assay '", par$assay,
     "'. Available layers: ", paste(Layers(obj[[par$assay]]), collapse = ", ")
   )
+}
+
+# The output names have to line up with the annotation levels, which are
+# only known when --annotation_levels is provided.
+for (arg in c("output_obs_predictions", "output_obs_probability")) {
+  if (is.null(par[[arg]])) {
+    next
+  }
+  if (is.null(par$annotation_levels)) {
+    stop("--", arg, " can only be used together with --annotation_levels.")
+  }
+  if (length(par[[arg]]) != length(par$annotation_levels)) {
+    stop(
+      "--", arg, " should have the same length as --annotation_levels (",
+      length(par$annotation_levels), "), found: ", length(par[[arg]]), "."
+    )
+  }
+}
+if (par$output_obsm_umap == par$output_obsm_integrated) {
+  stop("--output_obsm_umap and --output_obsm_integrated should be different.")
 }
 
 # Run Azimuth on a minimal query object containing just the raw counts,
@@ -72,7 +96,7 @@ query <- RunAzimuth(
   query = query,
   reference = par$reference,
   annotation.levels = par$annotation_levels,
-  umap.name = par$umap_name,
+  umap.name = "ref.umap",
   do.adt = par$do_adt,
   assay = "RNA",
   k.weight = par$k_weight,
@@ -95,30 +119,77 @@ warn_overwrite <- function(name, existing, what) {
   }
 }
 
-cat("Adding predicted labels and mapping scores to the cell metadata\n")
-result_cols <- grep(
-  "^predicted\\.|^mapping\\.score$", colnames(query[[]]),
-  value = TRUE
+# RunAzimuth() stores its results as `predicted.<level>`,
+# `predicted.<level>.score` and `mapping.score`. When no annotation levels
+# were requested, the transferred levels are derived from these columns.
+annotation_levels <- par$annotation_levels
+if (is.null(annotation_levels)) {
+  predicted_cols <- grep("^predicted\\.", colnames(query[[]]), value = TRUE)
+  annotation_levels <- sub(
+    "^predicted\\.", "",
+    predicted_cols[!grepl("\\.score$", predicted_cols)]
+  )
+}
+level_names <- gsub(".", "_", annotation_levels, fixed = TRUE)
+obs_predictions <- par$output_obs_predictions
+if (is.null(obs_predictions)) {
+  obs_predictions <- paste0("azimuth_pred_", level_names)
+}
+obs_probability <- par$output_obs_probability
+if (is.null(obs_probability)) {
+  obs_probability <- paste0("azimuth_probability_", level_names)
+}
+
+# Mapping of the RunAzimuth() column names to the output column names
+obs_mapping <- c(
+  setNames(obs_predictions, paste0("predicted.", annotation_levels)),
+  setNames(
+    obs_probability,
+    paste0("predicted.", annotation_levels, ".score")
+  ),
+  setNames(par$output_obs_mapping_score, "mapping.score")
 )
-for (col in result_cols) {
+if (anyDuplicated(obs_mapping)) {
+  stop(
+    "The output column names should be unique, found: ",
+    paste(obs_mapping, collapse = ", ")
+  )
+}
+missing_cols <- setdiff(names(obs_mapping), colnames(query[[]]))
+if (length(missing_cols) > 0) {
+  stop(
+    "RunAzimuth() did not return the expected columns: ",
+    paste(missing_cols, collapse = ", ")
+  )
+}
+
+cat("Adding predicted labels and mapping scores to the cell metadata\n")
+for (col in obs_mapping) {
   warn_overwrite(col, colnames(obj[[]]), "Metadata column")
 }
-obj <- AddMetaData(obj, metadata = query[[]][cells, result_cols, drop = FALSE])
+result <- query[[]][cells, names(obs_mapping), drop = FALSE]
+colnames(result) <- obs_mapping
+obj <- AddMetaData(obj, metadata = result)
 
 # Cell embeddings are not guaranteed to be in the same order as the cells of
 # the object after IntegrateEmbeddings(), so realign them to the input object.
 cat("Adding reference-projected reductions\n")
-for (reduction_name in c(par$umap_name, "integrated_dr")) {
-  warn_overwrite(reduction_name, Reductions(obj), "Reduction")
+reduction_mapping <- c(
+  "ref.umap" = par$output_obsm_umap,
+  "integrated_dr" = par$output_obsm_integrated
+)
+for (reduction_name in names(reduction_mapping)) {
+  output_name <- reduction_mapping[[reduction_name]]
+  warn_overwrite(output_name, Reductions(obj), "Reduction")
   reduction <- query[[reduction_name]]
   reduction <- CreateDimReducObject(
     embeddings = Embeddings(reduction)[cells, , drop = FALSE],
     loadings = Loadings(reduction),
-    key = paste0(gsub("[^[:alnum:]]", "", reduction_name), "_"),
+    key = paste0(gsub("[^[:alnum:]]", "", output_name), "_"),
     assay = par$assay,
     misc = Misc(reduction)
   )
-  obj[[reduction_name]] <- reduction
+  obj[[output_name]] <- reduction
 }
 
 # TransferData() stores the per-class prediction scores of each annotation

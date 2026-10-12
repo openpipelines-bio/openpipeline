@@ -84,10 +84,6 @@ argument_groups:
   - name: Mapping arguments
     description: Lower-level arguments passed through to RunAzimuth().
     arguments:
-      - name: "--umap_name"
-        type: string
-        default: "ref.umap"
-        description: Name of the UMAP reduction added to the output, projected onto the reference's UMAP.
       - name: "--k_weight"
         type: integer
         default: 50
@@ -111,11 +107,11 @@ argument_groups:
         type: file
         description: |
           Output .rds file containing the input Seurat object, extended with
-          the Azimuth results: `predicted.<level>`, `predicted.<level>.score`
-          and `mapping.score` columns in the cell metadata, the reference
-          projected UMAP (`--umap_name`) and `integrated_dr` reductions, and a
-          `prediction.score.<level>` assay per annotation level (plus an
-          `impADT` assay when `--do_adt` is set).
+          the Azimuth results: the predicted labels, prediction scores and
+          mapping score in the cell metadata (see `--output_obs_*`), the
+          reference projected UMAP and integrated reductions (see
+          `--output_obsm_*`), and a `prediction.score.<level>` assay per
+          annotation level (plus an `impADT` assay when `--do_adt` is set).
         direction: output
         required: true
         example: output.rds
@@ -124,6 +120,40 @@ argument_groups:
         choices: [gzip, bzip2, xz, none]
         default: gzip
         description: Compression used when writing the output .rds file.
+      - name: "--output_obs_predictions"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          In which cell metadata columns to store the predicted labels.
+          If provided, `--annotation_levels` must be provided as well, and both
+          must have the same length. If not provided, defaults to
+          `azimuth_pred_<level>`, with "." in the level name replaced by "_".
+      - name: "--output_obs_probability"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          In which cell metadata columns to store the prediction scores.
+          If provided, `--annotation_levels` must be provided as well, and both
+          must have the same length. If not provided, defaults to
+          `azimuth_probability_<level>`, with "." in the level name replaced by "_".
+      - name: "--output_obs_mapping_score"
+        type: string
+        default: "azimuth_mapping_score"
+        description: In which cell metadata column to store the per-cell mapping score.
+      - name: "--output_obsm_umap"
+        type: string
+        default: "X_azimuth_umap"
+        description: |
+          Name of the reduction in which to store the query embedding projected
+          onto the reference UMAP.
+      - name: "--output_obsm_integrated"
+        type: string
+        default: "X_integrated_azimuth"
+        description: |
+          Name of the reduction in which to store the integrated
+          (reference-projected) embedding.
 
 resources:
   - type: r_script
