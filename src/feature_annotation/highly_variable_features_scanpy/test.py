@@ -6,6 +6,8 @@ import sys
 import pytest
 import re
 import pandas as pd
+import numpy as np
+import anndata as ad
 
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
@@ -69,13 +71,19 @@ def filter_data_path(tmp_path, input_data):
 
 
 @pytest.fixture()
-def common_vars_data_path(tmp_path, lognormed_test_data):
-    temp_h5mu = tmp_path / "lognormed_var_input.h5mu"
+def common_vars_data(lognormed_test_data):
     rna_in = lognormed_test_data.mod["rna"]
     rna_in.var["common_vars"] = False
-    rna_in.var["common_vars"].iloc[:10000] = True
+    column_index = rna_in.var.columns.get_indexer(["common_vars"])
+    rna_in.var.iloc[:10000, column_index] = True
     rna_in.var["common_vars"] = rna_in.var["common_vars"].astype("boolean")
-    lognormed_test_data.write_h5mu(temp_h5mu)
+    return lognormed_test_data
+
+
+@pytest.fixture()
+def common_vars_data_path(tmp_path, common_vars_data):
+    temp_h5mu = tmp_path / "lognormed_var_input.h5mu"
+    common_vars_data.write_h5mu(temp_h5mu)
     return temp_h5mu
 
 
@@ -406,6 +414,122 @@ def test_filter_with_hvg_stores_uns(run_component, lognormed_test_data_path):
     data = mu.read_h5mu("output.h5mu")
     assert "hvg" in data.mod["rna"].varm
     assert data.mod["rna"].uns["hvg"] == {"flavor": "seurat"}
+
+
+def test_filter_with_hvg_var_input_with_batch(
+    run_component, common_vars_data, tmp_path
+):
+    """
+    Make sure the details stored in .varm can be written when var_input is
+    combined with obs_batch_key, which adds 'highly_variable_intersection'.
+    """
+    input_data = common_vars_data
+    rna_in = input_data.mod["rna"]
+    rna_in.obs["batch"] = "A"
+    column_index = rna_in.obs.columns.get_indexer(["batch"])
+    rna_in.obs.iloc[slice(rna_in.n_obs // 2, None), column_index] = "B"
+    input_path = tmp_path / "lognormed_var_input_batch.h5mu"
+    input_data.write_h5mu(input_path)
+
+    run_component(
+        [
+            "--flavor",
+            "seurat",
+            "--input",
+            input_path,
+            "--output",
+            "output.h5mu",
+            "--layer",
+            "log_transformed",
+            "--var_input",
+            "common_vars",
+            "--obs_batch_key",
+            "batch",
+        ]
+    )
+    assert os.path.exists("output.h5mu")
+    data = mu.read_h5mu("output.h5mu")
+    hvg = data.mod["rna"].varm["hvg"]
+    common_vars = data.mod["rna"].var["common_vars"].to_numpy(dtype=bool)
+    for column in ("highly_variable", "highly_variable_intersection"):
+        assert hvg[column].dtype == bool
+        assert not hvg.loc[~common_vars, column].any()
+
+
+@pytest.mark.parametrize("flavor", ["seurat", "cell_ranger"])
+@pytest.mark.parametrize("subset_by", ["var_input", "features_to_exclude"])
+def test_filter_with_hvg_subset_with_batch_matches_scanpy(
+    run_component, common_vars_data, tmp_path, flavor, subset_by
+):
+    """
+    With obs_batch_key, scanpy returns the dispersion based flavors sorted by
+    feature name instead of in input order. Make sure the results are still
+    assigned to the correct features when only a subset of the features is used.
+    """
+    input_data = common_vars_data
+    rna_in = input_data.mod["rna"]
+    rna_in.obs["batch"] = "A"
+    column_index = rna_in.obs.columns.get_indexer(["batch"])
+    rna_in.obs.iloc[slice(rna_in.n_obs // 2, None), column_index] = "B"
+    input_path = tmp_path / "lognormed_var_input_batch.h5mu"
+    input_data.write_h5mu(input_path)
+
+    if subset_by == "var_input":
+        keep = rna_in.var["common_vars"].to_numpy(dtype=bool)
+        subset_args = ["--var_input", "common_vars"]
+    else:
+        # Leave out few enough features to keep --features_to_exclude within
+        # the command line length limit.
+        keep = (np.arange(rna_in.n_vars) % 50) != 0
+        subset_args = ["--features_to_exclude", ";".join(rna_in.var_names[~keep])]
+
+    run_component(
+        [
+            "--flavor",
+            flavor,
+            "--input",
+            input_path,
+            "--output",
+            "output.h5mu",
+            "--layer",
+            "log_transformed",
+            "--obs_batch_key",
+            "batch",
+            *subset_args,
+        ]
+    )
+    assert os.path.exists("output.h5mu")
+    output_rna = mu.read_h5mu("output.h5mu").mod["rna"]
+
+    # Calculate the expected result by running scanpy on the subset directly
+    expected_input = ad.AnnData(
+        X=rna_in.layers["log_transformed"].copy(),
+        obs=rna_in.obs[["batch"]],
+        var=pd.DataFrame(index=rna_in.var_names),
+        uns={"log1p": {"base": None}},
+    )[:, keep].copy()
+    expected = sc.pp.highly_variable_genes(
+        expected_input, flavor=flavor, batch_key="batch", inplace=False, subset=False
+    )
+    kept_features = rna_in.var_names[keep]
+    expected = expected.reindex(index=kept_features)
+    assert expected["highly_variable"].any()
+
+    hvg = output_rna.varm["hvg"]
+    hvg.index = output_rna.var_names
+    for column in ("highly_variable", "dispersions_norm", "highly_variable_nbatches"):
+        pd.testing.assert_series_equal(
+            hvg.loc[kept_features, column],
+            expected[column],
+            check_names=False,
+            check_dtype=False,
+        )
+    pd.testing.assert_series_equal(
+        output_rna.var.loc[kept_features, "filter_with_hvg"],
+        expected["highly_variable"],
+        check_names=False,
+    )
+    assert not output_rna.var.loc[~keep, "filter_with_hvg"].any()
 
 
 if __name__ == "__main__":
