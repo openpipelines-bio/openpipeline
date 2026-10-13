@@ -5,6 +5,11 @@ import re
 import pytest
 import sys
 import subprocess
+import csv
+import gzip
+import random
+import shutil
+from itertools import chain
 
 ## VIASH START
 meta = {
@@ -724,44 +729,112 @@ def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
     run_component(args)
 
 
+def read_libraries_section(config_path: Path) -> list[dict[str, str]]:
+    config_contents = config_path.read_text()
+    libraries_section = config_contents.split("[libraries]\n")[1].split("\n\n")[0]
+    return list(csv.DictReader(libraries_section.splitlines()))
+
+
+def stage_file(random_path, file_name: str) -> Path:
+    """
+    Return a path for a file in a new directory. This simulates viash staging
+    input files with stageInMode 'copy': every file ends up in its own directory.
+    """
+    staging_dir = random_path()
+    staging_dir.mkdir()
+    return staging_dir / file_name
+
+
 def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
-    flowcell_1 = random_path()
-    flowcell_2 = random_path()
-    flowcell_1.mkdir()
-    flowcell_2.mkdir()
-
-    # Copy files to simulate flow cell directories containing identical file names
-    import shutil
-
-    for src in [input1_R1, input1_R2]:
-        shutil.copy(src, flowcell_1 / src.name)
-        shutil.copy(src, flowcell_2 / src.name)
-    for src in [input2_R1, input2_R2]:
-        shutil.copy(src, flowcell_2 / src.name)
+    # Simulate libraries that were sequenced on two flow cells by splitting the reads
+    # of each FASTQ file in two. Both halves keep the original file name.
+    fastq_files = []
+    for input_file in [input1_R1, input1_R2, input3_R1, input3_R2]:
+        with gzip.open(input_file, "rt") as open_fastq:
+            lines = open_fastq.readlines()
+        half = len(lines) // 8 * 4
+        for part in (lines[:half], lines[half:]):
+            fastq_file = stage_file(random_path, input_file.name)
+            with gzip.open(fastq_file, "wt", compresslevel=1) as open_fastq:
+                open_fastq.writelines(part)
+            fastq_files.append(fastq_file)
+    # The order of the input files must not matter
+    random.shuffle(fastq_files)
 
     outputpath = random_path()
     run_component(
         [
             "--output",
             outputpath,
-            "--input",
-            flowcell_1 / input1_R1.name,
-            "--input",
-            flowcell_1 / input1_R2.name,
-            "--input",
-            flowcell_2 / input1_R1.name,
-            "--input",
-            flowcell_2 / input1_R2.name,
-            "--input",
-            flowcell_2 / input2_R1.name,
-            "--input",
-            flowcell_2 / input2_R2.name,
+            *chain.from_iterable(("--input", fastq_file) for fastq_file in fastq_files),
             "--library_id",
-            "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset",
+            "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
             "--library_type",
-            "Gene Expression;Antibody Capture",
+            "Gene Expression;VDJ",
             "--gex_reference",
             gex_reference,
+            "--vdj_reference",
+            vdj_reference,
+            "--gex_generate_bam",
+            "false",
+        ]
+    )
+
+    # Each library is split across two directories. Only the VDJ directories need
+    # an explicit physical_library_id, the GEX directories use Cell Ranger's default.
+    libraries = read_libraries_section(outputpath / "config.csv")
+    gex_row = (
+        "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
+        "Gene Expression",
+        "",
+    )
+    vdj_row = (
+        "5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+        "VDJ",
+        "5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+    )
+    assert sorted(
+        (row["fastq_id"], row["feature_types"], row["physical_library_id"])
+        for row in libraries
+    ) == [gex_row, gex_row, vdj_row, vdj_row]
+
+    assert (outputpath / "raw_feature_bc_matrix.h5").is_file()
+    assert (
+        outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv"
+    ).is_file()
+
+
+def test_cellranger_multi_inputs_staged_in_separate_directories(
+    run_component, random_path
+):
+    # R1 and R2 of the same library do not share a parent directory
+    staged_inputs = []
+    for input_file in [
+        input1_R1,
+        input1_R2,
+        input2_R1,
+        input2_R2,
+        input3_R1,
+        input3_R2,
+    ]:
+        staged_input = stage_file(random_path, input_file.name)
+        shutil.copy(input_file, staged_input)
+        staged_inputs.append(staged_input)
+
+    outputpath = random_path()
+    run_component(
+        [
+            "--output",
+            outputpath,
+            *chain.from_iterable(("--input", path) for path in staged_inputs),
+            "--library_id",
+            "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+            "--library_type",
+            "Gene Expression;Antibody Capture;VDJ",
+            "--gex_reference",
+            gex_reference,
+            "--vdj_reference",
+            vdj_reference,
             "--feature_reference",
             feature_reference,
             "--gex_generate_bam",
@@ -770,15 +843,180 @@ def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
         ]
     )
 
-    config_path = outputpath / "config.csv"
-    assert config_path.is_file()
-    config_contents = config_path.read_text()
+    # A library from a single flow cell must result in a single row in the
+    # [libraries] section: one directory containing both R1 and R2.
+    libraries = read_libraries_section(outputpath / "config.csv")
+    assert [row["fastq_id"] for row in libraries] == [
+        "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
+        "5k_human_antiCMV_T_TBNK_connect_AB_subset",
+        "5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+    ]
+    assert "physical_library_id" not in libraries[0]
 
-    # Check that all libraries across flow cell directories are correctly represented
-    assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_GEX_1_subset") == 2
-    assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_AB_subset") == 1
-    assert config_contents.count("Gene Expression") == 2
-    assert config_contents.count("Antibody Capture") == 1
+
+def write_flowcell_fastqs(random_path, library_id: str, header_template: str):
+    """
+    Write an R1 and R2 FASTQ file containing a single read for two flow cells.
+    The files from both flow cells have the same name.
+    """
+    fastq_files = []
+    for flowcell in ["FLOWCELL1", "FLOWCELL2"]:
+        for read in ["R1", "R2"]:
+            fastq_file = stage_file(
+                random_path, f"{library_id}_S1_L001_{read}_001.fastq.gz"
+            )
+            header = header_template.format(flowcell=flowcell, read_number=read[1])
+            with gzip.open(fastq_file, "wt") as open_fastq:
+                open_fastq.write(f"@{header}\nACGT\n+\nFFFF\n")
+            fastq_files.append(fastq_file)
+    return fastq_files
+
+
+@pytest.mark.parametrize(
+    "header_template",
+    [
+        # The read number is part of the comment after the space
+        "A00123:8:{flowcell}:1:1101:1000:1000 {read_number}:N:0:ACGT",
+        # Older Illumina format: the read number is appended after a forward slash
+        "HWUSI-EAS100R:6:{flowcell}:941:1973#0/{read_number}",
+    ],
+)
+def test_cellranger_multi_pair_fastq_files_using_read_names(
+    run_component, random_path, header_template
+):
+    library_id = "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset"
+    fastq_files = write_flowcell_fastqs(random_path, library_id, header_template)
+    outputpath = random_path()
+    run_component(
+        [
+            "--output",
+            outputpath,
+            *chain.from_iterable(("--input", path) for path in fastq_files),
+            "--library_id",
+            library_id,
+            "--library_type",
+            "Gene Expression",
+            "--gex_reference",
+            gex_reference,
+            "--dryrun",
+        ]
+    )
+    libraries = read_libraries_section(outputpath / "config.csv")
+    assert [row["fastq_id"] for row in libraries] == [library_id, library_id]
+    assert "physical_library_id" not in libraries[0]
+
+
+def test_cellranger_multi_library_arguments_for_split_library(
+    run_component, random_path
+):
+    # The library is staged into two directories, each resulting in a row in the config.
+    library_id = "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset"
+    fastq_files = write_flowcell_fastqs(
+        random_path,
+        library_id,
+        "A00123:8:{flowcell}:1:1101:1000:1000 {read_number}:N:0:ACGT",
+    )
+    outputpath = random_path()
+    run_component(
+        [
+            "--output",
+            outputpath,
+            *chain.from_iterable(("--input", path) for path in fastq_files),
+            "--input",
+            input2_R1,
+            "--input",
+            input2_R2,
+            "--library_id",
+            f"{library_id};5k_human_antiCMV_T_TBNK_connect_AB_subset",
+            "--library_type",
+            "Gene Expression;Antibody Capture",
+            "--library_subsample",
+            "0.5;0.8",
+            "--library_lanes",
+            "1;4",
+            "--gex_reference",
+            gex_reference,
+            "--feature_reference",
+            feature_reference,
+            "--dryrun",
+        ]
+    )
+    libraries = read_libraries_section(outputpath / "config.csv")
+    assert [
+        (row["fastq_id"], row["subsample_rate"], row["lanes"]) for row in libraries
+    ] == [
+        (library_id, "0.5", "1"),
+        (library_id, "0.5", "1"),
+        ("5k_human_antiCMV_T_TBNK_connect_AB_subset", "0.8", "4"),
+    ]
+
+
+def test_raise_with_wrong_number_of_library_subsample_values(
+    run_component, random_path
+):
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--output",
+                random_path(),
+                "--input",
+                input1_R1,
+                "--input",
+                input1_R2,
+                "--input",
+                input2_R1,
+                "--input",
+                input2_R2,
+                "--library_id",
+                "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset",
+                "--library_type",
+                "Gene Expression;Antibody Capture",
+                "--library_subsample",
+                "0.5",
+                "--gex_reference",
+                gex_reference,
+                "--feature_reference",
+                feature_reference,
+                "--dryrun",
+            ]
+        )
+    assert (
+        "--library_subsample must have one value per library, "
+        "but has 1 value(s) for 2 libraries"
+    ) in err.value.stdout.decode("utf-8")
+
+
+@pytest.mark.parametrize(
+    "header_template",
+    [
+        # The read names are identical between flow cells
+        "A00123:8:FLOWCELL:1:1101:1000:1000 {read_number}:N:0:ACGT",
+        # The read names of paired files do not match
+        "A00123:8:{flowcell}:1:1101:1000:100{read_number} {read_number}:N:0:ACGT",
+    ],
+)
+def test_raise_with_unpairable_fastq_files(run_component, random_path, header_template):
+    library_id = "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset"
+    fastq_files = write_flowcell_fastqs(random_path, library_id, header_template)
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--output",
+                random_path(),
+                *chain.from_iterable(("--input", path) for path in fastq_files),
+                "--library_id",
+                library_id,
+                "--library_type",
+                "Gene Expression",
+                "--gex_reference",
+                gex_reference,
+                "--dryrun",
+            ]
+        )
+    assert "could not be paired using the name of the first read" in (
+        err.value.stdout.decode("utf-8")
+    )
 
 
 def test_raise_with_missing_library_id(run_component, random_path):
