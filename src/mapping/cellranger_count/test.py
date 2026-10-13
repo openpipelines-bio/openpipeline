@@ -157,5 +157,29 @@ def test_cellranger_trim_reads(run_component, random_path):
     )
 
 
+def test_cellranger_disable_cell_annotation(run_component, random_path):
+    output = random_path()
+    run_component(
+        [
+            "--input",
+            input / "tinygex_S1_L001_R1_001.fastq.gz",
+            "--input",
+            input / "tinygex_S1_L001_R2_001.fastq.gz",
+            "--reference",
+            reference,
+            "--output",
+            output,
+            "--disable_cell_annotation",
+            "true",
+        ]
+    )
+    assert (output / "filtered_feature_bc_matrix.h5").is_file(), (
+        "No output was created."
+    )
+    assert not (output / "cell_types").exists(), (
+        "Cell annotation output was created while annotation was disabled."
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
