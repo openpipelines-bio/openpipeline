@@ -23,7 +23,7 @@ def test_simple_execution(run_component):
             "--output",
             "output.h5mu",
             "--methods",
-            "rf;svm",
+            "Random_Forest;Support_Vector",
         ]
     )
 
@@ -56,7 +56,7 @@ def test_popv_with_other_layer(run_component, tmp_path):
             "--output",
             "output.h5mu",
             "--methods",
-            "rf;svm;knn_on_scanorama;knn_on_scvi",
+            "Random_Forest;Support_Vector;KNN_SCANORAMA;KNN_SCVI",
         ]
     )
 
@@ -86,7 +86,7 @@ def test_popv_with_non_overlapping_cells(run_component, tmp_path):
             "--output",
             "output.h5mu",
             "--methods",
-            "rf;svm;knn_on_scanorama",
+            "Random_Forest;Support_Vector;KNN_SCANORAMA",
         ]
     )
 

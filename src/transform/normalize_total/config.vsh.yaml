@@ -9,7 +9,7 @@ description: |
   If exclude_highly_expressed=True, very highly expressed genes are excluded from the computation of the normalization factor (size factor) for each cell. This is meaningful as these can strongly influence the resulting normalized values for all other genes [Weinreb17].
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ contributor ]
 arguments:

@@ -174,6 +174,7 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "layer": "layer",
+        "scrublet_score_threshold": "scrublet_score_threshold",
         "output": "workflow_output"
       ],
       args: [output_compression: "gzip"],

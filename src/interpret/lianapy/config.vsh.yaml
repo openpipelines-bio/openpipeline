@@ -14,11 +14,13 @@ arguments:
     description: Input h5mu file
     direction: input
     required: true
+    example: input.h5mu
   - name: "--output"
     alternatives: ["-o"]
     type: file
     description: Output h5mu file.
     direction: output
+    example: output.h5mu
     required: true
   - name: "--modality"
     description: |
@@ -101,9 +103,7 @@ engines:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - liana~=1.5.0
-          # Pinning scipy because https://github.com/statsmodels/statsmodels/issues/9584
-          - scipy<1.16
+          - liana~=1.7.1
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]

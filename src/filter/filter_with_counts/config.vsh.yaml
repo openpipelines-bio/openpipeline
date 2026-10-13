@@ -9,7 +9,7 @@ authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer, author ]
+    roles: [ author ]
 
 argument_groups:
   - name: Inputs
@@ -29,7 +29,6 @@ argument_groups:
         required: false
 
       - name: "--layer"
-        description: |
         description: |
           Location of the count matrix. If specified, will be used to select a key from .layers,
           otherwise .X is used.

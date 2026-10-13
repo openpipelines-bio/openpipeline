@@ -6,14 +6,14 @@ description: |
   by prefixing the values with an unique id per .h5mu file.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]
     type: file
     description: Path to the input .h5mu.
     required: true
-    example: sample_path
+    example: input.h5mu
   - name: "--input_id"
     type: string
     description: "The input id."

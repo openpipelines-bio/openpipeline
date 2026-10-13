@@ -15,6 +15,13 @@ output = mu.read_h5mu(par["input"])
 assert input.n_mod == output.n_mod, "Number of modalities differ"
 assert input.mod.keys() == output.mod.keys(), "Modalities differ"
 
+# Without --intersect_obs, per-modality processing yields diverging cell sets
+# across modalities. This guards against intersect_obs silently being applied.
+assert output.mod["rna"].n_obs != output.mod["atac"].n_obs, (
+    f"Expected rna and atac modalities to have different observation counts "
+    f"when intersect_obs is not enabled, but both have {output.mod['rna'].n_obs}."
+)
+
 # Check atac modality
 assert_annotation_objects_equal(
     input.mod["atac"], output.mod["atac"], promote_precision=True

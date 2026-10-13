@@ -8,6 +8,8 @@ info:
       namespace: test_workflows/multiomics/process_singlesample
     - name: workflow2_test
       namespace: test_workflows/multiomics/process_singlesample
+    - name: workflow3_test
+      namespace: test_workflows/multiomics/process_singlesample
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
@@ -15,6 +17,7 @@ __merge__: process_singlesample.yaml
 
 dependencies:
   - name: dataflow/merge
+  - name: filter/intersect_obs
   - name: workflows/multiomics/process_singlesample_base
 
 resources:
@@ -31,6 +34,9 @@ test_resources:
   - type: nextflow_script
     path: test.nf
     entrypoint: test_wf2
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf3
   - path: /resources_test/concat_test_data
   - path: /resources_test/pbmc_1k_protein_v3
 runners:

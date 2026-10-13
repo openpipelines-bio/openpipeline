@@ -9,9 +9,7 @@ authors:
   - __merge__: /src/authors/angela_pisco.yaml
     roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
+    roles: [ author ]
 argument_groups:
   - name: Inputs
     arguments:
@@ -93,6 +91,7 @@ argument_groups:
         type: file
         direction: input
         description: Path to file containing transcription factor motifs in JASPAR format.
+        example: "motifs.txt"
       - name: "--non_nuclear_contigs"
         multiple: true
         required: false

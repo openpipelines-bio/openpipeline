@@ -29,12 +29,18 @@ data = {
 }
 
 logger.info("Converting to mudata")
+var_index_names = {key: adata.var.index.name for key, adata in data.items()}
 mudata = mu.MuData(data)
 
 try:
     mudata.var_names_make_unique()
 except (TypeError, ValueError):
     pass
+
+# Set var index names to avoid https://github.com/scverse/mudata/issues/146
+# TODO: Will be fixed in mudata 0.3.9
+for key, name in var_index_names.items():
+    mudata.mod[key].var.index.name = name
 
 logger.info("Writing to %s.", par["output"])
 mudata.write_h5mu(par["output"], compression=par["output_compression"])

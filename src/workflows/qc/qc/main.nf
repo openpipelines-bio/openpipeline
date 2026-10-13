@@ -79,6 +79,7 @@ workflow run_wf {
           //     ValueError: invalid literal for int() with base 10: ''
           // See https://github.com/viash-io/viash/issues/619
           "top_n_vars": state.top_n_vars ? state.top_n_vars : null,
+          "log1p_transform": state.log1p_transform,
           "var_qc_metrics_fill_na_value": state.var_qc_metrics_fill_na_value,
           "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
           "output_obs_total_counts_vars": state.output_obs_total_counts_vars,

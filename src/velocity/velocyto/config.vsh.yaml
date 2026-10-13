@@ -4,7 +4,7 @@ scope: "public"
 description: "Runs the velocity analysis on a BAM file, outputting a loom file."
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: [-i]
@@ -12,15 +12,18 @@ arguments:
     direction: input
     description: "Path to BAM file"
     required: true
+    example: input.bam
   - name: "--transcriptome"
     alternatives: [-t]
     type: file
     direction: input
     description: "Path to GTF file"
     required: true
+    example: transcriptome.gtf
   - name: "--barcode"
     alternatives: [-b]
     type: file
+    example: barcodes.txt
     direction: input
     description: |
       Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.
@@ -35,6 +38,7 @@ arguments:
     type: file
     direction: output
     description: "Velocyto loom file"
+    example: output.loom
   - name: "--logic"
     alternatives: ["-l"]
     type: string

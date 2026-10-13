@@ -7,7 +7,7 @@ authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ author ]
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   # inputs
   - name: "--input"
@@ -16,6 +16,7 @@ arguments:
     description: Input h5mu file
     direction: input
     required: true
+    example: input.h5mu
   - name: "--modality"
     description: |
       Which modality from the input MuData file to process.

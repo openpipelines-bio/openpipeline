@@ -5,11 +5,10 @@ description: |
   Regress out the effects of confounding variables using a linear least squares regression model with BPCells.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ maintainer, author ]
+    roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ contributor, author ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
+
 arguments:
   - name: "--input"
     type: file

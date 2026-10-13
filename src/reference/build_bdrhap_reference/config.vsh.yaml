@@ -12,9 +12,7 @@ description: |
   - Filtered GTF file
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
+    roles: [ author ]
 
 argument_groups:
   - name: Inputs
@@ -46,6 +44,7 @@ argument_groups:
           GTF lines for these sequences will be automatically generated and combined with the main GTF.
         required: false
         multiple: true
+        example: ["extra_sequence_1.fa.gz", "extra_sequence_2.fa.gz"]
         info:
           config_key: Extra_sequences
   - name: Outputs

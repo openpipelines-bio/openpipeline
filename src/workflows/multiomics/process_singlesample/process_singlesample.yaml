@@ -98,6 +98,16 @@ argument_groups:
         type: boolean_true
         description: Skip the scrublet doublet detection step.
 
+      - name: "--scrublet_score_threshold"
+        type: double
+        required: false
+        min: 0
+        max: 1
+        description: |
+          Manual doublet score threshold passed to filter_with_scrublet. Cells with a
+          doublet score above this value are classified as doublets. If not provided,
+          the threshold is determined automatically by Scrublet.
+
   - name: "CITE-seq filtering options"
     arguments:
       - name: "--prot_min_counts"
@@ -147,6 +157,14 @@ argument_groups:
         description: Minimum of non-zero values per guide. 
     
   
+  - name: "Cross-modality filtering"
+    arguments:
+      - name: "--intersect_obs"
+        type: boolean_true
+        description: |
+          After per-modality filtering, remove observations that are not present
+          in all processed modalities so that each modality shares the same set of cells.
+
   - name: "Mitochondrial & Ribosomal Gene Detection"
     arguments:
       - name: "--var_gene_names"

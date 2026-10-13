@@ -8,7 +8,7 @@ authors:
   - __merge__: /src/authors/samuel_d_souza.yaml
     roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 arguments:
   - name: --input
     type: file

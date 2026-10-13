@@ -5,7 +5,7 @@ description: |
   Convert the htseq table to a h5mu.
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/angela_pisco.yaml
     roles: [ author ]
 argument_groups:
@@ -27,7 +27,7 @@ argument_groups:
         name: --reference
         required: true
         description: The GTF file.
-        example: gencode_v41_star
+        example: gencode_v41_star.gtf
   - name: Outputs
     arguments:
       - name: "--output"

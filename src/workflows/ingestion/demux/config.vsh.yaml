@@ -9,7 +9,7 @@ info:
   test_dependencies:
 authors:
   - __merge__: /src/authors/toni_verbeiren.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/marijke_van_moerbeke.yaml
     roles: [ author ]
   - __merge__: /src/authors/angela_pisco.yaml
@@ -28,14 +28,14 @@ arguments:
     alternatives: [ "-i" ]
     type: file
     required: true
-    description: Input run directory
+    description: Directory containing BCL files
     example: bcl_dir
   - name: "--sample_sheet"
     alternatives: [ "-s" ]
     type: file
     required: true
     description: Pointer to the sample sheet
-    example: bcl_dir
+    example: SampleSheet.csv
   - name: "--demultiplexer"
     type: string
     description: The multiplexer to use, one of bclconvert or mkfastq

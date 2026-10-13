@@ -14,10 +14,6 @@ authors:
     roles: [ author ]
   - __merge__: /src/authors/jakub_majercik.yaml
     roles: [ author ]
-  - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ contributor ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
 
 argument_groups:
   - name: Inputs
@@ -28,6 +24,7 @@ argument_groups:
         description: Input h5mu file.
         direction: input
         required: true
+        example: input.h5mu
       - name: "--modality"
         description: |
           Which modality from the input MuData file to process.
@@ -73,6 +70,7 @@ argument_groups:
         description: Output h5mu file containing the aggregated pseudobulk samples.
         direction: output
         required: true
+        example: output.h5mu
       - name: "--output_compression"
         type: string
         description: |

@@ -1,0 +1,111 @@
+name: consensus_vote
+namespace: annotate
+scope: "public"
+description: |
+  Combines cell type predictions from multiple annotation methods into a single consensus prediction using a weighted majority vote. 
+  For each cell, each method votes for its predicted cell type, optionally weighted by the probability score and/or a per-method weight.
+  The consensus prediction is the cell type with the highest total weighted vote.
+  Note that this method does not leverage pre-existing ontology or perform any reconciliation of cell type labels across methods, so the same cell type may be represented by different labels in different methods and will be treated as distinct cell types in the vote.
+authors:
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    description: Input dataset arguments.
+    arguments:
+      - name: "--input"
+        type: file
+        description: Input h5mu file containing cell type predictions in .obs.
+        direction: input
+        required: true
+        example: input.h5mu
+      - name: "--modality"
+        description: Which modality to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--input_obs_predictions"
+        type: string
+        description: |
+          One or more .obs column names containing cell type predictions (labels) from
+          different annotation methods.
+        required: true
+        multiple: true
+        example: ["scanvi_pred", "celltypist_pred"]
+      - name: "--input_obs_probabilities"
+        type: string
+        description: |
+          One or more .obs column names containing prediction probability scores,
+          one per method in --input_obs_predictions. When provided, each method's
+          vote is scaled by the probability score for that cell (in addition to
+          any per-method --weights). Must be the same length as --input_obs_predictions.
+        required: false
+        multiple: true
+        example: ["scanvi_prob", "celltypist_prob", "singler_prob"]
+      - name: "--tie_label"
+        type: string
+        description: |
+          Label to assign when two or more cell types receive equal votes.
+          If not provided, tied cells are assigned None (missing value).
+        required: false
+        example: "Unknown"
+      - name: "--weights"
+        type: double
+        description: |
+          Per-method weights for the consensus vote. Must be the same length as
+          --input_obs_predictions when provided. Weights are normalized to sum to 1
+          before use. If not provided, all methods are weighted equally.
+        required: false
+        multiple: true
+        example: [1.0, 2.0]
+
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        alternatives: [-o]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        example: output.h5mu
+      - name: "--output_obs_predictions"
+        type: string
+        default: consensus_pred
+        required: false
+        description: |
+          In which `.obs` slot to store the consensus predicted cell type.
+      - name: "--output_obs_score"
+        type: string
+        default: consensus_score
+        required: false
+        description: |
+          In which `.obs` slot to store the consensus score, defined as the fraction
+          of total weight assigned to the winning cell type.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+
+engines:
+  - type: docker
+    image: python:3.13-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowcpu, lowmem, lowdisk]

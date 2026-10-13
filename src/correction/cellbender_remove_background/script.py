@@ -2,6 +2,7 @@ import mudata as mu
 import tempfile
 import subprocess
 import os
+import shutil
 import sys
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -16,6 +17,7 @@ par = {
     "modality": "rna",
     # outputs
     "output": "output.h5mu",
+    "output_raw": "cellbender_output",
     "layer_output": "corrected",
     "obs_background_fraction": "background_fraction",
     "obs_cell_probability": "cell_probability",
@@ -26,12 +28,12 @@ par = {
     "obsm_gene_expression_encoding": "gene_expression_encoding",
     # args
     "expected_cells_from_qc": False,
-    "expected_cells": 1000,
-    "total_droplets_included": 25000,
+    "expected_cells": 400,
+    "total_droplets_included": 600,
     "force_cell_umi_prior": None,
     "force_empty_umi_prior": None,
     "model": "full",
-    "epochs": 150,
+    "epochs": 1,
     "low_count_threshold": 5,
     "z_dim": 64,
     "z_layers": [512],
@@ -55,10 +57,11 @@ par = {
     "constant_learning_rate": True,
     "debug": False,
     "cuda": False,
+    "output_compression": "gzip",
 }
 meta = {
     "temp_dir": os.getenv("VIASH_TEMP"),
-    "resources_dir": "src/correction/cellbender_remove_background",
+    "resources_dir": "src/utils",
 }
 ## VIASH END
 
@@ -170,7 +173,10 @@ with tempfile.TemporaryDirectory(
         ]
 
     logger.info("Running CellBender: '%s'", " ".join(cmd_pars))
-    out = subprocess.check_output(cmd_pars).decode("utf-8")
+    # Run inside temp_dir so CellBender's report and checkpoint tarball stay on the
+    # same filesystem as the output; otherwise its os.replace() of the report fails
+    # with EXDEV and the report is silently dropped.
+    out = subprocess.check_output(cmd_pars, cwd=temp_dir).decode("utf-8")
 
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
     adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
@@ -245,6 +251,20 @@ with tempfile.TemporaryDirectory(
                     "Requested to save latent gene encoding, but the data is either missing "
                     "from cellbender output or in an incorrect format."
                 )
+
+    logger.info("Copying full CellBender output bundle to '%s'", par["output_raw"])
+    # the tempdir also holds the AnnData input file we created and the checkpoint
+    # tarball CellBender writes to its working directory, neither of which is part
+    # of the CellBender output bundle and should not be published
+    exclude_from_bundle = {os.path.basename(input_file), "ckpt.tar.gz"}
+    shutil.copytree(
+        temp_dir,
+        par["output_raw"],
+        ignore=lambda directory, names: exclude_from_bundle
+        if directory == temp_dir
+        else set(),
+        dirs_exist_ok=True,
+    )
 
 
 logger.info("Writing to file %s", par["output"])

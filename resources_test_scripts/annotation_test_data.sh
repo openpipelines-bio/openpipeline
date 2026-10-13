@@ -65,6 +65,10 @@ disease = np.random.choice(["healthy", "diseased"], size=n_cells, p=[0.5, 0.5])
 sub_ref_adata_final.obs["treatment"] = treatment
 sub_ref_adata_final.obs["disease"] = disease
 
+# Strip raw slot - not needed for annotation and causes compatibility issues between AnnData/MuData versions
+sub_ref_adata_final = sub_ref_adata_final.copy()
+sub_ref_adata_final.raw = None
+
 # Write out data
 sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
 HEREDOC
@@ -87,6 +91,11 @@ viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml --engine docker -- \
     --input "${OUT}/demo_2000_cells.h5ad" \
     --output "${OUT}/demo_2000_cells.h5mu" \
     --modality "rna"
+
+
+echo "> Downloading pretrained Pan-human Azimuth (panhumanpy) model"
+wget "https://zenodo.org/records/20401417/files/panhumanpy_inference_model_v1.keras?download=1" \
+    -O "${OUT}/panhumanpy_inference_model_v1.keras"
 
 
 echo "> Fetching OnClass data and models"
