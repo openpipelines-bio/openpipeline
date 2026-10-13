@@ -37,11 +37,18 @@
 
 * `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234).
 
+* `mapping/cellranger_multi`: support libraries that were sequenced on multiple flow cells, resulting in FASTQ files with identical names in different directories (PR #1172):
+  - Files with identical names are staged into separate directories. Files that belong together (e.g. R1 and R2) are matched using the name of the first read in each file: the part of the FASTQ header before the first space or `/`, like Cell Ranger does. An error is raised when the files can not be matched.
+  - The `physical_library_id` column is added to the Cell Ranger config for split libraries with feature type `VDJ`, as required by Cell Ranger.
+  - The values of `--library_subsample` and `--library_lanes` are applied to all directories of a library.
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
+
+* `mapping/cellranger_multi`: raise a descriptive error when no FASTQ files are found for a `--library_id`, when the same FASTQ file is passed to more than one input argument (e.g. `--input` and `--gex_input`), or when the number of values for `--library_subsample` or `--library_lanes` does not match the number of libraries (PR #1172).
 
 
 ## BUG FIXES
