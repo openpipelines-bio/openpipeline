@@ -456,9 +456,9 @@ RUN pip install --user --upgrade pip && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2026-10-12T09:36:19Z"
+LABEL org.opencontainers.image.created="2026-10-13T09:40:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3ea378bcc5416a7aacd66210d71bc20aefbc4c74"
+LABEL org.opencontainers.image.revision="17acadbc777ed8a4526a618048ff8d33f2098479"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
