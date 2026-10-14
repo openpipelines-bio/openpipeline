@@ -20,7 +20,7 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
-* `report/mermaid`: this component has been deprecated and will be removed in a future release (PR ###)
+* `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
 ## NEW FEATURES
 
