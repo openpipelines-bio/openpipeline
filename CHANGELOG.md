@@ -20,6 +20,8 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
+* `report/mermaid`: this component has been deprecated and will be removed in a future release (PR ###)
+
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
