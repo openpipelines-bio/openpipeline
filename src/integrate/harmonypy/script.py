@@ -30,7 +30,7 @@ def main():
     pca_embedding = mod.obsm[par["obsm_input"]]
     metadata = mod.obs
     logger.info(
-        "Available covariates to regress out: ", ", ".join(metadata.columns.to_list())
+        "Available covariates to regress out: %s", ", ".join(metadata.columns.to_list())
     )
     logger.info(
         "Running harmonypy with theta %s to regress out the following variables: ",
@@ -39,8 +39,8 @@ def main():
     )
     ho = run_harmony(pca_embedding, metadata, par["obs_covariates"], theta=par["theta"])
     logger.info("Adding output to slot %s", par["obsm_output"])
-    mod.obsm[par["obsm_output"]] = ho.Z_corr.T
-    logger.info("Writing to %s")
+    mod.obsm[par["obsm_output"]] = ho.Z_corr
+    logger.info("Writing to %s", par["output"])
     write_h5ad_to_h5mu_with_compression(
         par["output"], par["input"], par["modality"], mod, par["output_compression"]
     )
