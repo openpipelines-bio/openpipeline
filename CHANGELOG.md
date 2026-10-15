@@ -20,7 +20,7 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
-* `integrate/harmonypy`, `workflows/integration/harmony_leiden`, `workflows/annotation/harmony_knn`: bump `harmonypy` from `0.0.6` to `0.2.0`. The component arguments are unchanged, but the integrated embedding will differ from previous releases (PR #xxxx):
+* `integrate/harmonypy`, `workflows/integration/harmony_leiden`, `workflows/annotation/harmony_knn`: bump `harmonypy` from `0.0.6` to `0.2.0`. The component arguments are unchanged, but the integrated embedding will differ from previous releases (PR #1256):
   - `harmonypy` was rewritten in PyTorch to match the formulas of the R package. The diversity penalty, embedding normalization, k-means initialization and convergence criteria changed, so the same `--theta` yields different results, and downstream neighbors and clusters will shift.
   - The integrated embedding is now stored as `float32` instead of `float64`.
   - A GPU (CUDA or MPS) is used automatically when one is available to the container, which may cause small numerical differences compared to running on CPU.
