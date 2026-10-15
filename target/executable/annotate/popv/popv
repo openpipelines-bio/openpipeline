@@ -449,26 +449,27 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
 ENTRYPOINT []
+COPY popv.patch /opt/popv.patch
 ENV CFLAGS="-mno-avx512f -mno-avx2"
 ENV CPPFLAGS="-mno-avx512f -mno-avx2"
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y procps git build-essential && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps git git-lfs build-essential && \
   rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "popv~=0.6.1"
+RUN git lfs install && \
+cd /opt && git clone --depth 1 --branch 0.6.1 https://github.com/YosefLab/PopV.git && \
+cd /opt/PopV && git apply /opt/popv.patch && \
+pip install --no-cache-dir /opt/PopV
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
-RUN cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git
-
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2026-10-09T12:56:52Z"
+LABEL org.opencontainers.image.created="2026-10-15T13:20:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e35e8c713a32871a487ba7d1fcbb97fb27f04bbf"
+LABEL org.opencontainers.image.revision="955f726e9e46e96615c400f5812c1447c2c335d2"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
