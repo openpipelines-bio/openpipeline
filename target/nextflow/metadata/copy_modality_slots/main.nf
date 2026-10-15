@@ -3492,7 +3492,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/copy_modality_slots",
     "viash_version" : "0.9.7",
-    "git_commit" : "fbe688a7d81be43df23ca8e724e9d7255ebc36e1",
+    "git_commit" : "e054918dbcecae12e9c18b6d1124f0e5d79f8c7b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
