@@ -463,9 +463,11 @@ def untar(tar_file, output_directory):
             # strip that directory name from the destination folder
             if len(root_dirs) == 1:
                 for mem in members:
-                    mem.path = Path(*Path(mem.path).parts[1:])
-            members_to_move = [mem for mem in members if mem.path != Path(".")]
-            open_tar.extractall(unpacked_directory, members=members_to_move)
+                    mem.name = mem.name.partition("/")[2]
+            members_to_move = [mem for mem in members if mem.name not in ("", ".")]
+            open_tar.extractall(
+                unpacked_directory, members=members_to_move, filter="data"
+            )
         return unpacked_directory
     return tar_file
 
