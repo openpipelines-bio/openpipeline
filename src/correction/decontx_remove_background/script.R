@@ -47,24 +47,24 @@ meta <- list(
 h5mu_to_h5ad <- function(h5mu_path, modality_name) {
   tmp_path <- tempfile(fileext = ".h5ad")
   mod_path <- paste0("/mod/", modality_name)
-  src <- H5Fopen(h5mu_path, flags = "H5F_ACC_RDONLY")
-  on.exit(H5Fclose(src))
-  if (!H5Lexists(src, mod_path)) {
+  src <- rhdf5::H5Fopen(h5mu_path, flags = "H5F_ACC_RDONLY")
+  on.exit(rhdf5::H5Fclose(src))
+  if (!rhdf5::H5Lexists(src, mod_path)) {
     stop(
       "Modality '", modality_name, "' is not available in '", h5mu_path, "'."
     )
   }
-  dest <- H5Fcreate(tmp_path)
-  on.exit(H5Fclose(dest), add = TRUE)
-  mod <- H5Gopen(src, mod_path)
-  on.exit(H5Gclose(mod), add = TRUE, after = FALSE)
+  dest <- rhdf5::H5Fcreate(tmp_path)
+  on.exit(rhdf5::H5Fclose(dest), add = TRUE)
+  mod <- rhdf5::H5Gopen(src, mod_path)
+  on.exit(rhdf5::H5Gclose(mod), add = TRUE, after = FALSE)
 
-  for (child in h5ls(mod, recursive = FALSE)$name) {
-    H5Ocopy(mod, child, dest, child)
+  for (child in rhdf5::h5ls(mod, recursive = FALSE)$name) {
+    rhdf5::H5Ocopy(mod, child, dest, child)
   }
   # The modality group's attributes (encoding-type: anndata, ...) become the
   # root attributes of the .h5ad file
-  h5_write_attrs(dest, "/", h5readAttributes(src, mod_path))
+  h5_write_attrs(dest, "/", rhdf5::h5readAttributes(src, mod_path))
 
   tmp_path
 }
@@ -101,24 +101,24 @@ read_modality <- function(file, modality, layer, obs_columns = list()) {
 
 # Writers for the AnnData elements added to the output
 h5_write_attrs <- function(fid, path, attrs, scalar = TRUE) {
-  oid <- H5Oopen(fid, path)
-  on.exit(H5Oclose(oid))
+  oid <- rhdf5::H5Oopen(fid, path)
+  on.exit(rhdf5::H5Oclose(oid))
   for (name in names(attrs)) {
-    if (H5Aexists(oid, name)) H5Adelete(oid, name)
+    if (rhdf5::H5Aexists(oid, name)) rhdf5::H5Adelete(oid, name)
     value <- attrs[[name]]
     if (is.character(value)) {
-      h5writeAttribute(
+      rhdf5::h5writeAttribute(
         value, oid, name,
         encoding = "UTF-8", variableLengthString = TRUE, asScalar = scalar
       )
     } else {
-      h5writeAttribute(value, oid, name, asScalar = scalar)
+      rhdf5::h5writeAttribute(value, oid, name, asScalar = scalar)
     }
   }
 }
 
 h5_delete_if_exists <- function(fid, path) {
-  if (H5Lexists(fid, path)) h5delete(fid, path)
+  if (rhdf5::H5Lexists(fid, path)) rhdf5::h5delete(fid, path)
 }
 
 compression_type <- if (is.null(par$output_compression)) {
@@ -136,7 +136,7 @@ h5_write_array <- function(fid, path, value, encoding_type = "array") {
   n <- length(value)
   # Filters don't apply to variable-length strings (LZF even segfaults on them)
   filter <- if (is.character(value)) "NONE" else compression$filter
-  h5createDataset(
+  rhdf5::h5createDataset(
     fid, path,
     dims = n,
     storage.mode = storage.mode(value),
@@ -146,7 +146,7 @@ h5_write_array <- function(fid, path, value, encoding_type = "array") {
     filter = filter,
     level = if (filter == "NONE") 0 else compression$level
   )
-  h5write(value, fid, path)
+  rhdf5::h5write(value, fid, path)
   h5_write_attrs(
     fid, path,
     list("encoding-type" = encoding_type, "encoding-version" = "0.2.0")
@@ -157,7 +157,7 @@ h5_write_array <- function(fid, path, value, encoding_type = "array") {
 h5_write_csr_matrix <- function(fid, path, mat) {
   mat <- methods::as(mat, "CsparseMatrix")
   h5_delete_if_exists(fid, path)
-  h5createGroup(fid, path)
+  rhdf5::h5createGroup(fid, path)
   h5_write_array(fid, paste0(path, "/data"), as.numeric(mat@x))
   h5_write_array(fid, paste0(path, "/indices"), mat@i)
   h5_write_array(fid, paste0(path, "/indptr"), mat@p)
@@ -171,7 +171,7 @@ h5_write_csr_matrix <- function(fid, path, mat) {
 h5_write_categorical <- function(fid, path, values) {
   values <- factor(values)
   h5_delete_if_exists(fid, path)
-  h5createGroup(fid, path)
+  rhdf5::h5createGroup(fid, path)
   codes <- as.integer(values) - 1L
   codes[is.na(codes)] <- -1L
   h5_write_array(fid, paste0(path, "/codes"), codes)
