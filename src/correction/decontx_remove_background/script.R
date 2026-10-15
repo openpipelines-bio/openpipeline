@@ -7,7 +7,7 @@ par <- list(
   modality = "rna",
   input_layer = NULL,
   input_obs_clusters = NULL,
-  input_obs_batsch = NULL,
+  input_obs_batch = NULL,
   background = NULL,
   background_layer = NULL,
   background_obs_batch = NULL,
@@ -36,91 +36,65 @@ meta <- list(
 
 ### VIASH END
 
-# The .h5mu files are read and written directly with rhdf5, following the
-# AnnData on-disk format, see
+# Each modality of an .h5mu file is an AnnData group under /mod/<modality>.
+# The input is read with anndataR after extracting the modality to a
+# temporary .h5ad file. The output is written in place with rhdf5, following
+# the AnnData on-disk format, see
 # https://anndata.readthedocs.io/en/latest/fileformat-prose.html
-# Each modality is an AnnData group under /mod/<modality>.
 
-h5_encoding_type <- function(fid, path) {
-  encoding <- h5readAttributes(fid, path)[["encoding-type"]]
-  if (is.null(encoding)) "" else encoding
-}
-
-h5_check_exists <- function(fid, path, what) {
-  if (!H5Lexists(fid, path)) {
-    stop(what, " '", path, "' is not available in the input file.")
-  }
-}
-
-# Read a counts matrix (.X or a layer) as a genes x cells dgCMatrix
-read_matrix <- function(fid, path) {
-  encoding <- h5_encoding_type(fid, path)
-  if (encoding %in% c("csr_matrix", "csc_matrix")) {
-    shape <- h5readAttributes(fid, path)[["shape"]]
-    mat <- Matrix::sparseMatrix(
-      i = as.integer(h5read(fid, paste0(path, "/indices"))),
-      p = as.integer(h5read(fid, paste0(path, "/indptr"))),
-      x = as.numeric(h5read(fid, paste0(path, "/data"))),
-      # A cells x genes CSR matrix has the same layout as a genes x cells CSC
-      dims = if (encoding == "csr_matrix") rev(shape) else shape,
-      index1 = FALSE
+# Uses rhdf5 rather than hdf5r: anndataR reads through rhdf5, and a file left
+# open by a different HDF5 library stays locked for it.
+h5mu_to_h5ad <- function(h5mu_path, modality_name) {
+  tmp_path <- tempfile(fileext = ".h5ad")
+  mod_path <- paste0("/mod/", modality_name)
+  src <- H5Fopen(h5mu_path, flags = "H5F_ACC_RDONLY")
+  on.exit(H5Fclose(src))
+  if (!H5Lexists(src, mod_path)) {
+    stop(
+      "Modality '", modality_name, "' is not available in '", h5mu_path, "'."
     )
-    if (encoding == "csr_matrix") mat else Matrix::t(mat)
-  } else if (encoding == "array") {
-    # rhdf5 reads the row-major cells x genes array as genes x cells
-    methods::as(h5read(fid, path), "CsparseMatrix")
-  } else {
-    stop("Unsupported encoding '", encoding, "' for matrix '", path, "'.")
   }
+  dest <- H5Fcreate(tmp_path)
+  on.exit(H5Fclose(dest), add = TRUE)
+  mod <- H5Gopen(src, mod_path)
+  on.exit(H5Gclose(mod), add = TRUE, after = FALSE)
+
+  for (child in h5ls(mod, recursive = FALSE)$name) {
+    H5Ocopy(mod, child, dest, child)
+  }
+  # The modality group's attributes (encoding-type: anndata, ...) become the
+  # root attributes of the .h5ad file
+  h5_write_attrs(dest, "/", h5readAttributes(src, mod_path))
+
+  tmp_path
 }
 
-# Read a single .obs column as a plain vector
-read_obs_column <- function(fid, obs_path, column) {
-  path <- paste0(obs_path, "/", column)
-  h5_check_exists(fid, path, ".obs column")
-  encoding <- h5_encoding_type(fid, path)
-  if (encoding == "categorical") {
-    codes <- as.integer(h5read(fid, paste0(path, "/codes")))
-    categories <- as.vector(h5read(fid, paste0(path, "/categories")))
-    codes[codes < 0] <- NA
-    categories[codes + 1L]
-  } else if (encoding %in% c("array", "string-array")) {
-    as.vector(h5read(fid, path))
-  } else {
-    stop("Unsupported encoding '", encoding, "' for .obs column '", path, "'.")
-  }
-}
-
-# Read the counts matrix and the requested .obs columns of one modality
+# Read the counts matrix (as a genes x cells dgCMatrix) and the requested
+# .obs columns of one modality
 read_modality <- function(file, modality, layer, obs_columns = list()) {
-  fid <- H5Fopen(file, flags = "H5F_ACC_RDONLY")
-  on.exit(H5Fclose(fid))
+  h5ad_path <- h5mu_to_h5ad(file, modality)
+  on.exit(unlink(h5ad_path))
+  adata <- anndataR::read_h5ad(h5ad_path, as = "InMemoryAnnData")
 
-  mod_path <- paste0("/mod/", modality)
-  h5_check_exists(fid, mod_path, "Modality")
-  matrix_path <- if (is.null(layer)) {
-    paste0(mod_path, "/X")
-  } else {
-    paste0(mod_path, "/layers/", layer)
+  mat <- if (is.null(layer)) adata$X else adata$layers[[layer]]
+  if (is.null(mat)) {
+    what <- if (is.null(layer)) ".X" else paste0("layer '", layer, "'")
+    stop("Counts matrix ", what, " is not available in '", file, "'.")
   }
-  h5_check_exists(fid, matrix_path, "Counts matrix")
-
-  read_index <- function(df_path) {
-    index_col <- h5readAttributes(fid, df_path)[["_index"]]
-    as.character(h5read(fid, paste0(df_path, "/", index_col)))
-  }
-  obs_path <- paste0(mod_path, "/obs")
-
-  mat <- read_matrix(fid, matrix_path)
-  dimnames(mat) <- list(
-    read_index(paste0(mod_path, "/var")),
-    read_index(obs_path)
-  )
+  mat <- Matrix::t(methods::as(mat, "CsparseMatrix"))
+  dimnames(mat) <- list(adata$var_names, adata$obs_names)
 
   list(
     matrix = mat,
     obs = lapply(obs_columns, function(col) {
-      if (is.null(col)) NULL else read_obs_column(fid, obs_path, col)
+      if (is.null(col)) {
+        return(NULL)
+      }
+      if (!col %in% colnames(adata$obs)) {
+        stop(".obs column '", col, "' is not available in '", file, "'.")
+      }
+      # Categoricals are read as factors, decontX expects plain vectors
+      as.vector(adata$obs[[col]])
     })
   )
 }

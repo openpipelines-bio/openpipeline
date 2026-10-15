@@ -179,7 +179,7 @@ engines:
     image: rocker/r2u:24.04
     setup:
       - type: r
-        bioc: [ decontX, rhdf5 ]
+        bioc: [ decontX, anndataR, rhdf5 ]
     test_setup:
       - type: docker
         env:
