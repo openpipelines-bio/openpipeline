@@ -125,7 +125,7 @@ test_resources:
 engines:
   - type: docker
     #image: nvcr.io/nvidia/pytorch:22.12-py3
-    image: pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
+    image: pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime
 
     setup:
       - type: docker
@@ -133,6 +133,7 @@ engines:
           # Build extensions without AVX512/AVX2 support
           - CFLAGS="-mno-avx512f -mno-avx2" 
           - CPPFLAGS="-mno-avx512f -mno-avx2"
+          - PIP_BREAK_SYSTEM_PACKAGES=1
       - type: apt
         packages:
           - procps
