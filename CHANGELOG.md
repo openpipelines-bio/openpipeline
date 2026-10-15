@@ -46,6 +46,8 @@
 
 ## BUG FIXES
 
+* `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #xxxx).
+
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
 * `feature_annotation/highly_variable_features_scanpy`: fix results being assigned to the wrong feature, when
