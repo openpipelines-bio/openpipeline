@@ -1,19 +1,10 @@
 import sys
 import os
 import numpy as np
-import scipy.sparse as sp
 import pytest
 import mudata as mu
 import pandas as pd
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
-
-
-def _assert_matrices_equal(a, b, msg):
-    if sp.issparse(a) or sp.issparse(b):
-        a, b = sp.csr_matrix(a), sp.csr_matrix(b)
-        assert a.shape == b.shape and (a != b).nnz == 0, msg
-    else:
-        assert np.array_equal(np.asarray(a), np.asarray(b)), msg
 
 
 ## VIASH START
@@ -30,6 +21,7 @@ background_file = (
 
 
 def assert_decontx_output(
+    input_path,
     output_file,
     output_layer="decontx_counts",
     output_obs_contamination="decontx_contamination",
@@ -37,11 +29,7 @@ def assert_decontx_output(
 ):
     assert os.path.exists(output_file), "No output was created."
 
-    input_mudata = mu.read_h5mu(input_file)
     output_mudata = mu.read_h5mu(output_file)
-
-    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
-
     output_rna = output_mudata.mod["rna"]
     assert output_layer in output_rna.layers, (
         f"Output should contain a '{output_layer}' layer."
@@ -56,20 +44,15 @@ def assert_decontx_output(
         "Contamination values should be between 0 and 1."
     )
 
-    input_rna = input_mudata.mod["rna"]
-    _assert_matrices_equal(
-        input_rna.X, output_rna.X, "rna.X should be unchanged by the component."
+    # Delete output slots in order to test for equality with input data
+    del output_rna.layers[output_layer]
+    output_obs_columns = [output_obs_contamination, output_obs_clusters]
+    output_rna.obs = output_rna.obs.drop(columns=output_obs_columns)
+    output_mudata.obs = output_mudata.obs.drop(
+        columns=[f"rna:{col}" for col in output_obs_columns]
     )
-
-    for layer_name, layer_matrix in input_rna.layers.items():
-        assert layer_name in output_rna.layers, (
-            f"Pre-existing layer '{layer_name}' should still be present in the output."
-        )
-        _assert_matrices_equal(
-            layer_matrix,
-            output_rna.layers[layer_name],
-            f"Pre-existing layer '{layer_name}' should be unchanged by the component.",
-        )
+    output_mudata.update()
+    assert_annotation_objects_equal(input_path, output_mudata)
 
 
 def test_execution_without_background(run_component, random_h5mu_path):
@@ -87,7 +70,7 @@ def test_execution_without_background(run_component, random_h5mu_path):
         ]
     )
 
-    assert_decontx_output(output_file)
+    assert_decontx_output(input_file, output_file)
 
 
 @pytest.fixture
@@ -149,7 +132,7 @@ def test_execution_with_background(run_component, random_h5mu_path):
         ]
     )
 
-    assert_decontx_output(output_file)
+    assert_decontx_output(input_file, output_file)
 
 
 def test_execution_with_cluster_label(
@@ -171,7 +154,7 @@ def test_execution_with_cluster_label(
         ]
     )
 
-    assert_decontx_output(output_file)
+    assert_decontx_output(input_with_clusters_path, output_file)
 
     input_clusters = (
         mu.read_h5mu(input_with_clusters_path)
@@ -215,7 +198,7 @@ def test_execution_with_batch(run_component, random_h5mu_path, input_with_batch_
         ]
     )
 
-    assert_decontx_output(output_file)
+    assert_decontx_output(input_with_batch_path, output_file)
 
 
 def test_execution_with_batch_with_background(
@@ -243,7 +226,7 @@ def test_execution_with_batch_with_background(
         ]
     )
 
-    assert_decontx_output(output_file)
+    assert_decontx_output(input_with_batch_path, output_file)
 
 
 def test_execution_without_delta_estimation(run_component, random_h5mu_path):
@@ -276,7 +259,8 @@ def test_execution_without_delta_estimation(run_component, random_h5mu_path):
         ]
     )
 
-    assert_decontx_output(output_fixed_delta)
+    assert_decontx_output(input_file, output_default)
+    assert_decontx_output(input_file, output_fixed_delta)
 
     contamination_default = (
         mu.read_h5mu(output_default).mod["rna"].obs["decontx_contamination"]
@@ -314,23 +298,11 @@ def test_execution_with_custom_output_names(run_component, random_h5mu_path):
     )
 
     assert_decontx_output(
+        input_file,
         output_file,
         output_layer="custom_counts",
         output_obs_contamination="custom_contamination",
         output_obs_clusters="custom_clusters",
-    )
-
-    output_rna = mu.read_h5mu(output_file).mod["rna"]
-    assert "decontx_counts" not in output_rna.layers, (
-        "Default 'decontx_counts' layer should not be written when --output_layer is set."
-    )
-    assert "decontx_contamination" not in output_rna.obs, (
-        "Default 'decontx_contamination' column should not be written when "
-        "--output_obs_contamination is set."
-    )
-    assert "decontx_clusters" not in output_rna.obs, (
-        "Default 'decontx_clusters' column should not be written when "
-        "--output_obs_clusters is set."
     )
 
 
@@ -367,17 +339,8 @@ def test_execution_with_input_layer(
         ]
     )
 
-    assert_decontx_output(output_layer)
-
-    input_layer_data = (
-        mu.read_h5mu(input_with_layer_path).mod["rna"].layers["shuffled_counts"]
-    )
-    output_layer_data = mu.read_h5mu(output_layer).mod["rna"].layers["shuffled_counts"]
-    _assert_matrices_equal(
-        input_layer_data,
-        output_layer_data,
-        "Pre-existing 'shuffled_counts' layer should be unchanged by the component.",
-    )
+    assert_decontx_output(input_with_layer_path, output_default)
+    assert_decontx_output(input_with_layer_path, output_layer)
 
     contamination_default = (
         mu.read_h5mu(output_default).mod["rna"].obs["decontx_contamination"]
