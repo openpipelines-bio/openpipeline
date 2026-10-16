@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "azimuth_seurat",
+  "description": "Reference-based cell type annotation using Seurat's Azimuth (RunAzimuth()).\nUnlike annotate/azimuth (which uses a single fixed pan-human neural network\nwith no reference choice), this component lets you pick which annotated\nreference dataset to map the query onto: one of the curated Azimuth\nreferences (e.g. \"pbmcref\", \"bonemarrowref\", \"lungref\"; see\nhttps://azimuth.hubmapconsortium.org/references/ for the full, up to date\nlist), or a local directory containing a custom \"ref.Rds\" + \"idx.annoy\"\nreference pair.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "Input dataset (query) arguments",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "The input (query) data to be annotated",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "assay": {
+          "type": "string",
+          "description": "Name of the Seurat assay to create from the input modality, and\nto run the annotation on.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"RNA\"`. ",
+          "default": "RNA"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "Output arguments.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "reference": {
+      "title": "Reference",
+      "type": "object",
+      "description": "Arguments controlling which Azimuth reference to map the query onto.\nThere is no training step: RunAzimuth() maps the query directly onto\nthe chosen reference's precomputed embeddings.\n",
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "Name of a curated Azimuth reference (e.g",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"pbmcref\"`. "
+        },
+        "annotation_levels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Which annotation levels (columns in the reference's metadata,\ne.g",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "do_adt": {
+          "type": "boolean",
+          "description": "Whether to impute a protein (ADT) assay from the reference, if\nthe reference includes antibody-derived tag data.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "mapping arguments": {
+      "title": "Mapping arguments",
+      "type": "object",
+      "description": "Lower-level arguments passed through to RunAzimuth().",
+      "properties": {
+        "umap_name": {
+          "type": "string",
+          "description": "Name of the UMAP reduction added to the output, projected onto the reference's UMAP.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"ref.umap\"`. ",
+          "default": "ref.umap"
+        },
+        "k_weight": {
+          "type": "integer",
+          "description": "Number of neighbors to consider when weighting anchors during label/embedding transfer.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
+          "default": 50
+        },
+        "n_trees": {
+          "type": "integer",
+          "description": "Number of trees used when building the annoy index for neighbor search.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `20`. ",
+          "default": 20
+        },
+        "mapping_score_k": {
+          "type": "integer",
+          "description": "Number of neighbors used to compute the per-cell mapping score.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
+          "default": 100
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/reference"
+    },
+    {
+      "$ref": "#/$defs/mapping arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}

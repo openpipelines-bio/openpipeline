@@ -3291,6 +3291,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "popv.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3413,6 +3417,12 @@ meta = [
       "setup" : [
         {
           "type" : "docker",
+          "copy" : [
+            "popv.patch /opt/popv.patch"
+          ]
+        },
+        {
+          "type" : "docker",
           "env" : [
             "CFLAGS=\\"-mno-avx512f -mno-avx2\\"",
             "CPPFLAGS=\\"-mno-avx512f -mno-avx2\\""
@@ -3423,17 +3433,16 @@ meta = [
           "packages" : [
             "procps",
             "git",
+            "git-lfs",
             "build-essential"
           ],
           "interactive" : false
         },
         {
-          "type" : "python",
-          "user" : false,
-          "packages" : [
-            "popv~=0.6.1"
-          ],
-          "upgrade" : true
+          "type" : "docker",
+          "run" : [
+            "git lfs install && \\\\\ncd /opt && git clone --depth 1 --branch 0.6.1 https://github.com/YosefLab/PopV.git && \\\\\ncd /opt/PopV && git apply /opt/popv.patch && \\\\\npip install --no-cache-dir /opt/PopV\n"
+          ]
         },
         {
           "type" : "python",
@@ -3448,12 +3457,6 @@ meta = [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
           ],
           "upgrade" : true
-        },
-        {
-          "type" : "docker",
-          "run" : [
-            "cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git\n"
-          ]
         }
       ],
       "test_setup" : [
@@ -3474,7 +3477,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.9.7",
-    "git_commit" : "e054918dbcecae12e9c18b6d1124f0e5d79f8c7b",
+    "git_commit" : "62c0cd7c5a14c06a96b661aa4ee90c82e6a575f2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
