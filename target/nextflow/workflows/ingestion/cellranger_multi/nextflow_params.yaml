@@ -37,7 +37,6 @@ gex_secondary_analysis: false
 gex_generate_bam: false
 # tenx_cloud_token_path: "path/to/file"
 # cell_annotation_model: "foo"
-# skip_cell_annotation: true
 # gex_expect_cells: 3000
 # gex_force_cells: 3000
 gex_include_introns: true

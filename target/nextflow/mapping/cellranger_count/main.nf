@@ -3183,7 +3183,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--chemistry",
-          "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv4: Single Cell 3' v4\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-R2-v3: Single Cell 5', paired-end/R2-only\n- SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC5PHT: Single Cell 5' HT\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+          "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv4: Single Cell 3' v4\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-R2-v3: Single Cell 5', paired-end/R2-only\n- SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
           "default" : [
             "auto"
           ],
@@ -3196,12 +3196,12 @@ meta = [
             "SC3Pv2",
             "SC3Pv3",
             "SC3Pv4",
+            "SC3Pv3LT",
             "SC3Pv3HT",
             "SC5P-PE-v3",
             "SC5P-PE",
             "SC5P-R2",
             "SC5P-R2-v3",
-            "SC5PHT",
             "SC-FB",
             "ARC-v1"
           ],
@@ -3223,22 +3223,13 @@ meta = [
         {
           "type" : "string",
           "name" : "--cell_annotation_model",
-          "description" : "Cell annotation model to use. Valid model names are auto, human_pca_v1_beta (10x human cloud model)\nand mouse_pca_v1_beta (10x mouse cloud model); the cloud-based models require a 10x Cloud Analysis token.\nThe Pan-Human Azimuth model (human samples only) runs locally and does not require a model name or\ncloud token. If this option is omitted or set to auto, uses the default model for the species.\nUse --disable_cell_annotation to turn off cell annotation altogether.\n",
+          "description" : "\\"Cell annotation model to use. If auto, uses the default model for the species.\nIf not given, does not run cell annotation.\\"\n",
           "required" : false,
           "choices" : [
             "auto",
             "human_pca_v1_beta",
             "mouse_pca_v1_beta"
           ],
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean",
-          "name" : "--disable_cell_annotation",
-          "description" : "Disable cell type annotation. Note that from Cell Ranger 10.1 onwards, cell annotation\nusing the local Pan-Human Azimuth model is performed by default for human samples.\n",
-          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3460,21 +3451,14 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "quay.io/nf-core/cellranger:10.1.0",
+      "image" : "ghcr.io/data-intuitive/cellranger:9.0",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
         {
-          "type" : "apt",
-          "packages" : [
-            "procps"
-          ],
-          "interactive" : false
-        },
-        {
           "type" : "docker",
           "run" : [
-            "cellranger telemetry disable"
+            "DEBIAN_FRONTEND=noninteractive apt update && \\\\\napt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*\n"
           ]
         }
       ],
@@ -3506,7 +3490,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count",
     "viash_version" : "0.9.7",
-    "git_commit" : "d76958a540a7813b8357a7e0d4580607946f11d7",
+    "git_commit" : "98d4783bc1ec523340ea2a4727993df14e757584",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3577,7 +3561,6 @@ $( if [ ! -z ${VIASH_PAR_FORCE_CELLS+x} ]; then echo "${VIASH_PAR_FORCE_CELLS}" 
 $( if [ ! -z ${VIASH_PAR_CHEMISTRY+x} ]; then echo "${VIASH_PAR_CHEMISTRY}" | sed "s#'#'\\"'\\"'#g;s#.*#par_chemistry='&'#" ; else echo "# par_chemistry="; fi )
 $( if [ ! -z ${VIASH_PAR_TENX_CLOUD_TOKEN_PATH+x} ]; then echo "${VIASH_PAR_TENX_CLOUD_TOKEN_PATH}" | sed "s#'#'\\"'\\"'#g;s#.*#par_tenx_cloud_token_path='&'#" ; else echo "# par_tenx_cloud_token_path="; fi )
 $( if [ ! -z ${VIASH_PAR_CELL_ANNOTATION_MODEL+x} ]; then echo "${VIASH_PAR_CELL_ANNOTATION_MODEL}" | sed "s#'#'\\"'\\"'#g;s#.*#par_cell_annotation_model='&'#" ; else echo "# par_cell_annotation_model="; fi )
-$( if [ ! -z ${VIASH_PAR_DISABLE_CELL_ANNOTATION+x} ]; then echo "${VIASH_PAR_DISABLE_CELL_ANNOTATION}" | sed "s#'#'\\"'\\"'#g;s#.*#par_disable_cell_annotation='&'#" ; else echo "# par_disable_cell_annotation="; fi )
 $( if [ ! -z ${VIASH_PAR_SECONDARY_ANALYSIS+x} ]; then echo "${VIASH_PAR_SECONDARY_ANALYSIS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_secondary_analysis='&'#" ; else echo "# par_secondary_analysis="; fi )
 $( if [ ! -z ${VIASH_PAR_GENERATE_BAM+x} ]; then echo "${VIASH_PAR_GENERATE_BAM}" | sed "s#'#'\\"'\\"'#g;s#.*#par_generate_bam='&'#" ; else echo "# par_generate_bam="; fi )
 $( if [ ! -z ${VIASH_PAR_INCLUDE_INTRONS+x} ]; then echo "${VIASH_PAR_INCLUDE_INTRONS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_include_introns='&'#" ; else echo "# par_include_introns="; fi )
@@ -3650,8 +3633,6 @@ if [ "\\$par_secondary_analysis" == "false" ]; then
   no_secondary_analysis="true"
 fi
 
-[[ "\\$par_disable_cell_annotation" == "false" ]] && unset par_disable_cell_annotation
-
 IFS=","
 id=myoutput
 cellranger count \\\\
@@ -3668,7 +3649,6 @@ cellranger count \\\\
   \\${par_force_cells:+--force-cells=\\$par_force_cells} \\\\
   \\${par_chemistry:+--chemistry="\\$par_chemistry"} \\\\
   \\${par_generate_bam:+--create-bam=\\$par_generate_bam} \\\\
-  \\${par_disable_cell_annotation:+--disable-cell-annotation} \\\\
   \\${no_secondary_analysis:+--nosecondary} \\\\
   \\${par_r1_length:+--r1-length=\\$par_r1_length} \\\\
   \\${par_r2_length:+--r2-length=\\$par_r2_length} \\\\

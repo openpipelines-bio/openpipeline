@@ -298,18 +298,13 @@
         },
         "cell_annotation_model": {
           "type": "string",
-          "description": "Cell annotation model to use",
+          "description": "\"Cell annotation model to use",
           "help_text": "Type: `string`, multiple: `False`, choices: ``auto`, `human_pca_v1_beta`, `mouse_pca_v1_beta``. ",
           "enum": [
             "auto",
             "human_pca_v1_beta",
             "mouse_pca_v1_beta"
           ]
-        },
-        "skip_cell_annotation": {
-          "type": "boolean",
-          "description": "Disable cell type annotation.\n",
-          "help_text": "Type: `boolean`, multiple: `False`. "
         },
         "gex_expect_cells": {
           "type": "integer",
@@ -340,7 +335,7 @@
         "gex_chemistry": {
           "type": "string",
           "description": "Assay configuration",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"auto\"`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv3-polyA`, `SC3Pv3-CS1`, `SC3Pv4`, `SC3Pv4-polyA`, `SC3Pv4-CS1`, `SC3Pv4-polyA-OCM`, `SC3Pv4-CS1-OCM`, `SC3Pv3HT`, `SC3Pv3HT-polyA`, `SC3Pv3HT-CS1`, `SC5P-PE`, `SC5P-PE-v3`, `SC5P-PE-OCM-v3`, `SC5P-R2`, `SC-FB`, `SC5P-R2-v3`, `SC5P-R2-OCM-v3`, `SC5PHT`, `MFRP`, `MFRP-R1`, `MFRP-RNA`, `MFRP-Ab`, `SFRP`, `MFRP-Ab-R2pos50`, `MFRP-RNA-R1`, `MFRP-Ab-R1`, `Flex-v2-singleplex`, `Flex-v2-R1`, `Flex-v2-RNA-R2`, `Flex-v2-Ab-R2:45`, `Flex-v2-Ab-R2:64`, `Flex-v2-CRISPR-R2:1`, `ARC-v1``. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"auto\"`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv3-polyA`, `SC3Pv4`, `SC3Pv4-polyA`, `SC3Pv3LT`, `SC3Pv3HT`, `SC3Pv3HT-polyA`, `SC5P-PE`, `SC5P-PE-v3`, `SC5P-R2`, `SC-FB`, `SC5P-R2-v3`, `SCP5-PE-v3`, `SC5PHT`, `MFRP`, `MFRP-R1`, `MFRP-RNA`, `MFRP-Ab`, `SFRP`, `MFRP-Ab-R2pos50`, `MFRP-RNA-R1`, `MFRP-Ab-R1`, `ARC-v1``. ",
           "enum": [
             "auto",
             "threeprime",
@@ -349,22 +344,17 @@
             "SC3Pv2",
             "SC3Pv3",
             "SC3Pv3-polyA",
-            "SC3Pv3-CS1",
             "SC3Pv4",
             "SC3Pv4-polyA",
-            "SC3Pv4-CS1",
-            "SC3Pv4-polyA-OCM",
-            "SC3Pv4-CS1-OCM",
+            "SC3Pv3LT",
             "SC3Pv3HT",
             "SC3Pv3HT-polyA",
-            "SC3Pv3HT-CS1",
             "SC5P-PE",
             "SC5P-PE-v3",
-            "SC5P-PE-OCM-v3",
             "SC5P-R2",
             "SC-FB",
             "SC5P-R2-v3",
-            "SC5P-R2-OCM-v3",
+            "SCP5-PE-v3",
             "SC5PHT",
             "MFRP",
             "MFRP-R1",
@@ -374,12 +364,6 @@
             "MFRP-Ab-R2pos50",
             "MFRP-RNA-R1",
             "MFRP-Ab-R1",
-            "Flex-v2-singleplex",
-            "Flex-v2-R1",
-            "Flex-v2-RNA-R2",
-            "Flex-v2-Ab-R2:45",
-            "Flex-v2-Ab-R2:64",
-            "Flex-v2-CRISPR-R2:1",
             "ARC-v1"
           ],
           "default": "auto"
