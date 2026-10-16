@@ -19,7 +19,7 @@ par = {
     "output_similarity": None,
 }
 meta = {
-    "resources_dir": "src/cluster/label_communities/",
+    "resources_dir": "src/cluster/subpopulation_communities/",
     "cpus": None,
 }
 ## VIASH END

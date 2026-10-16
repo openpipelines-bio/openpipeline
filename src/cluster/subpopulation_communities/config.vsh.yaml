@@ -1,4 +1,4 @@
-name: label_communities
+name: subpopulation_communities
 namespace: "cluster"
 scope: "public"
 description: |
@@ -24,7 +24,7 @@ description: |
   To carry the community labels back onto cells, join `--output` onto `.obs` with
   `metadata/join_csv`.
 
-keywords: [ label communities, clustering, co-occurrence, dynamics, BEYOND ]
+keywords: [ subpopulation communities, clustering, co-occurrence, dynamics, BEYOND ]
 links:
   repository: https://github.com/naomihabiblab/BEYOND_DLPFC
 references:
@@ -45,7 +45,7 @@ argument_groups:
         description: |
           CSV with the group x label proportion matrix: an identifier column plus one
           numeric column per label
-          (`--output_csv` of `stats/calculate_label_proportions`).
+          (`--output_csv` of `metadata/calculate_obs_label_proportions`).
         example: proportions.csv
 
       - name: "--dynamics"
@@ -70,7 +70,7 @@ argument_groups:
         type: integer
         required: true
         min: 2
-        description: Number of label communities.
+        description: Number of subpopulation communities.
         example: 6
 
       - name: "--alpha"

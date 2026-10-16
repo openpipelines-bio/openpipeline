@@ -1,5 +1,5 @@
-name: calculate_label_proportions
-namespace: "stats"
+name: calculate_obs_label_proportions
+namespace: "metadata"
 scope: "public"
 description: |
   Calculate the proportion of each cell label within each group of cells.

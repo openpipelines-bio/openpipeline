@@ -6,9 +6,9 @@ import pandas as pd
 
 ## VIASH START
 meta = {
-    "executable": "target/executable/cluster/label_communities/label_communities",
-    "resources_dir": "src/cluster/label_communities/",
-    "config": "src/cluster/label_communities/config.vsh.yaml",
+    "executable": "target/executable/cluster/subpopulation_communities/subpopulation_communities",
+    "resources_dir": "src/cluster/subpopulation_communities/",
+    "config": "src/cluster/subpopulation_communities/config.vsh.yaml",
 }
 ## VIASH END
 

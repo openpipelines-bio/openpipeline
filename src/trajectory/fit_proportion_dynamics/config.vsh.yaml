@@ -11,7 +11,7 @@ description: |
   MuData - no cell-level data is involved.
 
     --input       group x label proportions
-                  (`--output_csv` of `stats/calculate_label_proportions`)
+                  (`--output_csv` of `metadata/calculate_obs_label_proportions`)
     --pseudotime  one pseudotime value per group
                   (`--output_table` of `trajectory/palantir`)
 

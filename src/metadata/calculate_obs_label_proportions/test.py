@@ -9,10 +9,10 @@ from mudata import MuData, read_h5mu
 
 ## VIASH START
 meta = {
-    "executable": "./target/executable/stats/calculate_label_proportions/calculate_label_proportions",
-    "resources_dir": "./src/stats/calculate_label_proportions/",
+    "executable": "./target/executable/metadata/calculate_obs_label_proportions/calculate_obs_label_proportions",
+    "resources_dir": "./src/metadata/calculate_obs_label_proportions/",
     "cpus": 2,
-    "config": "./src/stats/calculate_label_proportions/config.vsh.yaml",
+    "config": "./src/metadata/calculate_obs_label_proportions/config.vsh.yaml",
 }
 ## VIASH END
 

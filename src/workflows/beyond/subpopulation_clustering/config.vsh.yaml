@@ -46,7 +46,7 @@ argument_groups:
         required: false
         description: |
           .obs column for the per-cell-type Leiden labels. This is the `--obs_label`
-          input of `stats/calculate_label_proportions`.
+          input of `metadata/calculate_obs_label_proportions`.
 
   - name: Clustering
     arguments:

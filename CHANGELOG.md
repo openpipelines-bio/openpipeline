@@ -8,7 +8,7 @@
 
   **Components:**
 
-  - `stats/calculate_label_proportions` *(new namespace)*: computes a group x label cell
+  - `metadata/calculate_obs_label_proportions`: computes a group x label cell
     proportion matrix from a single-cell dataset (`--obs_group`, e.g. a participant or
     sample, x `--obs_label`, e.g. a cell type); omitting `--obs_group` gives the overall
     label proportions. `--obs_normalize_within` takes the proportion within a broader
@@ -44,7 +44,7 @@
     joins them on their identifier column, and writes the fitted curves as a long-format
     CSV (`--output`) plus per-label peak pseudotime, R^2 and p-value (`--output_stats`).
 
-  - `cluster/label_communities`: groups labels into communities by combining
+  - `cluster/subpopulation_communities`: groups labels into communities by combining
     co-occurrence similarity (correlation of group proportion vectors, Spearman by
     default as in the reference implementation, `--correlation_method`) and dynamics
     similarity (Pearson correlation of the fitted proportion curves); applies
@@ -60,7 +60,7 @@
     genes warns and writes an empty table instead of failing, so a workflow survives
     a DE run without hits.
 
-  - `stats/test_associations`: tests the association between any set of
+  - `stats/test_associations` *(new namespace)*: tests the association between any set of
     response columns and any set of predictor columns in a table (CSV in, long-format CSV
     out, no `MuData` involved), using statsmodels MixedLM when `--random_effect_column` is
     given and OLS otherwise. Supports covariates, a `--formula` escape hatch, `logit` /
@@ -82,7 +82,7 @@
 
   - `workflows/beyond/trajectory_analysis`: full BEYOND trajectory inference from an
     annotated atlas h5mu - runs 6 steps (proportions -> PHATE -> Palantir ->
-    proportion dynamics -> label communities -> trait associations). The BEYOND
+    proportion dynamics -> subpopulation communities -> trait associations). The BEYOND
     cellular landscape is a landscape of participants, not of cells: step 1 converts the
     atlas into a participant x subpopulation proportion table and steps 2-6 are table
     in / table out. Emits the h5mu (with the proportion matrix in `.uns`) plus the

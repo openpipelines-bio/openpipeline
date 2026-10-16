@@ -229,7 +229,7 @@ argument_groups:
         required: false
         description: Smoothing regularisation penalty for the spline (higher = smoother).
 
-  - name: Label communities
+  - name: Subpopulation communities
     arguments:
       - name: "--n_communities"
         type: integer
@@ -316,11 +316,11 @@ argument_groups:
           implementation), or within each subpopulation.
 
 dependencies:
-  - name: stats/calculate_label_proportions
+  - name: metadata/calculate_obs_label_proportions
   - name: dimred/phate
   - name: trajectory/palantir
   - name: trajectory/fit_proportion_dynamics
-  - name: cluster/label_communities
+  - name: cluster/subpopulation_communities
   - name: stats/test_associations
 
 resources:

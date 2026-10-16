@@ -28,7 +28,7 @@ workflow run_wf {
     //
     // The only step that opens the h5mu. The CSV it writes is what every downstream
     // step consumes.
-    | calculate_label_proportions.run(
+    | calculate_obs_label_proportions.run(
         fromState: { id, state -> [
           "input":       state.input,
           "obs_group":   state.obs_group,
@@ -106,8 +106,8 @@ workflow run_wf {
         }
       )
 
-    // -- 5. Label communities (co-occurrence + dynamics) ----------------------------
-    | label_communities.run(
+    // -- 5. Subpopulation communities (co-occurrence + dynamics) --------------------
+    | subpopulation_communities.run(
         fromState: { id, state -> [
           "input":               state.output_proportions_csv,
           "dynamics":            state.output_dynamics_csv,
