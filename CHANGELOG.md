@@ -41,6 +41,8 @@
 
 * `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234).
 
+* `workflows/annotation/Azimuth`: added a wrapper workflow around the annotate/azimuth_seurat component to make it accept either H5MU or Seurat input (PR #1251).
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).

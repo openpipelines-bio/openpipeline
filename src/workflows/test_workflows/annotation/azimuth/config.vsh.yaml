@@ -1,0 +1,53 @@
+name: "azimuth_test"
+namespace: "test_workflows/annotation"
+scope: "test"
+description: "This component tests the output of the azimuth annotation workflow."
+authors:
+  - __merge__: /src/authors/mirte_detemmerman.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to h5mu output.
+        example: foo.final.h5mu
+      - name: "--modality"
+        type: string
+        default: "rna"
+        description: The annotated modality.
+      - name: "--expected_modalities"
+        type: string
+        multiple: true
+        required: true
+        description: The modalities that should be present in the output.
+      - name: "--expected_obs_predictions"
+        type: string
+        multiple: true
+        required: true
+        description: The .obs columns of --modality that should contain the predicted labels.
+      - name: "--expected_obs_probability"
+        type: string
+        multiple: true
+        required: true
+        description: The .obs columns of --modality that should contain the prediction scores.
+      - name: "--expected_obs_mapping_score"
+        type: string
+        default: "azimuth_mapping_score"
+        description: The .obs column of --modality that should contain the mapping score.
+      - name: "--expected_obsm"
+        type: string
+        multiple: true
+        default: ["X_azimuth_umap", "X_integrated_azimuth"]
+        description: The .obsm keys of --modality that should be present.
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+engines:
+  - type: docker
+    image: python:3.12-slim
+    __merge__: /src/base/requirements/testworkflows_setup.yaml
+runners:
+  - type: executable
+  - type: nextflow
