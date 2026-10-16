@@ -1,0 +1,118 @@
+name: pca
+namespace: "cpu_gpu_wrappers/preprocessing"
+scope: "private"
+description: |
+  Computes PCA coordinates, loadings and variance decomposition, running either
+  the GPU (rapids-singlecell) or the CPU (scanpy) variant of pca, selected
+  with --device_type.
+
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        direction: input
+        description: |
+          Input h5mu file. When running the GPU variant (`--device_type gpu`), genes
+          with zero expression must be filtered out beforehand (e.g. with
+          `filter_genes`), as rapids-singlecell PCA raises an error otherwise.
+          The CPU variant tolerates zero-expression genes.
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        default: "rna"
+        description: Which modality from the input MuData file to process.
+      - name: "--layer"
+        type: string
+        description: |
+          Use specified layer for expression values instead of the .X object
+          from the modality.
+      - name: "--var_input"
+        type: string
+        description: |
+          Column name in .var matrix that will be used to select which genes
+          to run the PCA on.
+        example: filter_with_hvg
+
+  - __merge__: /src/base/device_type_argument.yaml
+
+  - name: Options
+    arguments:
+      - name: "--num_components"
+        type: integer
+        example: 25
+        description: |
+          Number of principal components to compute. Defaults to 50, or
+          1 - minimum dimension size of selected representation.
+      - name: "--chunked"
+        type: boolean_true
+        description: |
+          If True, perform an incremental PCA on segments of a predefined
+          size. Setting this flag automatically implies zero centering.
+          Must be specified together with --chunk_size.
+      - name: "--chunk_size"
+        type: integer
+        min: 2
+        description: |
+          Number of observations to include in each chunk. Required if
+          chunked=True was passed.
+      - name: "--random_state"
+        type: integer
+        min: 0
+        description: |
+          Used to set the initial states for the optimization.
+
+  - name: Outputs
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Output h5mu file.
+        example: output.h5mu
+      - name: "--obsm_output"
+        type: string
+        default: "X_pca"
+        description: In which .obsm slot to store the resulting embedding.
+      - name: "--varm_output"
+        type: string
+        default: "pca_loadings"
+        description: In which .varm slot to store the resulting loadings matrix.
+      - name: "--uns_output"
+        type: string
+        default: "pca_variance"
+        description: In which .uns slot to store the resulting variance objects.
+      - name: "--overwrite"
+        type: boolean
+        default: false
+        description: Allow overwriting .obsm, .varm and .uns slots.
+
+dependencies:
+  - name: preprocessing/pca
+    repository: openpipeline_rapids
+    alias: pca_gpu
+  - name: dimred/pca
+    alias: pca_cpu
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_gpu_wf
+  - path: /resources_test/pbmc_1k_protein_v3
+
+runners:
+  - type: nextflow

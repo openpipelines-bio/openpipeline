@@ -1,0 +1,94 @@
+name: log1p
+namespace: "cpu_gpu_wrappers/preprocessing"
+scope: "private"
+description: |
+  Logarithmize the data matrix, running either the GPU (rapids-singlecell) or
+  the CPU (scanpy) variant of log1p, selected with --device_type.
+
+  Computes X = log(X + 1), where log denotes the natural logarithm unless
+  a different base is given.
+
+authors:
+  - __merge__: /src/authors/jakub_majercik.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        direction: input
+        description: Input h5mu file.
+        example: input.h5mu
+      - name: "--modality"
+        type: string
+        default: "rna"
+        description: Which modality from the input MuData file to process.
+      - name: "--input_layer"
+        type: string
+        description: Input layer to use. If not set, .X is used.
+
+  - __merge__: /src/base/device_type_argument.yaml
+
+  - name: Outputs
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+    arguments:
+      - name: "--output"
+        type: file
+        required: true
+        direction: output
+        description: Output h5mu file.
+        example: output.h5mu
+      - name: "--output_layer"
+        type: string
+        description: |
+          Output layer to write the transformed matrix to. If not set:
+          when --input_layer is unset, .X is modified in-place; when
+          --input_layer is set, that input layer is modified in-place.
+
+  - name: Options
+    arguments:
+      - name: "--base"
+        type: double
+        description: |
+          Base of the logarithm. If unset, the natural logarithm is used.
+
+  - name: rapids-singlecell options
+    description: Exposed only by the GPU (rapids-singlecell) variant (--device_type gpu).
+    arguments:
+      - name: "--input_obsm"
+        type: string
+        description: |
+          Entry in .obsm to log-transform. Mutually exclusive with
+          --input_layer.
+      - name: "--output_obsm"
+        type: string
+        description: |
+          Output entry in .obsm to write the transformed matrix to. Only valid
+          when --input_obsm is set. If not set, the input .obsm entry is
+          modified in-place. Mutually exclusive with --output_layer.
+
+dependencies:
+  - name: preprocessing/log1p
+    repository: openpipeline_rapids
+    alias: log1p_gpu
+  - name: transform/log1p
+    alias: log1p_cpu
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_gpu_wf
+  - path: /resources_test/pbmc_1k_protein_v3
+
+runners:
+  - type: nextflow
