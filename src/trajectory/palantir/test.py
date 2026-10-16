@@ -191,12 +191,13 @@ def test_palantir_input_preserved(run_component, tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# Table mode: group-level input, no MuData involved
+# Group-level input: one observation per donor, as written by
+# metadata/calculate_obs_label_proportions + dimred/phate
 # ---------------------------------------------------------------------------
 
 
-def _make_tables(tmp_path, n_groups=120, n_dims=4, seed=42, id_column="participant_id"):
-    """Embedding CSV with a linear trajectory, plus a metadata CSV of labels."""
+def _make_group_mudata(tmp_path, n_groups=120, n_dims=4, seed=42):
+    """Group-level MuData with a linear trajectory in X_phate and a stage label."""
     rng = np.random.default_rng(seed)
     pt = np.linspace(0, 1, n_groups)
     embedding = np.column_stack(
@@ -208,269 +209,132 @@ def _make_tables(tmp_path, n_groups=120, n_dims=4, seed=42, id_column="participa
     )
     ids = [f"donor_{i:03d}" for i in range(n_groups)]
 
-    emb_df = pd.DataFrame(embedding, columns=[f"phate_{i + 1}" for i in range(n_dims)])
-    emb_df.insert(0, id_column, ids)
-    emb_path = tmp_path / "embedding.csv"
-    emb_df.to_csv(emb_path, index=False)
-
     # Early third of the trajectory is the "control" stage
     stage = np.where(pt < 0.33, "control", np.where(pt < 0.66, "mid", "late"))
-    meta_df = pd.DataFrame({id_column: ids, "stage": stage, "age": pt * 40 + 50})
-    meta_path = tmp_path / "metadata.csv"
-    meta_df.to_csv(meta_path, index=False)
+    obs = pd.DataFrame({"participant_id": ids, "stage": stage}, index=ids)
+    adata = ad.AnnData(obs=obs)
+    adata.obsm["X_phate"] = embedding
 
-    return emb_path, meta_path, ids
+    path = tmp_path / "groups.h5mu"
+    mu.MuData({"proportions": adata}).write_h5mu(str(path))
+    return path, ids
 
 
-def test_table_mode_start_id(run_component, tmp_path):
-    """Explicit --start_id identifier on a table; pseudotime follows the gradient."""
-    emb_path, _, ids = _make_tables(tmp_path)
-    output = tmp_path / "pseudotime.csv"
+def _group_args(input_path, output, *extra):
+    return [
+        "--input",
+        str(input_path),
+        "--modality",
+        "proportions",
+        "--obsm_input",
+        "X_phate",
+        "--output",
+        str(output),
+        "--num_waypoints",
+        "40",
+        "--waypoint_knn",
+        "10",
+        "--n_components",
+        "3",
+        "--knn",
+        "15",
+        *extra,
+    ]
 
-    run_component(
-        [
-            "--input_table",
-            str(emb_path),
-            "--output_table",
-            str(output),
-            "--start_id",
-            ids[0],
-            "--num_waypoints",
-            "40",
-            "--waypoint_knn",
-            "10",
-            "--n_components",
-            "3",
-            "--knn",
-            "15",
-        ]
-    )
 
-    assert output.is_file()
-    result = pd.read_csv(output)
-    assert result.columns[0] == "participant_id"
-    assert "palantir_pseudotime" in result.columns
-    assert "palantir_entropy" in result.columns
-    assert "palantir_waypoint" in result.columns
-    assert list(result["participant_id"]) == ids, "Identifiers not preserved"
+def test_group_level_start_id(run_component, tmp_path):
+    """Explicit --start_id on donors; pseudotime follows the gradient."""
+    input_path, ids = _make_group_mudata(tmp_path)
+    output = tmp_path / "groups_pt.h5mu"
 
-    pt = result["palantir_pseudotime"].to_numpy()
+    run_component(_group_args(input_path, output, "--start_id", ids[0]))
+
+    adata = mu.read_h5mu(str(output)).mod["proportions"]
+    assert list(adata.obs_names) == ids, "Identifiers not preserved"
+    pt = adata.obs["palantir_pseudotime"].to_numpy()
     assert np.isfinite(pt).all()
     assert pt.min() >= 0.0 and pt.max() <= 1.0
-    # The table rows are ordered along the trajectory, so pseudotime must increase
+    # The donors are ordered along the trajectory, so pseudotime must increase
     rank_corr = pd.Series(pt).corr(pd.Series(np.arange(len(pt))), method="spearman")
     assert rank_corr > 0.9, (
         f"Pseudotime does not follow the trajectory: rho={rank_corr:.3f}"
     )
 
 
-def test_table_mode_start_cluster_from_metadata(run_component, tmp_path):
-    """--start_cluster resolves against a column of --metadata."""
-    emb_path, meta_path, ids = _make_tables(tmp_path)
-    output = tmp_path / "pseudotime_cluster.csv"
+def test_group_level_start_cluster(run_component, tmp_path):
+    """--start_cluster resolves against an .obs column of the group-level object."""
+    input_path, ids = _make_group_mudata(tmp_path)
+    output = tmp_path / "groups_cluster.h5mu"
 
     run_component(
-        [
-            "--input_table",
-            str(emb_path),
-            "--metadata",
-            str(meta_path),
-            "--output_table",
-            str(output),
+        _group_args(
+            input_path,
+            output,
             "--start_cluster_column",
             "stage",
             "--start_cluster",
             "control",
-            "--num_waypoints",
-            "40",
-            "--waypoint_knn",
-            "10",
-            "--n_components",
-            "3",
-            "--knn",
-            "15",
-        ]
+        )
     )
 
-    result = pd.read_csv(output)
-    pt = result.set_index("participant_id")["palantir_pseudotime"]
+    pt = mu.read_h5mu(str(output)).mod["proportions"].obs["palantir_pseudotime"]
     n_control = int(len(ids) * 0.33)
     assert pt.iloc[:n_control].mean() < pt.iloc[-n_control:].mean(), (
         "Root was not taken from the 'control' stage"
     )
 
 
-def test_table_mode_terminal_states(run_component, tmp_path):
-    """Explicit --terminal_states produce one fate_<id> column each."""
-    emb_path, _, ids = _make_tables(tmp_path)
-    output = tmp_path / "pseudotime_fates.csv"
+def test_group_level_terminal_states(run_component, tmp_path):
+    """Explicit --terminal_states give one fate-probability column each."""
+    input_path, ids = _make_group_mudata(tmp_path)
+    output = tmp_path / "groups_fates.h5mu"
 
     run_component(
-        [
-            "--input_table",
-            str(emb_path),
-            "--output_table",
-            str(output),
+        _group_args(
+            input_path,
+            output,
             "--start_id",
             ids[0],
             "--terminal_states",
             ids[-1],
             "--terminal_states",
             ids[-2],
-            "--num_waypoints",
-            "40",
-            "--waypoint_knn",
-            "10",
-            "--n_components",
-            "3",
-            "--knn",
-            "15",
-        ]
-    )
-
-    result = pd.read_csv(output)
-    fate_cols = [c for c in result.columns if c.startswith("fate_")]
-    assert sorted(fate_cols) == sorted([f"fate_{ids[-1]}", f"fate_{ids[-2]}"]), (
-        f"Unexpected fate columns: {fate_cols}"
-    )
-    fates = result[fate_cols].to_numpy()
-    np.testing.assert_allclose(fates.sum(axis=1), 1.0, atol=1e-6)
-
-
-def test_table_mode_metadata_missing_id(run_component, tmp_path):
-    """--metadata that does not cover every identifier is an error."""
-    emb_path, meta_path, _ = _make_tables(tmp_path, n_groups=40)
-    truncated = pd.read_csv(meta_path).head(10)
-    truncated_path = tmp_path / "metadata_short.csv"
-    truncated.to_csv(truncated_path, index=False)
-
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input_table",
-                str(emb_path),
-                "--metadata",
-                str(truncated_path),
-                "--output_table",
-                str(tmp_path / "out.csv"),
-                "--start_cluster_column",
-                "stage",
-                "--start_cluster",
-                "control",
-                "--num_waypoints",
-                "15",
-                "--waypoint_knn",
-                "5",
-                "--n_components",
-                "3",
-                "--knn",
-                "10",
-            ]
         )
-    assert "is missing" in err.value.stdout.decode("utf-8")
-
-
-def test_metadata_rejected_with_h5mu(run_component, tmp_path):
-    """--metadata only applies to table mode."""
-    input_path = _make_mudata(tmp_path, n_cells=60, n_dims=5)
-    _, meta_path, _ = _make_tables(tmp_path, n_groups=10)
-
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input",
-                str(input_path),
-                "--metadata",
-                str(meta_path),
-                "--output",
-                str(tmp_path / "out.h5mu"),
-                "--start_id",
-                "cell_0000",
-            ]
-        )
-    assert "--metadata only applies to --input_table" in err.value.stdout.decode(
-        "utf-8"
     )
 
-
-@pytest.mark.parametrize(
-    "args,message",
-    [
-        (
-            ["--input", "H5MU", "--input_table", "TABLE", "--output_table", "OUT"],
-            "Exactly one of",
-        ),
-        ([], "Exactly one of"),
-        (["--input_table", "TABLE"], "--output_table is required"),
-        (["--input", "H5MU"], "--output is required"),
-    ],
-)
-def test_input_mode_errors(run_component, tmp_path, args, message):
-    """Exactly one input mode, with the matching output argument."""
-    input_path = _make_mudata(tmp_path, n_cells=60, n_dims=5)
-    emb_path, _, _ = _make_tables(tmp_path, n_groups=20)
-    substitutions = {
-        "TABLE": str(emb_path),
-        "H5MU": str(input_path),
-        "OUT": str(tmp_path / "out.csv"),
-    }
-    resolved = [substitutions.get(a, a) for a in args]
-
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(resolved)
-    assert message in err.value.stdout.decode("utf-8")
+    fates = (
+        mu.read_h5mu(str(output)).mod["proportions"].obsm["palantir_fate_probabilities"]
+    )
+    assert sorted(fates.columns) == sorted([ids[-1], ids[-2]]), (
+        f"Unexpected fate columns: {list(fates.columns)}"
+    )
+    np.testing.assert_allclose(fates.to_numpy().sum(axis=1), 1.0, atol=1e-6)
 
 
 def test_waypoint_knn_too_large(run_component, tmp_path):
     """--waypoint_knn above the waypoint count fails with a message naming it."""
-    emb_path, _, ids = _make_tables(tmp_path, n_groups=40)
+    input_path, ids = _make_group_mudata(tmp_path, n_groups=40)
+    args = _group_args(input_path, tmp_path / "out.h5mu", "--start_id", ids[0])
+    args[args.index("--num_waypoints") + 1] = "12"
+    args[args.index("--waypoint_knn") + 1] = "20"
+    args[args.index("--knn") + 1] = "10"
 
     with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input_table",
-                str(emb_path),
-                "--output_table",
-                str(tmp_path / "out.csv"),
-                "--start_id",
-                ids[0],
-                "--num_waypoints",
-                "12",
-                "--waypoint_knn",
-                "20",
-                "--n_components",
-                "3",
-                "--knn",
-                "10",
-            ]
-        )
+        run_component(args)
     stdout = err.value.stdout.decode("utf-8")
     assert "--waypoint_knn (20) must be smaller than the number of waypoints" in stdout
 
 
 def test_waypoints_capped_at_n_obs(run_component, tmp_path):
-    """--num_waypoints above the row count is capped, and the cap is what is checked."""
-    emb_path, _, ids = _make_tables(tmp_path, n_groups=25)
+    """--num_waypoints above the observation count is capped, and the cap is checked."""
+    input_path, ids = _make_group_mudata(tmp_path, n_groups=25)
+    args = _group_args(input_path, tmp_path / "out.h5mu", "--start_id", ids[0])
+    args[args.index("--num_waypoints") + 1] = "500"
+    args[args.index("--waypoint_knn") + 1] = "30"
+    args[args.index("--knn") + 1] = "10"
 
     with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input_table",
-                str(emb_path),
-                "--output_table",
-                str(tmp_path / "out.csv"),
-                "--start_id",
-                ids[0],
-                "--num_waypoints",
-                "500",
-                "--waypoint_knn",
-                "30",
-                "--n_components",
-                "3",
-                "--knn",
-                "10",
-            ]
-        )
+        run_component(args)
     stdout = err.value.stdout.decode("utf-8")
     assert "25 = min(--num_waypoints 500, 25 observations)" in stdout
 

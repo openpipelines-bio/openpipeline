@@ -1,13 +1,12 @@
 import sys
 import numpy as np
 import pandas as pd
+import mudata as mu
 
 ## VIASH START
 par = {
-    "input": "proportions.csv",
-    "metadata": "traits.csv",
-    "input_join_column": "sample_id",
-    "metadata_join_column": None,
+    "input": "proportions.h5mu",
+    "modality": "proportions",
     "response_columns": None,
     "predictor_columns": ["trait_A"],
     "covariate_columns": None,
@@ -32,89 +31,40 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 
-def _read_table(path, label):
-    df = pd.read_csv(path)
-    if df.empty:
-        raise ValueError(f"{label} '{path}' has no rows.")
-    logger.info("%s '%s': %d rows x %d columns.", label, path, *df.shape)
-    return df
+def _read_input(par):
+    """Return (data, responses): one row per observation, responses then .obs."""
+    logger.info("Reading %s, modality '%s'.", par["input"], par["modality"])
+    adata = mu.read_h5ad(par["input"], mod=par["modality"])
+    if adata.n_obs == 0:
+        raise ValueError(f"Modality '{par['modality']}' has no observations.")
 
-
-def _join_tables(df, par):
-    """Inner-join the optional metadata table onto the input table."""
-    input_col = par["input_join_column"]
-    if par["metadata"] is None and input_col is None:
-        if par["metadata_join_column"] is not None:
-            raise ValueError("--metadata_join_column requires --metadata.")
-        return df
-    if par["metadata"] is None or input_col is None:
-        raise ValueError("--metadata and --input_join_column must be given together.")
-
-    meta_df = _read_table(par["metadata"], "Metadata table")
-    meta_col = par["metadata_join_column"] or input_col
-    for arg, col, table in (
-        ("--input_join_column", input_col, df),
-        ("--metadata_join_column", meta_col, meta_df),
-    ):
-        if col not in table.columns:
-            raise ValueError(
-                f"{arg} '{col}' not found in its table. "
-                f"Available: {list(table.columns)}"
-            )
-    merged = df.merge(
-        meta_df,
-        left_on=input_col,
-        right_on=meta_col,
-        how="inner",
-        suffixes=("", "_metadata"),
-    )
-    if merged.empty:
+    var_names = [str(v) for v in adata.var_names]
+    responses = list(par["response_columns"] or var_names)
+    missing = sorted(set(responses).difference(var_names))
+    if missing:
         raise ValueError(
-            f"No rows in common between --input '{input_col}' and "
-            f"--metadata '{meta_col}'."
+            f"--response_columns {missing} not found in .var_names. "
+            f"Available: {var_names[:20]}"
         )
-    logger.info(
-        "Joined --input '%s' on --metadata '%s': %d rows kept (of %d and %d).",
-        input_col,
-        meta_col,
-        len(merged),
-        len(df),
-        len(meta_df),
-    )
-    return merged
 
-
-def _resolve_responses(df, candidates, par):
-    """Return the response columns, defaulting to the unused numeric columns.
-
-    Only columns of --input are candidates: columns that arrive through --metadata
-    are predictors, covariates or annotation, never responses.
-    """
-    if par["response_columns"]:
-        return list(par["response_columns"])
-
-    reserved = set(par["predictor_columns"] or [])
-    reserved.update(par["covariate_columns"] or [])
-    if par["random_effect_column"]:
-        reserved.add(par["random_effect_column"])
-    if par["input_join_column"]:
-        reserved.add(par["input_join_column"])
-
-    responses = [
-        c
-        for c in candidates
-        if c not in reserved and pd.api.types.is_numeric_dtype(df[c])
-    ]
-    if not responses:
+    overlap = sorted(set(responses).intersection(adata.obs.columns))
+    if overlap:
         raise ValueError(
-            "--response_columns not given and no unused numeric columns were found "
-            f"in --input. Columns: {list(candidates)}"
+            f"Response(s) {overlap} are also .obs column names; rename one of the two."
         )
+
+    idx = [var_names.index(r) for r in responses]
+    X = adata.X[:, idx]
+    X = X.toarray() if hasattr(X, "toarray") else np.asarray(X)
+    data = pd.DataFrame(X, index=adata.obs_names, columns=responses, dtype=float)
+    data = pd.concat([data, adata.obs], axis=1)
     logger.info(
-        "--response_columns not given; using %d numeric column(s) of --input.",
+        "%d observations, %d response(s), %d .obs column(s).",
+        adata.n_obs,
         len(responses),
+        adata.obs.shape[1],
     )
-    return responses
+    return data, responses
 
 
 def _transform_responses(df, responses, method, pseudocount):
@@ -242,23 +192,20 @@ def _correct(results, method, scope):
 
 
 def main():
-    df = _read_table(par["input"], "Input table")
-    input_columns = list(df.columns)
-    df = _join_tables(df, par)
+    df, responses = _read_input(par)
 
     predictors = list(par["predictor_columns"])
     covariates = list(par["covariate_columns"] or [])
     random_effect = par["random_effect_column"]
-    responses = _resolve_responses(df, input_columns, par)
 
-    required = set(predictors) | set(covariates) | set(responses)
+    required = set(predictors) | set(covariates)
     if random_effect:
         required.add(random_effect)
     missing = sorted(c for c in required if c not in df.columns)
     if missing:
         raise ValueError(
-            f"Column(s) {missing} not found in the input table. "
-            f"Available: {list(df.columns)}"
+            f"Column(s) {missing} not found in .obs. "
+            f"Available: {[c for c in df.columns if c not in responses]}"
         )
 
     df = _transform_responses(df, responses, par["transform"], par["pseudocount"])

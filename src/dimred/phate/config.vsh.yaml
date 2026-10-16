@@ -9,11 +9,9 @@ description: |
   Unlike UMAP or tSNE, PHATE models the data manifold using a diffusion process,
   making it particularly suited for single-cell trajectories.
 
-  Two input modes, exactly one of which must be given:
-    - `--input`: an h5mu file, embedding the matrix in `.obsm[--obsm_input]`.
-    - `--input_table`: a CSV with an identifier column plus one numeric column per
-      feature, for observations that are not cells (e.g. a donor x label proportion
-      table).
+  The input matrix is read from `.obsm[--obsm_input]`, so any embedding of the
+  observations can be used, e.g. `X_pca` for cells or the group x label proportions
+  that `metadata/calculate_obs_label_proportions` stores in `.obsm`.
 
   Reference: Moon et al., Visualizing structure and transitions in high-dimensional
   biological data. Nature Biotechnology, 2019.
@@ -35,69 +33,40 @@ argument_groups:
       - name: "--input"
         alternatives: ["-i"]
         type: file
-        description: |
-          Input h5mu file. Mutually exclusive with `--input_table`; exactly one
-          of the two is required.
+        description: Input h5mu file.
         direction: input
-        required: false
+        required: true
         example: input.h5mu
 
       - name: "--modality"
         type: string
-        description: Which modality from the MuData file to process. Only used with `--input`.
+        description: Which modality from the MuData file to process.
         default: "rna"
         required: false
 
       - name: "--obsm_input"
         type: string
-        description: |
-          Key in `.obsm` to use as the input matrix for PHATE, e.g. `X_pca`.
-          Only used with `--input`.
+        description: Key in `.obsm` to use as the input matrix for PHATE, e.g. `X_pca`.
         default: "X_pca"
         required: false
         example: "X_pca"
-
-      - name: "--input_table"
-        type: file
-        description: |
-          Input CSV with one row per observation: an identifier column plus one
-          numeric column per feature. Mutually exclusive with `--input`.
-        direction: input
-        required: false
-        example: proportions.csv
-
-      - name: "--id_column"
-        type: string
-        description: |
-          Identifier column of `--input_table`. Defaults to its first column.
-        required: false
-        example: "participant_id"
 
   - name: Outputs
     arguments:
       - name: "--output"
         alternatives: ["-o"]
         type: file
-        description: Output h5mu file. Required with `--input`.
+        description: Output h5mu file.
         direction: output
-        required: false
+        required: true
         example: output.h5mu
 
       - name: "--obsm_output"
         type: string
-        description: Key in `.obsm` where the PHATE embedding will be stored. Only used with `--input`.
+        description: Key in `.obsm` where the PHATE embedding will be stored.
         default: "X_phate"
         required: false
         example: "X_phate"
-
-      - name: "--output_table"
-        type: file
-        description: |
-          Output CSV with the identifier column followed by one column per PHATE
-          dimension (`phate_1` ... `phate_n`). Required with `--input_table`.
-        direction: output
-        required: false
-        example: phate.csv
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
   - name: Arguments
@@ -158,14 +127,12 @@ resources:
     path: script.py
   - path: /src/utils/setup_logger.py
   - path: /src/utils/compress_h5mu.py
-  - path: /src/utils/group_table.py
 
 test_resources:
   - type: python_script
     path: test.py
   - path: /src/utils/setup_logger.py
   - path: /src/utils/compress_h5mu.py
-  - path: /src/utils/group_table.py
 
 engines:
   - type: docker

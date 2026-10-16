@@ -3,6 +3,8 @@ import subprocess
 import pytest
 import numpy as np
 import pandas as pd
+import anndata as ad
+import mudata as mu
 
 ## VIASH START
 meta = {
@@ -12,11 +14,13 @@ meta = {
 }
 ## VIASH END
 
-ID = "participant_id"
+LABELS = ["rising", "falling", "peaking"]
 
 
-def _make_tables(tmp_path, n_groups=40, seed=42, id_column=ID):
-    """Two group-level tables with known proportion dynamics.
+def _make_mudata(
+    tmp_path, n_groups=40, seed=42, pseudotime_column="palantir_pseudotime"
+):
+    """Group-level MuData with known proportion dynamics.
 
     Three labels with different shapes along pseudotime, so a broken fit is
     visible rather than merely noisy:
@@ -37,36 +41,31 @@ def _make_tables(tmp_path, n_groups=40, seed=42, id_column=ID):
     raw = np.clip(raw, 1e-6, None)
     props = raw / raw.sum(axis=1, keepdims=True)
 
-    prop_df = pd.DataFrame(props, columns=["rising", "falling", "peaking"])
-    prop_df.insert(0, id_column, ids)
-    prop_path = tmp_path / "proportions.csv"
-    prop_df.to_csv(prop_path, index=False)
+    obs = pd.DataFrame(
+        {pseudotime_column: pt, "palantir_entropy": rng.random(n_groups)}, index=ids
+    )
+    adata = ad.AnnData(X=props, obs=obs, var=pd.DataFrame(index=LABELS))
+    # Shuffled, so the component cannot rely on the groups being ordered by pseudotime
+    adata = adata[rng.permutation(n_groups)].copy()
 
-    # Shuffled, so the component cannot rely on row order to align the tables
-    pt_df = pd.DataFrame(
-        {
-            id_column: ids,
-            "palantir_pseudotime": pt,
-            "palantir_entropy": rng.random(n_groups),
-        }
-    ).sample(frac=1.0, random_state=seed)
-    pt_path = tmp_path / "pseudotime.csv"
-    pt_df.to_csv(pt_path, index=False)
+    path = tmp_path / "proportions.h5mu"
+    mu.MuData({"proportions": adata}).write_h5mu(str(path))
+    return path
 
-    return prop_path, pt_path, ids
+
+def _read(path):
+    return mu.read_h5mu(str(path)).mod["proportions"]
 
 
 def test_basic(run_component, tmp_path):
-    """Long-format curves for every label, on the requested number of bins."""
-    prop_path, pt_path, _ = _make_tables(tmp_path)
-    output = tmp_path / "dynamics.csv"
+    """One fitted curve per label, on the requested number of bins."""
+    input_path = _make_mudata(tmp_path)
+    output = tmp_path / "dynamics.h5mu"
 
     run_component(
         [
             "--input",
-            str(prop_path),
-            "--pseudotime",
-            str(pt_path),
+            str(input_path),
             "--output",
             str(output),
             "--n_pseudotime_bins",
@@ -75,179 +74,120 @@ def test_basic(run_component, tmp_path):
     )
 
     assert output.is_file()
-    result = pd.read_csv(output)
-    assert list(result.columns) == ["label", "pseudotime", "proportion_fitted"]
-    assert sorted(result["label"].unique()) == ["falling", "peaking", "rising"]
-    assert len(result) == 3 * 50
-    assert np.isfinite(result["proportion_fitted"]).all()
+    adata = _read(output)
+    assert list(adata.var_names) == LABELS
+    curves = adata.varm["proportion_dynamics"]
+    assert curves.shape == (3, 50)
+    assert np.isfinite(curves).all()
+    grid = adata.uns["proportion_dynamics_pseudotime"]
+    assert len(grid) == 50
+    assert np.all(np.diff(grid) > 0), "pseudotime bins are not increasing"
+    # the proportions themselves are left alone
+    np.testing.assert_allclose(adata.X, _read(input_path).X)
 
 
 def test_curve_shapes(run_component, tmp_path):
-    """The fitted curves reproduce the shapes that were put in."""
-    prop_path, pt_path, _ = _make_tables(tmp_path)
-    output = tmp_path / "dynamics.csv"
-    stats_path = tmp_path / "stats.csv"
+    """The fitted curves and statistics reproduce the shapes that were put in."""
+    input_path = _make_mudata(tmp_path)
+    output = tmp_path / "dynamics.h5mu"
 
     run_component(
-        [
-            "--input",
-            str(prop_path),
-            "--pseudotime",
-            str(pt_path),
-            "--output",
-            str(output),
-            "--output_stats",
-            str(stats_path),
-            "--lam",
-            "0.001",
-        ]
+        ["--input", str(input_path), "--output", str(output), "--lam", "0.001"]
     )
 
-    curves = pd.read_csv(output)
-    by_label = {
-        label: group.sort_values("pseudotime")["proportion_fitted"].to_numpy()
-        for label, group in curves.groupby("label")
-    }
-    assert by_label["rising"][-1] > by_label["rising"][0], "'rising' does not rise"
-    assert by_label["falling"][-1] < by_label["falling"][0], "'falling' does not fall"
+    adata = _read(output)
+    curves = pd.DataFrame(adata.varm["proportion_dynamics"], index=adata.var_names)
+    assert curves.loc["rising"].iloc[-1] > curves.loc["rising"].iloc[0], (
+        "'rising' does not rise"
+    )
+    assert curves.loc["falling"].iloc[-1] < curves.loc["falling"].iloc[0], (
+        "'falling' does not fall"
+    )
 
-    stats = pd.read_csv(stats_path).set_index("label")
-    assert list(stats.columns) == [
-        "peak_pseudotime",
-        "r_squared",
-        "p_value",
-        "n_groups",
+    stats = adata.var
+    assert [c for c in stats.columns if c.startswith("dynamics_")] == [
+        "dynamics_peak_pseudotime",
+        "dynamics_r_squared",
+        "dynamics_p_value",
+        "dynamics_n_groups",
     ]
-    assert stats.loc["peaking", "peak_pseudotime"] == pytest.approx(0.5, abs=0.2), (
-        f"'peaking' peaks at {stats.loc['peaking', 'peak_pseudotime']}, expected ~0.5"
+    assert stats.loc["peaking", "dynamics_peak_pseudotime"] == pytest.approx(
+        0.5, abs=0.2
+    ), f"'peaking' peaks at {stats.loc['peaking', 'dynamics_peak_pseudotime']}"
+    assert stats.loc["rising", "dynamics_peak_pseudotime"] > 0.8
+    assert stats.loc["falling", "dynamics_peak_pseudotime"] < 0.2
+    assert (stats["dynamics_n_groups"] == 40).all()
+
+
+def test_missing_pseudotime(run_component, tmp_path):
+    """Groups without a pseudotime value are left out of the fit."""
+    input_path = _make_mudata(tmp_path)
+    mdata = mu.read_h5mu(str(input_path))
+    mdata.mod["proportions"].obs.iloc[0, 0] = np.nan
+    trimmed = tmp_path / "proportions_trimmed.h5mu"
+    mdata.write_h5mu(str(trimmed))
+
+    output = tmp_path / "dynamics.h5mu"
+    run_component(["--input", str(trimmed), "--output", str(output)])
+
+    n_groups = _read(output).var["dynamics_n_groups"]
+    assert (n_groups == 39).all(), (
+        f"Expected 39 groups after dropping one, got {n_groups.unique()}"
     )
-    assert stats.loc["rising", "peak_pseudotime"] > 0.8
-    assert stats.loc["falling", "peak_pseudotime"] < 0.2
-    assert (stats["n_groups"] == 40).all()
 
 
-def test_partial_overlap(run_component, tmp_path):
-    """Groups present in only one table are dropped, the rest still fit."""
-    prop_path, pt_path, ids = _make_tables(tmp_path)
-    trimmed = pd.read_csv(pt_path)
-    trimmed = trimmed[trimmed[ID] != ids[0]]
-    trimmed_path = tmp_path / "pseudotime_trimmed.csv"
-    trimmed.to_csv(trimmed_path, index=False)
+def test_custom_keys(run_component, tmp_path):
+    """--obs_pseudotime, --varm_output, --uns_output and --var_prefix are respected."""
+    input_path = _make_mudata(tmp_path, pseudotime_column="via_time")
+    output = tmp_path / "dynamics.h5mu"
 
-    output = tmp_path / "dynamics.csv"
-    stats_path = tmp_path / "stats.csv"
     run_component(
         [
             "--input",
-            str(prop_path),
-            "--pseudotime",
-            str(trimmed_path),
-            "--output",
-            str(output),
-            "--output_stats",
-            str(stats_path),
-        ]
-    )
-
-    stats = pd.read_csv(stats_path)
-    assert (stats["n_groups"] == 39).all(), (
-        f"Expected 39 groups after dropping one, got {stats['n_groups'].unique()}"
-    )
-
-
-def test_custom_pseudotime_column(run_component, tmp_path):
-    """--pseudotime_column selects a differently named column."""
-    prop_path, pt_path, _ = _make_tables(tmp_path)
-    renamed = pd.read_csv(pt_path).rename(columns={"palantir_pseudotime": "via_time"})
-    renamed_path = tmp_path / "pseudotime_renamed.csv"
-    renamed.to_csv(renamed_path, index=False)
-
-    output = tmp_path / "dynamics.csv"
-    run_component(
-        [
-            "--input",
-            str(prop_path),
-            "--pseudotime",
-            str(renamed_path),
-            "--pseudotime_column",
+            str(input_path),
+            "--obs_pseudotime",
             "via_time",
+            "--varm_output",
+            "my_curves",
+            "--uns_output",
+            "my_grid",
+            "--var_prefix",
+            "my_",
             "--output",
             str(output),
         ]
     )
-    assert pd.read_csv(output)["label"].nunique() == 3
 
-
-def test_id_column(run_component, tmp_path):
-    """--id_column picks a non-first identifier column shared by both tables."""
-    prop_path, pt_path, _ = _make_tables(tmp_path, id_column="donor")
-    prop = pd.read_csv(prop_path)
-    prop = prop[[c for c in prop.columns if c != "donor"] + ["donor"]]
-    reordered = tmp_path / "proportions_reordered.csv"
-    prop.to_csv(reordered, index=False)
-
-    output = tmp_path / "dynamics.csv"
-    run_component(
-        [
-            "--input",
-            str(reordered),
-            "--pseudotime",
-            str(pt_path),
-            "--id_column",
-            "donor",
-            "--output",
-            str(output),
-        ]
-    )
-    assert pd.read_csv(output)["label"].nunique() == 3
+    adata = _read(output)
+    assert adata.varm["my_curves"].shape == (3, 100)
+    assert len(adata.uns["my_grid"]) == 100
+    assert "my_p_value" in adata.var.columns
 
 
 @pytest.mark.parametrize(
     "mutation,message",
     [
-        ("duplicate_id", "duplicated identifiers"),
-        ("non_numeric", "non-numeric value column"),
-        ("bad_id_column", "not found in --pseudotime"),
-        ("bad_pseudotime_column", "--pseudotime_column"),
+        ("bad_pseudotime_column", "--obs_pseudotime 'nope' not found"),
+        ("non_numeric", "must be numeric"),
         ("too_few_groups", "--min_groups"),
     ],
 )
 def test_input_errors(run_component, tmp_path, mutation, message):
     """Each malformed input is rejected with a specific message."""
-    prop_path, pt_path, _ = _make_tables(tmp_path)
-    args = [
-        "--input",
-        str(prop_path),
-        "--pseudotime",
-        str(pt_path),
-        "--output",
-        str(tmp_path / "out.csv"),
-    ]
+    input_path = _make_mudata(tmp_path)
+    args = ["--input", str(input_path), "--output", str(tmp_path / "out.h5mu")]
 
-    if mutation == "duplicate_id":
-        df = pd.read_csv(prop_path)
-        df.loc[1, ID] = df.loc[0, ID]
-        path = tmp_path / "dup.csv"
-        df.to_csv(path, index=False)
-        args[1] = str(path)
+    if mutation == "bad_pseudotime_column":
+        args += ["--obs_pseudotime", "nope"]
     elif mutation == "non_numeric":
-        df = pd.read_csv(prop_path)
-        df["batch"] = "a"
-        path = tmp_path / "non_numeric.csv"
-        df.to_csv(path, index=False)
-        args[1] = str(path)
-    elif mutation == "bad_id_column":
-        df = pd.read_csv(pt_path).rename(columns={ID: "other_id"})
-        path = tmp_path / "bad_id.csv"
-        df.to_csv(path, index=False)
-        args[3] = str(path)
-    elif mutation == "bad_pseudotime_column":
-        args += ["--pseudotime_column", "nope"]
+        args += ["--obs_pseudotime", "label"]
+        mdata = mu.read_h5mu(str(input_path))
+        mdata.mod["proportions"].obs["label"] = "a"
+        mdata.write_h5mu(str(input_path))
     elif mutation == "too_few_groups":
-        df = pd.read_csv(pt_path).head(3)
-        path = tmp_path / "short.csv"
-        df.to_csv(path, index=False)
-        args[3] = str(path)
+        mdata = mu.read_h5mu(str(input_path))
+        mdata.mod["proportions"].obs.iloc[3:, 0] = np.nan
+        mdata.write_h5mu(str(input_path))
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)

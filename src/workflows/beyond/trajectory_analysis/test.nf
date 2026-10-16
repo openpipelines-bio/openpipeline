@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 include { trajectory_analysis } from params.rootDir + "/target/nextflow/workflows/beyond/trajectory_analysis/main.nf"
+include { trajectory_analysis_test } from params.rootDir + "/target/_test/nextflow/test_workflows/beyond/trajectory_analysis_test/main.nf"
 
 params.resources_test = params.rootDir + "/resources_test"
 
@@ -22,13 +23,8 @@ workflow test_wf {
       id:    "beyond_radc",
       input: resources_test.resolve("beyond_test_data/atlas.h5mu"),
 
-      output:                     "beyond_radc.h5mu",
-      output_proportions_csv:     "proportions.csv",
-      output_phate_csv:           "phate.csv",
-      output_pseudotime_csv:      "pseudotime.csv",
-      output_dynamics_csv:        "dynamics.csv",
-      output_dynamics_stats_csv:  "dynamics_stats.csv",
-      output_communities_csv:     "communities.csv",
+      output:                         "beyond_radc.h5mu",
+      output_trait_associations_csv:  "trait_associations.csv",
 
       // Atlas metadata. Subpopulation prevalence is taken within cell class, as the
       // BEYOND reference implementation does.
@@ -69,13 +65,8 @@ workflow test_wf {
       id:    "beyond_simulated",
       input: resources_test.resolve("beyond_simulated_test_data/atlas.h5mu"),
 
-      output:                     "beyond_simulated.h5mu",
-      output_proportions_csv:     "proportions.csv",
-      output_phate_csv:           "phate.csv",
-      output_pseudotime_csv:      "pseudotime.csv",
-      output_dynamics_csv:        "dynamics.csv",
-      output_dynamics_stats_csv:  "dynamics_stats.csv",
-      output_communities_csv:     "communities.csv",
+      output:                         "beyond_simulated.h5mu",
+      output_trait_associations_csv:  "trait_associations.csv",
 
       obs_group: "participant_id",
       obs_label: "subpopulation",
@@ -119,57 +110,10 @@ workflow test_wf {
     assert state instanceof Map : "State should be a map. Found: ${state}"
 
     // -- shared structure ------------------------------------------------------------
+    // The donor-level h5mu itself is checked by trajectory_analysis_test below.
     assert state.containsKey("output") : "Output should contain key 'output'."
     assert state.output.isFile() : "'output' should be a file."
     assert state.output.toString().endsWith(".h5mu") : "Output file should end with '.h5mu'. Found: ${state.output}"
-
-    // Steps 2-5 are table in / table out: the landscape never enters the h5mu.
-    [
-      "output_proportions_csv",
-      "output_phate_csv",
-      "output_pseudotime_csv",
-      "output_dynamics_csv",
-      "output_dynamics_stats_csv",
-      "output_communities_csv",
-    ].each { key ->
-      assert state.containsKey(key) : "State should contain key '${key}'. Found: ${state.keySet()}"
-      assert state[key].isFile() : "'${key}' should be a file."
-    }
-
-    // One row per donor in the landscape tables - not one per cell, which is the whole
-    // point of the rewrite: 152 donors out of 32377 nuclei, 12 out of 864.
-    def n_donors = id == "beyond_radc" ? 152 : 12
-    def n_labels = id == "beyond_radc" ? 65 : 9
-    def n_communities = id == "beyond_radc" ? 6 : 2
-
-    def phate_lines = state.output_phate_csv.readLines()
-    assert phate_lines[0] == "participant_id,phate_1,phate_2,phate_3" :
-      "Unexpected PHATE CSV header: ${phate_lines[0]}"
-    assert phate_lines.size() == n_donors + 1 :
-      "PHATE table should hold ${n_donors} donors, found ${phate_lines.size() - 1}"
-
-    def pt_lines = state.output_pseudotime_csv.readLines()
-    assert pt_lines[0].startsWith("participant_id,palantir_pseudotime,palantir_entropy") :
-      "Unexpected pseudotime CSV header: ${pt_lines[0]}"
-    assert pt_lines.size() == n_donors + 1 :
-      "Pseudotime table should hold ${n_donors} donors, found ${pt_lines.size() - 1}"
-    // Terminal states were pinned, so there must be one fate column per endpoint
-    def n_fate = pt_lines[0].split(",").count { it.startsWith("fate_") }
-    assert n_fate == 2 :
-      "Expected 2 fate columns for the 2 pinned terminal states, found ${n_fate}"
-
-    def comm_lines = state.output_communities_csv.readLines()
-    assert comm_lines[0] == "label,community_id" :
-      "Unexpected communities CSV header: ${comm_lines[0]}"
-    assert comm_lines.size() == n_labels + 1 :
-      "Communities table should hold ${n_labels} subpopulations, found ${comm_lines.size() - 1}"
-    def comm_ids = comm_lines.drop(1).collect { it.split(",")[1] }.toSet()
-    assert comm_ids.size() == n_communities :
-      "Expected ${n_communities} communities, found ${comm_ids.size()}: ${comm_ids}"
-
-    def dyn_lines = state.output_dynamics_csv.readLines()
-    assert dyn_lines[0] == "label,pseudotime,proportion_fitted" :
-      "Unexpected dynamics CSV header: ${dyn_lines[0]}"
 
     // The association table leaves the workflow as a CSV, not inside the h5mu
     assert state.containsKey("output_trait_associations_csv") :
@@ -207,21 +151,21 @@ workflow test_wf {
         "age is independent of the simulated trajectory but came out significant (min fdr_q ${min_q['age']})"
     }
 
-    // -- what only the real fixture can check ------------------------------------------
-    //
-    // Within-class normalisation: a donor's row sums to the number of cell classes they
-    // have nuclei in (8 here), not to 1. A global normalisation would give 1.
-    if (id == "beyond_radc") {
-      def prop_lines = state.output_proportions_csv.readLines()
-      assert prop_lines.size() == n_donors + 1 :
-        "Proportion table should hold ${n_donors} donors, found ${prop_lines.size() - 1}"
-      assert prop_lines[0].split(",").size() == n_labels + 1 :
-        "Proportion table should hold ${n_labels} subpopulations, found ${prop_lines[0].split(",").size() - 1}"
-      def row_sum = prop_lines[1].split(",").drop(1).collect { it as Double }.sum()
-      assert row_sum > 7.0 && row_sum < 8.01 :
-        "Within-class proportions should sum to the number of classes present (<= 8), found ${row_sum}"
-    }
-
     "Output: $output"
   }
+  | trajectory_analysis_test.run(
+      fromState: { id, state ->
+        def radc = id == "beyond_radc"
+        [
+          "input":                       state.output,
+          "expected_n_obs":              radc ? 152 : 12,
+          "expected_n_vars":             radc ? 65 : 9,
+          "expected_n_communities":      radc ? 6 : 2,
+          "expected_n_terminal_states":  2,
+          "expected_n_components":       3,
+          // Within-class normalisation is only used on the real fixture.
+          "obs_normalize_within":        radc ? "cell_class" : null,
+        ]
+      }
+    )
 }

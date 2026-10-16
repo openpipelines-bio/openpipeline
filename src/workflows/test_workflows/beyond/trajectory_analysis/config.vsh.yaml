@@ -1,0 +1,50 @@
+name: "trajectory_analysis_test"
+namespace: "test_workflows/beyond"
+scope: "test"
+description: "This component tests the donor-level h5mu written by the beyond/trajectory_analysis workflow."
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        type: file
+        required: true
+        description: Path to the donor-level h5mu output.
+        example: beyond_donors.h5mu
+      - name: "--expected_n_obs"
+        type: integer
+        required: true
+        description: Expected number of donors.
+      - name: "--expected_n_vars"
+        type: integer
+        required: true
+        description: Expected number of subpopulations.
+      - name: "--expected_n_communities"
+        type: integer
+        required: true
+        description: Expected number of subpopulation communities.
+      - name: "--expected_n_terminal_states"
+        type: integer
+        required: true
+        description: Expected number of fate-probability columns.
+      - name: "--expected_n_components"
+        type: integer
+        required: true
+        description: Expected number of PHATE dimensions.
+      - name: "--obs_normalize_within"
+        type: string
+        required: false
+        description: |
+          The `.var` column holding the coarser label the proportions were normalised
+          within, if any. Without it every row of `.X` must sum to 1.
+resources:
+  - type: python_script
+    path: script.py
+engines:
+  - type: docker
+    image: python:3.12-slim
+    __merge__: /src/base/requirements/testworkflows_setup.yaml
+runners:
+  - type: executable
+  - type: nextflow

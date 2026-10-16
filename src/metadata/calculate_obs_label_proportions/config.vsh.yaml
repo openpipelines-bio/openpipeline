@@ -6,15 +6,21 @@ description: |
 
   For each group (`--obs_group`, e.g. a donor, participant, sample or condition) and each
   label (`--obs_label`, e.g. a Leiden cluster, cell type or subpopulation), computes the
-  fraction of that group's cells carrying that label.  The resulting group x label
-  proportion matrix is stored in:
+  fraction of that group's cells carrying that label.
 
-  * `.uns[<uns_output>]`  -  a DataFrame (rows = groups, columns = labels)
-  * `--output_csv`  -  the same matrix as a table, for components that do not read
-    `MuData`.
+  The result is a new, group-level `.h5mu` file with one modality
+  (`--output_modality`) in which every observation is a group and every variable a
+  label:
 
-  When `--obs_group` is omitted, all cells are treated as a single group named `all`,
-  giving the overall label proportions of the dataset.
+  * `.X`  -  the group x label proportion matrix
+  * `.obsm[--obsm_output]`  -  a copy of `.X`, for components that take their input
+    matrix from `.obsm` (e.g. `dimred/phate`)
+  * `.layers["counts"]`  -  the number of cells per group and label
+  * `.obs[--obs_group]`  -  the group identifier, also used as `.obs_names`
+  * `.var[--obs_normalize_within]`  -  the coarser label of every label, when given
+
+  The input file is not modified. When `--obs_group` is omitted, all cells are treated
+  as a single group named `all`, giving the overall label proportions of the dataset.
 
   Missing combinations (a group has zero cells with a given label) are filled with 0.
   Rows sum to 1, unless `--obs_normalize_within` is given.
@@ -46,7 +52,7 @@ argument_groups:
         type: string
         description: |
           `.obs` column that groups the cells (e.g. a participant, donor, sample or
-          condition identifier).  Used as the row index of the proportion matrix.
+          condition identifier).  Its values become the observations of the output.
           When not given, all cells form a single group named `all`, i.e. the overall
           label proportions of the dataset.
         required: false
@@ -55,8 +61,8 @@ argument_groups:
         type: string
         description: |
           `.obs` column containing the labels whose proportions are computed (e.g.
-          Leiden cluster IDs, cell types or named subpopulations).  Used as the column
-          index of the proportion matrix.
+          Leiden cluster IDs, cell types or named subpopulations).  Its values become
+          the variables of the output.
         required: true
         example: "cell_type"
       - name: "--obs_normalize_within"
@@ -83,29 +89,20 @@ argument_groups:
         alternatives: ["-o"]
         type: file
         description: |
-          Path to the output `.h5mu` file. Optional when only `--output_csv` is needed;
-          at least one of the two must be given.
+          Path to the output group-level `.h5mu` file, with one observation per group.
         direction: output
-        required: false
-        example: "atlas_with_proportions.h5mu"
-      - name: "--output_csv"
-        type: file
-        direction: output
-        required: false
-        description: |
-          Optional CSV copy of the proportion matrix (rows = groups, columns = labels),
-          for components that work on tables rather than on `MuData` objects, such as
-          `stats/test_associations`. The first column holds the group identifier and is
-          named after `--obs_group` (`group` when no grouping column is given).
-        example: proportions.csv
-      - name: "--uns_output"
+        required: true
+        example: "proportions.h5mu"
+      - name: "--output_modality"
         type: string
-        description: |
-          Key under `.uns` where the proportion matrix is stored, as a DataFrame with the
-          groups as index and the labels as columns.
+        description: Name of the single modality of `--output`.
         default: "proportions"
         required: false
-        example: "proportions"
+      - name: "--obsm_output"
+        type: string
+        description: Key in `.obsm` of `--output` where a copy of the proportion matrix is stored.
+        default: "X_proportions"
+        required: false
     __merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:

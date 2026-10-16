@@ -2,10 +2,13 @@ name: test_associations
 namespace: "stats"
 scope: "public"
 description: |
-  Test the association between one or more response variables and one or more predictors
-  in a tabular dataset.
+  Test the association between one or more variables of a modality and one or more
+  `.obs` columns.
 
-  For each (response, predictor) pair a model is fit:
+  The responses are variables of `.X` (e.g. the labels of a group x label proportion
+  matrix written by `metadata/calculate_obs_label_proportions`); the predictors,
+  covariates and random effect are `.obs` columns (e.g. donor traits joined in with
+  `metadata/join_csv`). For each (response, predictor) pair a model is fit:
 
       response ~ predictor + covariates [ + (1 | random_effect) ]
 
@@ -35,33 +38,15 @@ argument_groups:
         direction: input
         required: true
         description: |
-          CSV file with one row per unit of observation. Must contain the response
-          columns, and the predictor columns unless `--metadata` provides them.
-        example: proportions.csv
+          Input h5mu file. The responses are read from `.X`, the predictors,
+          covariates and random effect from `.obs`.
+        example: proportions.h5mu
 
-      - name: "--metadata"
-        type: file
-        direction: input
-        required: false
-        description: |
-          Optional second CSV (e.g. donor metadata) joined onto `--input` before
-          modelling. Requires `--input_join_column`.
-        example: metadata.csv
-
-      - name: "--input_join_column"
+      - name: "--modality"
         type: string
+        default: "rna"
         required: false
-        description: |
-          Column of `--input` used for the inner join with `--metadata`.
-        example: "sample_id"
-
-      - name: "--metadata_join_column"
-        type: string
-        required: false
-        description: |
-          Column of `--metadata` matched against `--input_join_column`. Defaults to
-          `--input_join_column`, i.e. the same column name in both tables.
-        example: "participant_id"
+        description: Modality to process.
 
   - name: Model
     arguments:
@@ -70,8 +55,8 @@ argument_groups:
         multiple: true
         required: false
         description: |
-          Column(s) modelled as the response, one model per response and predictor.
-          Defaults to the numeric columns of `--input` not used by any other argument.
+          Variable(s) (`.var_names`) modelled as the response, one model per response
+          and predictor. Defaults to all variables.
         example: ["Ast.1", "Ast.2"]
 
       - name: "--predictor_columns"
@@ -79,23 +64,23 @@ argument_groups:
         multiple: true
         required: true
         description: |
-          Column(s) to test for association with each response. These are the terms
-          whose coefficients are reported.
+          `.obs` column(s) to test for association with each response. These are the
+          terms whose coefficients are reported.
         example: ["amyloid_score", "age_at_death"]
 
       - name: "--covariate_columns"
         type: string
         multiple: true
         required: false
-        description: Column(s) included as fixed effects but not reported.
+        description: "`.obs` column(s) included as fixed effects but not reported."
         example: ["age_at_death", "sex"]
 
       - name: "--random_effect_column"
         type: string
         required: false
         description: |
-          Grouping column for random intercepts (e.g. cohort or batch). When given a
-          mixed-effects model is fit, otherwise OLS.
+          `.obs` grouping column for random intercepts (e.g. cohort or batch). When
+          given a mixed-effects model is fit, otherwise OLS.
         example: "cohort"
 
       - name: "--formula"
@@ -115,7 +100,7 @@ argument_groups:
         required: false
         description: |
           Transformation applied to the response values before modelling. One
-          transform applies to all response columns: `clr` is by definition computed
+          transform applies to all responses: `clr` is by definition computed
           jointly over them. When the responses need different transforms (e.g.
           proportions next to a continuous score), transform them upstream or run the
           component once per set of responses.
@@ -189,6 +174,7 @@ engines:
         packages:
           - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - pandas~=2.2.3
           - numpy~=2.1.3

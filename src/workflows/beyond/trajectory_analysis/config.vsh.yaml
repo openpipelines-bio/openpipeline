@@ -1,12 +1,19 @@
 name: "trajectory_analysis"
 namespace: "workflows/beyond"
 scope: "public"
+info:
+  test_dependencies:
+    - name: trajectory_analysis_test
+      namespace: test_workflows/beyond
 description: |
   BEYOND trajectory analysis of a multi-donor atlas with subpopulation labels.
   Computes the donor x subpopulation proportions, places the donors on a PHATE
   landscape, orders them along a Palantir pseudotime, fits how each subpopulation
   changes along it, groups subpopulations into communities, and tests the
   subpopulations for association with donor traits.
+
+  The results are collected in a donor-level h5mu (one observation per donor, one
+  variable per subpopulation); the atlas itself is not modified.
 
 references:
   doi:
@@ -39,7 +46,7 @@ argument_groups:
         description: |
           .obs column that groups the cells for proportion calculation (a participant /
           donor / sample identifier), e.g. the column written by metadata/add_id.
-          It also names the identifier column of every table this workflow writes.
+          Its values become the observations of --output.
       - name: "--obs_label"
         type: string
         default: "subpopulation"
@@ -56,6 +63,18 @@ argument_groups:
           of a donor's cells.
         example: "cell_class"
 
+      - name: "--traits_csv"
+        type: file
+        required: true
+        description: |
+          CSV file with donor metadata: an identifier column named after --obs_group
+          plus the trait and covariate columns. It is joined onto the donors of
+          --output, where it is also the label source for --start_cluster_column /
+          --terminal_states_column. Every participant of --input needs a row.
+          Missing values arrive as empty strings (metadata/join_csv), which turns a
+          numeric column into a categorical one; fill or drop them upstream.
+        example: traits.csv
+
   - name: Outputs
     arguments:
       - name: "--output"
@@ -63,62 +82,12 @@ argument_groups:
         required: true
         direction: output
         description: |
-          Atlas h5mu with the participant x subpopulation proportion matrix added to
-          uns[--uns_proportions]. The cells are otherwise unchanged.
-        example: beyond_atlas.h5mu
-
-      - name: "--uns_proportions"
-        type: string
-        default: "proportions"
-        required: false
-        description: |
-          .uns key under which the proportion matrix is kept in --output.
-
-      - name: "--output_proportions_csv"
-        type: file
-        required: false
-        direction: output
-        description: Participant x subpopulation proportion table.
-        example: proportions.csv
-
-      - name: "--output_phate_csv"
-        type: file
-        required: false
-        direction: output
-        description: PHATE coordinates of the cellular landscape, one row per participant.
-        example: phate.csv
-
-      - name: "--output_pseudotime_csv"
-        type: file
-        required: false
-        direction: output
-        description: |
-          Palantir pseudotime, entropy and fate probabilities, one row per participant.
-        example: pseudotime.csv
-
-      - name: "--output_dynamics_csv"
-        type: file
-        required: false
-        direction: output
-        description: |
-          Long-format fitted proportion curves, one row per
-          (subpopulation, pseudotime bin).
-        example: dynamics.csv
-
-      - name: "--output_dynamics_stats_csv"
-        type: file
-        required: false
-        direction: output
-        description: |
-          Per-subpopulation dynamics statistics: peak pseudotime, R^2 and p-value.
-        example: dynamics_stats.csv
-
-      - name: "--output_communities_csv"
-        type: file
-        required: false
-        direction: output
-        description: Subpopulation -> community assignment.
-        example: communities.csv
+          Donor-level h5mu with one modality, `proportions`: one observation per donor
+          (`.obs`: the traits, Palantir pseudotime and entropy; `.obsm`: the proportions,
+          PHATE coordinates and fate probabilities) and one variable per subpopulation
+          (`.X`: the proportions; `.var`: the dynamics statistics and community;
+          `.varm`: the fitted proportion curves; `.varp`: the community similarities).
+        example: beyond_donors.h5mu
 
       - name: "--output_trait_associations_csv"
         type: file
@@ -164,7 +133,7 @@ argument_groups:
         description: |
           Value of --start_cluster_column identifying the root population of
           participants; Palantir picks the best representative automatically.
-          Requires --traits_csv to carry --start_cluster_column.
+          Requires --start_cluster_column.
         example: "No"
       - name: "--start_cluster_column"
         type: string
@@ -218,8 +187,8 @@ argument_groups:
         default: "palantir_pseudotime"
         required: false
         description: |
-          Name of the pseudotime column written by Palantir and read by
-          fit_proportion_dynamics.
+          Name of the .obs column of --output holding the Palantir pseudotime, read
+          by fit_proportion_dynamics.
 
   - name: Pseudotime dynamics
     arguments:
@@ -259,14 +228,6 @@ argument_groups:
 
   - name: Trait associations
     arguments:
-      - name: "--traits_csv"
-        type: file
-        required: true
-        description: |
-          CSV file with participant metadata. Must contain a participant ID column
-          (--obs_group) and at least one trait column (--trait_columns). It is also
-          the label source for --start_cluster_column / --terminal_states_column.
-        example: traits.csv
       - name: "--trait_columns"
         type: string
         multiple: true
@@ -317,6 +278,7 @@ argument_groups:
 
 dependencies:
   - name: metadata/calculate_obs_label_proportions
+  - name: metadata/join_csv
   - name: dimred/phate
   - name: trajectory/palantir
   - name: trajectory/fit_proportion_dynamics

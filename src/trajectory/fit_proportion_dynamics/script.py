@@ -1,20 +1,23 @@
 import sys
 import numpy as np
 import pandas as pd
+import mudata as mu
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import f as f_dist
 
 ## VIASH START
 par = {
-    "input": "proportions.csv",
-    "pseudotime": "pseudotime.csv",
-    "id_column": None,
-    "pseudotime_column": "palantir_pseudotime",
+    "input": "proportions.h5mu",
+    "modality": "proportions",
+    "obs_pseudotime": "palantir_pseudotime",
     "lam": 0.6,
     "n_pseudotime_bins": 100,
     "min_groups": 5,
-    "output": "dynamics.csv",
-    "output_stats": None,
+    "output": "dynamics.h5mu",
+    "varm_output": "proportion_dynamics",
+    "uns_output": "proportion_dynamics_pseudotime",
+    "var_prefix": "dynamics_",
+    "output_compression": None,
 }
 meta = {
     "resources_dir": "src/trajectory/fit_proportion_dynamics/",
@@ -24,42 +27,29 @@ meta = {
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
-from group_table import read_group_table
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
 
 logger = setup_logger()
 
 
-def _read_pseudotime(path, id_column, column):
-    """Return a Series of pseudotime indexed by group identifier."""
-    df = pd.read_csv(path)
-    if df.empty:
-        raise ValueError(f"--pseudotime '{path}' has no rows.")
-    if id_column not in df.columns:
+def _read_pseudotime(adata, column):
+    """Return the pseudotime per group, with the groups lacking a value dropped."""
+    if column not in adata.obs.columns:
         raise ValueError(
-            f"Identifier column '{id_column}' not found in --pseudotime '{path}'. "
-            f"Available: {list(df.columns)}"
+            f"--obs_pseudotime '{column}' not found in .obs. "
+            f"Available: {list(adata.obs.columns)}"
         )
-    if column not in df.columns:
+    values = adata.obs[column]
+    if not pd.api.types.is_numeric_dtype(values):
         raise ValueError(
-            f"--pseudotime_column '{column}' not found in --pseudotime '{path}'. "
-            f"Available: {list(df.columns)}"
+            f"--obs_pseudotime '{column}' must be numeric, found dtype {values.dtype}."
         )
-    ids = df[id_column].astype(str)
-    if ids.duplicated().any():
-        duplicated = sorted(ids[ids.duplicated()].unique())
-        raise ValueError(
-            f"--pseudotime '{path}' has duplicated identifiers in column "
-            f"'{id_column}': {duplicated}"
-        )
-    values = pd.to_numeric(df[column], errors="coerce")
-    series = pd.Series(values.to_numpy(), index=pd.Index(ids.values, name=id_column))
-    n_missing = int(series.isna().sum())
+    n_missing = int(values.isna().sum())
     if n_missing:
         logger.warning(
             "Dropping %d group(s) with a missing '%s' value.", n_missing, column
         )
-        series = series.dropna()
-    return series
+    return values.notna().to_numpy(), values.to_numpy(dtype=float)
 
 
 def _fit_spline(pt_vals, prop_vals, lam, n_bins):
@@ -108,76 +98,42 @@ def _fit_spline(pt_vals, prop_vals, lam, n_bins):
 
 
 def main():
-    logger.info("Reading proportions from %s", par["input"])
-    prop_df = read_group_table(par["input"], par["id_column"], "--input")
-    id_column = prop_df.index.name
-    logger.info(
-        "Proportions: %d groups x %d labels, identifier column '%s'.",
-        prop_df.shape[0],
-        prop_df.shape[1],
-        id_column,
-    )
+    logger.info("Reading %s, modality '%s'.", par["input"], par["modality"])
+    adata = mu.read_h5ad(par["input"], mod=par["modality"])
+    logger.info("Proportions: %d groups x %d labels.", adata.n_obs, adata.n_vars)
 
-    logger.info("Reading pseudotime from %s", par["pseudotime"])
-    pt = _read_pseudotime(par["pseudotime"], id_column, par["pseudotime_column"])
-
-    common = prop_df.index.intersection(pt.index)
-    dropped_prop = prop_df.index.difference(pt.index)
-    dropped_pt = pt.index.difference(prop_df.index)
-    if len(dropped_prop):
-        logger.warning(
-            "%d group(s) in --input have no pseudotime and are dropped: %s",
-            len(dropped_prop),
-            list(dropped_prop[:10]),
-        )
-    if len(dropped_pt):
-        logger.warning(
-            "%d group(s) in --pseudotime are absent from --input and are dropped: %s",
-            len(dropped_pt),
-            list(dropped_pt[:10]),
-        )
-    if len(common) < par["min_groups"]:
+    keep, pt = _read_pseudotime(adata, par["obs_pseudotime"])
+    n_groups = int(keep.sum())
+    if n_groups < par["min_groups"]:
         raise ValueError(
-            f"Only {len(common)} group(s) present in both --input and --pseudotime; "
+            f"Only {n_groups} group(s) have a pseudotime value; "
             f"--min_groups is {par['min_groups']}."
         )
-    prop_df = prop_df.loc[common]
-    pt = pt.loc[common]
-    logger.info(
-        "Fitting splines for %d labels over %d groups.", prop_df.shape[1], len(common)
-    )
+    X = adata.X.toarray() if hasattr(adata.X, "toarray") else np.asarray(adata.X)
+    X = X[keep].astype(float)
+    pt = pt[keep]
+    logger.info("Fitting splines for %d labels over %d groups.", adata.n_vars, n_groups)
 
-    curves = []
-    stats = []
-    for label in prop_df.columns:
+    n_bins = par["n_pseudotime_bins"]
+    curves = np.full((adata.n_vars, n_bins), np.nan)
+    stats = {
+        "peak_pseudotime": np.full(adata.n_vars, np.nan),
+        "r_squared": np.full(adata.n_vars, np.nan),
+        "p_value": np.full(adata.n_vars, np.nan),
+    }
+    grid = None
+    n_fitted = 0
+    for i, label in enumerate(adata.var_names):
         try:
-            result = _fit_spline(
-                pt,
-                prop_df[label],
-                par["lam"],
-                par["n_pseudotime_bins"],
-            )
+            result = _fit_spline(pt, X[:, i], par["lam"], n_bins)
         except Exception as exc:
             logger.warning("  Spline fit failed for '%s': %s", label, exc)
             continue
-        curves.append(
-            pd.DataFrame(
-                {
-                    "label": label,
-                    "pseudotime": result["pseudotime_grid"],
-                    "proportion_fitted": result["proportion_fitted"],
-                }
-            )
-        )
-        stats.append(
-            {
-                "label": label,
-                "peak_pseudotime": result["peak_pseudotime"],
-                "r_squared": result["r_squared"],
-                "p_value": result["p_value"],
-                "n_groups": len(common),
-            }
-        )
+        n_fitted += 1
+        grid = result["pseudotime_grid"]
+        curves[i] = result["proportion_fitted"]
+        for key in stats:
+            stats[key][i] = result[key]
         logger.info(
             "  %-20s peak_pt=%.3f  R^2=%.3f  p=%.4f",
             label,
@@ -186,21 +142,29 @@ def main():
             result["p_value"],
         )
 
-    if not curves:
+    if not n_fitted:
         raise ValueError("No label could be fitted; see the warnings above.")
 
-    curves_df = pd.concat(curves, ignore_index=True)
-    curves_df.to_csv(par["output"], index=False)
+    adata.varm[par["varm_output"]] = curves
+    adata.uns[par["uns_output"]] = grid
+    prefix = par["var_prefix"]
+    for key, values in stats.items():
+        adata.var[f"{prefix}{key}"] = values
+    adata.var[f"{prefix}n_groups"] = n_groups
     logger.info(
-        "Written %d fitted curve rows for %d labels to %s.",
-        curves_df.shape[0],
-        len(stats),
-        par["output"],
+        "Stored %d fitted curves in .varm['%s'] and per-label statistics in .var.",
+        n_fitted,
+        par["varm_output"],
     )
 
-    if par["output_stats"]:
-        pd.DataFrame(stats).to_csv(par["output_stats"], index=False)
-        logger.info("Written per-label statistics to %s.", par["output_stats"])
+    logger.info("Writing output to %s.", par["output"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"],
+        par["input"],
+        par["modality"],
+        adata,
+        par["output_compression"],
+    )
 
 
 if __name__ == "__main__":

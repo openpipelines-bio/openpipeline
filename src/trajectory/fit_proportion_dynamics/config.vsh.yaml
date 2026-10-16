@@ -6,17 +6,19 @@ description: |
   versus pseudotime to reveal which cell subpopulations expand or contract along a
   disease trajectory.
 
-  This is a group-level component: every row is a group (a participant, donor or
-  sample), not a cell. It takes two tables and writes two tables, and never opens a
-  MuData - no cell-level data is involved.
+  The input is a group-level object: every observation is a group (a participant,
+  donor or sample), every variable a label, and `.X` holds the group x label
+  proportions (`metadata/calculate_obs_label_proportions`). The pseudotime is an
+  `.obs` column (e.g. from `trajectory/palantir`). Groups without a pseudotime value
+  are left out of the fit.
 
-    --input       group x label proportions
-                  (`--output_csv` of `metadata/calculate_obs_label_proportions`)
-    --pseudotime  one pseudotime value per group
-                  (`--output_table` of `trajectory/palantir`)
-
-  Both tables are joined on their identifier column; groups missing from either are
-  dropped.
+  Results are added per label:
+    - `.varm[--varm_output]`: the fitted curve, labels x `--n_pseudotime_bins`,
+      evaluated at the pseudotime values in `.uns[--uns_output]`.
+    - `.var`: the peak pseudotime, R^2, p-value and number of groups of the fit, as
+      `dynamics_peak_pseudotime`, `dynamics_r_squared`, `dynamics_p_value` and
+      `dynamics_n_groups` (prefix set by `--var_prefix`). A label whose fit failed
+      gets NaN.
 
   This is step 4 of the BEYOND methodology (Green et al., Nature 2024).
 
@@ -39,32 +41,21 @@ argument_groups:
         direction: input
         required: true
         description: |
-          CSV with the group x label proportion matrix: an identifier column plus one
-          numeric column per label.
-        example: proportions.csv
+          Group-level h5mu file with the group x label proportions in `.X` and the
+          pseudotime in `.obs[--obs_pseudotime]`.
+        example: proportions.h5mu
 
-      - name: "--pseudotime"
-        type: file
-        direction: input
-        required: true
-        description: |
-          CSV with the same identifier column plus a pseudotime column
-          (`--pseudotime_column`). Extra columns are ignored.
-        example: pseudotime.csv
-
-      - name: "--id_column"
+      - name: "--modality"
         type: string
+        default: "proportions"
         required: false
-        description: |
-          Identifier column shared by both tables. Defaults to the first column of
-          `--input`.
-        example: "participant_id"
+        description: Modality to process.
 
-      - name: "--pseudotime_column"
+      - name: "--obs_pseudotime"
         type: string
         default: "palantir_pseudotime"
         required: false
-        description: Column of `--pseudotime` holding the pseudotime values.
+        description: "`.obs` column holding the pseudotime values."
 
   - name: Arguments
     arguments:
@@ -100,31 +91,41 @@ argument_groups:
         type: file
         direction: output
         required: true
-        description: |
-          Long-format CSV of the fitted curves, one row per (label, pseudotime bin):
-          `label`, `pseudotime`, `proportion_fitted`.
-        example: dynamics.csv
+        description: Output h5mu file.
+        example: output.h5mu
 
-      - name: "--output_stats"
-        type: file
-        direction: output
+      - name: "--varm_output"
+        type: string
+        default: "proportion_dynamics"
         required: false
         description: |
-          CSV with one row per label: `label`, `peak_pseudotime`, `r_squared`,
-          `p_value`, `n_groups`.
-        example: dynamics_stats.csv
+          `.varm` key for the fitted curves, one row per label and one column per
+          pseudotime bin.
+
+      - name: "--uns_output"
+        type: string
+        default: "proportion_dynamics_pseudotime"
+        required: false
+        description: "`.uns` key for the pseudotime value of every bin of `--varm_output`."
+
+      - name: "--var_prefix"
+        type: string
+        default: "dynamics_"
+        required: false
+        description: Prefix of the per-label statistics columns added to `.var`.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:
   - type: python_script
     path: script.py
   - path: /src/utils/setup_logger.py
-  - path: /src/utils/group_table.py
+  - path: /src/utils/compress_h5mu.py
 
 test_resources:
   - type: python_script
     path: test.py
   - path: /src/utils/setup_logger.py
-  - path: /src/utils/group_table.py
+  - path: /src/utils/compress_h5mu.py
 
 engines:
   - type: docker
@@ -134,6 +135,7 @@ engines:
         packages:
           - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - pandas
           - numpy

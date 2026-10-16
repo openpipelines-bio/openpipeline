@@ -3,6 +3,8 @@ import subprocess
 import pytest
 import numpy as np
 import pandas as pd
+import anndata as ad
+import mudata as mu
 
 ## VIASH START
 meta = {
@@ -13,8 +15,21 @@ meta = {
 ## VIASH END
 
 
-def _make_tables(tmp_path, n=40, seed=0):
-    """One table with a real signal: resp_signal ~ trait_A, resp_null independent."""
+def _to_h5mu(df, responses, path):
+    """Write `df` as a MuData: `responses` become .X, the other columns .obs."""
+    obs = df.drop(columns=responses)
+    obs.index = [f"obs_{i:03d}" for i in range(len(df))]
+    adata = ad.AnnData(
+        X=df[responses].to_numpy(dtype=float),
+        obs=obs,
+        var=pd.DataFrame(index=responses),
+    )
+    mu.MuData({"proportions": adata}).write_h5mu(str(path))
+    return path
+
+
+def _make_input(tmp_path, n=40, seed=0):
+    """resp_signal ~ trait_A, resp_null independent; traits in .obs."""
     rng = np.random.default_rng(seed)
     trait_a = rng.normal(0, 1, n)
     df = pd.DataFrame(
@@ -29,32 +44,33 @@ def _make_tables(tmp_path, n=40, seed=0):
             "cohort": np.where(np.arange(n) < n // 2, "c1", "c2"),
         }
     )
-    path = tmp_path / "input.csv"
-    df.to_csv(str(path), index=False)
+    path = _to_h5mu(df, ["resp_signal", "resp_null"], tmp_path / "input.h5mu")
     return df, path
 
 
-def _make_split_tables(tmp_path, n=40, seed=1):
-    """Same data split over a response table and a metadata table."""
-    df, _ = _make_tables(tmp_path, n=n, seed=seed)
-    responses = df[["sample_id", "resp_signal", "resp_null"]]
-    metadata = df[["sample_id", "trait_A", "trait_B", "age", "sex", "cohort"]]
-    resp_path = tmp_path / "responses.csv"
-    meta_path = tmp_path / "metadata.csv"
-    responses.to_csv(str(resp_path), index=False)
-    metadata.to_csv(str(meta_path), index=False)
-    return resp_path, meta_path
+def _args(input_path, output, *extra):
+    return [
+        "--input",
+        str(input_path),
+        "--modality",
+        "proportions",
+        *extra,
+        "--output",
+        str(output),
+    ]
 
 
 def test_basic(run_component, tmp_path):
     """The true association is found and the null one is not."""
-    _, input_path = _make_tables(tmp_path)
+    _, input_path = _make_input(tmp_path)
     output = tmp_path / "assoc.csv"
 
     run_component(
         [
             "--input",
             str(input_path),
+            "--modality",
+            "proportions",
             "--response_columns",
             "resp_signal",
             "--response_columns",
@@ -93,102 +109,51 @@ def test_basic(run_component, tmp_path):
     assert (res["fdr_q"] >= res["p_value"]).all()
 
 
-def test_join_metadata(run_component, tmp_path):
-    """Predictors can live in a second table joined on --input_join_column."""
-    resp_path, meta_path = _make_split_tables(tmp_path)
-    output = tmp_path / "assoc_join.csv"
+def test_default_responses(run_component, tmp_path):
+    """Without --response_columns every variable is a response, no .obs column is."""
+    _, input_path = _make_input(tmp_path)
+    output = tmp_path / "assoc_default.csv"
 
-    run_component(
-        [
-            "--input",
-            str(resp_path),
-            "--metadata",
-            str(meta_path),
-            "--input_join_column",
-            "sample_id",
-            "--predictor_columns",
-            "trait_A",
-            "--output",
-            str(output),
-        ]
-    )
+    run_component(_args(input_path, output, "--predictor_columns", "trait_A"))
 
     res = pd.read_csv(str(output))
-    # --response_columns omitted: the numeric columns of the joined table that are
-    # not the predictor, covariate, random-effect or join column
     assert set(res["response"]) == {"resp_signal", "resp_null"}, (
         f"unexpected responses: {sorted(set(res['response']))}"
     )
-    assert "trait_B" not in set(res["response"])
     assert (res["n"] == 40).all()
 
 
-def test_join_different_column_names(run_component, tmp_path):
-    """--metadata_join_column matches a differently named column in --metadata."""
-    resp_path, meta_path = _make_split_tables(tmp_path)
-    meta = pd.read_csv(str(meta_path)).rename(columns={"sample_id": "donor"})
-    # drop half the donors so the inner join is visible in n
-    meta.iloc[:30].to_csv(str(meta_path), index=False)
-    output = tmp_path / "assoc_join_names.csv"
-
-    run_component(
-        [
-            "--input",
-            str(resp_path),
-            "--metadata",
-            str(meta_path),
-            "--input_join_column",
-            "sample_id",
-            "--metadata_join_column",
-            "donor",
-            "--predictor_columns",
-            "trait_A",
-            "--output",
-            str(output),
-        ]
-    )
-
-    res = pd.read_csv(str(output))
-    assert set(res["response"]) == {"resp_signal", "resp_null"}
-    assert (res["n"] == 30).all(), f"inner join should keep 30 rows:\n{res}"
-
-
-def test_join_column_missing_raises(run_component, tmp_path):
-    """Same-name default fails with the argument name when --metadata lacks it."""
-    resp_path, meta_path = _make_split_tables(tmp_path)
-    meta = pd.read_csv(str(meta_path)).rename(columns={"sample_id": "donor"})
-    meta.to_csv(str(meta_path), index=False)
-    output = tmp_path / "assoc_join_err.csv"
+def test_unknown_response_raises(run_component, tmp_path):
+    """A --response_columns value that is not a variable is reported."""
+    _, input_path = _make_input(tmp_path)
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
-            [
-                "--input",
-                str(resp_path),
-                "--metadata",
-                str(meta_path),
-                "--input_join_column",
-                "sample_id",
-                "--predictor_columns",
+            _args(
+                input_path,
+                tmp_path / "out.csv",
+                "--response_columns",
                 "trait_A",
-                "--output",
-                str(output),
-            ]
+                "--predictor_columns",
+                "trait_B",
+            )
         )
-    assert "--metadata_join_column 'sample_id' not found" in err.value.stdout.decode(
-        "utf-8"
+    assert "--response_columns ['trait_A'] not found in .var_names" in (
+        err.value.stdout.decode("utf-8")
     )
 
 
 def test_covariates_and_mixed_model(run_component, tmp_path):
     """--random_effect_column switches to mixedlm; covariates are not reported."""
-    _, input_path = _make_tables(tmp_path)
+    _, input_path = _make_input(tmp_path)
     output = tmp_path / "assoc_mixed.csv"
 
     run_component(
         [
             "--input",
             str(input_path),
+            "--modality",
+            "proportions",
             "--response_columns",
             "resp_signal",
             "--predictor_columns",
@@ -215,13 +180,15 @@ def test_covariates_and_mixed_model(run_component, tmp_path):
 
 def test_categorical_predictor(run_component, tmp_path):
     """A string predictor is reported per contrast level."""
-    _, input_path = _make_tables(tmp_path)
+    _, input_path = _make_input(tmp_path)
     output = tmp_path / "assoc_cat.csv"
 
     run_component(
         [
             "--input",
             str(input_path),
+            "--modality",
+            "proportions",
             "--response_columns",
             "resp_signal",
             "--predictor_columns",
@@ -245,8 +212,7 @@ def test_transform_logit(run_component, tmp_path):
     trait = rng.normal(0, 1, n)
     prop = 1 / (1 + np.exp(-(0.8 * trait + rng.normal(0, 0.3, n))))
     df = pd.DataFrame({"prop": prop, "trait_A": trait})
-    input_path = tmp_path / "prop.csv"
-    df.to_csv(str(input_path), index=False)
+    input_path = _to_h5mu(df, ["prop"], tmp_path / "prop.h5mu")
 
     betas = {}
     for transform in ("none", "logit"):
@@ -255,6 +221,8 @@ def test_transform_logit(run_component, tmp_path):
             [
                 "--input",
                 str(input_path),
+                "--modality",
+                "proportions",
                 "--response_columns",
                 "prop",
                 "--predictor_columns",
@@ -281,8 +249,7 @@ def test_transform_sqrt(run_component, tmp_path):
     root = 0.4 + 0.1 * trait + rng.normal(0, 0.01, n)
     prop = np.clip(root, 1e-6, None) ** 2
     df = pd.DataFrame({"prop": prop, "trait_A": trait})
-    input_path = tmp_path / "prop_sqrt.csv"
-    df.to_csv(str(input_path), index=False)
+    input_path = _to_h5mu(df, ["prop"], tmp_path / "prop_sqrt.h5mu")
 
     betas = {}
     for transform in ("none", "sqrt"):
@@ -291,6 +258,8 @@ def test_transform_sqrt(run_component, tmp_path):
             [
                 "--input",
                 str(input_path),
+                "--modality",
+                "proportions",
                 "--response_columns",
                 "prop",
                 "--predictor_columns",
@@ -314,14 +283,15 @@ def test_transform_sqrt_negative_response(run_component, tmp_path):
     df = pd.DataFrame(
         {"prop": np.linspace(-0.2, 0.5, 30), "trait_A": np.linspace(0, 1, 30)}
     )
-    input_path = tmp_path / "negative.csv"
-    df.to_csv(str(input_path), index=False)
+    input_path = _to_h5mu(df, ["prop"], tmp_path / "negative.h5mu")
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
                 "--input",
                 str(input_path),
+                "--modality",
+                "proportions",
                 "--response_columns",
                 "prop",
                 "--predictor_columns",
@@ -337,7 +307,7 @@ def test_transform_sqrt_negative_response(run_component, tmp_path):
 
 def test_fdr_scope(run_component, tmp_path):
     """per_response correction is applied within each response, not over all tests."""
-    _, input_path = _make_tables(tmp_path)
+    _, input_path = _make_input(tmp_path)
     qs = {}
     for scope in ("global", "per_response"):
         output = tmp_path / f"assoc_{scope}.csv"
@@ -345,6 +315,8 @@ def test_fdr_scope(run_component, tmp_path):
             [
                 "--input",
                 str(input_path),
+                "--modality",
+                "proportions",
                 "--response_columns",
                 "resp_signal",
                 "--response_columns",
@@ -372,8 +344,8 @@ def test_fdr_scope(run_component, tmp_path):
 
 
 def test_missing_column_raises(run_component, tmp_path):
-    """An unknown predictor column is reported with the available columns."""
-    _, input_path = _make_tables(tmp_path)
+    """An unknown predictor column is reported with the available .obs columns."""
+    _, input_path = _make_input(tmp_path)
     output = tmp_path / "assoc_err.csv"
 
     with pytest.raises(subprocess.CalledProcessError) as err:
@@ -381,6 +353,8 @@ def test_missing_column_raises(run_component, tmp_path):
             [
                 "--input",
                 str(input_path),
+                "--modality",
+                "proportions",
                 "--response_columns",
                 "resp_signal",
                 "--predictor_columns",
@@ -389,7 +363,7 @@ def test_missing_column_raises(run_component, tmp_path):
                 str(output),
             ]
         )
-    assert "not found in the input table" in err.value.stdout.decode("utf-8")
+    assert "['does_not_exist'] not found in .obs" in err.value.stdout.decode("utf-8")
 
 
 def test_min_observations(run_component, tmp_path):
@@ -400,8 +374,7 @@ def test_min_observations(run_component, tmp_path):
             "trait_A": [1.0, 2.0, 3.0, 4.0, 5.0],
         }
     )
-    input_path = tmp_path / "small.csv"
-    df.to_csv(str(input_path), index=False)
+    input_path = _to_h5mu(df, ["resp"], tmp_path / "small.h5mu")
     output = tmp_path / "assoc_small.csv"
 
     with pytest.raises(subprocess.CalledProcessError) as err:
@@ -409,6 +382,8 @@ def test_min_observations(run_component, tmp_path):
             [
                 "--input",
                 str(input_path),
+                "--modality",
+                "proportions",
                 "--response_columns",
                 "resp",
                 "--predictor_columns",
@@ -426,6 +401,8 @@ def test_min_observations(run_component, tmp_path):
         [
             "--input",
             str(input_path),
+            "--modality",
+            "proportions",
             "--response_columns",
             "resp",
             "--predictor_columns",

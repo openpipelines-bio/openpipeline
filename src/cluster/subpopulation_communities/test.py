@@ -3,6 +3,8 @@ import subprocess
 import pytest
 import numpy as np
 import pandas as pd
+import anndata as ad
+import mudata as mu
 
 ## VIASH START
 meta = {
@@ -12,15 +14,16 @@ meta = {
 }
 ## VIASH END
 
-ID = "participant_id"
+LABELS = ["a1", "a2", "a3", "b1", "b2", "b3"]
 
 
-def _make_tables(tmp_path, n_groups=60, seed=42, id_column=ID):
-    """Proportion and dynamics tables with two planted communities.
+def _make_mudata(tmp_path, n_groups=60, seed=42, with_dynamics=True, extra=None):
+    """Group-level MuData with two planted communities.
 
     Labels `a1`/`a2`/`a3` move together across groups; `b1`/`b2`/`b3` move
     together in the opposite direction. Any working community detection must
     recover exactly that split, so a broken similarity matrix cannot pass.
+    `extra` maps additional label names to (proportions, fitted curve).
     """
     rng = np.random.default_rng(seed)
     ids = [f"donor_{i:03d}" for i in range(n_groups)]
@@ -32,44 +35,50 @@ def _make_tables(tmp_path, n_groups=60, seed=42, id_column=ID):
     group_a += rng.normal(0, 0.005, group_a.shape)
     group_b += rng.normal(0, 0.005, group_b.shape)
 
-    labels = ["a1", "a2", "a3", "b1", "b2", "b3"]
     raw = np.clip(np.hstack([group_a, group_b]), 1e-6, None)
     props = raw / raw.sum(axis=1, keepdims=True)
 
-    prop_df = pd.DataFrame(props, columns=labels)
-    prop_df.insert(0, id_column, ids)
-    prop_path = tmp_path / "proportions.csv"
-    prop_df.to_csv(prop_path, index=False)
-
     # Fitted curves: community a rises, community b falls
     grid = np.linspace(0.0, 1.0, 30)
-    rows = []
-    for label in labels:
-        curve = 0.2 + 0.5 * grid if label.startswith("a") else 0.7 - 0.5 * grid
-        for x, y in zip(grid, curve):
-            rows.append({"label": label, "pseudotime": x, "proportion_fitted": y})
-    dyn_path = tmp_path / "dynamics.csv"
-    pd.DataFrame(rows).to_csv(dyn_path, index=False)
+    curves = np.vstack(
+        [
+            0.2 + 0.5 * grid if label.startswith("a") else 0.7 - 0.5 * grid
+            for label in LABELS
+        ]
+    )
 
-    return prop_path, dyn_path, labels
+    labels = list(LABELS)
+    for label, (values, curve) in (extra or {}).items():
+        labels.append(label)
+        props = np.column_stack([props, values])
+        curves = np.vstack([curves, curve])
+
+    adata = ad.AnnData(
+        X=props, obs=pd.DataFrame(index=ids), var=pd.DataFrame(index=labels)
+    )
+    if with_dynamics:
+        adata.varm["proportion_dynamics"] = curves
+        adata.uns["proportion_dynamics_pseudotime"] = grid
+
+    path = tmp_path / "proportions.h5mu"
+    mu.MuData({"proportions": adata}).write_h5mu(str(path))
+    return path, labels
 
 
 def _communities(path):
-    df = pd.read_csv(path)
-    return dict(zip(df["label"], df["community_id"].astype(str)))
+    var = mu.read_h5mu(str(path)).mod["proportions"].var
+    return var["community_id"].astype(str).to_dict()
 
 
 def test_basic(run_component, tmp_path):
-    """One row per label, with the planted split recovered."""
-    prop_path, dyn_path, labels = _make_tables(tmp_path)
-    output = tmp_path / "communities.csv"
+    """One community per label, with the planted split recovered."""
+    input_path, labels = _make_mudata(tmp_path)
+    output = tmp_path / "communities.h5mu"
 
     run_component(
         [
             "--input",
-            str(prop_path),
-            "--dynamics",
-            str(dyn_path),
+            str(input_path),
             "--n_communities",
             "2",
             "--output",
@@ -78,11 +87,8 @@ def test_basic(run_component, tmp_path):
     )
 
     assert output.is_file()
-    result = pd.read_csv(output)
-    assert list(result.columns) == ["label", "community_id"]
-    assert sorted(result["label"]) == sorted(labels)
-
     comm = _communities(output)
+    assert sorted(comm) == sorted(labels)
     assert comm["a1"] == comm["a2"] == comm["a3"], f"Community a split: {comm}"
     assert comm["b1"] == comm["b2"] == comm["b3"], f"Community b split: {comm}"
     assert comm["a1"] != comm["b1"], f"Communities a and b merged: {comm}"
@@ -91,15 +97,13 @@ def test_basic(run_component, tmp_path):
 @pytest.mark.parametrize("method", ["hierarchical", "spectral"])
 def test_methods(run_component, tmp_path, method):
     """Both clustering methods recover the planted split."""
-    prop_path, dyn_path, _ = _make_tables(tmp_path)
-    output = tmp_path / f"communities_{method}.csv"
+    input_path, _ = _make_mudata(tmp_path)
+    output = tmp_path / f"communities_{method}.h5mu"
 
     run_component(
         [
             "--input",
-            str(prop_path),
-            "--dynamics",
-            str(dyn_path),
+            str(input_path),
             "--n_communities",
             "2",
             "--method",
@@ -116,15 +120,13 @@ def test_methods(run_component, tmp_path, method):
 @pytest.mark.parametrize("correlation", ["pearson", "spearman"])
 def test_correlation_method(run_component, tmp_path, correlation):
     """Both correlation methods are accepted and recover the split."""
-    prop_path, dyn_path, _ = _make_tables(tmp_path)
-    output = tmp_path / f"communities_{correlation}.csv"
+    input_path, _ = _make_mudata(tmp_path)
+    output = tmp_path / f"communities_{correlation}.h5mu"
 
     run_component(
         [
             "--input",
-            str(prop_path),
-            "--dynamics",
-            str(dyn_path),
+            str(input_path),
             "--n_communities",
             "2",
             "--correlation_method",
@@ -139,14 +141,14 @@ def test_correlation_method(run_component, tmp_path, correlation):
 
 
 def test_alpha_one_without_dynamics(run_component, tmp_path):
-    """--alpha 1.0 is co-occurrence only, so --dynamics may be omitted."""
-    prop_path, _, _ = _make_tables(tmp_path)
-    output = tmp_path / "communities_alpha1.csv"
+    """--alpha 1.0 is co-occurrence only, so no fitted curves are needed."""
+    input_path, _ = _make_mudata(tmp_path, with_dynamics=False)
+    output = tmp_path / "communities_alpha1.h5mu"
 
     run_component(
         [
             "--input",
-            str(prop_path),
+            str(input_path),
             "--n_communities",
             "2",
             "--alpha",
@@ -160,126 +162,92 @@ def test_alpha_one_without_dynamics(run_component, tmp_path):
     assert comm["a1"] == comm["a2"] != comm["b1"], f"Co-occurrence only failed: {comm}"
 
 
-def test_output_similarity(run_component, tmp_path):
-    """--output_similarity holds one row per label pair."""
-    prop_path, dyn_path, labels = _make_tables(tmp_path)
-    output = tmp_path / "communities.csv"
-    sim_path = tmp_path / "similarity.csv"
+def test_similarity_matrices(run_component, tmp_path):
+    """The three label x label similarity matrices are written to .varp."""
+    input_path, labels = _make_mudata(tmp_path)
+    output = tmp_path / "communities.h5mu"
 
     run_component(
         [
             "--input",
-            str(prop_path),
-            "--dynamics",
-            str(dyn_path),
+            str(input_path),
             "--n_communities",
             "2",
             "--output",
             str(output),
-            "--output_similarity",
-            str(sim_path),
         ]
     )
 
-    sim = pd.read_csv(sim_path)
+    adata = mu.read_h5mu(str(output)).mod["proportions"]
     n = len(labels)
-    assert list(sim.columns) == [
-        "label_1",
-        "label_2",
-        "co_occurrence",
-        "dynamics",
-        "combined",
-    ]
-    assert len(sim) == n * (n - 1) // 2
-    assert sim[["co_occurrence", "dynamics", "combined"]].abs().max().max() <= 1.0
+    for key in ("co_occurrence", "dynamics", "combined"):
+        sim = np.asarray(adata.varp[f"community_{key}"])
+        assert sim.shape == (n, n), f"{key}: shape {sim.shape}"
+        np.testing.assert_allclose(sim, sim.T, atol=1e-12)
+        assert np.abs(sim).max() <= 1.0
 
-    within = sim[
-        sim["label_1"].str.startswith("a") & sim["label_2"].str.startswith("a")
-    ]["co_occurrence"].mean()
-    between = sim[
-        sim["label_1"].str.startswith("a") & sim["label_2"].str.startswith("b")
-    ]["co_occurrence"].mean()
+    co = pd.DataFrame(
+        np.asarray(adata.varp["community_co_occurrence"]), index=labels, columns=labels
+    )
+    within = co.loc[["a1", "a2", "a3"], ["a1", "a2", "a3"]].to_numpy()
+    within = within[~np.eye(3, dtype=bool)].mean()
+    between = co.loc[["a1", "a2", "a3"], ["b1", "b2", "b3"]].to_numpy().mean()
     assert within > between, (
         f"Within-community co-occurrence {within:.3f} not above between {between:.3f}"
     )
 
 
 def test_missing_dynamics(run_component, tmp_path):
-    """--dynamics is required whenever --alpha is below 1.0."""
-    prop_path, _, _ = _make_tables(tmp_path)
+    """The fitted curves are required whenever --alpha is below 1.0."""
+    input_path, _ = _make_mudata(tmp_path, with_dynamics=False)
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
                 "--input",
-                str(prop_path),
+                str(input_path),
                 "--n_communities",
                 "2",
                 "--output",
-                str(tmp_path / "out.csv"),
+                str(tmp_path / "out.h5mu"),
             ]
         )
-    assert "--dynamics is required" in err.value.stdout.decode("utf-8")
+    assert "--varm_dynamics 'proportion_dynamics' not found" in (
+        err.value.stdout.decode("utf-8")
+    )
 
 
 def test_too_many_communities(run_component, tmp_path):
     """--n_communities above the number of labels is rejected."""
-    prop_path, dyn_path, labels = _make_tables(tmp_path)
+    input_path, labels = _make_mudata(tmp_path)
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(
             [
                 "--input",
-                str(prop_path),
-                "--dynamics",
-                str(dyn_path),
+                str(input_path),
                 "--n_communities",
                 str(len(labels) + 1),
                 "--output",
-                str(tmp_path / "out.csv"),
+                str(tmp_path / "out.h5mu"),
             ]
         )
     assert "exceeds the number of labels" in err.value.stdout.decode("utf-8")
 
 
-def test_dynamics_missing_column(run_component, tmp_path):
-    """A --dynamics table without the expected columns is rejected."""
-    prop_path, dyn_path, _ = _make_tables(tmp_path)
-    bad = pd.read_csv(dyn_path).rename(columns={"proportion_fitted": "value"})
-    bad_path = tmp_path / "dynamics_bad.csv"
-    bad.to_csv(bad_path, index=False)
+def test_unfitted_label(run_component, tmp_path):
+    """A label whose curve could not be fitted (NaN) gets zero dynamics similarity."""
+    rng = np.random.default_rng(3)
+    input_path, _ = _make_mudata(
+        tmp_path,
+        extra={"unfitted": (rng.uniform(0.01, 0.02, 60), np.full(30, np.nan))},
+    )
+    output = tmp_path / "communities_unfitted.h5mu"
 
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input",
-                str(prop_path),
-                "--dynamics",
-                str(bad_path),
-                "--n_communities",
-                "2",
-                "--output",
-                str(tmp_path / "out.csv"),
-            ]
-        )
-    assert "missing column" in err.value.stdout.decode("utf-8")
-
-
-def test_zero_variance_label(run_component, tmp_path):
-    """A label with constant proportions gets zero similarity, not a crash."""
-    prop_path, dyn_path, _ = _make_tables(tmp_path)
-    df = pd.read_csv(prop_path)
-    df["constant"] = 0.05
-    padded = tmp_path / "proportions_constant.csv"
-    df.to_csv(padded, index=False)
-
-    output = tmp_path / "communities_constant.csv"
     run_component(
         [
             "--input",
-            str(padded),
-            "--dynamics",
-            str(dyn_path),
+            str(input_path),
             "--n_communities",
             "3",
             "--output",
@@ -287,9 +255,37 @@ def test_zero_variance_label(run_component, tmp_path):
         ]
     )
 
-    result = pd.read_csv(output)
-    assert "constant" in set(result["label"])
-    assert not result["community_id"].isna().any()
+    adata = mu.read_h5mu(str(output)).mod["proportions"]
+    dyn = pd.DataFrame(
+        np.asarray(adata.varp["community_dynamics"]),
+        index=adata.var_names,
+        columns=adata.var_names,
+    )
+    assert (dyn.loc["unfitted"].drop("unfitted") == 0).all()
+    assert not adata.var["community_id"].isna().any()
+
+
+def test_zero_variance_label(run_component, tmp_path):
+    """A label with constant proportions gets zero similarity, not a crash."""
+    input_path, _ = _make_mudata(
+        tmp_path, extra={"constant": (np.full(60, 0.05), np.full(30, 0.05))}
+    )
+    output = tmp_path / "communities_constant.h5mu"
+
+    run_component(
+        [
+            "--input",
+            str(input_path),
+            "--n_communities",
+            "3",
+            "--output",
+            str(output),
+        ]
+    )
+
+    comm = _communities(output)
+    assert "constant" in comm
+    assert "nan" not in comm.values()
 
 
 if __name__ == "__main__":

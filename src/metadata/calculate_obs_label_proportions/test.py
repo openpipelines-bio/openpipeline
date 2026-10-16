@@ -45,8 +45,14 @@ def synthetic_mudata(tmp_path):
     return _make_mudata(tmp_path)
 
 
+def _read_proportions(path, modality="proportions"):
+    """Proportion matrix of a group-level output, as a groups x labels DataFrame."""
+    adata = read_h5mu(str(path)).mod[modality]
+    return pd.DataFrame(adata.X, index=adata.obs_names, columns=adata.var_names)
+
+
 def test_basic(run_component, tmp_path):
-    """Proportions are computed and stored in uns."""
+    """One observation per group and one variable per label, in a new modality."""
     mdata, h5mu_path = _make_mudata(
         tmp_path, n_donors=3, n_subpops=4, cells_per_group=10
     )
@@ -67,19 +73,23 @@ def test_basic(run_component, tmp_path):
 
     assert output_path.is_file()
     result = read_h5mu(str(output_path))
-    adata = result.mod["rna"]
-
-    # uns["proportions"] is a DataFrame (groups x labels), not a nested dict
-    assert "proportions" in adata.uns
-    prop_df = adata.uns["proportions"]
-    assert isinstance(prop_df, pd.DataFrame), (
-        f"uns['proportions'] should survive the round-trip as a DataFrame, got {type(prop_df)}"
+    assert list(result.mod) == ["proportions"], (
+        f"expected a single 'proportions' modality, got {list(result.mod)}"
     )
-    assert prop_df.shape == (3, 4)
+    adata = result.mod["proportions"]
+
+    # one observation per group, one variable per label
+    assert adata.shape == (3, 4)
+    assert sorted(adata.obs_names) == ["donor_0", "donor_1", "donor_2"]
+    assert sorted(adata.var_names) == [f"subpop_{j}" for j in range(4)]
+    assert list(adata.obs["participant_id"]) == list(adata.obs_names)
 
     # Each row must sum to 1
-    row_sums = prop_df.sum(axis=1)
-    np.testing.assert_allclose(row_sums.values, np.ones(3), atol=1e-10)
+    np.testing.assert_allclose(adata.X.sum(axis=1), np.ones(3), atol=1e-10)
+
+    # obsm copy for components that read .obsm, and the raw cell counts
+    np.testing.assert_array_equal(adata.obsm["X_proportions"], adata.X)
+    np.testing.assert_array_equal(adata.layers["counts"], np.full((3, 4), 10))
 
 
 def test_uniform_proportions(run_component, tmp_path):
@@ -103,9 +113,7 @@ def test_uniform_proportions(run_component, tmp_path):
         ]
     )
 
-    result = read_h5mu(str(output_path))
-    prop_dict = result.mod["rna"].uns["proportions"]
-    prop_df = pd.DataFrame(prop_dict)
+    prop_df = _read_proportions(output_path)
     expected = 1.0 / n_subpops
     np.testing.assert_allclose(prop_df.values, expected, atol=1e-10)
 
@@ -135,16 +143,19 @@ def test_custom_column_names(run_component, tmp_path):
             "sample",
             "--obs_label",
             "cell_class",
-            "--uns_output",
+            "--output_modality",
             "my_props",
+            "--obsm_output",
+            "my_obsm",
         ]
     )
 
     result = read_h5mu(str(output_path))
-    adata_out = result.mod["rna"]
-    assert "my_props" in adata_out.uns
-    prop_df = pd.DataFrame(adata_out.uns["my_props"]).T
-    np.testing.assert_allclose(prop_df.sum(axis=1).values, np.ones(2), atol=1e-10)
+    assert list(result.mod) == ["my_props"]
+    adata_out = result.mod["my_props"]
+    assert "my_obsm" in adata_out.obsm
+    assert list(adata_out.obs["sample"]) == ["s1", "s2"]
+    np.testing.assert_allclose(adata_out.X.sum(axis=1), np.ones(2), atol=1e-10)
 
 
 def test_normalize_within(run_component, tmp_path):
@@ -195,7 +206,7 @@ def test_normalize_within(run_component, tmp_path):
         ]
     )
 
-    prop = pd.DataFrame(read_h5mu(str(output_path)).mod["rna"].uns["proportions"])
+    prop = _read_proportions(output_path)
     expected = {
         "donor_A": {"b1": 0.9, "b2": 0.1, "s1": 0.5, "s2": 0.5},
         "donor_B": {"b1": 0.25, "b2": 0.75, "s1": 0.8, "s2": 0.2},
@@ -208,6 +219,15 @@ def test_normalize_within(run_component, tmp_path):
 
     # Two classes, so a row sums to 2 and not to 1
     np.testing.assert_allclose(prop.sum(axis=1).to_numpy(), np.full(2, 2.0), atol=1e-12)
+
+    # The label -> class hierarchy is kept in .var
+    var = read_h5mu(str(output_path)).mod["proportions"].var
+    assert var["cell_class"].to_dict() == {
+        "b1": "big",
+        "b2": "big",
+        "s1": "small",
+        "s2": "small",
+    }
 
 
 def test_normalize_within_differs_from_global(run_component, tmp_path):
@@ -236,7 +256,7 @@ def test_normalize_within_differs_from_global(run_component, tmp_path):
         ]
     )
 
-    prop = pd.DataFrame(read_h5mu(str(output_path)).mod["rna"].uns["proportions"])
+    prop = _read_proportions(output_path)
     assert prop.loc["d", "b1"] == pytest.approx(0.9)
     assert prop.loc["d", "s1"] == pytest.approx(0.1)
 
@@ -315,8 +335,7 @@ def test_output_compression(run_component, tmp_path):
     )
 
     assert output_path.is_file()
-    result = read_h5mu(str(output_path))
-    assert "proportions" in result.mod["rna"].uns
+    assert _read_proportions(output_path).shape == (3, 4)
 
 
 def test_unequal_group_sizes(run_component, tmp_path):
@@ -361,9 +380,7 @@ def test_unequal_group_sizes(run_component, tmp_path):
         ]
     )
 
-    result = read_h5mu(str(output_path))
-    adata_out = result.mod["rna"]
-    prop_df = pd.DataFrame(adata_out.uns["proportions"])
+    prop_df = _read_proportions(output_path)
     expected_df = pd.DataFrame(expected).T.loc[prop_df.index, prop_df.columns]
 
     np.testing.assert_allclose(
@@ -371,44 +388,6 @@ def test_unequal_group_sizes(run_component, tmp_path):
         expected_df.to_numpy(dtype=float),
         atol=1e-12,
         err_msg=f"Proportions differ from hand-computed values:\n{prop_df}",
-    )
-
-
-def test_output_csv(run_component, tmp_path):
-    """--output_csv writes the same matrix as a table, keyed by the group column."""
-    mdata, h5mu_path = _make_mudata(
-        tmp_path, n_donors=3, n_subpops=4, cells_per_group=10
-    )
-    output_path = tmp_path / "output_csv.h5mu"
-    csv_path = tmp_path / "proportions.csv"
-
-    run_component(
-        [
-            "--input",
-            str(h5mu_path),
-            "--output",
-            str(output_path),
-            "--output_csv",
-            str(csv_path),
-            "--obs_group",
-            "participant_id",
-            "--obs_label",
-            "subpopulation",
-        ]
-    )
-
-    assert csv_path.is_file()
-    csv_df = pd.read_csv(str(csv_path), index_col=0)
-    assert csv_df.index.name == "participant_id"
-    assert csv_df.shape == (3, 4)
-    np.testing.assert_allclose(csv_df.sum(axis=1).values, np.ones(3), atol=1e-10)
-
-    # identical to what went into .uns
-    uns_df = pd.DataFrame(read_h5mu(str(output_path)).mod["rna"].uns["proportions"])
-    np.testing.assert_allclose(
-        csv_df.loc[uns_df.index, uns_df.columns].to_numpy(dtype=float),
-        uns_df.to_numpy(dtype=float),
-        atol=1e-12,
     )
 
 
@@ -435,57 +414,14 @@ def test_overall_proportions_without_group(run_component, tmp_path):
         ]
     )
 
-    adata_out = read_h5mu(str(output_path)).mod["rna"]
-    prop_df = pd.DataFrame(adata_out.uns["proportions"])
+    adata_out = read_h5mu(str(output_path)).mod["proportions"]
+    prop_df = _read_proportions(output_path)
     assert list(prop_df.index) == ["all"], f"expected a single 'all' row, got {prop_df}"
     # 30/40 cells are sub_0, 10/40 are sub_1 - not the per-donor proportions
     np.testing.assert_allclose(prop_df.loc["all", "sub_0"], 0.75, atol=1e-12)
     np.testing.assert_allclose(prop_df.loc["all", "sub_1"], 0.25, atol=1e-12)
     # the helper column must not leak into the written object
-    assert "_obs_group" not in adata_out.obs.columns
-
-
-def test_output_csv_only(run_component, tmp_path):
-    """--output can be left out when only the CSV is needed."""
-    _, h5mu_path = _make_mudata(tmp_path, n_donors=3, n_subpops=4, cells_per_group=10)
-    csv_path = tmp_path / "proportions_only.csv"
-
-    run_component(
-        [
-            "--input",
-            str(h5mu_path),
-            "--output_csv",
-            str(csv_path),
-            "--obs_group",
-            "participant_id",
-            "--obs_label",
-            "subpopulation",
-        ]
-    )
-
-    csv_df = pd.read_csv(str(csv_path), index_col=0)
-    assert csv_df.shape == (3, 4)
-    assert [p.name for p in tmp_path.glob("*.h5mu")] == ["input.h5mu"]
-
-
-def test_no_output_raises(run_component, tmp_path):
-    """Neither --output nor --output_csv is an error."""
-    _, h5mu_path = _make_mudata(tmp_path)
-
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(
-            [
-                "--input",
-                str(h5mu_path),
-                "--obs_group",
-                "participant_id",
-                "--obs_label",
-                "subpopulation",
-            ]
-        )
-    assert "at least one of --output or --output_csv" in err.value.stdout.decode(
-        "utf-8"
-    )
+    assert list(adata_out.obs.columns) == ["group"]
 
 
 if __name__ == "__main__":

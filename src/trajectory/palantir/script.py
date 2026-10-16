@@ -1,7 +1,5 @@
 import sys
 import numpy as np
-import pandas as pd
-import anndata as ad
 import mudata as mu
 import palantir
 
@@ -10,9 +8,6 @@ par = {
     "input": "resources_test/beyond_test_data/atlas.h5mu",
     "modality": "rna",
     "obsm_input": "X_pca_integrated",
-    "input_table": None,
-    "id_column": None,
-    "metadata": None,
     "start_id": None,
     "start_cluster": None,
     "start_cluster_column": "subpopulation",
@@ -25,7 +20,6 @@ par = {
     "terminal_states_column": None,
     "seed": 42,
     "output": "output.h5mu",
-    "output_table": None,
     "pseudotime_column": "palantir_pseudotime",
     "entropy_column": "palantir_entropy",
     "obsm_fate_probabilities": "palantir_fate_probabilities",
@@ -41,37 +35,8 @@ meta = {
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
-from group_table import read_group_table, write_group_table
 
 logger = setup_logger()
-
-# Key of the embedding inside the in-memory AnnData built in table mode. Internal
-# only: table mode never reads or writes an .obsm.
-TABLE_EMBEDDING_KEY = "X_embedding"
-
-
-def _check_arguments():
-    """Exactly one input mode, with the matching output argument."""
-    if (par["input"] is None) == (par["input_table"] is None):
-        raise ValueError(
-            "Exactly one of --input (h5mu) and --input_table (CSV) must be given."
-        )
-    if par["input"] is not None:
-        if par["output"] is None:
-            raise ValueError("--output is required when --input is given.")
-        if par["metadata"] is not None:
-            raise ValueError(
-                "--metadata only applies to --input_table; with --input the labels "
-                "are read from .obs."
-            )
-    else:
-        if par["output_table"] is None:
-            raise ValueError("--output_table is required when --input_table is given.")
-
-
-def _label_source(par):
-    """Where the label columns come from, for error messages."""
-    return ".obs" if par["input"] is not None else "--metadata"
 
 
 def _resolve_start_id(adata, par):
@@ -87,13 +52,12 @@ def _resolve_start_id(adata, par):
         cluster = par["start_cluster"]
         if obs_key not in adata.obs.columns:
             raise ValueError(
-                f"--start_cluster_column '{obs_key}' not found in {_label_source(par)}. "
+                f"--start_cluster_column '{obs_key}' not found in .obs. "
                 f"Available columns: {list(adata.obs.columns)}"
             )
         if not (adata.obs[obs_key] == cluster).any():
             raise ValueError(
-                f"No observations found for '{cluster}' in "
-                f"{_label_source(par)} column '{obs_key}'."
+                f"No observations found for '{cluster}' in .obs column '{obs_key}'."
             )
         # early_cell(ad, celltype, celltype_column) - requires DM_EigenVectors_multiscaled
         start_id = palantir.utils.early_cell(adata, cluster, celltype_column=obs_key)
@@ -135,7 +99,7 @@ def _resolve_terminal_states(adata, par):
         if obs_key not in adata.obs.columns:
             raise ValueError(
                 f"--terminal_states_column '{obs_key}' not found in "
-                f"{_label_source(par)}. Available columns: {list(adata.obs.columns)}"
+                f".obs. Available columns: {list(adata.obs.columns)}"
             )
         terminal_cells = []
         for label in adata.obs[obs_key].unique():
@@ -157,8 +121,8 @@ def _resolve_terminal_states(adata, par):
     return None
 
 
-def _read_h5mu_input():
-    """Return (adata, obsm_key) for h5mu mode."""
+def _read_input():
+    """Return (adata, obsm_key)."""
     logger.info("Reading input from %s", par["input"])
     mdata = mu.read_h5mu(par["input"])
     adata = mdata.mod[par["modality"]]
@@ -172,72 +136,10 @@ def _read_h5mu_input():
     return adata, obsm_key
 
 
-def _read_table_input():
-    """Build an in-memory AnnData from the embedding table (+ optional metadata)."""
-    logger.info("Reading table %s", par["input_table"])
-    embedding = read_group_table(par["input_table"], par["id_column"], "--input_table")
-    id_column = embedding.index.name
-
-    obs = pd.DataFrame(index=embedding.index)
-    if par["metadata"] is not None:
-        logger.info("Reading metadata %s", par["metadata"])
-        meta_df = pd.read_csv(par["metadata"])
-        if id_column not in meta_df.columns:
-            raise ValueError(
-                f"Identifier column '{id_column}' not found in --metadata "
-                f"'{par['metadata']}'. Available: {list(meta_df.columns)}"
-            )
-        meta_df[id_column] = meta_df[id_column].astype(str)
-        meta_df = meta_df.drop_duplicates(subset=[id_column]).set_index(id_column)
-        missing = embedding.index.difference(meta_df.index)
-        if len(missing) > 0:
-            raise ValueError(
-                f"--metadata '{par['metadata']}' is missing {len(missing)} "
-                f"identifier(s) present in --input_table, e.g. {list(missing[:5])}."
-            )
-        obs = meta_df.loc[embedding.index]
-
-    adata = ad.AnnData(
-        X=np.zeros((embedding.shape[0], 0), dtype="float32"),
-        obs=obs,
-        obsm={TABLE_EMBEDDING_KEY: embedding.to_numpy(dtype=float)},
-    )
-    adata.uns["_id_column"] = id_column
-    return adata, TABLE_EMBEDDING_KEY
-
-
-def _write_table_output(adata):
-    """Flatten the Palantir results back into one CSV."""
-    out = pd.DataFrame(index=adata.obs_names)
-    out[par["pseudotime_column"]] = adata.obs[par["pseudotime_column"]].to_numpy()
-    out[par["entropy_column"]] = adata.obs[par["entropy_column"]].to_numpy()
-
-    fate = adata.obsm.get(par["obsm_fate_probabilities"])
-    if fate is not None:
-        fate_df = pd.DataFrame(fate)
-        fate_df.index = adata.obs_names
-        for col in fate_df.columns:
-            out[f"fate_{col}"] = fate_df[col].to_numpy()
-
-    waypoints = adata.uns.get(par["uns_waypoints"])
-    if waypoints is not None:
-        out["palantir_waypoint"] = adata.obs_names.isin(np.asarray(waypoints))
-
-    out.index = pd.Index(out.index, name=adata.uns["_id_column"])
-    write_group_table(out, par["output_table"])
-    logger.info(
-        "Written Palantir results to %s (shape %s)", par["output_table"], out.shape
-    )
-
-
 def main():
-    _check_arguments()
     np.random.seed(par["seed"])
 
-    if par["input"] is not None:
-        adata, obsm_key = _read_h5mu_input()
-    else:
-        adata, obsm_key = _read_table_input()
+    adata, obsm_key = _read_input()
 
     logger.info(
         "Using embedding '%s' (%d observations, %d dims)",
@@ -313,24 +215,21 @@ def main():
     )
 
     # -- 6. Write output ------------------------------------------------------
-    if par["input"] is not None:
-        logger.info(
-            "Results stored: obs['%s'], obs['%s'], obsm['%s'], uns['%s']",
-            par["pseudotime_column"],
-            par["entropy_column"],
-            par["obsm_fate_probabilities"],
-            par["uns_waypoints"],
-        )
-        logger.info("Writing output to %s", par["output"])
-        write_h5ad_to_h5mu_with_compression(
-            output_file=par["output"],
-            h5mu=par["input"],
-            modality_name=par["modality"],
-            modality_data=adata,
-            output_compression=par["output_compression"],
-        )
-    else:
-        _write_table_output(adata)
+    logger.info(
+        "Results stored: obs['%s'], obs['%s'], obsm['%s'], uns['%s']",
+        par["pseudotime_column"],
+        par["entropy_column"],
+        par["obsm_fate_probabilities"],
+        par["uns_waypoints"],
+    )
+    logger.info("Writing output to %s", par["output"])
+    write_h5ad_to_h5mu_with_compression(
+        output_file=par["output"],
+        h5mu=par["input"],
+        modality_name=par["modality"],
+        modality_data=adata,
+        output_compression=par["output_compression"],
+    )
 
 
 if __name__ == "__main__":

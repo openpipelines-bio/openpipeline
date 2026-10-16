@@ -1,18 +1,15 @@
 from __future__ import annotations
 import sys
 import numpy as np
-import pandas as pd
+import mudata as mu
 
 ## VIASH START
 par = {
     "input": "phate_input.h5mu",
     "modality": "rna",
     "obsm_input": "X_pca",
-    "input_table": None,
-    "id_column": None,
     "output": "phate_output.h5mu",
     "obsm_output": "X_phate",
-    "output_table": None,
     "n_components": 2,
     "knn": 5,
     "decay": 40,
@@ -30,21 +27,8 @@ meta = {
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
 from compress_h5mu import write_h5ad_to_h5mu_with_compression
-from group_table import read_group_table, write_group_table
 
 logger = setup_logger()
-
-
-def _check_arguments():
-    """Exactly one input mode, with the matching output argument."""
-    if (par["input"] is None) == (par["input_table"] is None):
-        raise ValueError(
-            "Exactly one of --input (h5mu) and --input_table (CSV) must be given."
-        )
-    if par["input"] is not None and par["output"] is None:
-        raise ValueError("--output is required when --input is given.")
-    if par["input_table"] is not None and par["output_table"] is None:
-        raise ValueError("--output_table is required when --input_table is given.")
 
 
 def _parse_t(t):
@@ -80,9 +64,7 @@ def _run_phate(X):
     return phate_op.fit_transform(X)
 
 
-def _run_on_h5mu():
-    import mudata as mu
-
+def main():
     logger.info("Reading '%s', modality '%s'.", par["input"], par["modality"])
     data = mu.read_h5ad(par["input"], mod=par["modality"])
 
@@ -110,40 +92,6 @@ def _run_on_h5mu():
     write_h5ad_to_h5mu_with_compression(
         par["output"], par["input"], par["modality"], data, par["output_compression"]
     )
-
-
-def _run_on_table():
-    logger.info("Reading table '%s'.", par["input_table"])
-    values = read_group_table(par["input_table"], par["id_column"], "--input_table")
-    logger.info(
-        "Table '%s': %d rows x %d features, identifier column '%s'.",
-        par["input_table"],
-        values.shape[0],
-        values.shape[1],
-        values.index.name,
-    )
-
-    X_phate = _run_phate(values.to_numpy(dtype=float))
-
-    embedding = pd.DataFrame(
-        X_phate,
-        index=values.index,
-        columns=[f"phate_{i + 1}" for i in range(X_phate.shape[1])],
-    )
-    write_group_table(embedding, par["output_table"])
-    logger.info(
-        "Written PHATE embedding to '%s' (shape %s).",
-        par["output_table"],
-        embedding.shape,
-    )
-
-
-def main():
-    _check_arguments()
-    if par["input"] is not None:
-        _run_on_h5mu()
-    else:
-        _run_on_table()
     logger.info("Finished.")
 
 

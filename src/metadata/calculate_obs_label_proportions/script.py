@@ -1,7 +1,9 @@
 from __future__ import annotations
 import sys
+import numpy as np
 import pandas as pd
-from mudata import read_h5mu
+from anndata import AnnData
+from mudata import MuData, read_h5mu
 
 ### VIASH START
 par = {
@@ -11,8 +13,8 @@ par = {
     "obs_label": "subpopulation",  # generic: any .obs label column
     "obs_normalize_within": None,
     "output": "proportions_output.h5mu",
-    "output_csv": None,
-    "uns_output": "proportions",
+    "output_modality": "proportions",
+    "obsm_output": "X_proportions",
     "output_compression": None,
 }
 meta = {
@@ -81,11 +83,14 @@ def _normalise_within(counts, strata):
 
 
 def compute_proportions(obs, group_col, label_col, within_col):
-    """Group x label proportion matrix."""
+    """Group x label cell counts and proportion matrix, plus the label strata."""
     counts = (
         obs.groupby([group_col, label_col], observed=True).size().unstack(fill_value=0)
     )
+    counts.index = counts.index.astype(str)
+    counts.columns = counts.columns.astype(str)
 
+    strata = None
     if within_col is None:
         proportions = counts.div(counts.sum(axis=1), axis=0)
     else:
@@ -98,16 +103,29 @@ def compute_proportions(obs, group_col, label_col, within_col):
             len(set(strata.values())),
         )
 
-    proportions.index = proportions.index.astype(str)
-    proportions.columns = proportions.columns.astype(str)
+    return counts, proportions, strata
 
-    return proportions
+
+def build_group_adata(counts, proportions, strata, group_name, within_col):
+    """Group-level AnnData: obs = groups, var = labels, X = proportions."""
+    groups = pd.Index(proportions.index, name=None)
+    obs = pd.DataFrame({group_name: groups.to_numpy()}, index=groups)
+    var = pd.DataFrame(index=pd.Index(proportions.columns, name=None))
+    if strata is not None:
+        var[within_col] = [strata[label] for label in var.index]
+
+    X = proportions.to_numpy(dtype=np.float64)
+    adata = AnnData(
+        X=X,
+        obs=obs,
+        var=var,
+        layers={"counts": counts.loc[obs.index, var.index].to_numpy(dtype=np.int64)},
+    )
+    adata.obsm[par["obsm_output"]] = X.copy()
+    return adata
 
 
 def main():
-    if not par["output"] and not par["output_csv"]:
-        raise ValueError("Give at least one of --output or --output_csv.")
-
     logger.info("Reading input file '%s'.", par["input"])
     mdata = read_h5mu(par["input"])
 
@@ -131,28 +149,29 @@ def main():
     obs = adata.obs
     if group_col is None:
         obs, group_col = _add_single_group(obs)
+        group_name = "group"
         logger.info(
             "No --obs_group given; computing overall '%s' proportions over all cells.",
             label_col,
         )
     else:
+        group_name = group_col
         logger.info("Computing proportions: '%s' x '%s'.", group_col, label_col)
 
-    proportions = compute_proportions(obs, group_col, label_col, within_col)
+    counts, proportions, strata = compute_proportions(
+        obs, group_col, label_col, within_col
+    )
     logger.info("Proportion matrix shape: %d groups x %d labels.", *proportions.shape)
 
-    if par["output_csv"]:
-        csv_df = proportions.copy()
-        csv_df.index.name = par["obs_group"] or "group"
-        csv_df.to_csv(par["output_csv"])
-        logger.info("Written proportion matrix to '%s'.", par["output_csv"])
-
-    if par["output"]:
-        # Store in .uns as a DataFrame (groups x labels), not a nested dict
-        mdata.mod[modality].uns[par["uns_output"]] = proportions
-        logger.info("Stored proportion matrix in .uns['%s'].", par["uns_output"])
-        logger.info("Writing output to '%s'.", par["output"])
-        mdata.write_h5mu(par["output"], compression=par["output_compression"])
+    group_adata = build_group_adata(counts, proportions, strata, group_name, within_col)
+    logger.info(
+        "Writing group-level output to '%s', modality '%s'.",
+        par["output"],
+        par["output_modality"],
+    )
+    MuData({par["output_modality"]: group_adata}).write_h5mu(
+        par["output"], compression=par["output_compression"]
+    )
 
     logger.info("Finished.")
 
