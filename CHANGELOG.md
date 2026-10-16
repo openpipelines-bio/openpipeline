@@ -20,6 +20,8 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
+* `qc/fastqc`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/fastqc](https://www.viash-hub.com/packages/biobox/latest/components/fastqc) instead (PR #1253)
+
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
 ## NEW FEATURES
