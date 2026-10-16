@@ -3175,7 +3175,7 @@ meta = [
       "is_executable" : true
     }
   ],
-  "status" : "enabled",
+  "status" : "deprecated",
   "scope" : {
     "image" : "public",
     "target" : "public"
@@ -3292,7 +3292,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/report/mermaid",
     "viash_version" : "0.9.7",
-    "git_commit" : "d3e7c1b1b38c399c4235fa1bfd65ffcdd30da498",
+    "git_commit" : "630d50fb4f807ea61d0619cadd25595ac1ff0af6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
