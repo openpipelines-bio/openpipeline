@@ -12,6 +12,7 @@ reference: # please fill in - example: "reference.tar.gz"
 chemistry: "auto"
 # tenx_cloud_token_path: "path/to/file"
 # cell_annotation_model: "foo"
+# disable_cell_annotation: true
 secondary_analysis: false
 generate_bam: true
 include_introns: true

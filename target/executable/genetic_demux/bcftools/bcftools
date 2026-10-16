@@ -455,9 +455,9 @@ RUN apt-get update && \
 RUN wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux bcftools"
-LABEL org.opencontainers.image.created="2026-10-16T09:04:07Z"
+LABEL org.opencontainers.image.created="2026-10-16T09:15:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="630d50fb4f807ea61d0619cadd25595ac1ff0af6"
+LABEL org.opencontainers.image.revision="d76958a540a7813b8357a7e0d4580607946f11d7"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

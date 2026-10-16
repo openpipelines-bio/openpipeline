@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component tiledb move_mudata_obsp_to_tiledb"
-LABEL org.opencontainers.image.created="2026-10-16T09:04:09Z"
+LABEL org.opencontainers.image.created="2026-10-16T09:15:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="630d50fb4f807ea61d0619cadd25595ac1ff0af6"
+LABEL org.opencontainers.image.revision="d76958a540a7813b8357a7e0d4580607946f11d7"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

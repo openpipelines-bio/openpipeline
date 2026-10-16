@@ -450,7 +450,7 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM quay.io/nf-core/cellranger:10.0.0
+FROM quay.io/nf-core/cellranger:10.1.0
 ENTRYPOINT []
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
@@ -462,9 +462,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2026-10-16T09:04:00Z"
+LABEL org.opencontainers.image.created="2026-10-16T09:15:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="630d50fb4f807ea61d0619cadd25595ac1ff0af6"
+LABEL org.opencontainers.image.revision="d76958a540a7813b8357a7e0d4580607946f11d7"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -810,9 +810,21 @@ function ViashHelp {
   echo "    --cell_annotation_model"
   echo "        type: string"
   echo "        choices: [ auto, human_pca_v1_beta, mouse_pca_v1_beta ]"
-  echo "        \"Cell annotation model to use. If auto, uses the default model for the"
-  echo "        species."
-  echo "        If not given, does not run cell annotation.\""
+  echo "        Cell annotation model to use. Valid model names are auto,"
+  echo "        human_pca_v1_beta (10x human cloud model),"
+  echo "        and mouse_pca_v1_beta (10x mouse cloud model); the cloud-based models"
+  echo "        require a 10x Cloud Analysis token."
+  echo "        The Pan-Human Azimuth model (human samples only) runs locally and does"
+  echo "        not require a model name or"
+  echo "        cloud token. If this option is omitted or set to auto, uses the default"
+  echo "        model for the species."
+  echo "        If a cloud token is not available or the --disable-cell-annotation flag"
+  echo "        is used, cloud cell annotation"
+  echo "        will not be performed."
+  echo ""
+  echo "    --skip_cell_annotation"
+  echo "        type: boolean"
+  echo "        Disable cell type annotation."
   echo ""
   echo "    --gex_expect_cells"
   echo "        type: integer"
@@ -851,9 +863,12 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: auto"
   echo "        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3,"
-  echo "SC3Pv3-polyA, SC3Pv4, SC3Pv4-polyA, SC3Pv3LT, SC3Pv3HT, SC3Pv3HT-polyA, SC5P-PE,"
-  echo "SC5P-PE-v3, SC5P-R2, SC-FB, SC5P-R2-v3, SCP5-PE-v3, SC5PHT, MFRP, MFRP-R1,"
-  echo "MFRP-RNA, MFRP-Ab, SFRP, MFRP-Ab-R2pos50, MFRP-RNA-R1, MFRP-Ab-R1, ARC-v1 ]"
+  echo "SC3Pv3-polyA, SC3Pv3-CS1, SC3Pv4, SC3Pv4-polyA, SC3Pv4-CS1, SC3Pv4-polyA-OCM,"
+  echo "SC3Pv4-CS1-OCM, SC3Pv3HT, SC3Pv3HT-polyA, SC3Pv3HT-CS1, SC5P-PE, SC5P-PE-v3,"
+  echo "SC5P-PE-OCM-v3, SC5P-R2, SC-FB, SC5P-R2-v3, SC5P-R2-OCM-v3, SC5PHT, MFRP,"
+  echo "MFRP-R1, MFRP-RNA, MFRP-Ab, SFRP, MFRP-Ab-R2pos50, MFRP-RNA-R1, MFRP-Ab-R1,"
+  echo "Flex-v2-singleplex, Flex-v2-R1, Flex-v2-RNA-R2, Flex-v2-Ab-R2:45,"
+  echo "Flex-v2-Ab-R2:64, Flex-v2-CRISPR-R2:1, ARC-v1 ]"
   echo "        Assay configuration. Either specify a single value which will be applied"
   echo "        to all libraries,"
   echo "        or a number of values that is equal to the number of libararies. The"
@@ -864,13 +879,18 @@ function ViashHelp {
   echo "          - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single Cell 3' v1,"
   echo "        v2, v3, or v4"
   echo "          - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT"
+  echo "          - SC3Pv3-CS1, SC3Pv4-CS1, SC3Pv3HT-CS1: Single Cell 3' v3, v4 or v3.1"
+  echo "        HT (CS1)"
+  echo "          - SC3Pv4-polyA-OCM, SC3Pv4-CS1-OCM: Single Cell 3' v4 (polyA or CS1)"
+  echo "        OCM"
   echo "          - SC-FB: Single Cell Antibody-only 3' v2 or 5'"
   echo "          - fiveprime: Single Cell 5'"
   echo "          - SC5P-PE: Paired-end Single Cell 5'"
   echo "          - SC5P-PE-v3: Paired-end Single Cell 5' v3"
   echo "          - SC5P-R2: R2-only Single Cell 5'"
   echo "          - SC5P-R2-v3: R2-only Single Cell 5' v3"
-  echo "          - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)"
+  echo "          - SC5P-PE-OCM-v3: Paired-end Single Cell 5' OCM v3"
+  echo "          - SC5P-R2-OCM-v3: R2-only Single Cell 5' OCM v3"
   echo "          - SC5PHT : Single Cell 5' v2 HT"
   echo "          - SFRP: Fixed RNA Profiling (Singleplex)"
   echo "          - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)"
@@ -884,6 +904,12 @@ function ViashHelp {
   echo "        R1)"
   echo "          - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode"
   echo "        on R1)"
+  echo "          - Flex-v2-singleplex: GEM-X Flex v2 (Singleplex)"
+  echo "          - Flex-v2-R1: GEM-X Flex v2 (Multiplex)"
+  echo "          - Flex-v2-RNA-R2: GEM-X Flex v2 Gene Expression"
+  echo "          - Flex-v2-Ab-R2:45: GEM-X Flex v2 Antibody (R2:45)"
+  echo "          - Flex-v2-Ab-R2:64: GEM-X Flex v2 Antibody (R2:64)"
+  echo "          - Flex-v2-CRISPR-R2:1: GEM-X Flex v2 CRISPR (R2:1)"
   echo "          - ARC-v1 for analyzing the Gene Expression portion of Multiome data."
   echo "        If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered."
   echo "        See"
@@ -1567,6 +1593,17 @@ while [[ $# -gt 0 ]]; do
         --cell_annotation_model=*)
             [ -n "$VIASH_PAR_CELL_ANNOTATION_MODEL" ] && ViashError Bad arguments for option \'--cell_annotation_model=*\': \'$VIASH_PAR_CELL_ANNOTATION_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_CELL_ANNOTATION_MODEL=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --skip_cell_annotation)
+            [ -n "$VIASH_PAR_SKIP_CELL_ANNOTATION" ] && ViashError Bad arguments for option \'--skip_cell_annotation\': \'$VIASH_PAR_SKIP_CELL_ANNOTATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SKIP_CELL_ANNOTATION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --skip_cell_annotation. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --skip_cell_annotation=*)
+            [ -n "$VIASH_PAR_SKIP_CELL_ANNOTATION" ] && ViashError Bad arguments for option \'--skip_cell_annotation=*\': \'$VIASH_PAR_SKIP_CELL_ANNOTATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SKIP_CELL_ANNOTATION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --gex_expect_cells)
@@ -2332,6 +2369,12 @@ if [[ -n "$VIASH_PAR_GEX_GENERATE_BAM" ]]; then
     exit 1
   fi
 fi
+if [[ -n "$VIASH_PAR_SKIP_CELL_ANNOTATION" ]]; then
+  if ! [[ "$VIASH_PAR_SKIP_CELL_ANNOTATION" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--skip_cell_annotation' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_GEX_EXPECT_CELLS" ]]; then
   if ! [[ "$VIASH_PAR_GEX_EXPECT_CELLS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--gex_expect_cells' has to be an integer. Use "--help" to get more information on the parameters.
@@ -2515,7 +2558,7 @@ if [ ! -z "$VIASH_PAR_CELL_ANNOTATION_MODEL" ]; then
 fi
 
 if [ ! -z "$VIASH_PAR_GEX_CHEMISTRY" ]; then
-  VIASH_PAR_GEX_CHEMISTRY_CHOICES=("auto;threeprime;fiveprime;SC3Pv1;SC3Pv2;SC3Pv3;SC3Pv3-polyA;SC3Pv4;SC3Pv4-polyA;SC3Pv3LT;SC3Pv3HT;SC3Pv3HT-polyA;SC5P-PE;SC5P-PE-v3;SC5P-R2;SC-FB;SC5P-R2-v3;SCP5-PE-v3;SC5PHT;MFRP;MFRP-R1;MFRP-RNA;MFRP-Ab;SFRP;MFRP-Ab-R2pos50;MFRP-RNA-R1;MFRP-Ab-R1;ARC-v1")
+  VIASH_PAR_GEX_CHEMISTRY_CHOICES=("auto;threeprime;fiveprime;SC3Pv1;SC3Pv2;SC3Pv3;SC3Pv3-polyA;SC3Pv3-CS1;SC3Pv4;SC3Pv4-polyA;SC3Pv4-CS1;SC3Pv4-polyA-OCM;SC3Pv4-CS1-OCM;SC3Pv3HT;SC3Pv3HT-polyA;SC3Pv3HT-CS1;SC5P-PE;SC5P-PE-v3;SC5P-PE-OCM-v3;SC5P-R2;SC-FB;SC5P-R2-v3;SC5P-R2-OCM-v3;SC5PHT;MFRP;MFRP-R1;MFRP-RNA;MFRP-Ab;SFRP;MFRP-Ab-R2pos50;MFRP-RNA-R1;MFRP-Ab-R1;Flex-v2-singleplex;Flex-v2-R1;Flex-v2-RNA-R2;Flex-v2-Ab-R2:45;Flex-v2-Ab-R2:64;Flex-v2-CRISPR-R2:1;ARC-v1")
   IFS=';'
   set -f
   if ! [[ ";${VIASH_PAR_GEX_CHEMISTRY_CHOICES[*]};" =~ ";$VIASH_PAR_GEX_CHEMISTRY;" ]]; then
@@ -2797,6 +2840,7 @@ par = {
   'gex_generate_bam': $( if [ ! -z ${VIASH_PAR_GEX_GENERATE_BAM+x} ]; then echo "r'${VIASH_PAR_GEX_GENERATE_BAM//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'tenx_cloud_token_path': $( if [ ! -z ${VIASH_PAR_TENX_CLOUD_TOKEN_PATH+x} ]; then echo "r'${VIASH_PAR_TENX_CLOUD_TOKEN_PATH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'cell_annotation_model': $( if [ ! -z ${VIASH_PAR_CELL_ANNOTATION_MODEL+x} ]; then echo "r'${VIASH_PAR_CELL_ANNOTATION_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'skip_cell_annotation': $( if [ ! -z ${VIASH_PAR_SKIP_CELL_ANNOTATION+x} ]; then echo "r'${VIASH_PAR_SKIP_CELL_ANNOTATION//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'gex_expect_cells': $( if [ ! -z ${VIASH_PAR_GEX_EXPECT_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_EXPECT_CELLS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'gex_force_cells': $( if [ ! -z ${VIASH_PAR_GEX_FORCE_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_FORCE_CELLS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'gex_include_introns': $( if [ ! -z ${VIASH_PAR_GEX_INCLUDE_INTRONS+x} ]; then echo "r'${VIASH_PAR_GEX_INCLUDE_INTRONS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
@@ -2895,6 +2939,7 @@ GEX_CONFIG_KEYS = {
     "filter_probes": "filter-probes",
     "gex_r1_length": "r1-length",
     "gex_r2_length": "r2-length",
+    "skip_cell_annotation": "skip-cell-annotation",
     "tenx_cloud_token_path": "tenx-cloud-token-path",
     "cell_annotation_model": "cell-annotation-model",
     "emptydrops_minimum_umis": "emptydrops_minimum_umis",
@@ -3243,9 +3288,11 @@ def untar(tar_file, output_directory):
             # strip that directory name from the destination folder
             if len(root_dirs) == 1:
                 for mem in members:
-                    mem.path = Path(*Path(mem.path).parts[1:])
-            members_to_move = [mem for mem in members if mem.path != Path(".")]
-            open_tar.extractall(unpacked_directory, members=members_to_move)
+                    mem.name = mem.name.partition("/")[2]
+            members_to_move = [mem for mem in members if mem.name not in ("", ".")]
+            open_tar.extractall(
+                unpacked_directory, members=members_to_move, filter="data"
+            )
         return unpacked_directory
     return tar_file
 
