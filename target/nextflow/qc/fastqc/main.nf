@@ -3139,7 +3139,7 @@ meta = [
       "path" : "/resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq"
     }
   ],
-  "status" : "enabled",
+  "status" : "deprecated",
   "scope" : {
     "image" : "public",
     "target" : "public"
@@ -3254,7 +3254,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc",
     "viash_version" : "0.9.7",
-    "git_commit" : "62c0cd7c5a14c06a96b661aa4ee90c82e6a575f2",
+    "git_commit" : "7befc8c8ee850080b8851d08fb07723c818ebf9b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
