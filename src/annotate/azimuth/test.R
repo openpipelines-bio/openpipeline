@@ -167,8 +167,7 @@ test_that("Fails on an invalid reference", {
   ))
   expect_false(out$status == 0)
   # --reference is restricted to a list of choices
-  expect_match(out$stdout, "not_a_real_reference")
-  expect_match(out$stdout, "choices")
+  expect_match(out$stdout, "not in the list of allowed values")
   expect_false(file.exists(output_file))
 })
 

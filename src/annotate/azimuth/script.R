@@ -119,12 +119,32 @@ if (!is.null(par$input_var_gene_names)) {
   gene_names[missing] <- rownames(counts)[missing]
   rownames(counts) <- make.unique(gene_names)
 }
+query <- CreateSeuratObject(counts = counts, assay = "RNA")
+rm(counts)
 
 # Check overlap of genes between the query and the reference
 cat("Checking overlap of genes between input and reference\n")
-ref_map <- Azimuth::LoadReference(reference)$map
-ref_genes <- rownames(ref_map[[DefaultAssay(ref_map)]])
-common_genes <- intersect(ref_genes, rownames(counts))
+# Load the reference the same way RunAzimuth() does: custom references from
+# a directory, curated references via SeuratData (installed on first use).
+if (par$reference == "custom") {
+  ref_map <- LoadReference(reference)$map
+} else {
+  if (!reference %in% SeuratData::InstalledData()$Dataset) {
+    SeuratData::InstallData(reference)
+  }
+  ref_map <- SeuratData::LoadData(reference, type = "azimuth")$map
+}
+ref_genes <- rownames(ref_map)
+rm(ref_map)
+# RunAzimuth() converts the query gene names (e.g. Ensembl IDs) to the
+# reference gene symbols, so do the same before checking the overlap.
+# RunAzimuth() leaves the already converted names untouched.
+query <- ConvertGeneNames(
+  object = query,
+  reference.names = ref_genes,
+  homolog.table = "https://seurat.nygenome.org/azimuth/references/homologs.rds"
+)
+common_genes <- intersect(ref_genes, rownames(query))
 if (length(common_genes) < par$input_reference_gene_overlap) {
   stop(
     "The intersection of genes between the query and reference is too small.\n",
@@ -132,10 +152,7 @@ if (length(common_genes) < par$input_reference_gene_overlap) {
     "Detected overlap: ", length(common_genes)
   )
 }
-rm(ref_map, ref_genes, common_genes)
-
-query <- CreateSeuratObject(counts = counts, assay = "RNA")
-rm(counts)
+rm(ref_genes, common_genes)
 
 cat("Running Azimuth reference mapping against reference:", reference, "\n")
 query <- RunAzimuth(
