@@ -187,7 +187,7 @@ engines:
       - type: r
         cran: [ hdf5r, Seurat, SeuratObject, remotes ]
       - type: r
-        github: [ satijalab/azimuth@v0.5.0 ]
+        github: [ satijalab/azimuth@ad5929686e005ae91d8452187a3a1d8c0563fdd5 ]
     test_setup:
       - type: r
         cran: [ testthat, processx ]
