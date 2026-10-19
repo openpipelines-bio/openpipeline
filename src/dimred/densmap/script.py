@@ -48,7 +48,13 @@ if neigh_key not in data.uns:
         f"'{neigh_key}' was not found in .mod['{par['modality']}'].uns. Set the correct key or run 'find_neighbors' first."
     )
 
-neigh_params = data.uns[neigh_key].get("params", {})
+# the parameters used to compute the neighbors, as stored by 'find_neighbors' or scanpy
+neigh_params = data.uns[neigh_key].get("params")
+if not neigh_params or "metric" not in neigh_params:
+    raise ValueError(
+        f"'params' with a 'metric' was not found in .mod['{par['modality']}'].uns['{neigh_key}']. "
+        "Run 'find_neighbors' first."
+    )
 
 obsm_input = par["obsm_pca"]
 if obsm_input is None:
@@ -62,8 +68,8 @@ if obsm_input is None:
 if obsm_input not in data.obsm:
     raise ValueError(f"'{obsm_input}' was not found in .mod['{par['modality']}'].obsm.")
 
-# use the metric that was used to compute the neighbors
-metric = neigh_params.get("metric", "euclidean")
+# use the same metric as the neighbors
+metric = neigh_params["metric"]
 metric_kwds = dict(neigh_params.get("metric_kwds", {}))
 
 # umap-learn only picks the number of epochs itself when n_epochs is None

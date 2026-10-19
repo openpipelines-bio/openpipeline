@@ -166,5 +166,33 @@ def test_densmap_missing_obsm_raise(run_component, random_h5mu_path):
     )
 
 
+def test_densmap_missing_params_raise(run_component, random_h5mu_path):
+    """The metric of the neighbors is required, it is not guessed."""
+    tmp_input_path = random_h5mu_path()
+    output_path = random_h5mu_path()
+
+    input_mudata = read_h5mu(input_path)
+    del input_mudata.mod["rna"].uns["neighbors"]["params"]
+    input_mudata.write_h5mu(tmp_input_path)
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                tmp_input_path,
+                "--output",
+                output_path,
+                "--obsm_pca",
+                "X_pca",
+                "--modality",
+                "rna",
+            ]
+        )
+    assert re.search(
+        r"ValueError: 'params' with a 'metric' was not found in .mod\['rna'\].uns\['neighbors'\].",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
