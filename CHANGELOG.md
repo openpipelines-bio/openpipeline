@@ -20,7 +20,7 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
-* `mapping/cellranger_multi`: update Cell Ranger from 10.0.0 to 10.1.0. The `SC3Pv3LT` chemistry is no longer supported by Cell Ranger and was removed from the `--gex_chemistry` choices. Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples; use the new `--skip_cell_annotation` argument to turn this off.  Added the GEM-X Flex v2 (`Flex-v2-*`), CS1 (`*-CS1`) and OCM (`*-OCM*`) chemistries to the `--gex_chemistry` choices.
+* `mapping/cellranger_multi`: update Cell Ranger from 10.0.0 to 10.1.0. The `SC3Pv3LT` chemistry is no longer supported by Cell Ranger and was removed from the `--gex_chemistry` choices. Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples; use the new `--skip_cell_annotation` argument to turn this off. Added the GEM-X Flex v2 (`Flex-v2-*`), CS1 (`*-CS1`) and OCM (`*-OCM*`) chemistries to the `--gex_chemistry` choices (PR #1252).
 
 * `mapping/cellranger_count`: update Cell Ranger from 9.0 to 10.1.0. Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples; use `--disable_cell_annotation` to turn this off. Remove the `SC3Pv3LT` chemistry from the `--chemistry` choices, as Cell Ranger has rejected it since version 8.0. Add the `SC5PHT` chemistry, which Cell Ranger accepts but does not list in its help text (PR #1252).
 
