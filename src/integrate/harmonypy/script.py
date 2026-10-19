@@ -1,6 +1,7 @@
 import mudata
 import sys
 from harmonypy import run_harmony
+from torch.cuda import is_available as cuda_is_available
 
 ### VIASH START
 par = {
@@ -36,6 +37,9 @@ def main():
         "Running harmonypy with theta %s to regress out the following variables: ",
         par["theta"],
         ", ".join(par["obs_covariates"]),
+    )
+    logger.info(
+        "%sCUDA acceleration", "Using " if cuda_is_available() else "Not using "
     )
     ho = run_harmony(pca_embedding, metadata, par["obs_covariates"], theta=par["theta"])
     logger.info("Adding output to slot %s", par["obsm_output"])
