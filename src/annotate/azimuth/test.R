@@ -4,9 +4,9 @@ suppressMessages(library(SeuratObject))
 
 ## VIASH START
 meta <- list(
-  executable = "target/executable/annotate/azimuth_seurat/azimuth_seurat",
+  executable = "target/executable/annotate/azimuth/azimuth",
   resources_dir = "resources_test/pbmc_1k_protein_v3",
-  name = "azimuth_seurat"
+  name = "azimuth"
 )
 ## VIASH END
 
@@ -166,7 +166,52 @@ test_that("Fails on an invalid reference", {
     "--output", output_file
   ))
   expect_false(out$status == 0)
-  expect_match(out$stdout, "Could not find a reference for")
+  # --reference is restricted to a list of choices
+  expect_match(out$stdout, "not_a_real_reference")
+  expect_match(out$stdout, "choices")
+  expect_false(file.exists(output_file))
+})
+
+test_that("Fails on --reference custom without --custom_reference", {
+  output_file <- tempfile(fileext = ".rds")
+  out <- run_component(c(
+    "--input", input_file,
+    "--input_layer", "X",
+    "--reference", "custom",
+    "--output", output_file
+  ))
+  expect_false(out$status == 0)
+  expect_match(out$stdout, "--custom_reference must be provided")
+  expect_false(file.exists(output_file))
+})
+
+test_that("Fails on --custom_reference without --reference custom", {
+  output_file <- tempfile(fileext = ".rds")
+  out <- run_component(c(
+    "--input", input_file,
+    "--input_layer", "X",
+    "--reference", "pbmcref",
+    "--custom_reference", tempdir(),
+    "--output", output_file
+  ))
+  expect_false(out$status == 0)
+  expect_match(out$stdout, "can only be used with --reference 'custom'")
+  expect_false(file.exists(output_file))
+})
+
+test_that("Fails on a custom reference directory without reference files", {
+  output_file <- tempfile(fileext = ".rds")
+  empty_dir <- tempfile()
+  dir.create(empty_dir)
+  out <- run_component(c(
+    "--input", input_file,
+    "--input_layer", "X",
+    "--reference", "custom",
+    "--custom_reference", empty_dir,
+    "--output", output_file
+  ))
+  expect_false(out$status == 0)
+  expect_match(out$stdout, "missing the required file")
   expect_false(file.exists(output_file))
 })
 

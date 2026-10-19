@@ -1,4 +1,4 @@
-name: azimuth_seurat
+name: azimuth
 namespace: annotate
 scope: "private"
 description: |
@@ -48,6 +48,13 @@ argument_groups:
           references use gene symbols; when the query features are Ensembl IDs,
           Azimuth converts them using a homolog table downloaded at runtime.
         example: gene_symbol
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: |
+          Minimum number of genes that must overlap between the query and the
+          reference for the mapping to be performed.
 
   - name: Reference
     description: |
@@ -58,15 +65,22 @@ argument_groups:
       - name: "--reference"
         type: string
         required: true
+        choices: [ pbmcref, bonemarrowref, lungref, heartref, tonsilref, humancortexref, kidneyref, pancreasref, adiposeref, fetusref, custom ]
         description: |
           Name of a curated Azimuth reference (e.g. "pbmcref",
           "bonemarrowref", "lungref", "heartref", "tonsilref",
           "humancortexref", "kidneyref", "pancreasref", "adiposeref",
           "fetusref"; case-insensitive, downloaded/installed automatically
-          on first use via SeuratData), or a path to a local directory
-          containing a "ref.Rds" and "idx.annoy" file pair for a custom
-          reference.
+          on first use via SeuratData). If "custom", a local directory containing 
+          a "ref.Rds" + "idx.annoy" file pair must be provided via `--custom_reference`.  
         example: pbmcref
+      - name: "--custom_reference"
+        type: file
+        required: false
+        description: |
+          Path to a local directory containing a "ref.Rds" and "idx.annoy"
+          file pair for a custom reference. If provided, `--reference` must
+          be set to "custom".
       - name: "--annotation_levels"
         type: string
         multiple: true
@@ -173,7 +187,7 @@ engines:
       - type: r
         cran: [ hdf5r, Seurat, SeuratObject, remotes ]
       - type: r
-        github: [ satijalab/azimuth@master ]
+        github: [ satijalab/azimuth@v0.5.0 ]
     test_setup:
       - type: r
         cran: [ testthat, processx ]

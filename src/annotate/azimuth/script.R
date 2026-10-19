@@ -10,7 +10,9 @@ par <- list(
   assay = "RNA",
   input_layer = "X",
   input_var_gene_names = "gene_symbol",
+  input_reference_gene_overlap = 100,
   reference = "pbmcref",
+  custom_reference = NULL,
   annotation_levels = NULL,
   do_adt = FALSE,
   k_weight = 50,
@@ -42,6 +44,35 @@ if (!par$input_layer %in% Layers(obj[[par$assay]])) {
     "Layer '", par$input_layer, "' not found in assay '", par$assay,
     "'. Available layers: ", paste(Layers(obj[[par$assay]]), collapse = ", ")
   )
+}
+
+if (par$reference == "custom") {
+  if (is.null(par$custom_reference)) {
+    stop("--custom_reference must be provided when --reference is 'custom'.")
+  }
+  if (!dir.exists(par$custom_reference)) {
+    stop("--custom_reference should be an existing directory, found: ",
+      par$custom_reference,
+      call. = FALSE
+    )
+  }
+  missing_files <- setdiff(
+    c("ref.Rds", "idx.annoy"),
+    list.files(par$custom_reference)
+  )
+  if (length(missing_files) > 0) {
+    stop(
+      "--custom_reference is missing the required file(s): ",
+      paste(missing_files, collapse = ", "),
+      call. = FALSE
+    )
+  }
+  reference <- par$custom_reference
+} else {
+  if (!is.null(par$custom_reference)) {
+    stop("--custom_reference can only be used with --reference 'custom'.")
+  }
+  reference <- par$reference
 }
 
 # The output names have to line up with the annotation levels, which are
@@ -88,13 +119,28 @@ if (!is.null(par$input_var_gene_names)) {
   gene_names[missing] <- rownames(counts)[missing]
   rownames(counts) <- make.unique(gene_names)
 }
+
+# Check overlap of genes between the query and the reference
+cat("Checking overlap of genes between input and reference\n")
+ref_map <- Azimuth::LoadReference(reference)$map
+ref_genes <- rownames(ref_map[[DefaultAssay(ref_map)]])
+common_genes <- intersect(ref_genes, rownames(counts))
+if (length(common_genes) < par$input_reference_gene_overlap) {
+  stop(
+    "The intersection of genes between the query and reference is too small.\n",
+    "Expected overlap: ", par$input_reference_gene_overlap, "\n",
+    "Detected overlap: ", length(common_genes)
+  )
+}
+rm(ref_map, ref_genes, common_genes)
+
 query <- CreateSeuratObject(counts = counts, assay = "RNA")
 rm(counts)
 
-cat("Running Azimuth reference mapping against reference:", par$reference, "\n")
+cat("Running Azimuth reference mapping against reference:", reference, "\n")
 query <- RunAzimuth(
   query = query,
-  reference = par$reference,
+  reference = reference,
   annotation.levels = par$annotation_levels,
   umap.name = "ref.umap",
   do.adt = par$do_adt,
