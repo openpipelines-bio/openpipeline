@@ -24,6 +24,10 @@
 
 * `mapping/cellranger_count`: update Cell Ranger from 9.0 to 10.1.0. Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples; use `--disable_cell_annotation` to turn this off. Remove the `SC3Pv3LT` chemistry from the `--chemistry` choices, as Cell Ranger has rejected it since version 8.0. Add the `SC5PHT` chemistry, which Cell Ranger accepts but does not list in its help text (PR #1252).
 
+* `qc/fastqc`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/fastqc](https://www.viash-hub.com/packages/biobox/latest/components/fastqc) instead (PR #1253)
+
+* `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
+
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -49,6 +53,8 @@
 
 
 ## BUG FIXES
+
+* `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
