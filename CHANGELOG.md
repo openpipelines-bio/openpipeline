@@ -61,6 +61,8 @@
 
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
+* `dimred/densmap`: use the distance metric of the neighbors stored in `--uns_neighbors`, instead of looking for it in a hard-coded `neighbors` slot, which caused the component to fail when the neighbors were stored elsewhere. `--obsm_pca` is now optional and defaults to the representation used to compute the neighbors (PR #TBD).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES

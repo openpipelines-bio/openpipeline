@@ -32,8 +32,10 @@ argument_groups:
       - name: "--obsm_pca"
         type: string
         description: |
-          The slot in `.obsm` where the PCA results are stored.
-        required: true
+          The slot in `.obsm` to compute the densMAP on, for example the PCA results or
+          an integrated embedding. If not provided, the representation used to compute
+          the neighbors (`.uns[uns_neighbors]["params"]["use_rep"]`) is used.
+        required: false
     
   - name: Outputs
     arguments:
@@ -85,8 +87,8 @@ argument_groups:
         type: integer
         description: | 
           The number of iterations (epochs) of the optimization. Called `n_epochs` 
-          in the original UMAP. Default is set to 500 if 
-          neighbors['connectivities'].shape[0] <= 10000, else 200.
+          in the original UMAP. When set to 0, the number of epochs is chosen 
+          based on the size of the dataset.
         default: 0
         min: 0
         max: 1000

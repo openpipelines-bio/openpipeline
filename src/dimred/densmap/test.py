@@ -105,5 +105,66 @@ def test_densmap_no_neighbors_raise(run_component, random_h5mu_path):
     )
 
 
+def test_densmap_custom_uns_neighbors(run_component, random_h5mu_path):
+    """The neighbors can be stored under a different key than 'neighbors'."""
+    tmp_input_path = random_h5mu_path()
+    output_path = random_h5mu_path()
+
+    input_mudata = read_h5mu(input_path)
+    mod = input_mudata.mod["rna"]
+    mod.uns["custom_neighbors"] = mod.uns.pop("neighbors")
+    input_mudata.write_h5mu(tmp_input_path)
+
+    args = [
+        "--input",
+        tmp_input_path,
+        "--output",
+        output_path,
+        "--modality",
+        "rna",
+        "--uns_neighbors",
+        "custom_neighbors",
+        "--output_compression",
+        "gzip",
+    ]
+    run_component(args)
+
+    assert output_path.is_file(), "No output was created."
+    output_mudata = read_h5mu(output_path)
+    output_mod = output_mudata.mod["rna"]
+
+    assert "X_densmap" in output_mod.obsm, "Check whether output was found in .obsm"
+    assert output_mod.obsm["X_densmap"].shape == (output_mod.n_obs, 2)
+
+    # when --obsm_pca is not provided, the representation of the neighbors is used
+    expected_use_rep = mod.uns["custom_neighbors"]["params"]["use_rep"]
+    assert output_mod.uns["densmap"]["params"]["use_rep"] == expected_use_rep
+
+    output_mod.obsm.pop("X_densmap")
+    output_mod.uns.pop("densmap")
+    assert_annotation_objects_equal(output_mudata, tmp_input_path)
+
+
+def test_densmap_missing_obsm_raise(run_component, random_h5mu_path):
+    output_path = random_h5mu_path()
+    args = [
+        "--input",
+        input_path,
+        "--output",
+        output_path,
+        "--obsm_pca",
+        "X_does_not_exist",
+        "--modality",
+        "rna",
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r"ValueError: 'X_does_not_exist' was not found in .mod\['rna'\].obsm.",
+        err.value.stdout.decode("utf-8"),
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
