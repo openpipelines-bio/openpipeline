@@ -20,9 +20,11 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
-* `mapping/cellranger_multi`: update Cell Ranger from 10.0.0 to 10.1.0. The `SC3Pv3LT` chemistry is no longer supported by Cell Ranger and was removed from the `--gex_chemistry` choices. Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples; use the new `--skip_cell_annotation` argument to turn this off. Added the GEM-X Flex v2 (`Flex-v2-*`), CS1 (`*-CS1`) and OCM (`*-OCM*`) chemistries to the `--gex_chemistry` choices (PR #1252).
-
-* `mapping/cellranger_count`: update Cell Ranger from 9.0 to 10.1.0. Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples; use `--disable_cell_annotation` to turn this off. Remove the `SC3Pv3LT` chemistry from the `--chemistry` choices, as Cell Ranger has rejected it since version 8.0. Add the `SC5PHT` chemistry, which Cell Ranger accepts but does not list in its help text (PR #1252).
+* `mapping/cellranger_count`, `mapping/cellranger_multi`, `workflows/ingestion/cellranger_mapping`, `workflows/ingestion/cellranger_multi`: update Cell Ranger to 10.1.0 (from 9.0 for `cellranger_count`, from 10.0.0 for `cellranger_multi`) (PR #1252):
+  - Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples. Use the new `--disable_cell_annotation` (`cellranger_count`, `cellranger_mapping`) or `--skip_cell_annotation` (`cellranger_multi`) argument to turn this off.
+  - Removed the `SC3Pv3LT` chemistry from the `--chemistry` and `--gex_chemistry` choices, as Cell Ranger no longer supports it.
+  - `--gex_chemistry` (`cellranger_multi`): added the GEM-X Flex v2 (`Flex-v2-*`), CS1 (`*-CS1`) and OCM (`*-OCM*`) chemistries.
+  - `--chemistry` (`cellranger_count`, `cellranger_mapping`): added the `SC5PHT` chemistry, which Cell Ranger accepts but does not list in its help text. `cellranger_mapping` also gains the `SC3Pv4`, `SC5P-PE-v3`, `SC5P-R2-v3` and `ARC-v1` chemistries, aligning its choices with `cellranger_count`.
 
 * `qc/fastqc`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/fastqc](https://www.viash-hub.com/packages/biobox/latest/components/fastqc) instead (PR #1253)
 
@@ -55,6 +57,8 @@
 ## BUG FIXES
 
 * `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
+
+* `workflows/ingestion/cellranger_multi`: pass the `--cell_annotation_model` and `--tenx_cloud_token_path` arguments on to `mapping/cellranger_multi`. These arguments were listed in the workflow's interface, but setting them had no effect (PR #1252).
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
