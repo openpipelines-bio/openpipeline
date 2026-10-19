@@ -8,6 +8,17 @@ par = {
     "modality": "rna",
     "output": "output.h5mu",
     "obsm_output": "X_densmap",
+    "uns_neighbors": "neighbors",
+    "obsm_pca": None,
+    "min_dist": 0.5,
+    "spread": 1.0,
+    "num_components": 2,
+    "max_iter": 0,
+    "alpha": 1.0,
+    "gamma": 1.0,
+    "negative_sample_rate": 5,
+    "init_pos": "spectral",
+    "output_compression": None,
     "lambda": 2.0,
     "fraction": 0.3,
     "var_shift": 0.1,
@@ -37,30 +48,43 @@ if neigh_key not in data.uns:
         f"'{neigh_key}' was not found in .mod['{par['modality']}'].uns. Set the correct key or run 'find_neighbors' first."
     )
 
-temp_uns = {neigh_key: data.uns[neigh_key]}
+neigh_params = data.uns[neigh_key].get("params", {})
 
-if "use_rep" not in temp_uns[neigh_key]["params"]:
-    raise ValueError(
-        f"'use_rep' was not found in .mod['{par['modality']}'].uns['{neigh_key}'].params. Set the correct key or run PCA first."
-    )
+obsm_input = par["obsm_pca"]
+if obsm_input is None:
+    if "use_rep" not in neigh_params:
+        raise ValueError(
+            f"'use_rep' was not found in .mod['{par['modality']}'].uns['{neigh_key}'].params. "
+            "Set --obsm_pca or run 'find_neighbors' first."
+        )
+    obsm_input = neigh_params["use_rep"]
 
+if obsm_input not in data.obsm:
+    raise ValueError(f"'{obsm_input}' was not found in .mod['{par['modality']}'].obsm.")
+
+# use the metric that was used to compute the neighbors
+metric = neigh_params.get("metric", "euclidean")
+metric_kwds = dict(neigh_params.get("metric_kwds", {}))
+
+# umap-learn only picks the number of epochs itself when n_epochs is None
+n_epochs = par["max_iter"] if par["max_iter"] else None
 
 X_densmap = UMAP(
     min_dist=par["min_dist"],
     spread=par["spread"],
     n_components=par["num_components"],
-    n_epochs=par["max_iter"],
+    n_epochs=n_epochs,
     learning_rate=par["alpha"],
     repulsion_strength=par["gamma"],
     negative_sample_rate=par["negative_sample_rate"],
     init=par["init_pos"],
-    metric=data.uns["neighbors"].get("metric", "euclidean"),
-    metric_kwds=data.uns["neighbors"].get("metric_kwds", {}),
+    metric=metric,
+    metric_kwds=metric_kwds,
     densmap=True,
     dens_lambda=par["lambda"],
     dens_frac=par["fraction"],
     dens_var_shift=par["var_shift"],
-).fit_transform(data.obsm[par["obsm_pca"]])
+).fit_transform(data.obsm[obsm_input])
 
 logger.info(
     f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]"
@@ -74,12 +98,13 @@ data.uns["densmap"] = {
         "spread": par["spread"],
         "n_components": par["num_components"],
         "n_epochs": par["max_iter"],
+        "use_rep": obsm_input,
         "learning_rate": par["alpha"],
         "repulsion_strength": par["gamma"],
         "negative_sample_rate": par["negative_sample_rate"],
         "init": par["init_pos"],
-        "metric": data.uns["neighbors"].get("metric", "euclidean"),
-        "metric_kwds": data.uns["neighbors"].get("metric_kwds", {}),
+        "metric": metric,
+        "metric_kwds": metric_kwds,
         "dens_lambda": par["lambda"],
         "dens_frac": par["fraction"],
         "dens_var_shift": par["var_shift"],
