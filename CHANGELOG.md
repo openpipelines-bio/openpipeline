@@ -61,6 +61,8 @@
 
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
+* `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES

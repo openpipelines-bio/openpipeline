@@ -453,15 +453,16 @@ RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps build-essential && \
   rm -rf /var/lib/apt/lists/*
 
+ENV ANNOY_COMPILER_ARGS=-D_CRT_SECURE_NO_WARNINGS,-fpermissive,-O3,-ffast-math,-fno-associative-math,-DANNOYLIB_MULTITHREADED_BUILD,-std=c++14
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" "scanpy~=1.11.4" "bbknn" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors bbknn"
-LABEL org.opencontainers.image.created="2026-10-16T09:23:37Z"
+LABEL org.opencontainers.image.created="2026-10-20T11:39:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="98d4783bc1ec523340ea2a4727993df14e757584"
+LABEL org.opencontainers.image.revision="9c8f37079f0d051e5b2d0410a0be53a13e27db5d"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
