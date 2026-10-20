@@ -61,6 +61,8 @@
 
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
+* `workflows/multiomics/process_batches`: recompute the expected `clr` layer in the `test_wf2` integration test from the reference counts as `muon` does, since the reference was normalized with `muon<0.1.8` (PR #1260).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES
