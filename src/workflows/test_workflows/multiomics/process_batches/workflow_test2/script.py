@@ -68,6 +68,9 @@ del input_rna.obsm["X_umap"]
 del input_rna.layers["log_normalized"]
 output_rna = output.mod["rna"]
 output_rna = remove_annotation_column(output_rna, "filter_with_hvg", "var")
+# The details of the highly variable feature selection are stored in .varm, which
+# is not part of the reference input.
+del output_rna.varm["hvg"]
 del output_rna.obsm["X_pca"]
 del output_rna.varm["pca_loadings"]
 del output_rna.obsm["X_umap"]
