@@ -3325,7 +3325,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities",
     "viash_version" : "0.9.7",
-    "git_commit" : "fd331d3c8ca1b145734b9f7801bbfbf68735c00b",
+    "git_commit" : "d3a9d9e73f91e3051e889fc54d1c07c0c715d893",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

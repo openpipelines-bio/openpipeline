@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.description="Companion container for running component transform clear_slots"
-LABEL org.opencontainers.image.created="2026-10-19T08:02:11Z"
+LABEL org.opencontainers.image.created="2026-10-20T07:51:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="fd331d3c8ca1b145734b9f7801bbfbf68735c00b"
+LABEL org.opencontainers.image.revision="d3a9d9e73f91e3051e889fc54d1c07c0c715d893"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
