@@ -1,4 +1,5 @@
 import mudata as mu
+import numpy as np
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 from openpipeline_testutils.utils import remove_annotation_column
 
@@ -45,6 +46,15 @@ del output_prot.var["log1p_obs_mean"]
 del output_prot.var["log1p_total_counts"]
 # Added after #1196
 del output_prot.var["pct_dropout"]
+# The clr layer of the reference input was computed with muon<0.1.8, which rounds
+# the float32 geometric mean differently. Recompute the expected clr from the counts
+# as the muon version pinned in transform/clr (0.1.9) does: take the mean over the
+# sparse matrix, CSC for axis 0. Update this when that pin changes.
+counts = input_prot.X.tocsc(copy=True)
+logmean = np.asarray(np.log1p(counts).mean(axis=0)).ravel()
+counts.data /= np.repeat(np.exp(logmean), counts.getnnz(axis=0))
+np.log1p(counts.data, out=counts.data)
+input_prot.layers["clr"] = counts
 assert_annotation_objects_equal(input_prot, output_prot, promote_precision=True)
 
 
