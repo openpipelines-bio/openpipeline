@@ -3,7 +3,7 @@ namespace: annotate
 scope: "private"
 description: |
   Reference-based cell type annotation using Seurat's Azimuth (RunAzimuth()).
-  Unlike annotate/azimuth (which uses a single fixed pan-human neural network
+  Unlike annotate/azimuth_panhuman (which uses a single fixed pan-human neural network
   with no reference choice), this component lets you pick which annotated
   reference dataset to map the query onto: one of the curated Azimuth
   references (e.g. "pbmcref", "bonemarrowref", "lungref"; see
