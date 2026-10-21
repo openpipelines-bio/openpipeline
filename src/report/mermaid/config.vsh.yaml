@@ -1,4 +1,5 @@
 name: mermaid
+status: deprecated
 namespace: "report"
 scope: "public"
 description: |
