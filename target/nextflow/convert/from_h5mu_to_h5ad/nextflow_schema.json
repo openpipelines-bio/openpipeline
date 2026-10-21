@@ -28,8 +28,7 @@
           "format": "path",
           "exists": true,
           "description": "Input MuData file",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"input.h5mu\"`, direction: `input`. ",
-          "default": "input.h5mu"
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
         },
         "modality": {
           "type": "string",
@@ -41,8 +40,8 @@
           "type": "string",
           "format": "path",
           "description": "Output AnnData file.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"output.h5ad\"`, direction: `output`. ",
-          "default": "output.h5ad"
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5ad\"`, direction: `output`, example: `\"output.h5ad\"`. ",
+          "default": "$id.$key.output.h5ad"
         },
         "output_compression": {
           "type": "string",

@@ -5,8 +5,8 @@ modality: "rna"
 obs_clustering: # please fill in - example: "leiden_0.5"
 
 # Outputs
-# output: "output.h5mu"
-# output_markers: "markers.csv"
+# output: "$id.$key.output.h5mu"
+# output_markers: "$id.$key.output_markers.csv"
 uns_output: "rank_genes_groups"
 # output_compression: "gzip"
 
