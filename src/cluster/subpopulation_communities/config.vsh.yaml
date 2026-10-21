@@ -1,0 +1,168 @@
+name: subpopulation_communities
+namespace: "cluster"
+scope: "public"
+description: |
+  Clusters labels (e.g. cell subpopulations), not cells, into communities: sets of
+  labels whose proportions co-vary across groups (e.g. participants) and change
+  together along pseudotime. The input is a group-level object: every observation is
+  a group, every variable a label, and `.X` holds the group x label proportions
+  (`metadata/calculate_obs_label_proportions`).
+
+  Two label x label similarity matrices are computed:
+
+  1. **Co-occurrence similarity**: correlation of group (e.g. participant)
+     proportion vectors across labels. Labels that tend to expand or contract
+     together receive a high score. The reference implementation uses Spearman
+     (`--correlation_method`).
+
+  2. **Dynamics similarity**: Pearson correlation of the spline-fitted proportion
+     curves along pseudotime (`.varm[--varm_dynamics]`, from
+     `trajectory/fit_proportion_dynamics`). Labels with parallel temporal trajectories
+     receive a high score.
+
+  The combined similarity (weighted sum controlled by `--alpha`) is converted to a
+  distance matrix, and the labels are clustered into `--n_communities` communities
+  (`--method`, `--linkage`). The community of every label is written to
+  `.var[--var_output]`, the three similarity matrices to `.varp`.
+
+keywords: [ subpopulation communities, clustering, co-occurrence, dynamics, BEYOND ]
+links:
+  repository: https://github.com/naomihabiblab/BEYOND_DLPFC
+references:
+  doi: 10.1038/s41586-024-07871-6
+license: MIT
+authors:
+  - __merge__: /src/authors/marilyn_degraeve.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        direction: input
+        required: true
+        description: |
+          Group-level h5mu file with the group x label proportions in `.X`.
+        example: proportions.h5mu
+
+      - name: "--modality"
+        type: string
+        default: "proportions"
+        required: false
+        description: Modality to process.
+
+      - name: "--varm_dynamics"
+        type: string
+        default: "proportion_dynamics"
+        required: false
+        description: |
+          `.varm` key of the fitted proportion curves, one row per label and one
+          column per pseudotime bin (`--varm_output` of
+          `trajectory/fit_proportion_dynamics`). Required unless `--alpha` is 1.0.
+
+  - name: Arguments
+    arguments:
+      - name: "--n_communities"
+        type: integer
+        required: true
+        min: 2
+        description: Number of subpopulation communities.
+        example: 6
+
+      - name: "--alpha"
+        type: double
+        default: 0.5
+        min: 0.0
+        max: 1.0
+        required: false
+        description: |
+          Weight for the co-occurrence similarity matrix.
+          Final similarity = alpha * co_occurrence + (1 - alpha) * dynamics.
+          Set to 1.0 for purely co-occurrence-based clustering, 0.0 for dynamics only.
+
+      - name: "--correlation_method"
+        type: string
+        default: "spearman"
+        choices: [pearson, spearman]
+        required: false
+        description: |
+          Correlation used for the co-occurrence similarity. The BEYOND reference
+          implementation uses Spearman, which is robust to the skew of compositional
+          proportions.
+
+      - name: "--method"
+        type: string
+        default: "hierarchical"
+        choices: [hierarchical, spectral]
+        required: false
+        description: Clustering method. 'hierarchical' uses the linkage set by `--linkage`; 'spectral' uses spectral clustering.
+
+      - name: "--linkage"
+        type: string
+        default: "ward"
+        choices: [ward, complete, average, single]
+        required: false
+        description: Linkage criterion for hierarchical clustering. Ignored when --method spectral.
+
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        direction: output
+        required: true
+        description: Output h5mu file.
+        example: output.h5mu
+
+      - name: "--var_output"
+        type: string
+        default: "community_id"
+        required: false
+        description: "`.var` column for the community of every label."
+
+      - name: "--varp_prefix"
+        type: string
+        default: "community_"
+        required: false
+        description: |
+          Prefix of the three label x label similarity matrices written to `.varp`:
+          `<prefix>co_occurrence`, `<prefix>dynamics` and `<prefix>combined`.
+    __merge__: [., /src/base/h5_compression_argument.yaml]
+
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+
+engines:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        packages:
+          - pandas
+          - numpy
+          - scipy
+          - scikit-learn
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [midcpu, midmem, middisk]
