@@ -41,6 +41,8 @@
 
 * `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234).
 
+* `integrate/harmonypy2`: added a Harmony integration component based on harmonypy 2.1.0, which follows R harmony2. In addition to the arguments of `integrate/harmonypy`, it exposes the other Harmony parameters (e.g. `--lambda`, `--sigma`, `--nclust`, `--max_iter_harmony`, `--random_state`). Note that the defaults follow R harmony2 and differ from `integrate/harmonypy` (e.g. lambda is estimated automatically) and that missing values in the covariates are not allowed (PR #1255).
+
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
