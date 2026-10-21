@@ -63,8 +63,6 @@
 
 * `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
 
-* `workflows/multiomics/process_batches`: fix the `test_wf2` integration test. The expected `clr` layer is recomputed from the reference counts as `muon` does, since the reference was normalized with `muon<0.1.8`, and the `hvg` `.varm` slot that `highly_variable_features_scanpy` always writes since PR #1186 is ignored (PR #1260).
-
 # openpipelines 4.2.0
 
 ## NEW FEATURES

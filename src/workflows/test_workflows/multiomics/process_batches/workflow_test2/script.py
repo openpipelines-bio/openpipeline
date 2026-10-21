@@ -1,5 +1,4 @@
 import mudata as mu
-import numpy as np
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 from openpipeline_testutils.utils import remove_annotation_column
 
@@ -46,15 +45,6 @@ del output_prot.var["log1p_obs_mean"]
 del output_prot.var["log1p_total_counts"]
 # Added after #1196
 del output_prot.var["pct_dropout"]
-# The clr layer of the reference input was computed with muon<0.1.8, which rounds
-# the float32 geometric mean differently. Recompute the expected clr from the counts
-# as the muon version pinned in transform/clr (0.1.9) does: take the mean over the
-# sparse matrix, CSC for axis 0. Update this when that pin changes.
-counts = input_prot.X.tocsc(copy=True)
-logmean = np.asarray(np.log1p(counts).mean(axis=0)).ravel()
-counts.data /= np.repeat(np.exp(logmean), counts.getnnz(axis=0))
-np.log1p(counts.data, out=counts.data)
-input_prot.layers["clr"] = counts
 assert_annotation_objects_equal(input_prot, output_prot, promote_precision=True)
 
 
@@ -68,9 +58,6 @@ del input_rna.obsm["X_umap"]
 del input_rna.layers["log_normalized"]
 output_rna = output.mod["rna"]
 output_rna = remove_annotation_column(output_rna, "filter_with_hvg", "var")
-# The details of the highly variable feature selection are stored in .varm, which
-# is not part of the reference input.
-del output_rna.varm["hvg"]
 del output_rna.obsm["X_pca"]
 del output_rna.varm["pca_loadings"]
 del output_rna.obsm["X_umap"]
