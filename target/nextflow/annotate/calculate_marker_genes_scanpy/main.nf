@@ -3108,6 +3108,9 @@ meta = [
           "example" : [
             "output.h5mu"
           ],
+          "default" : [
+            "output.h5mu"
+          ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
@@ -3120,6 +3123,9 @@ meta = [
           "name" : "--output_markers",
           "description" : "Path to the output CSV file where marker genes will be saved.",
           "example" : [
+            "markers.csv"
+          ],
+          "default" : [
             "markers.csv"
           ],
           "must_exist" : true,
@@ -3443,7 +3449,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/calculate_marker_genes_scanpy",
     "viash_version" : "0.9.7",
-    "git_commit" : "8edae645e7bdf6174355164eb4bd7c4324290fda",
+    "git_commit" : "8c2800b2a445d4cd0a0c4a0004d203e57e653a7b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

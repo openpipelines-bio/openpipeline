@@ -11,7 +11,7 @@ arguments:
     alternatives: ["-i"]
     type: file
     description: Input h5ad files
-    example: input.h5ad
+    default: input.h5ad
     direction: input
     required: true
     multiple: true
@@ -27,7 +27,7 @@ arguments:
     alternatives: ["-o"]
     type: file
     description: Output MuData file.
-    example: output.h5mu
+    default: output.h5mu
     direction: output
 __merge__: [., /src/base/h5_compression_argument.yaml]
 

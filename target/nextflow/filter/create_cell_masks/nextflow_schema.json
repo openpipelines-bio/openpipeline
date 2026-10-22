@@ -41,8 +41,8 @@
           "type": "string",
           "format": "path",
           "description": "The output MuData file with the created cell masks.\nIndividual cell masks are stored as a `DataFrame` in `.obsm` and\nsummary masks for each filter group are stored as boolean columns in\n`.obs`.\n",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "help_text": "Type: `file`, multiple: `False`, default: `\"output.h5mu\"`, direction: `output`. ",
+          "default": "output.h5mu"
         },
         "output_compression": {
           "type": "string",

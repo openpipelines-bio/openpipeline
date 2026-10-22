@@ -31,7 +31,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    example: output.h5mu
+    default: output.h5mu
   - name: "--missing_ok"
     type: boolean_true
     description: Do not raise an error if the layer does not exist for all modalities.

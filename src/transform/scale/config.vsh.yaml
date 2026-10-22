@@ -42,7 +42,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    example: output.h5mu
+    default: output.h5mu
 __merge__: [., /src/base/h5_compression_argument.yaml]
 
 

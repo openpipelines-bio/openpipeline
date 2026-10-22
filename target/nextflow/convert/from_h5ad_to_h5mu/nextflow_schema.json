@@ -31,7 +31,10 @@
           "format": "path",
           "exists": true,
           "description": "Input h5ad files",
-          "help_text": "Type: `file`, multiple: `True`, required, direction: `input`, example: `[\"input.h5ad\"]`. "
+          "help_text": "Type: `file`, multiple: `True`, required, default: `[\"input.h5ad\"]`, direction: `input`. ",
+          "default": [
+            "input.h5ad"
+          ]
         },
         "modality": {
           "type": "array",
@@ -48,8 +51,8 @@
           "type": "string",
           "format": "path",
           "description": "Output MuData file.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
+          "help_text": "Type: `file`, multiple: `False`, default: `\"output.h5mu\"`, direction: `output`. ",
+          "default": "output.h5mu"
         },
         "output_compression": {
           "type": "string",

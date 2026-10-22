@@ -41,8 +41,8 @@
           "type": "string",
           "format": "path",
           "description": "The folder to store the demux results",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output\"`, direction: `output`, example: `\"/path/to/output\"`. ",
-          "default": "$id.$key.output"
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"fastqs\"`, direction: `output`, example: `\"/path/to/output\"`. ",
+          "default": "fastqs"
         },
         "reports": {
           "type": "string",

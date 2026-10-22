@@ -26,7 +26,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    example: output.h5mu
+    default: output.h5mu
   - name: "--input_layer"
     type: string
     description: "Input layer to use. By default, .X is used."

@@ -22,7 +22,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    example: output.h5mu
+    default: output.h5mu
   - name: "--modality"
     type: string
     description: "The modality to run this component on."

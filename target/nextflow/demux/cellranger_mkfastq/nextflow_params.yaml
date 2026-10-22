@@ -1,7 +1,7 @@
 # Arguments
 input: # please fill in - example: "/path/to/bcl"
 sample_sheet: # please fill in - example: "SampleSheet.csv"
-# output: "$id.$key.output"
+# output: "fastqs"
 # reports: "$id.$key.reports"
 
 # Nextflow input-output arguments
