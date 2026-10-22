@@ -65,14 +65,13 @@ argument_groups:
       - name: "--reference"
         type: string
         required: true
-        choices: [ pbmcref, bonemarrowref, lungref, heartref, tonsilref, humancortexref, kidneyref, pancreasref, adiposeref, fetusref, custom ]
+        choices: [ pbmcref, bonemarrowref, lungref, heartref, tonsilref, humancortexref, mousecortexref, kidneyref, pancreasref, adiposeref, fetusref, custom ]
         description: |
-          Name of a curated Azimuth reference (e.g. "pbmcref",
-          "bonemarrowref", "lungref", "heartref", "tonsilref",
-          "humancortexref", "kidneyref", "pancreasref", "adiposeref",
-          "fetusref"; case-insensitive, downloaded/installed automatically
-          on first use via SeuratData). If "custom", a local directory containing 
-          a "ref.Rds" + "idx.annoy" file pair must be provided via `--custom_reference`.  
+          Name of a curated Azimuth reference, downloaded and installed
+          automatically on first use via SeuratData. See
+          https://azimuth.hubmapconsortium.org/references/ for a description
+          of each reference. Set to "custom" to use a local reference instead,
+          provided via `--custom_reference`.
         example: pbmcref
       - name: "--custom_reference"
         type: file
