@@ -17,6 +17,7 @@ workflow run_wf {
       },
       toState: [
         "input": "output_mudata",
+        "input_vdj_contigs": "vdj_unfiltered_contigs",
         "output_raw": "output_dir"
       ]
     )
@@ -27,6 +28,7 @@ workflow run_wf {
         [
           id: id,
           input: state.input,
+          input_vdj_contigs: state.input_vdj_contigs,
           output: state.output,
           output_compression: "gzip"
         ]
