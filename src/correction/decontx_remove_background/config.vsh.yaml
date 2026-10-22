@@ -172,13 +172,14 @@ test_resources:
   - type: python_script
     path: test.py
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
-  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
 
 engines:
   - type: docker
     image: rocker/r2u:24.04
     setup:
       - type: r
+        cran: [ hdf5r ]
         bioc: [ decontX, anndataR, rhdf5 ]
     test_setup:
       - type: docker

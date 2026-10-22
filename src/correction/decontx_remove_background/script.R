@@ -1,5 +1,4 @@
 library(decontX)
-library(rhdf5)
 
 ### VIASH START
 par <- list(
@@ -37,34 +36,44 @@ meta <- list(
 ### VIASH END
 
 # Each modality of an .h5mu file is an AnnData group under /mod/<modality>.
-# The input is read with anndataR after extracting the modality to a
-# temporary .h5ad file. The output is written in place with rhdf5, following
-# the AnnData on-disk format, see
-# https://anndata.readthedocs.io/en/latest/fileformat-prose.html
+# anndataR reads and writes .h5ad files but not .h5mu files, so hdf5r moves
+# elements between both: the modality is extracted to a temporary .h5ad file
+# for reading, and the results are written to a temporary .h5ad file with
+# anndataR and copied into the output .h5mu.
+# Files opened with hdf5r are closed with close_all(): objects left open keep
+# the file locked for anndataR, which uses a different HDF5 library (rhdf5).
 
-# Uses rhdf5 rather than hdf5r: anndataR reads through rhdf5, and a file left
-# open by a different HDF5 library stays locked for it.
+modality_exists <- function(h5file, modality_name) {
+  h5file$exists("mod") && h5file[["mod"]]$exists(modality_name)
+}
+
 h5mu_to_h5ad <- function(h5mu_path, modality_name) {
   tmp_path <- tempfile(fileext = ".h5ad")
-  mod_path <- paste0("/mod/", modality_name)
-  src <- rhdf5::H5Fopen(h5mu_path, flags = "H5F_ACC_RDONLY")
-  on.exit(rhdf5::H5Fclose(src))
-  if (!rhdf5::H5Lexists(src, mod_path)) {
+  src <- hdf5r::H5File$new(h5mu_path, mode = "r")
+  on.exit(src$close_all())
+  if (!modality_exists(src, modality_name)) {
     stop(
       "Modality '", modality_name, "' is not available in '", h5mu_path, "'."
     )
   }
-  dest <- rhdf5::H5Fcreate(tmp_path)
-  on.exit(rhdf5::H5Fclose(dest), add = TRUE)
-  mod <- rhdf5::H5Gopen(src, mod_path)
-  on.exit(rhdf5::H5Gclose(mod), add = TRUE, after = FALSE)
+  dest <- hdf5r::H5File$new(tmp_path, mode = "w")
+  on.exit(dest$close_all(), add = TRUE)
+  mod <- src[[paste0("mod/", modality_name)]]
 
-  for (child in rhdf5::h5ls(mod, recursive = FALSE)$name) {
-    rhdf5::H5Ocopy(mod, child, dest, child)
+  for (child in mod$names) {
+    dest$obj_copy_from(mod, child, child)
   }
   # The modality group's attributes (encoding-type: anndata, ...) become the
   # root attributes of the .h5ad file
-  h5_write_attrs(dest, "/", rhdf5::h5readAttributes(src, mod_path))
+  for (name in hdf5r::h5attr_names(mod)) {
+    value <- hdf5r::h5attr(mod, name)
+    space <- if (length(value) == 1) {
+      hdf5r::H5S$new("scalar")
+    } else {
+      hdf5r::guess_space(value)
+    }
+    dest$create_attr(name, value, space = space)
+  }
 
   tmp_path
 }
@@ -99,94 +108,10 @@ read_modality <- function(file, modality, layer, obs_columns = list()) {
   )
 }
 
-# Writers for the AnnData elements added to the output
-h5_write_attrs <- function(fid, path, attrs, scalar = TRUE) {
-  oid <- rhdf5::H5Oopen(fid, path)
-  on.exit(rhdf5::H5Oclose(oid))
-  for (name in names(attrs)) {
-    if (rhdf5::H5Aexists(oid, name)) rhdf5::H5Adelete(oid, name)
-    value <- attrs[[name]]
-    if (is.character(value)) {
-      rhdf5::h5writeAttribute(
-        value, oid, name,
-        encoding = "UTF-8", variableLengthString = TRUE, asScalar = scalar
-      )
-    } else {
-      rhdf5::h5writeAttribute(value, oid, name, asScalar = scalar)
-    }
-  }
-}
-
-h5_delete_if_exists <- function(fid, path) {
-  if (rhdf5::H5Lexists(fid, path)) rhdf5::h5delete(fid, path)
-}
-
-compression_type <- if (is.null(par$output_compression)) {
-  "none"
-} else {
-  par$output_compression
-}
-compression <- switch(compression_type,
-  gzip = list(filter = "GZIP", level = 4),
-  lzf = list(filter = "LZF", level = 0),
-  none = list(filter = "NONE", level = 0)
-)
-
-h5_write_array <- function(fid, path, value, encoding_type = "array") {
-  n <- length(value)
-  # Filters don't apply to variable-length strings (LZF even segfaults on them)
-  filter <- if (is.character(value)) "NONE" else compression$filter
-  rhdf5::h5createDataset(
-    fid, path,
-    dims = n,
-    storage.mode = storage.mode(value),
-    size = NULL,
-    encoding = if (is.character(value)) "UTF-8" else NULL,
-    chunk = max(1L, min(n, 262144L)),
-    filter = filter,
-    level = if (filter == "NONE") 0 else compression$level
-  )
-  rhdf5::h5write(value, fid, path)
-  h5_write_attrs(
-    fid, path,
-    list("encoding-type" = encoding_type, "encoding-version" = "0.2.0")
-  )
-}
-
-# mat is genes x cells dgCMatrix, stored as a cells x genes CSR matrix
-h5_write_csr_matrix <- function(fid, path, mat) {
-  mat <- methods::as(mat, "CsparseMatrix")
-  h5_delete_if_exists(fid, path)
-  rhdf5::h5createGroup(fid, path)
-  h5_write_array(fid, paste0(path, "/data"), as.numeric(mat@x))
-  h5_write_array(fid, paste0(path, "/indices"), mat@i)
-  h5_write_array(fid, paste0(path, "/indptr"), mat@p)
-  h5_write_attrs(
-    fid, path,
-    list("encoding-type" = "csr_matrix", "encoding-version" = "0.1.0")
-  )
-  h5_write_attrs(fid, path, list(shape = rev(dim(mat))), scalar = FALSE)
-}
-
-h5_write_categorical <- function(fid, path, values) {
-  values <- factor(values)
-  h5_delete_if_exists(fid, path)
-  rhdf5::h5createGroup(fid, path)
-  codes <- as.integer(values) - 1L
-  codes[is.na(codes)] <- -1L
-  h5_write_array(fid, paste0(path, "/codes"), codes)
-  h5_write_array(
-    fid, paste0(path, "/categories"), levels(values),
-    encoding_type = "string-array"
-  )
-  h5_write_attrs(
-    fid, path,
-    list(
-      "encoding-type" = "categorical",
-      "encoding-version" = "0.2.0",
-      ordered = FALSE
-    )
-  )
+# Replace (or add) element 'name' of 'dest_group' with 'src_name' of 'src'
+h5_replace <- function(dest_group, name, src, src_name) {
+  if (dest_group$exists(name)) dest_group$link_delete(name)
+  dest_group$obj_copy_from(src, src_name, name)
 }
 
 # Read input data
@@ -231,34 +156,55 @@ result <- decontX(
 )
 
 cat("Writing output data\n")
+# Write only the results as an AnnData object to a temporary .h5ad file
+obs <- data.frame(row.names = colnames(input$matrix))
+obs[[par$output_obs_contamination]] <- as.numeric(result$contamination)
+obs[[par$output_obs_clusters]] <- factor(result$z)
+layers <- list()
+layers[[par$output_layer]] <- methods::as(
+  Matrix::t(result$decontXcounts), "RsparseMatrix"
+)
+results <- anndataR::AnnData(
+  obs = obs,
+  var = data.frame(row.names = rownames(input$matrix)),
+  layers = layers
+)
+results_path <- tempfile(fileext = ".h5ad")
+compression <- if (is.null(par$output_compression)) {
+  "none"
+} else {
+  par$output_compression
+}
+anndataR::write_h5ad(results, results_path, compression = compression)
+
 # Copy the input and add the results to it in place, leaving every other
 # modality and field untouched.
 if (!file.copy(par$input, par$output, overwrite = TRUE)) {
   stop("Could not copy '", par$input, "' to '", par$output, "'.")
 }
-fid <- H5Fopen(par$output, flags = "H5F_ACC_RDWR")
-mod_path <- paste0("/mod/", par$modality)
-obs_path <- paste0(mod_path, "/obs")
+output <- hdf5r::H5File$new(par$output, mode = "r+")
+results_h5 <- hdf5r::H5File$new(results_path, mode = "r")
+mod <- output[[paste0("mod/", par$modality)]]
 
-h5_write_csr_matrix(
-  fid, paste0(mod_path, "/layers/", par$output_layer), result$decontXcounts
+if (!mod$exists("layers")) mod$create_group("layers")
+h5_replace(
+  mod[["layers"]], par$output_layer,
+  results_h5, paste0("layers/", par$output_layer)
 )
 
-contamination_path <- paste0(obs_path, "/", par$output_obs_contamination)
-h5_delete_if_exists(fid, contamination_path)
-h5_write_array(fid, contamination_path, as.numeric(result$contamination))
-h5_write_categorical(
-  fid, paste0(obs_path, "/", par$output_obs_clusters), result$z
-)
+obs_group <- mod[["obs"]]
+new_obs_columns <- c(par$output_obs_contamination, par$output_obs_clusters)
+for (col in new_obs_columns) {
+  h5_replace(obs_group, col, results_h5, paste0("obs/", col))
+}
 
 # New .obs columns are only read when listed in the 'column-order' attribute
-column_order <- as.character(h5readAttributes(fid, obs_path)[["column-order"]])
 column_order <- union(
-  column_order, c(par$output_obs_contamination, par$output_obs_clusters)
+  as.character(hdf5r::h5attr(obs_group, "column-order")), new_obs_columns
 )
-h5_write_attrs(
-  fid, obs_path, list("column-order" = column_order),
-  scalar = FALSE
-)
+obs_group$attr_delete("column-order")
+obs_group$create_attr("column-order", column_order)
 
-H5Fclose(fid)
+results_h5$close_all()
+output$close_all()
+unlink(results_path)

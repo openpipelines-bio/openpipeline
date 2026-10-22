@@ -1,9 +1,12 @@
 import sys
 import os
+import h5py
 import numpy as np
 import pytest
+import anndata as ad
 import mudata as mu
 import pandas as pd
+import scipy.sparse as sp
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 
@@ -15,9 +18,55 @@ input_file = (
     f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 )
 
-background_file = (
-    f"{meta['resources_dir']}/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu"
-)
+raw_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+
+
+@pytest.fixture(scope="module")
+def empty_droplets(n_droplets=2000, min_counts=10, max_counts=100):
+    # Real empty droplets from the raw (unfiltered) 10x h5 of the same run as the
+    # input: low-count gene expression barcodes that are not called as cells.
+    # Module-scoped, so the large raw file is only read once for all tests.
+    with h5py.File(raw_file, "r") as f:
+        matrix = f["matrix"]
+        counts = sp.csc_matrix(
+            (matrix["data"][:], matrix["indices"][:], matrix["indptr"][:]),
+            shape=tuple(matrix["shape"][:]),
+        )
+        barcodes = matrix["barcodes"][:].astype(str)
+        features = pd.DataFrame(
+            {
+                "gene_ids": matrix["features/id"][:].astype(str),
+                "gene_symbol": matrix["features/name"][:].astype(str),
+                "feature_types": matrix["features/feature_type"][:].astype(str),
+            }
+        ).set_index("gene_ids")
+
+    is_gex = (features["feature_types"] == "Gene Expression").to_numpy()
+    counts = counts[is_gex, :]
+    library_size = np.asarray(counts.sum(axis=0)).ravel()
+
+    cell_barcodes = mu.read_h5mu(input_file).mod["rna"].obs_names
+    candidates = np.flatnonzero(
+        (library_size >= min_counts)
+        & (library_size <= max_counts)
+        & ~np.isin(barcodes, cell_barcodes)
+    )
+    rng = np.random.default_rng(0)
+    selected = np.sort(
+        rng.choice(candidates, size=min(n_droplets, candidates.size), replace=False)
+    )
+
+    rna = ad.AnnData(
+        X=counts[:, selected].T.tocsr(),
+        obs=pd.DataFrame(index=barcodes[selected]),
+        var=features[is_gex],
+    )
+    return mu.MuData({"rna": rna})
+
+
+@pytest.fixture
+def background_path(write_mudata_to_file, empty_droplets):
+    return write_mudata_to_file(empty_droplets)
 
 
 def assert_decontx_output(
@@ -94,8 +143,9 @@ def input_with_batch_path(write_mudata_to_file):
 
 
 @pytest.fixture
-def background_with_batch_path(write_mudata_to_file):
-    bdata = mu.read_h5mu(background_file)
+def background_with_batch_path(write_mudata_to_file, empty_droplets):
+    # Copy so the shared module-scoped object is not modified
+    bdata = empty_droplets.copy()
     rna = bdata.mod["rna"]
     rna.obs["batch"] = pd.Categorical(
         np.random.default_rng(0).integers(0, 2, size=rna.n_obs).astype(str)
@@ -115,7 +165,7 @@ def input_with_layer_path(write_mudata_to_file):
     return write_mudata_to_file(mdata)
 
 
-def test_execution_with_background(run_component, random_h5mu_path):
+def test_execution_with_background(run_component, random_h5mu_path, background_path):
     output_file = random_h5mu_path()
 
     print("> Check whether decontx works with a background dataset")
@@ -124,7 +174,7 @@ def test_execution_with_background(run_component, random_h5mu_path):
             "--input",
             input_file,
             "--background",
-            background_file,
+            background_path,
             "--output",
             output_file,
             "--output_compression",
