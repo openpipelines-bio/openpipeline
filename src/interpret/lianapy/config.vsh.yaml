@@ -95,7 +95,7 @@ test_resources:
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 engines:
   - type: docker
-    image: python:3.11-slim
+    image: python:3.2-slim
     setup:
       - type: apt
         packages: 
