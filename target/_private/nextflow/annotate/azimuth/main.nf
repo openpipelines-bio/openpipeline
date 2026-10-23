@@ -3500,7 +3500,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/annotate/azimuth",
     "viash_version" : "0.9.7",
-    "git_commit" : "96f858360c6e8cd76bd9dfe89a33ca07ba58632e",
+    "git_commit" : "d14e6ac86a9ed3a991e0997ec7344f740fb1397a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

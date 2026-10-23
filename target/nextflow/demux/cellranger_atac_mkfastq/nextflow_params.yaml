@@ -5,7 +5,7 @@ csv: # please fill in - example: "SampleSheet.csv"
 # use_bases_mask: ["y50n,I6n,Y50n"]
 delete_undetermined: false
 barcode_mismatches: 1
-# output: "fastqs"
+# output: "$id.$key.output"
 # reports: "$id.$key.reports"
 
 # Nextflow input-output arguments

@@ -450,9 +450,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.description="Companion container for running component annotate calculate_marker_genes_scanpy"
-LABEL org.opencontainers.image.created="2026-10-23T07:40:41Z"
+LABEL org.opencontainers.image.created="2026-10-23T08:25:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="96f858360c6e8cd76bd9dfe89a33ca07ba58632e"
+LABEL org.opencontainers.image.revision="d14e6ac86a9ed3a991e0997ec7344f740fb1397a"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -604,13 +604,11 @@ function ViashHelp {
   echo ""
   echo "    --output"
   echo "        type: file, output, file must exist"
-  echo "        default: output.h5mu"
   echo "        example: output.h5mu"
   echo "        Path to the output MuData H5MU file."
   echo ""
   echo "    --output_markers"
   echo "        type: file, output, file must exist"
-  echo "        default: markers.csv"
   echo "        example: markers.csv"
   echo "        Path to the output CSV file where marker genes will be saved."
   echo ""
@@ -1109,12 +1107,6 @@ fi
 # filling in defaults
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
-fi
-if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
-  VIASH_PAR_OUTPUT="output.h5mu"
-fi
-if [ -z ${VIASH_PAR_OUTPUT_MARKERS+x} ]; then
-  VIASH_PAR_OUTPUT_MARKERS="markers.csv"
 fi
 if [ -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then
   VIASH_PAR_UNS_OUTPUT="rank_genes_groups"

@@ -3071,7 +3071,7 @@ meta = [
             "-i"
           ],
           "description" : "Input h5ad files",
-          "default" : [
+          "example" : [
             "input.h5ad"
           ],
           "must_exist" : true,
@@ -3100,7 +3100,7 @@ meta = [
             "-o"
           ],
           "description" : "Output MuData file.",
-          "default" : [
+          "example" : [
             "output.h5mu"
           ],
           "must_exist" : true,
@@ -3306,7 +3306,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "96f858360c6e8cd76bd9dfe89a33ca07ba58632e",
+    "git_commit" : "d14e6ac86a9ed3a991e0997ec7344f740fb1397a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
