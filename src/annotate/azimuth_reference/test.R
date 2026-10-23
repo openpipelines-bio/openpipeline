@@ -22,8 +22,6 @@ run_component <- function(args) {
   )
 }
 
-# Functions are namespaced here, as lintr's object_usage_linter checks
-# function bodies and cannot resolve package functions in CI.
 expect_valid_reference <- function(output_dir, annotation_levels) {
   testthat::expect_true(dir.exists(output_dir))
   testthat::expect_setequal(
