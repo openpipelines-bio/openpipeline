@@ -30,10 +30,12 @@ def generate_h5mu():
     )
     obs = pd.DataFrame([["A"], ["B"]], index=df.index, columns=["Obs"])
     var = pd.DataFrame([["a"], ["b"], ["c"]], index=df.columns, columns=["Feat"])
-    ad1 = AnnData(df, obs=obs, var=var)
+    # Do a manual copy. Anndata uses df.to_numpy() under the hood to populate .X, but that returns returns a read-only view.
+    # See https://github.com/scverse/anndata/issues/2717
+    ad1 = AnnData(df.to_numpy(copy=True), obs=obs, var=var)
     var2 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
     obs2 = pd.DataFrame(["C", "D"], index=df.index, columns=["Obs"])
-    ad2 = AnnData(df, obs=obs2, var=var2)
+    ad2 = AnnData(df.to_numpy(copy=True), obs=obs2, var=var2)
     tmp_mudata = MuData({"mod1": ad1, "mod2": ad2})
     return tmp_mudata
 
