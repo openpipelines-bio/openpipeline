@@ -1,0 +1,139 @@
+name: azimuth_reference
+namespace: annotate
+scope: "private"
+description: |
+  Build a custom Azimuth reference from an annotated Seurat object, using
+  Azimuth's AzimuthReference(). The raw counts are normalized with
+  SCTransform, after which a supervised PCA (SPCA) and a UMAP model are
+  computed and packaged together with the annotation levels to transfer.
+  The output is a directory containing a "ref.Rds" and "idx.annoy" file
+  pair, which can be used to annotate query datasets with annotate/azimuth
+  (`--reference custom --custom_reference <output>`).
+authors:
+  - __merge__: /src/authors/mirte_detemmerman.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    description: Input (reference) dataset arguments
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: |
+          The annotated data to build the reference from. Should be an .rds
+          file containing a Seurat object with raw (unnormalized) counts in
+          the layer specified by `--input_layer`, and the cell type labels to
+          transfer in its cell metadata.
+        direction: input
+        required: true
+        example: input.rds
+      - name: "--assay"
+        type: string
+        default: "RNA"
+        description: |
+          Name of the Seurat assay in the input object to build the reference from.
+      - name: "--input_layer"
+        type: string
+        default: "counts"
+        description: |
+          Layer of `--assay` containing the raw (unnormalized) counts.
+          These are normalized using SCTransform.
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          Column in the feature metadata of `--assay` containing gene symbols.
+          If not provided, the feature names of the assay are used. The gene
+          names of the reference should be gene symbols: annotate/azimuth
+          converts query Ensembl IDs to gene symbols, but not the other way
+          around.
+        example: gene_symbol
+
+  - name: Reference
+    description: Arguments controlling the content of the reference.
+    arguments:
+      - name: "--annotation_levels"
+        type: string
+        multiple: true
+        required: true
+        description: |
+          Columns in the cell metadata of the input object containing the
+          cell type labels (annotation levels) to store in the reference, and
+          transfer to the query with annotate/azimuth. Cells with missing
+          labels are not allowed.
+        example: [ celltype.l1, celltype.l2 ]
+      - name: "--reference_version"
+        type: string
+        default: "0.0.0"
+        description: Version number to store in the reference.
+
+  - name: Reference building arguments
+    description: Lower-level arguments for building the reference.
+    arguments:
+      - name: "--n_variable_features"
+        type: integer
+        default: 3000
+        min: 1
+        description: Number of variable features to select with SCTransform.
+      - name: "--n_dims"
+        type: integer
+        default: 50
+        min: 50
+        description: |
+          Number of dimensions of the PCA and supervised PCA, which are also
+          used to compute the UMAP and to find neighbors in the reference.
+          Azimuth requires references to contain at least 50 dimensions.
+      - name: "--k_param"
+        type: integer
+        default: 31
+        min: 1
+        description: |
+          Number of nearest neighbors stored in the reference annoy index
+          (used to find anchors between query and reference).
+      - name: "--seed"
+        type: integer
+        default: 42
+        description: Random seed for SCTransform and the UMAP.
+
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        type: file
+        description: |
+          Output directory to which the Azimuth reference is written, as a
+          "ref.Rds" and "idx.annoy" file pair. Can be passed to annotate/azimuth
+          using `--reference custom --custom_reference <output>`.
+        direction: output
+        required: true
+        example: azimuth_reference
+
+resources:
+  - type: r_script
+    path: script.R
+
+test_resources:
+  - type: r_script
+    path: test.R
+  - path: /resources_test/annotation_test_data/TS_Blood_filtered.rds
+
+engines:
+  - type: docker
+    image: rocker/r2u:24.04
+    setup:
+      - type: apt
+        packages: [ libhdf5-dev, libgeos-dev ]
+      - type: r
+        cran: [ hdf5r, Seurat, SeuratObject, remotes ]
+      - type: r
+        github: [ satijalab/azimuth@ad5929686e005ae91d8452187a3a1d8c0563fdd5 ]
+    test_setup:
+      - type: r
+        cran: [ testthat, processx ]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highcpu, highmem, highdisk]
