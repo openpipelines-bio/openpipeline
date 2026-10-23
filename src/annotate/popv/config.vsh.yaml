@@ -136,6 +136,7 @@ engines:
           # Build extensions without AVX512/AVX2 support
           - CFLAGS="-mno-avx512f -mno-avx2" 
           - CPPFLAGS="-mno-avx512f -mno-avx2"
+          - PIP_BREAK_SYSTEM_PACKAGES=1
       - type: apt
         packages:
           - procps
