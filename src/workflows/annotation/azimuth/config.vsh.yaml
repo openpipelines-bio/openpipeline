@@ -183,7 +183,7 @@ argument_groups:
 dependencies:
   - name: workflows/multiomics/split_modalities
   - name: convert/from_h5mu_or_h5ad_to_seurat
-  - name: annotate/azimuth_seurat
+  - name: annotate/azimuth
   - name: convert/from_seurat_to_h5mu
   - name: transform/delete_layer
   - name: dataflow/merge

@@ -87,7 +87,7 @@ workflow run_wf {
       | map {id, state -> [id, state + ["current_modality": state.modality]]}
 
     annotated_ch = h5mu_query_ch.mix(seurat_query_ch)
-      | azimuth_seurat.run(
+      | azimuth.run(
         fromState: {id, state ->
           def args = [
             "input": state.input_seurat,
