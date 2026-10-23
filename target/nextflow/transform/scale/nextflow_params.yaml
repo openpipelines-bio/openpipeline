@@ -5,7 +5,7 @@ modality: "rna"
 # output_layer: "foo"
 # max_value: 123.0
 zero_center: true
-# output: "output.h5mu"
+# output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 
 # Nextflow input-output arguments

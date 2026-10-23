@@ -57,15 +57,15 @@
           "type": "string",
           "format": "path",
           "description": "Path to the output MuData H5MU file.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "output.h5mu"
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
         },
         "output_markers": {
           "type": "string",
           "format": "path",
           "description": "Path to the output CSV file where marker genes will be saved.",
-          "help_text": "Type: `file`, multiple: `False`, default: `\"markers.csv\"`, direction: `output`, example: `\"markers.csv\"`. ",
-          "default": "markers.csv"
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output_markers.csv\"`, direction: `output`, example: `\"markers.csv\"`. ",
+          "default": "$id.$key.output_markers.csv"
         },
         "uns_output": {
           "type": "string",

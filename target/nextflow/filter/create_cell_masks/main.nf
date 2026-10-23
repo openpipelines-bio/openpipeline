@@ -3103,7 +3103,7 @@ meta = [
           "name" : "--output",
           "summary" : "The output MuData file with the created cell masks\n",
           "description" : "The output MuData file with the created cell masks.\nIndividual cell masks are stored as a `DataFrame` in `.obsm` and\nsummary masks for each filter group are stored as boolean columns in\n`.obs`.\n",
-          "default" : [
+          "example" : [
             "output.h5mu"
           ],
           "must_exist" : true,
@@ -3357,7 +3357,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/create_cell_masks",
     "viash_version" : "0.9.7",
-    "git_commit" : "8c2800b2a445d4cd0a0c4a0004d203e57e653a7b",
+    "git_commit" : "7b0168928c368b7a581189901d05fbe3573f2699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

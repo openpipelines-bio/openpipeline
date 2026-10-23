@@ -453,9 +453,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt update \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_atac_mkfastq"
-LABEL org.opencontainers.image.created="2026-10-22T07:52:00Z"
+LABEL org.opencontainers.image.created="2026-10-23T08:23:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8c2800b2a445d4cd0a0c4a0004d203e57e653a7b"
+LABEL org.opencontainers.image.revision="7b0168928c368b7a581189901d05fbe3573f2699"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -622,7 +622,6 @@ function ViashHelp {
   echo ""
   echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
-  echo "        default: fastqs"
   echo "        example: /path/to/output"
   echo "        The folder to store the demux results"
   echo ""
