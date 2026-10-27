@@ -20,7 +20,7 @@ echo "Running command"
 
 if [[ ! -f "$par_output" ]]; then
     echo "Output does not exist"
-    exit
+    exit 1
 fi
 
 echo "Test succeeded!"

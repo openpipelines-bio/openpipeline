@@ -28,14 +28,12 @@ arguments:
       Output format for the generated image. By default will be inferred from the extension 
       of the file specified with --output.
     choices: ["svg", "png", "pdf"]
-  - name: "--width"
+  - name: "--size"
     type: integer
-    description: "Width of the page"
+    description: |
+      Size of the diagram. For pngs, this is the maximum height or width of the image.
+      For svgs, this sets the `max-width` attribute. For pdfs, this is in CSS px (1/96 of an inch).
     default: 800
-  - name: "--height"
-    type: integer
-    description: "Height of the page"
-    default: 600
   - name: "--background_color"
     type: string
     description: "Background color for pngs/svgs (not pdfs)"
@@ -53,14 +51,14 @@ test_resources:
 
 engines:
   - type: docker
-    image: "node:22-bookworm"
+    image: "node:26-trixie"
     setup:
       - type: javascript
         npm: 
           - "@mermaid-js/mermaid-cli"
       - type: apt
         packages: 
-          - chromium
+          - chromium-headless-shell
 
 runners:
   - type: executable
