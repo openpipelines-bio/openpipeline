@@ -210,6 +210,8 @@ engines:
 - type: docker
   image: pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime
   setup:
+    - type: docker
+      env: PIP_BREAK_SYSTEM_PACKAGES=1
     - type: python
       upgrade: false
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
