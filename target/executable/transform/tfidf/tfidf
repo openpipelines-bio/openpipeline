@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component transform tfidf"
-LABEL org.opencontainers.image.created="2026-10-26T08:05:31Z"
+LABEL org.opencontainers.image.created="2026-10-27T08:13:50Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="70212534a87e82ff211ab251108ea0ed2b769b6f"
+LABEL org.opencontainers.image.revision="953225a39eb0a92340f434cfc5ab9e5489d7946f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
