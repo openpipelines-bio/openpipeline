@@ -24,7 +24,7 @@
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
-* `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #).
+* `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
 
 * `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
 
