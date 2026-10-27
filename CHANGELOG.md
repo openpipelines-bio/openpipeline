@@ -24,6 +24,13 @@
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
+* Bumped `mudata` to `0.4.1` and `anndata` to `0.13.4` (PR #). When reading a `MuData` object, the per-modality metadata columns (`var` and `obs`)
+  columns are no longer synchronized to the global (across all modalities) dataframes. By default, components that process a single modality edit
+  to the metadata of said modality only. Components that process multiple modalities are changes as follows:
+    - `dataflow/concatenate_h5mu`: 
+      + String columns van not be stored as `categorical` when they have repeated values. 
+      + Global-only metadata columns are now kept in the output. When they conflict across samples in `var`, they follow `--other_axis_mode`; with `move` they go to global `varm`.
+
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -62,6 +69,8 @@
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
 * `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
+
+* `dataflow/concatenate_h5mu`: fixed checking for duplicate observations between samples when the two observations are in different modalities. Within one input, the same observation can still be in several modalities (PR #)
 
 # openpipelines 4.2.0
 
