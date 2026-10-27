@@ -3480,7 +3480,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/differential_expression/pseudobulk_deseq2",
     "viash_version" : "0.9.7",
-    "git_commit" : "d14e6ac86a9ed3a991e0997ec7344f740fb1397a",
+    "git_commit" : "42ecf416091a69e159177028c8a915895c0c8622",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
