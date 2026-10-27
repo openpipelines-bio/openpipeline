@@ -33,6 +33,8 @@
 
 * `velocity/scvelo`: bumped `scvelo` to `0.3.4`, installed from source with a patch that adds compatibility with `pandas` 3. Highly variable gene selection (`--n_top_genes`) and log transformation (`--log_transform`) are now performed using `scanpy`, as they were removed from `scvelo.pp.filter_and_normalize` (PR #1263).
 
+* `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0` and patched it to support `pandas` 3 and `anndata` 0.13 (PR #).
+
 * `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
 
 ## NEW FEATURES
