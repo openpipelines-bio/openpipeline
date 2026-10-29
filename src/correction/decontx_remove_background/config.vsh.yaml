@@ -127,7 +127,6 @@ argument_groups:
           Used only when --input_obs_clusters is not provided.
       - name: "--seed"
         type: integer
-        default: 12345
         description: Seed for reproducibility.
       - name: "--logfile"
         type: file
@@ -136,8 +135,9 @@ argument_groups:
         description: |
           If provided, log messages will be redirected to this file instead of stdout.
       - name: "--verbose"
-        type: boolean_false
+        type: boolean
         description: Whether to print log messages. Use this flag to disable log messages.
+        default: false
 
   - name: Outputs
     description: Output arguments.
@@ -171,6 +171,7 @@ resources:
 test_resources:
   - type: python_script
     path: test.py
+  - path: /src/utils/setup_logger.py
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
 

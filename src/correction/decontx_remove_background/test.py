@@ -14,6 +14,11 @@ from openpipeline_testutils.asserters import assert_annotation_objects_equal
 meta = {"resources_dir": "resources_test"}
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+
+logger = setup_logger()
+
 input_file = (
     f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 )
@@ -107,7 +112,7 @@ def assert_decontx_output(
 def test_execution_without_background(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
-    print("> Check whether decontx works without a background dataset")
+    logger.info("> Check whether decontx works without a background dataset")
     run_component(
         [
             "--input",
@@ -168,7 +173,7 @@ def input_with_layer_path(write_mudata_to_file):
 def test_execution_with_background(run_component, random_h5mu_path, background_path):
     output_file = random_h5mu_path()
 
-    print("> Check whether decontx works with a background dataset")
+    logger.info("> Check whether decontx works with a background dataset")
     run_component(
         [
             "--input",
@@ -190,7 +195,7 @@ def test_execution_with_cluster_label(
 ):
     output_file = random_h5mu_path()
 
-    print("> Check whether decontx works with cluster labels provided")
+    logger.info("> Check whether decontx works with cluster labels provided")
     run_component(
         [
             "--input",
@@ -234,7 +239,7 @@ def test_execution_with_cluster_label(
 def test_execution_with_batch(run_component, random_h5mu_path, input_with_batch_path):
     output_file = random_h5mu_path()
 
-    print("> Check whether decontx works with batch labels provided")
+    logger.info("> Check whether decontx works with batch labels provided")
     run_component(
         [
             "--input",
@@ -256,7 +261,7 @@ def test_execution_with_batch_with_background(
 ):
     output_file = random_h5mu_path()
 
-    print(
+    logger.info(
         "> Check whether decontx works with batch labels and a background dataset provided"
     )
     run_component(
@@ -282,7 +287,9 @@ def test_execution_with_batch_with_background(
 def test_execution_without_delta_estimation(run_component, random_h5mu_path):
     output_default = random_h5mu_path()
 
-    print("> Check whether decontx works with delta estimation enabled (baseline)")
+    logger.info(
+        "> Check whether decontx works with delta estimation enabled (baseline)"
+    )
     run_component(
         [
             "--input",
@@ -296,7 +303,7 @@ def test_execution_without_delta_estimation(run_component, random_h5mu_path):
 
     output_fixed_delta = random_h5mu_path()
 
-    print("> Check whether decontx works with delta estimation disabled")
+    logger.info("> Check whether decontx works with delta estimation disabled")
     run_component(
         [
             "--input",
@@ -329,7 +336,7 @@ def test_execution_without_delta_estimation(run_component, random_h5mu_path):
 def test_execution_with_custom_output_names(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
-    print("> Check whether decontx honors custom output layer/obs names")
+    logger.info("> Check whether decontx honors custom output layer/obs names")
     run_component(
         [
             "--input",
@@ -361,7 +368,7 @@ def test_execution_with_input_layer(
 ):
     output_default = random_h5mu_path()
 
-    print("> Check whether decontx works without --input_layer (baseline)")
+    logger.info("> Check whether decontx works without --input_layer (baseline)")
     run_component(
         [
             "--input",
@@ -375,7 +382,7 @@ def test_execution_with_input_layer(
 
     output_layer = random_h5mu_path()
 
-    print("> Check whether decontx works with --input_layer provided")
+    logger.info("> Check whether decontx works with --input_layer provided")
     run_component(
         [
             "--input",

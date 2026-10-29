@@ -19,7 +19,7 @@ par <- list(
   dbscan_eps = 1,
   seed = 12345,
   logfile = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   output = "",
   output_layer = "decontx_counts",
   output_obs_contamination = "decontx_contamination",
