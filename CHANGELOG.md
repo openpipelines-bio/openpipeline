@@ -51,6 +51,7 @@
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
 
+* `build_cellranger_reference` and `cellranger_mkgtf`: bump Cell Ranger to `10.1.0` (PR #)
 
 ## BUG FIXES
 
