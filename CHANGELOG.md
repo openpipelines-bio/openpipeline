@@ -41,7 +41,11 @@
 
 * `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0` and patched it to support `pandas` 3 and `anndata` 0.13 (PR #).
 
+* `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
+
 * `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
+
+
 
 ## NEW FEATURES
 
@@ -61,6 +65,8 @@
 * `annotate/azimuth`: added a component for reference-based cell type annotation using Seurat's Azimuth (`RunAzimuth()`) on a Seurat object (`.rds`), letting users pick from Azimuth's curated reference datasets (e.g. `pbmcref`, `bonemarrowref`, `lungref`) or supply a custom reference directory (PR #1235).
 
 * `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234, PR #1269).
+
+* `correction/decontx_remove_background`: new component that estimates and removes ambient RNA contamination from single-cell RNA-seq count matrices using the DecontX algorithm, with optional support for an empty-droplet background dataset (PR #1223).
 
 ## MINOR CHANGES
 
