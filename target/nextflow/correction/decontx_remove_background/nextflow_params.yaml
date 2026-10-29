@@ -1,0 +1,34 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+# input_obs_clusters: "foo"
+# input_obs_batch: "foo"
+
+# Background
+# background: "background.h5mu"
+# background_layer: "foo"
+# background_obs_batch: "foo"
+
+# Arguments
+max_iter: 500
+delta: [10.0, 10.0]
+estimate_delta: true
+convergence: 0.001
+iter_log_lik: 10
+var_genes: 5000
+dbscan_eps: 1.0
+# seed: 123
+# logfile: "$id.$key.logfile"
+verbose: false
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+output_layer: "decontx_counts"
+output_obs_contamination: "decontx_contamination"
+output_obs_clusters: "decontx_clusters"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

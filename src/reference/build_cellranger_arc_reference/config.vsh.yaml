@@ -58,25 +58,18 @@ test_resources:
   - path: /resources_test/reference_gencodev41_chr1
 engines:
   - type: docker
-    image: ghcr.io/data-intuitive/cellranger_arc:2.0
+    image: debian:trixie-slim
     setup:
-      - type: docker
-        run: |
-          DEBIAN_FRONTEND=noninteractive apt update && \
-          apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
-    test_setup:
-      - type: docker
       - type: apt
-        packages: [ git, wget ]
+        packages: [ procps, pigz ]
       - type: docker
-        run: |
-          TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
-          TARGETOS="${TARGETOS:-linux}" && \
-          PATH="${PATH}:/usr/local/go/bin" && \
-          wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-          rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-          git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
-          cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
+        # Cell Ranger ARC can only be downloaded from 10x using an expiring signed URL,
+        # so copy the self-contained install from the (outdated, Debian buster based) nf-core image.
+        copy: [ "--from=quay.io/nf-core/cellranger-arc:2.0.2 /opt/cellranger-arc-2.0.2 /opt/cellranger-arc-2.0.2" ]
+        env: [ "PATH=/opt/cellranger-arc-2.0.2:$PATH" ]
+    test_setup:
+      - type: apt
+        packages: [ seqkit ]
 runners:
   - type: executable
   - type: nextflow
