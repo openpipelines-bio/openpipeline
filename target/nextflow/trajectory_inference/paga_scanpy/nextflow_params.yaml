@@ -1,0 +1,18 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+obs_groups: # please fill in - example: "foo"
+uns_neighbors: "neighbors"
+
+# Arguments
+# uns_velocity_graph: "foo"
+model: "v1.2"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+uns_output: "paga"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

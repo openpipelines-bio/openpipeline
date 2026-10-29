@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "paga_scanpy",
+  "description": "PAGA (partition-based graph abstraction) infers the connectivity between cell clusters or\nother groupings by quantifying how strongly neighboring partitions of a cell-cell graph are\nconnected to one another. The result is a coarse-grained, denoised map of the data's\ntopology that captures both continuous and disconnected structure, and can be used to infer\ntrajectories between cell populations without assuming an underlying tree-like or linear\nshape.\n\nWolf et al. 2019, Genome Biology\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "exists": true,
+          "description": "A .h5mu file",
+          "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality to process.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "obs_groups": {
+          "type": "string",
+          "description": "The .obs column containing predefined groups (e.g",
+          "help_text": "Type: `string`, multiple: `False`, required. "
+        },
+        "uns_neighbors": {
+          "type": "string",
+          "description": "The .uns key under which the neighbors settings are stored, used to look up the\ncorresponding connectivities and distances matrices in .obsp.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"neighbors\"`. ",
+          "default": "neighbors"
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file, with the PAGA graph abstraction results stored in the .uns slot\npointed to by --uns_output.\n",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "uns_output": {
+          "type": "string",
+          "description": "The .uns key under which to store the PAGA results (a dict containing the\n'connectivities' and 'connectivities_tree' adjacency matrices, plus the .obs column\nname used for the grouping).\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"paga\"`. ",
+          "default": "paga"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "arguments": {
+      "title": "Arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "uns_velocity_graph": {
+          "type": "string",
+          "description": "The .uns key under which the directed single-cell RNA velocity graph is stored.\nWhen set, RNA velocity is used to orient edges in the abstracted graph and estimate\ntransitions, instead of using connectivities.\n",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "model": {
+          "type": "string",
+          "description": "The PAGA connectivity model to use.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"v1.2\"`, choices: ``v1.2`, `v1.0``. ",
+          "enum": [
+            "v1.2",
+            "v1.0"
+          ],
+          "default": "v1.2"
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
