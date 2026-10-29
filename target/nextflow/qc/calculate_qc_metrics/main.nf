@@ -3466,7 +3466,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.9.7",
-    "git_commit" : "8327ad89b28d3e12d3f9b9436fba057f4bc7de49",
+    "git_commit" : "1a532e49a75eacefff2d2640ac3ba152f9d9848c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
