@@ -55,7 +55,7 @@ engines:
     setup:
       - type: javascript
         npm: 
-          - "@mermaid-js/mermaid-cli"
+          - "@mermaid-js/mermaid-cli@12"
       - type: apt
         packages: 
           - chromium-headless-shell
