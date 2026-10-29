@@ -54,7 +54,7 @@
 
 * `annotate/azimuth`: added a component for reference-based cell type annotation using Seurat's Azimuth (`RunAzimuth()`) on a Seurat object (`.rds`), letting users pick from Azimuth's curated reference datasets (e.g. `pbmcref`, `bonemarrowref`, `lungref`) or supply a custom reference directory (PR #1235).
 
-* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234).
+* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234, PR #1269).
 
 ## MINOR CHANGES
 
@@ -95,6 +95,8 @@
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
 * `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
+
+* `trajectory_inference/paga`: new component that infers the connectivity between cell clusters using PAGA (partition-based graph abstraction), producing a coarse-grained abstraction of the data's topology that can be used to reconstruct developmental trajectories (PR #1224).
 
 ## MINOR CHANGES
 
