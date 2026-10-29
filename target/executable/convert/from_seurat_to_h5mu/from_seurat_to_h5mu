@@ -471,9 +471,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_seurat_to_h5mu"
-LABEL org.opencontainers.image.created="2026-10-29T15:49:13Z"
+LABEL org.opencontainers.image.created="2026-10-29T16:17:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="95dd6d3808e88d3c145d531b7347d43accb1fe42"
+LABEL org.opencontainers.image.revision="21f3eb4995a510ea0b6ecc7888e4f8b1813be3f8"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

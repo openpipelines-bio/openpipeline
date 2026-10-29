@@ -3111,22 +3111,10 @@ meta = [
         },
         {
           "type" : "integer",
-          "name" : "--width",
-          "description" : "Width of the page",
+          "name" : "--size",
+          "description" : "Size of the diagram. For pngs, this is the maximum height or width of the image.\nFor svgs, this sets the `max-width` attribute. For pdfs, this is in CSS px (1/96 of an inch).\n",
           "default" : [
             800
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "integer",
-          "name" : "--height",
-          "description" : "Height of the page",
-          "default" : [
-            600
           ],
           "required" : false,
           "direction" : "input",
@@ -3266,20 +3254,20 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "node:22-bookworm",
+      "image" : "node:26-trixie",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
         {
           "type" : "javascript",
           "npm" : [
-            "@mermaid-js/mermaid-cli"
+            "@mermaid-js/mermaid-cli@12"
           ]
         },
         {
           "type" : "apt",
           "packages" : [
-            "chromium"
+            "chromium-headless-shell"
           ],
           "interactive" : false
         }
@@ -3292,7 +3280,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/report/mermaid",
     "viash_version" : "0.9.7",
-    "git_commit" : "95dd6d3808e88d3c145d531b7347d43accb1fe42",
+    "git_commit" : "21f3eb4995a510ea0b6ecc7888e4f8b1813be3f8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3353,8 +3341,7 @@ cat > "$tempscript" << VIASHMAIN
 $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "${VIASH_PAR_INPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_input='&'#" ; else echo "# par_input="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT_FORMAT+x} ]; then echo "${VIASH_PAR_OUTPUT_FORMAT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output_format='&'#" ; else echo "# par_output_format="; fi )
-$( if [ ! -z ${VIASH_PAR_WIDTH+x} ]; then echo "${VIASH_PAR_WIDTH}" | sed "s#'#'\\"'\\"'#g;s#.*#par_width='&'#" ; else echo "# par_width="; fi )
-$( if [ ! -z ${VIASH_PAR_HEIGHT+x} ]; then echo "${VIASH_PAR_HEIGHT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_height='&'#" ; else echo "# par_height="; fi )
+$( if [ ! -z ${VIASH_PAR_SIZE+x} ]; then echo "${VIASH_PAR_SIZE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_size='&'#" ; else echo "# par_size="; fi )
 $( if [ ! -z ${VIASH_PAR_BACKGROUND_COLOR+x} ]; then echo "${VIASH_PAR_BACKGROUND_COLOR}" | sed "s#'#'\\"'\\"'#g;s#.*#par_background_color='&'#" ; else echo "# par_background_color="; fi )
 $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "${VIASH_META_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_name='&'#" ; else echo "# meta_name="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
@@ -3381,10 +3368,9 @@ $( if [ ! -z ${VIASH_META_MEMORY_PIB+x} ]; then echo "${VIASH_META_MEMORY_PIB}" 
 mmdc -p "\\$meta_resources_dir/puppeteer-config.json" \\\\
     -i "\\$par_input" \\\\
     -o "\\$par_output" \\\\
-    --width "\\$par_width" \\\\
-    --height "\\$par_height" \\\\
-    \\${par_background_color:+--backgroundColor \\$par_background_color} \\\\
-    \\${output_format:+--outputFormat \\$par_output_format}
+    --size "\\$par_size" \\\\
+    \\${par_background_color:+--backgroundColor "\\$par_background_color"} \\\\
+    \\${par_output_format:+--outputFormat "\\$par_output_format"}
 VIASHMAIN
 bash "$tempscript"
 '''

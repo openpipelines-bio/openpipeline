@@ -446,19 +446,19 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM node:22-bookworm
+FROM node:26-trixie
 ENTRYPOINT []
-RUN npm install -g "@mermaid-js/mermaid-cli"
+RUN npm install -g "@mermaid-js/mermaid-cli@12"
 
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y chromium && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y chromium-headless-shell && \
   rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
-LABEL org.opencontainers.image.created="2026-10-29T15:49:10Z"
+LABEL org.opencontainers.image.created="2026-10-29T16:17:44Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="95dd6d3808e88d3c145d531b7347d43accb1fe42"
+LABEL org.opencontainers.image.revision="21f3eb4995a510ea0b6ecc7888e4f8b1813be3f8"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -597,15 +597,13 @@ function ViashHelp {
   echo "        the extension"
   echo "        of the file specified with --output."
   echo ""
-  echo "    --width"
+  echo "    --size"
   echo "        type: integer"
   echo "        default: 800"
-  echo "        Width of the page"
-  echo ""
-  echo "    --height"
-  echo "        type: integer"
-  echo "        default: 600"
-  echo "        Height of the page"
+  echo "        Size of the diagram. For pngs, this is the maximum height or width of"
+  echo "        the image."
+  echo "        For svgs, this sets the \`max-width\` attribute. For pdfs, this is in CSS"
+  echo "        px (1/96 of an inch)."
   echo ""
   echo "    --background_color"
   echo "        type: string"
@@ -708,26 +706,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_FORMAT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --width)
-            [ -n "$VIASH_PAR_WIDTH" ] && ViashError Bad arguments for option \'--width\': \'$VIASH_PAR_WIDTH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_WIDTH="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --width. Use "--help" to get more information on the parameters. && exit 1
+        --size)
+            [ -n "$VIASH_PAR_SIZE" ] && ViashError Bad arguments for option \'--size\': \'$VIASH_PAR_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SIZE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --size. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --width=*)
-            [ -n "$VIASH_PAR_WIDTH" ] && ViashError Bad arguments for option \'--width=*\': \'$VIASH_PAR_WIDTH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_WIDTH=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --height)
-            [ -n "$VIASH_PAR_HEIGHT" ] && ViashError Bad arguments for option \'--height\': \'$VIASH_PAR_HEIGHT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_HEIGHT="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --height. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --height=*)
-            [ -n "$VIASH_PAR_HEIGHT" ] && ViashError Bad arguments for option \'--height=*\': \'$VIASH_PAR_HEIGHT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_HEIGHT=$(ViashRemoveFlags "$1")
+        --size=*)
+            [ -n "$VIASH_PAR_SIZE" ] && ViashError Bad arguments for option \'--size=*\': \'$VIASH_PAR_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SIZE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --background_color)
@@ -945,11 +932,8 @@ if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
 fi
 
 # filling in defaults
-if [ -z ${VIASH_PAR_WIDTH+x} ]; then
-  VIASH_PAR_WIDTH="800"
-fi
-if [ -z ${VIASH_PAR_HEIGHT+x} ]; then
-  VIASH_PAR_HEIGHT="600"
+if [ -z ${VIASH_PAR_SIZE+x} ]; then
+  VIASH_PAR_SIZE="800"
 fi
 if [ -z ${VIASH_PAR_BACKGROUND_COLOR+x} ]; then
   VIASH_PAR_BACKGROUND_COLOR="white"
@@ -962,15 +946,9 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
-if [[ -n "$VIASH_PAR_WIDTH" ]]; then
-  if ! [[ "$VIASH_PAR_WIDTH" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--width' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_HEIGHT" ]]; then
-  if ! [[ "$VIASH_PAR_HEIGHT" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--height' has to be an integer. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_SIZE" ]]; then
+  if ! [[ "$VIASH_PAR_SIZE" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--size' has to be an integer. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1149,8 +1127,7 @@ cat > "\$tempscript" << 'VIASHMAIN'
 $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "${VIASH_PAR_INPUT}" | sed "s#'#'\"'\"'#g;s#.*#par_input='&'#" ; else echo "# par_input="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\"'\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT_FORMAT+x} ]; then echo "${VIASH_PAR_OUTPUT_FORMAT}" | sed "s#'#'\"'\"'#g;s#.*#par_output_format='&'#" ; else echo "# par_output_format="; fi )
-$( if [ ! -z ${VIASH_PAR_WIDTH+x} ]; then echo "${VIASH_PAR_WIDTH}" | sed "s#'#'\"'\"'#g;s#.*#par_width='&'#" ; else echo "# par_width="; fi )
-$( if [ ! -z ${VIASH_PAR_HEIGHT+x} ]; then echo "${VIASH_PAR_HEIGHT}" | sed "s#'#'\"'\"'#g;s#.*#par_height='&'#" ; else echo "# par_height="; fi )
+$( if [ ! -z ${VIASH_PAR_SIZE+x} ]; then echo "${VIASH_PAR_SIZE}" | sed "s#'#'\"'\"'#g;s#.*#par_size='&'#" ; else echo "# par_size="; fi )
 $( if [ ! -z ${VIASH_PAR_BACKGROUND_COLOR+x} ]; then echo "${VIASH_PAR_BACKGROUND_COLOR}" | sed "s#'#'\"'\"'#g;s#.*#par_background_color='&'#" ; else echo "# par_background_color="; fi )
 $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "${VIASH_META_NAME}" | sed "s#'#'\"'\"'#g;s#.*#meta_name='&'#" ; else echo "# meta_name="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\"'\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
@@ -1177,10 +1154,9 @@ $( if [ ! -z ${VIASH_META_MEMORY_PIB+x} ]; then echo "${VIASH_META_MEMORY_PIB}" 
 mmdc -p "\$meta_resources_dir/puppeteer-config.json" \\
     -i "\$par_input" \\
     -o "\$par_output" \\
-    --width "\$par_width" \\
-    --height "\$par_height" \\
-    \${par_background_color:+--backgroundColor \$par_background_color} \\
-    \${output_format:+--outputFormat \$par_output_format}
+    --size "\$par_size" \\
+    \${par_background_color:+--backgroundColor "\$par_background_color"} \\
+    \${par_output_format:+--outputFormat "\$par_output_format"}
 VIASHMAIN
 bash "\$tempscript" &
 wait "\$!"
