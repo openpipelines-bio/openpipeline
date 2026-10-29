@@ -5,13 +5,13 @@ description: |
   Converts a single layer h5ad file into a single MuData object
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]
     type: file
     description: Input h5ad files
-    default: input.h5ad
+    example: input.h5ad
     direction: input
     required: true
     multiple: true
@@ -27,7 +27,7 @@ arguments:
     alternatives: ["-o"]
     type: file
     description: Output MuData file.
-    default: output.h5mu
+    example: output.h5mu
     direction: output
 __merge__: [., /src/base/h5_compression_argument.yaml]
 

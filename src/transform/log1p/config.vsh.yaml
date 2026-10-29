@@ -5,7 +5,7 @@ description: |
   Logarithmize the data matrix. Computes X = log(X + 1), where log denotes the natural logarithm unless a different base is given.
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ contributor ]
 arguments:
@@ -42,7 +42,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    default: output.h5mu
+    example: output.h5mu
 
   # arguments
   - name: "--base"

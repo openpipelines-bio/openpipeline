@@ -7,9 +7,7 @@ info:
     documentation: https://docs.scvi-tools.org/en/1.3.2/tutorials/notebooks/multimodal/cite_scrna_integration_w_totalVI.html
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author, maintainer ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
+    roles: [ author ]
 argument_groups:
   - name: Inputs
     arguments:

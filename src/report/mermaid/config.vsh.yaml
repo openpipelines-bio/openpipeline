@@ -1,11 +1,12 @@
 name: mermaid
+status: deprecated
 namespace: "report"
 scope: "public"
 description: |
   Generates a network from mermaid code.
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 
 arguments:
   - name: "--input"
@@ -52,7 +53,7 @@ test_resources:
 
 engines:
   - type: docker
-    image: "node:20-bullseye"
+    image: "node:22-bookworm"
     setup:
       - type: javascript
         npm: 

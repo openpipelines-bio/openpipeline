@@ -5,7 +5,7 @@ description: |
   Converts an h5ad file or a single modality of an h5mu file into a Seurat file.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]

@@ -5,7 +5,7 @@ description: |
   Perform CLR normalization on CITE-seq data (Stoeckius et al., 2017).
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]
@@ -26,7 +26,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    default: output.h5mu
+    example: output.h5mu
   - name: "--input_layer"
     type: string
     description: "Input layer to use. By default, .X is used."
@@ -63,7 +63,7 @@ engines:
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:
-        - muon~=0.1.7
+        - muon~=0.1.9
   test_setup:
     - type: python
       __merge__: [ /src/base/requirements/viashpy.yaml, .]

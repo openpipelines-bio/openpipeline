@@ -5,8 +5,6 @@ description: Automated cell type annotation tool for scRNA-seq datasets on the b
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml
     roles: [ author ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
 
 argument_groups:
   - name: Inputs

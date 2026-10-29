@@ -8,11 +8,9 @@ description: |
   and https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html
 authors:
   - __merge__: /src/authors/toni_verbeiren.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/marijke_van_moerbeke.yaml
     roles: [ author ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ author ]
 arguments:

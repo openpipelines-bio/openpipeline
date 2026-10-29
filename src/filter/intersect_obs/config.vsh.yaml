@@ -7,7 +7,7 @@ description: |
   This component removes any observations which are not present in all modalities.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/isabelle_bergiers.yaml
     roles: [ contributor ] 
 arguments:

@@ -13,7 +13,7 @@ authors:
   - __merge__: /src/authors/samuel_d_souza.yaml
     roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 arguments:
   - type: file
     name: --input
@@ -30,7 +30,6 @@ arguments:
     direction: output
     description: The folder to store the demux results
     example: "/path/to/output"
-    default: fastqs
     required: true
   - name: "--reports"
     type: file

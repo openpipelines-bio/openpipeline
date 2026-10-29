@@ -15,7 +15,7 @@ authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ contributor ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer, contributor ]
+    roles: [ author, contributor ]
 arguments:
   # input
   - name: "--input"
@@ -64,6 +64,12 @@ arguments:
     type: string
     default: "hvg"
     description: In which .varm slot to store additional metadata.
+
+  - name: "--uns_name"
+    type: string
+    description: |
+      In which .uns slot to store the details of the HVG selection including the
+      flavor used. Set to "hvg" to replicate default scanpy behavior.
 
   # arguments
   - name: "--flavor"

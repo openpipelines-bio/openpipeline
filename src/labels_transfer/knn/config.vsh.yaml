@@ -5,7 +5,7 @@ description: |
   This component performs label transfer from reference to query using a K-Neirest Neighbors classifier.
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ maintainer, author ]
+    roles: [ author ]
   - __merge__: /src/authors/vladimir_shitov.yaml
     roles: [ author ]
 

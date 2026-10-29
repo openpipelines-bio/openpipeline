@@ -7,7 +7,7 @@ authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ author ]
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   # inputs
   - name: "--input"
@@ -87,6 +87,11 @@ engines:
       packages: 
         - procps
         - build-essential
+    - type: docker
+      env:
+        # These are the default annoy compilation flags for Linux x86_64, minus the -march=native
+        # This avoids compiling with AVX512 or AVX2 features which is not supported on every CPU.
+        - ANNOY_COMPILER_ARGS=-D_CRT_SECURE_NO_WARNINGS,-fpermissive,-O3,-ffast-math,-fno-associative-math,-DANNOYLIB_MULTITHREADED_BUILD,-std=c++14
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:

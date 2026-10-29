@@ -29,7 +29,11 @@ def main():
     )
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
     # the input layer at .X
-    normalized_counts = pt.pp.clr(input_data, axis=par["axis"], inplace=False)
+    # The flavor is set explicitly so that a change to the muon default does not
+    # silently alter the normalized counts.
+    normalized_counts = pt.pp.clr(
+        input_data, axis=par["axis"], inplace=False, flavor="seurat"
+    )
     if not normalized_counts:
         raise RuntimeError("CLR failed to return the requested output layer")
 

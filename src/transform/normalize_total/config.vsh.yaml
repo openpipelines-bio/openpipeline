@@ -9,7 +9,7 @@ description: |
   If exclude_highly_expressed=True, very highly expressed genes are excluded from the computation of the normalization factor (size factor) for each cell. This is meaningful as these can strongly influence the resulting normalized values for all other genes [Weinreb17].
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/robrecht_cannoodt.yaml
     roles: [ contributor ]
 arguments:
@@ -40,7 +40,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    default: output.h5mu
+    example: output.h5mu
 
   - name: "--output_layer"
     type: string

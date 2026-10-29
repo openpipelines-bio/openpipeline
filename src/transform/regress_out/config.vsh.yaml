@@ -8,7 +8,7 @@ description: |
   See https://github.com/theislab/scanpy/issues/526.
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer, contributor ]
+    roles: [ author, contributor ]
 arguments:
   - name: "--input"
     type: file
@@ -22,7 +22,7 @@ arguments:
     description: Output h5mu file.
     direction: output
     required: true
-    default: output.h5mu
+    example: output.h5mu
   - name: "--modality"
     type: string
     description: "Which modality (one or more) to run this component on."

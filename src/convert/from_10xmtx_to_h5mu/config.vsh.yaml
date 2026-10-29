@@ -5,7 +5,7 @@ description: |
   Converts a 10x mtx into an h5mu file.
 authors:
   - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]

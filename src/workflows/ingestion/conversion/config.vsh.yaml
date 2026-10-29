@@ -9,7 +9,7 @@ info:
       namespace: test_workflows/ingestion
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ author ]
 argument_groups:

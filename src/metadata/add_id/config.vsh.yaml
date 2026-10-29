@@ -6,7 +6,7 @@ description: |
   by prefixing the values with an unique id per .h5mu file.
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: ["-i"]

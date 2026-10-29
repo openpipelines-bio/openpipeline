@@ -6,7 +6,7 @@ authors:
   - __merge__: /src/authors/vladimir_shitov.yaml
     roles: [ author ]
   - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: Inputs
     description: Arguments related to the input (query) dataset

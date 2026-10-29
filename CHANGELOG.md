@@ -1,3 +1,76 @@
+# openpipelines x.x.x
+
+## BREAKING CHANGES
+
+* `transform/scale`: `--zero_center` is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of a `boolean_false` flag. Pass `--zero_center false` to omit centering (PR #1216).
+
+* `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of `boolean_false` (PR #1216).
+
+* `convert/from_cellranger_multi_to_h5mu`, `workflows/ingestion/cellranger_multi`: when processing Cell Ranger output from multiplexed experiments, filtered count matrices were being output. This is consistent when multiplexing is done using Cell Multiplexing Oligos (CMOs), as per-sample raw matrices are unavailable in this case. However, for other multiplexing methods (e.g. Flex) it is possible to assign all reads to a sample, meaning per-sample raw count matrices are available. Therefore, when dealing with multiplexed experiments, the following changes were made for consistency (PR #1227):
+  - Fixed outputting raw count matrices instead of filtered ones (when `output_filtered_data` is not set).
+  - When per-sample raw counts are not available, `NotImplementedError` will be thrown. 
+    Keep in mind that processing data from experiments using CMO multiplexing will now always result in a `NotImplementedError` when using default parameters.
+  - The original behavior (i.e. outputting filtered data) can be invoked by using the `output_filtered_data` argument.
+
+* Remove deprecated and disabled components (PR #1248):
+ - `compression/tar_extract`
+ - `convert/from_h5mu_to_seurat`
+ - `download/download_file`
+ - `files/make_params`
+ - `integrate/harmony`
+ - `mapping/samtools_sort`
+
+* `qc/fastqc`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/fastqc](https://www.viash-hub.com/packages/biobox/latest/components/fastqc) instead (PR #1253)
+
+* `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
+
+* `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
+
+
+
+## NEW FEATURES
+
+* `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+
+* `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
+
+* `workflows/embedding/scanvi_model`: Generate a scANVI emedding model (PR #1104).
+
+* `workflows/annotation/scanvi_scarches`: Accept either a reference model or dataset to perform scANVI annotation (PR #1104, #1236).
+
+* `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in a source MuData file into a modality in the input MuData file (PR #1166).
+
+* `convert/from_cellranger_multi_to_h5mu`: When processing non-multiplexed data, the value provided to Cell Ranger's `--id` parameter (as registered in the Cell Ranger multi output folder name) is now used as the sample name. For Cell Ranger output from openpipelines this is still `run`, but for externally generated data this implies a matching output file name  for the MuData object (PR #1227)
+* `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
+
+* `annotate/azimuth`: added a component for reference-based cell type annotation using Seurat's Azimuth (`RunAzimuth()`) on a Seurat object (`.rds`), letting users pick from Azimuth's curated reference datasets (e.g. `pbmcref`, `bonemarrowref`, `lungref`) or supply a custom reference directory (PR #1235).
+
+* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234, PR #1269).
+
+* `correction/decontx_remove_background`: new component that estimates and removes ambient RNA contamination from single-cell RNA-seq count matrices using the DecontX algorithm, with optional support for an empty-droplet background dataset (PR #1223).
+
+## MINOR CHANGES
+
+* `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
+
+* `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
+
+
+## BUG FIXES
+
+* `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
+
+* `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
+
+* `feature_annotation/highly_variable_features_scanpy`: fix results being assigned to the wrong feature, when
+  `--obs_batch_key` is combined with `--var_input` or `--features_to_exclude` (PR #1247):
+
+* `qc/calculate_atac_qc_metrics`: merge the `anndata`/`mudata` and `scanpy` requirements into a single `__merge__` field. Two `__merge__` fields were specified for the same Python setup, of which only the last one was applied, leaving `anndata` and `mudata` unpinned (PR #1233).
+
+* `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
+
+* `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES
@@ -14,7 +87,7 @@
 
 * `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
 
-* `correction/decontx_remove_background`: new component that estimates and removes ambient RNA contamination from single-cell RNA-seq count matrices using the DecontX algorithm, with optional support for an empty-droplet background dataset (PR #1223).
+* `trajectory_inference/paga`: new component that infers the connectivity between cell clusters using PAGA (partition-based graph abstraction), producing a coarse-grained abstraction of the data's topology that can be used to reconstruct developmental trajectories (PR #1224).
 
 ## MINOR CHANGES
 
@@ -64,6 +137,8 @@
 
 * `labels_transfer/cellmapper`: New component that transfers labels from a reference to a query with a shared embedding using CellMapper (PR #1169, PR #1177)
 
+* `annotate/calculate_marker_genes`: New component that calculates cluster marker genes using `scanpy` (PR #1168)
+
 ## MAJOR CHANGES
 
 * `qc/calculate_qc_metrics`: major improvements to memory consumption and runtimes (PR #1140 and PR #1191).
@@ -101,6 +176,8 @@
 * Add missing `example` fields to several component and workflow configurations (PR #1067).
 
 * Testing: bump `viashpy` to 0.10.0 (PR #1178).
+
+* `feature_annotation/highly_variable_features_scanpy`: allow storing details of the method flavor using the `uns_name` parameter (PR #1185)
 
 ## BUG FIXES
 

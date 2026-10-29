@@ -7,7 +7,7 @@ description: |
   NOTE: The functionality provided by this component is experimental and may be subject to change. 
 authors:
   - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author, maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: "Input"
     arguments:

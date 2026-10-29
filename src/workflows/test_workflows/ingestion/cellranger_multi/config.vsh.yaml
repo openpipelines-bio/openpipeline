@@ -13,6 +13,15 @@ argument_groups:
         multiple: true
         description: Path to h5mu output.
         example: foo.final.h5mu
+      - name: "--input_filtered"
+        type: file
+        required: false
+        multiple: true
+        description: |
+          Path to h5mu output generated with --output_filtered_data enabled.
+          When provided, the per-sample filtered count matrices are checked to
+          contain fewer cells than the corresponding raw count matrices.
+        example: foo.filtered.h5mu
 resources:
   - type: python_script
     path: script.py

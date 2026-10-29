@@ -6,7 +6,7 @@ description: |
   about the relative local density of the data. It is performed on the same inputs as UMAP.
 authors:
   - __merge__: /src/authors/jakub_majercik.yaml
-    roles: [ maintainer ]
+    roles: [ author ]
 argument_groups:
   - name: Inputs
     arguments:
