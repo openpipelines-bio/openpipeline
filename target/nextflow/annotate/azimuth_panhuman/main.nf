@@ -3499,6 +3499,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "panhumanpy.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3621,12 +3625,23 @@ meta = [
       "namespace_separator" : "/",
       "setup" : [
         {
-          "type" : "python",
-          "user" : false,
+          "type" : "docker",
+          "copy" : [
+            "panhumanpy.patch /opt/panhumanpy.patch"
+          ]
+        },
+        {
+          "type" : "apt",
           "packages" : [
-            "panhumanpy[gpu]==1.0.0"
+            "git"
           ],
-          "upgrade" : true
+          "interactive" : false
+        },
+        {
+          "type" : "docker",
+          "run" : [
+            "cd /opt && git clone --depth 1 --branch v1.0.0-orion https://github.com/satijalab/panhumanpy.git && \\\\\ncd /opt/panhumanpy && git apply /opt/panhumanpy.patch && \\\\\npip install --no-cache-dir \\"/opt/panhumanpy[gpu]\\"\n"
+          ]
         },
         {
           "type" : "python",
@@ -3671,7 +3686,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/azimuth_panhuman",
     "viash_version" : "0.9.7",
-    "git_commit" : "9b399f038c0dea2192d710872932602b3f3250d9",
+    "git_commit" : "bffce7aab487e9f7b1d48e9601220c37c87b9216",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

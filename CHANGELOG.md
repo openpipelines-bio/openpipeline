@@ -43,7 +43,7 @@
 
 * `annotate/azimuth`: added a component for reference-based cell type annotation using Seurat's Azimuth (`RunAzimuth()`) on a Seurat object (`.rds`), letting users pick from Azimuth's curated reference datasets (e.g. `pbmcref`, `bonemarrowref`, `lungref`) or supply a custom reference directory (PR #1235).
 
-* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234).
+* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234, PR #1269).
 
 ## MINOR CHANGES
 

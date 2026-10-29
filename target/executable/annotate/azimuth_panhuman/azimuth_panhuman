@@ -448,8 +448,14 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM python:3.12-slim
 ENTRYPOINT []
-RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "panhumanpy[gpu]==1.0.0"
+COPY panhumanpy.patch /opt/panhumanpy.patch
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y git && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN cd /opt && git clone --depth 1 --branch v1.0.0-orion https://github.com/satijalab/panhumanpy.git && \
+cd /opt/panhumanpy && git apply /opt/panhumanpy.patch && \
+pip install --no-cache-dir "/opt/panhumanpy[gpu]"
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" && \
@@ -457,9 +463,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Mirte De Temmerman"
 LABEL org.opencontainers.image.description="Companion container for running component annotate azimuth_panhuman"
-LABEL org.opencontainers.image.created="2026-10-29T10:58:40Z"
+LABEL org.opencontainers.image.created="2026-10-29T12:58:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9b399f038c0dea2192d710872932602b3f3250d9"
+LABEL org.opencontainers.image.revision="bffce7aab487e9f7b1d48e9601220c37c87b9216"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
