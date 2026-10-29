@@ -3252,7 +3252,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger:9.0",
+      "image" : "quay.io/nf-core/cellranger:10.1.0",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3261,22 +3261,21 @@ meta = [
           "run" : [
             "DEBIAN_FRONTEND=noninteractive apt update && \\\\\napt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*\n"
           ]
+        },
+        {
+          "type" : "docker",
+          "run" : [
+            "cellranger telemetry disable"
+          ]
         }
       ],
       "test_setup" : [
         {
           "type" : "apt",
           "packages" : [
-            "git",
-            "wget"
+            "seqkit"
           ],
           "interactive" : false
-        },
-        {
-          "type" : "docker",
-          "run" : [
-            "TARGETARCH=\\"${TARGETARCH:-$(dpkg --print-architecture)}\\" && \\\\\nTARGETOS=\\"${TARGETOS:-linux}\\" && \\\\\nPATH=\\"${PATH}:/usr/local/go/bin\\" && \\\\\nwget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\\\nrm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\\\ngit clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \\\\\ncd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go\n"
-          ]
         }
       ]
     }
@@ -3287,7 +3286,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference",
     "viash_version" : "0.9.7",
-    "git_commit" : "52b68da55372bf117385e2b34416351a676373cd",
+    "git_commit" : "9e923d1f37663875bc66124511a3bad0c7897d4d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
