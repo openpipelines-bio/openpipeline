@@ -36,7 +36,7 @@ if [ ! -z "$meta_cpus" ]; then
 fi
 if [ ! -z "$meta_memory_gb" ]; then 
   # always keep 2gb for the OS itself
-  memory_gb=`python -c "print(int('$meta_memory_gb') - 2)"`
+  memory_gb=$(( meta_memory_gb - 2 ))
   extra_params+=( "memgb: \"$memory_gb"\" )
 fi
 
