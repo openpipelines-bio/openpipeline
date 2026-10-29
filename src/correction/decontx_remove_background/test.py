@@ -309,6 +309,7 @@ def test_execution_without_delta_estimation(run_component, random_h5mu_path):
             "--input",
             input_file,
             "--estimate_delta",
+            "false",
             "--output",
             output_fixed_delta,
             "--output_compression",

@@ -90,18 +90,19 @@ argument_groups:
           Vector of length 2. Concentration parameters for the Dirichlet prior for the
           contamination in each cell. The first element is the prior for the native counts while
           the second element is the prior for the contamination counts. These essentially act as
-          pseudocounts for the native and contamination in each cell. If --estimate_delta is set,
+          pseudocounts for the native and contamination in each cell. If --estimate_delta is true,
           this is only used to produce a random sample of proportions for an initial value of
           contamination in each cell; delta is then updated in each iteration. If
-          --estimate_delta is not set, delta is fixed with these values for the entire inference
+          --estimate_delta is false, delta is fixed with these values for the entire inference
           procedure. Fixing delta and setting a high number in the second element will force
           DecontX to be more aggressive and estimate higher levels of contamination at the expense
           of potentially removing native expression.
       - name: "--estimate_delta"
-        type: boolean_false
+        type: boolean
         description: |
-          Whether to update delta at each iteration. Use this flag to disable that and keep delta
-          fixed at the --delta values for the entire inference procedure.
+          Whether to update delta at each iteration. Set to false to keep delta fixed at the
+          --delta values for the entire inference procedure.
+        default: true
       - name: "--convergence"
         type: double
         default: 0.001
