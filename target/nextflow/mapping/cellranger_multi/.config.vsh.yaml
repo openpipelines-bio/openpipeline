@@ -405,14 +405,27 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--cell_annotation_model"
-    description: "\"Cell annotation model to use. If auto, uses the default model\
-      \ for the species.\nIf not given, does not run cell annotation.\"\n"
+    description: "Cell annotation model to use. Valid model names are auto, human_pca_v1_beta\
+      \ (10x human cloud model), \nand mouse_pca_v1_beta (10x mouse cloud model);\
+      \ the cloud-based models require a 10x Cloud Analysis token.\nThe Pan-Human\
+      \ Azimuth model (human samples only) runs locally and does not require a model\
+      \ name or\ncloud token. If this option is omitted or set to auto, uses the default\
+      \ model for the species. \nIf a cloud token is not available or the --disable-cell-annotation\
+      \ flag is used, cloud cell annotation\nwill not be performed.\n"
     info: null
     required: false
     choices:
     - "auto"
     - "human_pca_v1_beta"
     - "mouse_pca_v1_beta"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--skip_cell_annotation"
+    description: "Disable cell type annotation.\n"
+    info: null
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
@@ -477,20 +490,27 @@ argument_groups:
       \ RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime:\
       \ Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single\
       \ Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT\n\
-      \  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell\
-      \ 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-PE-v3: Paired-end Single\
-      \ Cell 5' v3\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single\
-      \ Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT\
-      \ : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP:\
-      \ Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA\
-      \ Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling\
-      \ (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex,\
-      \ Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling\
-      \ (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA\
-      \ Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA\
-      \ Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing\
-      \ the Gene Expression portion of Multiome data. If Cell Ranger auto-detects\
-      \ ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
+      \  - SC3Pv3-CS1, SC3Pv4-CS1, SC3Pv3HT-CS1: Single Cell 3' v3, v4 or v3.1 HT\
+      \ (CS1)\n  - SC3Pv4-polyA-OCM, SC3Pv4-CS1-OCM: Single Cell 3' v4 (polyA or CS1)\
+      \ OCM\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single\
+      \ Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-PE-v3: Paired-end\
+      \ Single Cell 5' v3\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only\
+      \ Single Cell 5' v3\n  - SC5P-PE-OCM-v3: Paired-end Single Cell 5' OCM v3\n\
+      \  - SC5P-R2-OCM-v3: R2-only Single Cell 5' OCM v3\n  - SC5PHT : Single Cell\
+      \ 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA\
+      \ Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling\
+      \ (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex,\
+      \ RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody,\
+      \ Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex,\
+      \ Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex,\
+      \ RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex,\
+      \ Antibody, Probe Barcode on R1)\n  - Flex-v2-singleplex: GEM-X Flex v2 (Singleplex)\n\
+      \  - Flex-v2-R1: GEM-X Flex v2 (Multiplex)\n  - Flex-v2-RNA-R2: GEM-X Flex v2\
+      \ Gene Expression\n  - Flex-v2-Ab-R2:45: GEM-X Flex v2 Antibody (R2:45)\n  -\
+      \ Flex-v2-Ab-R2:64: GEM-X Flex v2 Antibody (R2:64)\n  - Flex-v2-CRISPR-R2:1:\
+      \ GEM-X Flex v2 CRISPR (R2:1)\n  - ARC-v1 for analyzing the Gene Expression\
+      \ portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an\
+      \ error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
       \ for more information.\n"
     info: null
     default:
@@ -504,17 +524,22 @@ argument_groups:
     - "SC3Pv2"
     - "SC3Pv3"
     - "SC3Pv3-polyA"
+    - "SC3Pv3-CS1"
     - "SC3Pv4"
     - "SC3Pv4-polyA"
-    - "SC3Pv3LT"
+    - "SC3Pv4-CS1"
+    - "SC3Pv4-polyA-OCM"
+    - "SC3Pv4-CS1-OCM"
     - "SC3Pv3HT"
     - "SC3Pv3HT-polyA"
+    - "SC3Pv3HT-CS1"
     - "SC5P-PE"
     - "SC5P-PE-v3"
+    - "SC5P-PE-OCM-v3"
     - "SC5P-R2"
     - "SC-FB"
     - "SC5P-R2-v3"
-    - "SCP5-PE-v3"
+    - "SC5P-R2-OCM-v3"
     - "SC5PHT"
     - "MFRP"
     - "MFRP-R1"
@@ -524,6 +549,12 @@ argument_groups:
     - "MFRP-Ab-R2pos50"
     - "MFRP-RNA-R1"
     - "MFRP-Ab-R1"
+    - "Flex-v2-singleplex"
+    - "Flex-v2-R1"
+    - "Flex-v2-RNA-R2"
+    - "Flex-v2-Ab-R2:45"
+    - "Flex-v2-Ab-R2:64"
+    - "Flex-v2-CRISPR-R2:1"
     - "ARC-v1"
     direction: "input"
     multiple: false
@@ -906,7 +937,7 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "quay.io/nf-core/cellranger:10.0.0"
+  image: "quay.io/nf-core/cellranger:10.1.0"
   target_tag: "main_build"
   namespace_separator: "/"
   setup:
@@ -944,7 +975,7 @@ build_info:
   output: "target/nextflow/mapping/cellranger_multi"
   executable: "target/nextflow/mapping/cellranger_multi/main.nf"
   viash_version: "0.9.7"
-  git_commit: "bffce7aab487e9f7b1d48e9601220c37c87b9216"
+  git_commit: "52b68da55372bf117385e2b34416351a676373cd"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

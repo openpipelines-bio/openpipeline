@@ -3214,7 +3214,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--chemistry",
-          "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+          "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv4: Single Cell 3' v4\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-R2-v3: Single Cell 5', paired-end/R2-only\n- SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC5PHT: Single Cell 5' HT\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
           "default" : [
             "auto"
           ],
@@ -3226,11 +3226,15 @@ meta = [
             "SC3Pv1",
             "SC3Pv2",
             "SC3Pv3",
-            "SC3Pv3LT",
+            "SC3Pv4",
             "SC3Pv3HT",
+            "SC5P-PE-v3",
             "SC5P-PE",
             "SC5P-R2",
-            "SC-FB"
+            "SC5P-R2-v3",
+            "SC5PHT",
+            "SC-FB",
+            "ARC-v1"
           ],
           "direction" : "input",
           "multiple" : false,
@@ -3428,7 +3432,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping",
     "viash_version" : "0.9.7",
-    "git_commit" : "bffce7aab487e9f7b1d48e9601220c37c87b9216",
+    "git_commit" : "52b68da55372bf117385e2b34416351a676373cd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3494,6 +3498,7 @@ workflow run_wf {
         "output": "output_raw",
         "expect_cells": "expect_cells",
         "chemistry": "chemistry",
+        "disable_cell_annotation": "disable_cell_annotation",
         "secondary_analysis": "secondary_analysis",
         "generate_bam": "generate_bam",
         "include_introns": "include_introns",

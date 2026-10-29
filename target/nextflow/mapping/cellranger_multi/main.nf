@@ -3507,13 +3507,22 @@ meta = [
         {
           "type" : "string",
           "name" : "--cell_annotation_model",
-          "description" : "\\"Cell annotation model to use. If auto, uses the default model for the species.\nIf not given, does not run cell annotation.\\"\n",
+          "description" : "Cell annotation model to use. Valid model names are auto, human_pca_v1_beta (10x human cloud model), \nand mouse_pca_v1_beta (10x mouse cloud model); the cloud-based models require a 10x Cloud Analysis token.\nThe Pan-Human Azimuth model (human samples only) runs locally and does not require a model name or\ncloud token. If this option is omitted or set to auto, uses the default model for the species. \nIf a cloud token is not available or the --disable-cell-annotation flag is used, cloud cell annotation\nwill not be performed.\n",
           "required" : false,
           "choices" : [
             "auto",
             "human_pca_v1_beta",
             "mouse_pca_v1_beta"
           ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--skip_cell_annotation",
+          "description" : "Disable cell type annotation.\n",
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3575,7 +3584,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--gex_chemistry",
-          "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-PE-v3: Paired-end Single Cell 5' v3\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+          "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3(-polyA), SC3Pv4(-polyA): Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT(-polyA): Single Cell 3' v3.1 HT\n  - SC3Pv3-CS1, SC3Pv4-CS1, SC3Pv3HT-CS1: Single Cell 3' v3, v4 or v3.1 HT (CS1)\n  - SC3Pv4-polyA-OCM, SC3Pv4-CS1-OCM: Single Cell 3' v4 (polyA or CS1) OCM\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-PE-v3: Paired-end Single Cell 5' v3\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SC5P-PE-OCM-v3: Paired-end Single Cell 5' OCM v3\n  - SC5P-R2-OCM-v3: R2-only Single Cell 5' OCM v3\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - Flex-v2-singleplex: GEM-X Flex v2 (Singleplex)\n  - Flex-v2-R1: GEM-X Flex v2 (Multiplex)\n  - Flex-v2-RNA-R2: GEM-X Flex v2 Gene Expression\n  - Flex-v2-Ab-R2:45: GEM-X Flex v2 Antibody (R2:45)\n  - Flex-v2-Ab-R2:64: GEM-X Flex v2 Antibody (R2:64)\n  - Flex-v2-CRISPR-R2:1: GEM-X Flex v2 CRISPR (R2:1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
           "default" : [
             "auto"
           ],
@@ -3588,17 +3597,22 @@ meta = [
             "SC3Pv2",
             "SC3Pv3",
             "SC3Pv3-polyA",
+            "SC3Pv3-CS1",
             "SC3Pv4",
             "SC3Pv4-polyA",
-            "SC3Pv3LT",
+            "SC3Pv4-CS1",
+            "SC3Pv4-polyA-OCM",
+            "SC3Pv4-CS1-OCM",
             "SC3Pv3HT",
             "SC3Pv3HT-polyA",
+            "SC3Pv3HT-CS1",
             "SC5P-PE",
             "SC5P-PE-v3",
+            "SC5P-PE-OCM-v3",
             "SC5P-R2",
             "SC-FB",
             "SC5P-R2-v3",
-            "SCP5-PE-v3",
+            "SC5P-R2-OCM-v3",
             "SC5PHT",
             "MFRP",
             "MFRP-R1",
@@ -3608,6 +3622,12 @@ meta = [
             "MFRP-Ab-R2pos50",
             "MFRP-RNA-R1",
             "MFRP-Ab-R1",
+            "Flex-v2-singleplex",
+            "Flex-v2-R1",
+            "Flex-v2-RNA-R2",
+            "Flex-v2-Ab-R2:45",
+            "Flex-v2-Ab-R2:64",
+            "Flex-v2-CRISPR-R2:1",
             "ARC-v1"
           ],
           "direction" : "input",
@@ -4017,7 +4037,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "quay.io/nf-core/cellranger:10.0.0",
+      "image" : "quay.io/nf-core/cellranger:10.1.0",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -4072,7 +4092,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.9.7",
-    "git_commit" : "bffce7aab487e9f7b1d48e9601220c37c87b9216",
+    "git_commit" : "52b68da55372bf117385e2b34416351a676373cd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4177,6 +4197,7 @@ par = {
   'gex_generate_bam': $( if [ ! -z ${VIASH_PAR_GEX_GENERATE_BAM+x} ]; then echo "r'${VIASH_PAR_GEX_GENERATE_BAM//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'tenx_cloud_token_path': $( if [ ! -z ${VIASH_PAR_TENX_CLOUD_TOKEN_PATH+x} ]; then echo "r'${VIASH_PAR_TENX_CLOUD_TOKEN_PATH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'cell_annotation_model': $( if [ ! -z ${VIASH_PAR_CELL_ANNOTATION_MODEL+x} ]; then echo "r'${VIASH_PAR_CELL_ANNOTATION_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'skip_cell_annotation': $( if [ ! -z ${VIASH_PAR_SKIP_CELL_ANNOTATION+x} ]; then echo "r'${VIASH_PAR_SKIP_CELL_ANNOTATION//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'gex_expect_cells': $( if [ ! -z ${VIASH_PAR_GEX_EXPECT_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_EXPECT_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'gex_force_cells': $( if [ ! -z ${VIASH_PAR_GEX_FORCE_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_FORCE_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'gex_include_introns': $( if [ ! -z ${VIASH_PAR_GEX_INCLUDE_INTRONS+x} ]; then echo "r'${VIASH_PAR_GEX_INCLUDE_INTRONS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -4275,6 +4296,7 @@ GEX_CONFIG_KEYS = {
     "filter_probes": "filter-probes",
     "gex_r1_length": "r1-length",
     "gex_r2_length": "r2-length",
+    "skip_cell_annotation": "skip-cell-annotation",
     "tenx_cloud_token_path": "tenx-cloud-token-path",
     "cell_annotation_model": "cell-annotation-model",
     "emptydrops_minimum_umis": "emptydrops_minimum_umis",
@@ -4623,9 +4645,11 @@ def untar(tar_file, output_directory):
             # strip that directory name from the destination folder
             if len(root_dirs) == 1:
                 for mem in members:
-                    mem.path = Path(*Path(mem.path).parts[1:])
-            members_to_move = [mem for mem in members if mem.path != Path(".")]
-            open_tar.extractall(unpacked_directory, members=members_to_move)
+                    mem.name = mem.name.partition("/")[2]
+            members_to_move = [mem for mem in members if mem.name not in ("", ".")]
+            open_tar.extractall(
+                unpacked_directory, members=members_to_move, filter="data"
+            )
         return unpacked_directory
     return tar_file
 

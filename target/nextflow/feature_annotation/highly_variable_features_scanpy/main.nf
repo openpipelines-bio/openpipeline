@@ -3487,7 +3487,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.7",
-    "git_commit" : "bffce7aab487e9f7b1d48e9601220c37c87b9216",
+    "git_commit" : "52b68da55372bf117385e2b34416351a676373cd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
