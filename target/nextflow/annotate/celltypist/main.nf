@@ -3547,7 +3547,8 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy~=1.11.4"
+            "scanpy~=1.11.4",
+            "pynndescent<0.7"
           ],
           "upgrade" : true
         }
@@ -3560,7 +3561,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/celltypist",
     "viash_version" : "0.9.7",
-    "git_commit" : "734a394e6cff398176be83842d1eaeebc6662ef8",
+    "git_commit" : "265a29199be37a03103b2da648793acdadddffac",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

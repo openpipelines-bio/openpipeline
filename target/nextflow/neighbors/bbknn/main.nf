@@ -3386,6 +3386,7 @@ meta = [
             "scipy~=1.17.1",
             "mudata~=0.3.8",
             "scanpy~=1.11.4",
+            "pynndescent<0.7",
             "bbknn"
           ],
           "script" : [
@@ -3412,7 +3413,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn",
     "viash_version" : "0.9.7",
-    "git_commit" : "734a394e6cff398176be83842d1eaeebc6662ef8",
+    "git_commit" : "265a29199be37a03103b2da648793acdadddffac",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
