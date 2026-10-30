@@ -1,2 +1,3 @@
 packages:
   - scanpy~=1.11.4
+  - pynndescent<0.7

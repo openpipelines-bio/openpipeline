@@ -65,6 +65,8 @@
 
 * `reference/build_cellranger_reference` and `reference/cellranger_mkgtf`: bump Cell Ranger to `10.1.0`, switch to the `quay.io/nf-core/cellranger` image and disable Cell Ranger telemetry (PR #1270).
 
+* Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #)
+
 ## BUG FIXES
 
 * `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
