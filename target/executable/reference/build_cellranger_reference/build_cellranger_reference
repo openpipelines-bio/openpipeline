@@ -447,16 +447,17 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/cellranger:9.0
+FROM quay.io/nf-core/cellranger:10.1.0
 ENTRYPOINT []
 RUN DEBIAN_FRONTEND=noninteractive apt update && \
 apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
 
+RUN cellranger telemetry disable
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_reference"
-LABEL org.opencontainers.image.created="2026-10-29T08:46:09Z"
+LABEL org.opencontainers.image.created="2026-10-30T08:53:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1a532e49a75eacefff2d2640ac3ba152f9d9848c"
+LABEL org.opencontainers.image.revision="754f6d2a0ebeaa21b889695131e1f33a445f42c8"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

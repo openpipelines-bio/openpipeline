@@ -3212,6 +3212,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "conftest.py"
+    },
+    {
+      "type" : "file",
       "path" : "/resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
     },
     {
@@ -3377,7 +3381,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "1a532e49a75eacefff2d2640ac3ba152f9d9848c",
+    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

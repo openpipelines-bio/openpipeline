@@ -3294,34 +3294,35 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger_arc:2.0",
+      "image" : "debian:trixie-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
         {
-          "type" : "docker",
-          "run" : [
-            "DEBIAN_FRONTEND=noninteractive apt update && \\\\\napt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*\n"
-          ]
-        }
-      ],
-      "test_setup" : [
-        {
-          "type" : "docker"
-        },
-        {
           "type" : "apt",
           "packages" : [
-            "git",
-            "wget"
+            "procps",
+            "pigz"
           ],
           "interactive" : false
         },
         {
           "type" : "docker",
-          "run" : [
-            "TARGETARCH=\\"${TARGETARCH:-$(dpkg --print-architecture)}\\" && \\\\\nTARGETOS=\\"${TARGETOS:-linux}\\" && \\\\\nPATH=\\"${PATH}:/usr/local/go/bin\\" && \\\\\nwget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\\\nrm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\\\ngit clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \\\\\ncd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go\n"
+          "copy" : [
+            "--from=quay.io/nf-core/cellranger-arc:2.0.2 /opt/cellranger-arc-2.0.2 /opt/cellranger-arc-2.0.2"
+          ],
+          "env" : [
+            "PATH=/opt/cellranger-arc-2.0.2:$PATH"
           ]
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "apt",
+          "packages" : [
+            "seqkit"
+          ],
+          "interactive" : false
         }
       ]
     }
@@ -3332,7 +3333,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_arc_reference",
     "viash_version" : "0.9.7",
-    "git_commit" : "1a532e49a75eacefff2d2640ac3ba152f9d9848c",
+    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3448,7 +3449,7 @@ if [ ! -z "\\$meta_cpus" ]; then
 fi
 if [ ! -z "\\$meta_memory_gb" ]; then 
   # always keep 2gb for the OS itself
-  memory_gb=\\`python -c "print(int('\\$meta_memory_gb') - 2)"\\`
+  memory_gb=\\$(( meta_memory_gb - 2 ))
   extra_params+=( "memgb: \\\\"\\$memory_gb"\\\\" )
 fi
 

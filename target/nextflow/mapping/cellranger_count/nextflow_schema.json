@@ -80,7 +80,7 @@
         "chemistry": {
           "type": "string",
           "description": "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected",
-          "help_text": "Type: `string`, multiple: `False`, default: `\"auto\"`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv4`, `SC3Pv3LT`, `SC3Pv3HT`, `SC5P-PE-v3`, `SC5P-PE`, `SC5P-R2`, `SC5P-R2-v3`, `SC-FB`, `ARC-v1``. ",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"auto\"`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv4`, `SC3Pv3HT`, `SC5P-PE-v3`, `SC5P-PE`, `SC5P-R2`, `SC5P-R2-v3`, `SC5PHT`, `SC-FB`, `ARC-v1``. ",
           "enum": [
             "auto",
             "threeprime",
@@ -89,12 +89,12 @@
             "SC3Pv2",
             "SC3Pv3",
             "SC3Pv4",
-            "SC3Pv3LT",
             "SC3Pv3HT",
             "SC5P-PE-v3",
             "SC5P-PE",
             "SC5P-R2",
             "SC5P-R2-v3",
+            "SC5PHT",
             "SC-FB",
             "ARC-v1"
           ],
@@ -108,13 +108,18 @@
         },
         "cell_annotation_model": {
           "type": "string",
-          "description": "\"Cell annotation model to use",
+          "description": "Cell annotation model to use",
           "help_text": "Type: `string`, multiple: `False`, choices: ``auto`, `human_pca_v1_beta`, `mouse_pca_v1_beta``. ",
           "enum": [
             "auto",
             "human_pca_v1_beta",
             "mouse_pca_v1_beta"
           ]
+        },
+        "disable_cell_annotation": {
+          "type": "boolean",
+          "description": "Disable cell type annotation",
+          "help_text": "Type: `boolean`, multiple: `False`. "
         },
         "secondary_analysis": {
           "type": "boolean",

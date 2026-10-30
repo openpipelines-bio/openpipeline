@@ -448,16 +448,18 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/cellranger:9.0
+FROM quay.io/nf-core/cellranger:10.1.0
 ENTRYPOINT []
-RUN DEBIAN_FRONTEND=noninteractive apt update && \
-apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
+  rm -rf /var/lib/apt/lists/*
 
+RUN cellranger telemetry disable
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-LABEL org.opencontainers.image.created="2026-10-29T08:46:11Z"
+LABEL org.opencontainers.image.created="2026-10-30T08:53:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1a532e49a75eacefff2d2640ac3ba152f9d9848c"
+LABEL org.opencontainers.image.revision="754f6d2a0ebeaa21b889695131e1f33a445f42c8"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -619,7 +621,7 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: auto"
   echo "        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4,"
-  echo "SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC5P-R2-v3, SC-FB, ARC-v1 ]"
+  echo "SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC5P-R2-v3, SC5PHT, SC-FB, ARC-v1 ]"
   echo "        Assay configuration."
   echo "        - auto: autodetect mode"
   echo "        - threeprime: Single Cell 3'"
@@ -630,12 +632,12 @@ function ViashHelp {
   echo "        - SC3Pv2: Single Cell 3' v2"
   echo "        - SC3Pv3: Single Cell 3' v3"
   echo "        - SC3Pv4: Single Cell 3' v4"
-  echo "        - SC3Pv3LT: Single Cell 3' v3 LT"
   echo "        - SC3Pv3HT: Single Cell 3' v3 HT"
   echo "        - SC5P-R2-v3: Single Cell 5', paired-end/R2-only"
   echo "        - SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)"
   echo "        - SC5P-PE: Single Cell 5' paired-end"
   echo "        - SC5P-R2: Single Cell 5' R2-only"
+  echo "        - SC5PHT: Single Cell 5' HT"
   echo "        - SC-FB: Single Cell Antibody-only 3' v2 or 5'"
   echo "        - ARC-v1: for analyzing the Gene Expression portion of Multiome data."
   echo "          NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is"
@@ -652,9 +654,22 @@ function ViashHelp {
   echo "    --cell_annotation_model"
   echo "        type: string"
   echo "        choices: [ auto, human_pca_v1_beta, mouse_pca_v1_beta ]"
-  echo "        \"Cell annotation model to use. If auto, uses the default model for the"
-  echo "        species."
-  echo "        If not given, does not run cell annotation.\""
+  echo "        Cell annotation model to use. Valid model names are auto,"
+  echo "        human_pca_v1_beta (10x human cloud model)"
+  echo "        and mouse_pca_v1_beta (10x mouse cloud model); the cloud-based models"
+  echo "        require a 10x Cloud Analysis token."
+  echo "        The Pan-Human Azimuth model (human samples only) runs locally and does"
+  echo "        not require a model name or"
+  echo "        cloud token. If this option is omitted or set to auto, uses the default"
+  echo "        model for the species."
+  echo "        Use --disable_cell_annotation to turn off cell annotation altogether."
+  echo ""
+  echo "    --disable_cell_annotation"
+  echo "        type: boolean"
+  echo "        Disable cell type annotation. Note that from Cell Ranger 10.1 onwards,"
+  echo "        cell annotation"
+  echo "        using the local Pan-Human Azimuth model is performed by default for"
+  echo "        human samples."
   echo ""
   echo "    --secondary_analysis"
   echo "        type: boolean"
@@ -853,6 +868,17 @@ while [[ $# -gt 0 ]]; do
         --cell_annotation_model=*)
             [ -n "$VIASH_PAR_CELL_ANNOTATION_MODEL" ] && ViashError Bad arguments for option \'--cell_annotation_model=*\': \'$VIASH_PAR_CELL_ANNOTATION_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_CELL_ANNOTATION_MODEL=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --disable_cell_annotation)
+            [ -n "$VIASH_PAR_DISABLE_CELL_ANNOTATION" ] && ViashError Bad arguments for option \'--disable_cell_annotation\': \'$VIASH_PAR_DISABLE_CELL_ANNOTATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DISABLE_CELL_ANNOTATION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --disable_cell_annotation. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --disable_cell_annotation=*)
+            [ -n "$VIASH_PAR_DISABLE_CELL_ANNOTATION" ] && ViashError Bad arguments for option \'--disable_cell_annotation=*\': \'$VIASH_PAR_DISABLE_CELL_ANNOTATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DISABLE_CELL_ANNOTATION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --secondary_analysis)
@@ -1212,6 +1238,12 @@ if [[ -n "$VIASH_PAR_FORCE_CELLS" ]]; then
     exit 1
   fi
 fi
+if [[ -n "$VIASH_PAR_DISABLE_CELL_ANNOTATION" ]]; then
+  if ! [[ "$VIASH_PAR_DISABLE_CELL_ANNOTATION" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--disable_cell_annotation' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_SECONDARY_ANALYSIS" ]]; then
   if ! [[ "$VIASH_PAR_SECONDARY_ANALYSIS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--secondary_analysis' has to be a boolean. Use "--help" to get more information on the parameters.
@@ -1346,7 +1378,7 @@ fi
 
 # check whether value is belongs to a set of choices
 if [ ! -z "$VIASH_PAR_CHEMISTRY" ]; then
-  VIASH_PAR_CHEMISTRY_CHOICES=("auto;threeprime;fiveprime;SC3Pv1;SC3Pv2;SC3Pv3;SC3Pv4;SC3Pv3LT;SC3Pv3HT;SC5P-PE-v3;SC5P-PE;SC5P-R2;SC5P-R2-v3;SC-FB;ARC-v1")
+  VIASH_PAR_CHEMISTRY_CHOICES=("auto;threeprime;fiveprime;SC3Pv1;SC3Pv2;SC3Pv3;SC3Pv4;SC3Pv3HT;SC5P-PE-v3;SC5P-PE;SC5P-R2;SC5P-R2-v3;SC5PHT;SC-FB;ARC-v1")
   IFS=';'
   set -f
   if ! [[ ";${VIASH_PAR_CHEMISTRY_CHOICES[*]};" =~ ";$VIASH_PAR_CHEMISTRY;" ]]; then
@@ -1487,6 +1519,7 @@ $( if [ ! -z ${VIASH_PAR_FORCE_CELLS+x} ]; then echo "${VIASH_PAR_FORCE_CELLS}" 
 $( if [ ! -z ${VIASH_PAR_CHEMISTRY+x} ]; then echo "${VIASH_PAR_CHEMISTRY}" | sed "s#'#'\"'\"'#g;s#.*#par_chemistry='&'#" ; else echo "# par_chemistry="; fi )
 $( if [ ! -z ${VIASH_PAR_TENX_CLOUD_TOKEN_PATH+x} ]; then echo "${VIASH_PAR_TENX_CLOUD_TOKEN_PATH}" | sed "s#'#'\"'\"'#g;s#.*#par_tenx_cloud_token_path='&'#" ; else echo "# par_tenx_cloud_token_path="; fi )
 $( if [ ! -z ${VIASH_PAR_CELL_ANNOTATION_MODEL+x} ]; then echo "${VIASH_PAR_CELL_ANNOTATION_MODEL}" | sed "s#'#'\"'\"'#g;s#.*#par_cell_annotation_model='&'#" ; else echo "# par_cell_annotation_model="; fi )
+$( if [ ! -z ${VIASH_PAR_DISABLE_CELL_ANNOTATION+x} ]; then echo "${VIASH_PAR_DISABLE_CELL_ANNOTATION}" | sed "s#'#'\"'\"'#g;s#.*#par_disable_cell_annotation='&'#" ; else echo "# par_disable_cell_annotation="; fi )
 $( if [ ! -z ${VIASH_PAR_SECONDARY_ANALYSIS+x} ]; then echo "${VIASH_PAR_SECONDARY_ANALYSIS}" | sed "s#'#'\"'\"'#g;s#.*#par_secondary_analysis='&'#" ; else echo "# par_secondary_analysis="; fi )
 $( if [ ! -z ${VIASH_PAR_GENERATE_BAM+x} ]; then echo "${VIASH_PAR_GENERATE_BAM}" | sed "s#'#'\"'\"'#g;s#.*#par_generate_bam='&'#" ; else echo "# par_generate_bam="; fi )
 $( if [ ! -z ${VIASH_PAR_INCLUDE_INTRONS+x} ]; then echo "${VIASH_PAR_INCLUDE_INTRONS}" | sed "s#'#'\"'\"'#g;s#.*#par_include_introns='&'#" ; else echo "# par_include_introns="; fi )
@@ -1559,6 +1592,8 @@ if [ "\$par_secondary_analysis" == "false" ]; then
   no_secondary_analysis="true"
 fi
 
+[[ "\$par_disable_cell_annotation" == "false" ]] && unset par_disable_cell_annotation
+
 IFS=","
 id=myoutput
 cellranger count \\
@@ -1575,6 +1610,7 @@ cellranger count \\
   \${par_force_cells:+--force-cells=\$par_force_cells} \\
   \${par_chemistry:+--chemistry="\$par_chemistry"} \\
   \${par_generate_bam:+--create-bam=\$par_generate_bam} \\
+  \${par_disable_cell_annotation:+--disable-cell-annotation} \\
   \${no_secondary_analysis:+--nosecondary} \\
   \${par_r1_length:+--r1-length=\$par_r1_length} \\
   \${par_r2_length:+--r2-length=\$par_r2_length} \\

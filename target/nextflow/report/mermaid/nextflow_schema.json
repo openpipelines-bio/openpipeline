@@ -47,17 +47,11 @@
             "pdf"
           ]
         },
-        "width": {
+        "size": {
           "type": "integer",
-          "description": "Width of the page",
+          "description": "Size of the diagram",
           "help_text": "Type: `integer`, multiple: `False`, default: `800`. ",
           "default": 800
-        },
-        "height": {
-          "type": "integer",
-          "description": "Height of the page",
-          "help_text": "Type: `integer`, multiple: `False`, default: `600`. ",
-          "default": 600
         },
         "background_color": {
           "type": "string",

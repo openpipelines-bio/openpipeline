@@ -446,16 +446,19 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/cellranger_arc:2.0
+FROM debian:trixie-slim
 ENTRYPOINT []
-RUN DEBIAN_FRONTEND=noninteractive apt update && \
-apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps pigz && \
+  rm -rf /var/lib/apt/lists/*
 
+ENV PATH=/opt/cellranger-arc-2.0.2:$PATH
+COPY --from=quay.io/nf-core/cellranger-arc:2.0.2 /opt/cellranger-arc-2.0.2 /opt/cellranger-arc-2.0.2
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_arc_reference"
-LABEL org.opencontainers.image.created="2026-10-29T08:46:10Z"
+LABEL org.opencontainers.image.created="2026-10-30T08:53:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1a532e49a75eacefff2d2640ac3ba152f9d9848c"
+LABEL org.opencontainers.image.revision="754f6d2a0ebeaa21b889695131e1f33a445f42c8"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1227,7 +1230,7 @@ if [ ! -z "\$meta_cpus" ]; then
 fi
 if [ ! -z "\$meta_memory_gb" ]; then 
   # always keep 2gb for the OS itself
-  memory_gb=\`python -c "print(int('\$meta_memory_gb') - 2)"\`
+  memory_gb=\$(( meta_memory_gb - 2 ))
   extra_params+=( "memgb: \\"\$memory_gb"\\" )
 fi
 

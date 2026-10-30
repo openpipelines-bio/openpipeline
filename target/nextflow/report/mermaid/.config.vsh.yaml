@@ -52,21 +52,13 @@ argument_groups:
     multiple: false
     multiple_sep: ";"
   - type: "integer"
-    name: "--width"
-    description: "Width of the page"
+    name: "--size"
+    description: "Size of the diagram. For pngs, this is the maximum height or width\
+      \ of the image.\nFor svgs, this sets the `max-width` attribute. For pdfs, this\
+      \ is in CSS px (1/96 of an inch).\n"
     info: null
     default:
     - 800
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "integer"
-    name: "--height"
-    description: "Height of the page"
-    info: null
-    default:
-    - 600
     required: false
     direction: "input"
     multiple: false
@@ -176,16 +168,16 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "node:22-bookworm"
+  image: "node:26-trixie"
   target_tag: "integration_build"
   namespace_separator: "/"
   setup:
   - type: "javascript"
     npm:
-    - "@mermaid-js/mermaid-cli"
+    - "@mermaid-js/mermaid-cli@12"
   - type: "apt"
     packages:
-    - "chromium"
+    - "chromium-headless-shell"
     interactive: false
   entrypoint: []
   cmd: null
@@ -196,7 +188,7 @@ build_info:
   output: "target/nextflow/report/mermaid"
   executable: "target/nextflow/report/mermaid/main.nf"
   viash_version: "0.9.7"
-  git_commit: "1a532e49a75eacefff2d2640ac3ba152f9d9848c"
+  git_commit: "754f6d2a0ebeaa21b889695131e1f33a445f42c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

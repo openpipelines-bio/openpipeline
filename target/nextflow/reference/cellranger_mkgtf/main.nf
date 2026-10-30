@@ -3227,7 +3227,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger:9.0",
+      "image" : "quay.io/nf-core/cellranger:10.1.0",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3235,6 +3235,12 @@ meta = [
           "type" : "docker",
           "run" : [
             "DEBIAN_FRONTEND=noninteractive apt update && \\\\\napt upgrade -y && apt install -y pigz procps && rm -rf /var/lib/apt/lists/*\n"
+          ]
+        },
+        {
+          "type" : "docker",
+          "run" : [
+            "cellranger telemetry disable"
           ]
         }
       ],
@@ -3266,7 +3272,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/cellranger_mkgtf",
     "viash_version" : "0.9.7",
-    "git_commit" : "1a532e49a75eacefff2d2640ac3ba152f9d9848c",
+    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -1,0 +1,491 @@
+name: "decontx_remove_background"
+namespace: "correction"
+version: "integration_build"
+argument_groups:
+- name: "Inputs"
+  description: "Input dataset arguments"
+  arguments:
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "A .h5mu file containing a matrix of counts. Cells in each batch\
+      \ will be subsetted and\nconverted to a sparse matrix before analysis. This\
+      \ object should only contain filtered\ncells after cell calling. Empty cell\
+      \ barcodes (low expression droplets before cell\ncalling) are not needed to\
+      \ run DecontX.\n"
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "Which modality to process."
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_layer"
+    description: "The layer in the input data to use as the counts matrix (assayName).\
+      \ If not provided, .X is used.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_obs_clusters"
+    description: "The name of the .obs column containing cell cluster labels (z).\
+      \ If not provided, PCA\nwill be used to reduce the dimensionality of the dataset\
+      \ initially, UMAP will be used to\nfurther reduce the dataset to 2 dimensions,\
+      \ and dbscan will be used to identify clusters\nof broad cell types.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_obs_batch"
+    description: "The name of the .obs column containing batch labels for cells. If\
+      \ batch labels are\nsupplied, DecontX is run on cells from each batch separately.\
+      \ Cells run in different\nchannels or assays should be considered different\
+      \ batches.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Background"
+  description: "Arguments related to the (optional) empty droplet background dataset."
+  arguments:
+  - type: "file"
+    name: "--background"
+    description: "A .h5mu file containing a matrix of counts from empty droplets,\
+      \ with the same data\nformat as --input. When supplied, the empirical distribution\
+      \ of transcripts from these\nempty droplets will be used as the contamination\
+      \ distribution.\n"
+    info: null
+    example:
+    - "background.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--background_layer"
+    description: "The layer in the background data to use as the counts matrix (bgAssayName).\
+      \ If not\nprovided, the value of --input_layer is used.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--background_obs_batch"
+    description: "The name of the .obs column in the background data containing batch\
+      \ labels (bgBatch).\nIts unique values should be the same as those in --input_obs_batch,\
+      \ such that each batch\nof cells has its corresponding batch of empty droplets\
+      \ as background.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Arguments"
+  description: "Arguments related to the DecontX algorithm."
+  arguments:
+  - type: "integer"
+    name: "--max_iter"
+    description: "Maximum iterations of the EM algorithm."
+    info: null
+    default:
+    - 500
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--delta"
+    description: "Vector of length 2. Concentration parameters for the Dirichlet prior\
+      \ for the\ncontamination in each cell. The first element is the prior for the\
+      \ native counts while\nthe second element is the prior for the contamination\
+      \ counts. These essentially act as\npseudocounts for the native and contamination\
+      \ in each cell. If --estimate_delta is true,\nthis is only used to produce a\
+      \ random sample of proportions for an initial value of\ncontamination in each\
+      \ cell; delta is then updated in each iteration. If\n--estimate_delta is false,\
+      \ delta is fixed with these values for the entire inference\nprocedure. Fixing\
+      \ delta and setting a high number in the second element will force\nDecontX\
+      \ to be more aggressive and estimate higher levels of contamination at the expense\n\
+      of potentially removing native expression.\n"
+    info: null
+    default:
+    - 10.0
+    - 10.0
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--estimate_delta"
+    description: "Whether to update delta at each iteration. Set to false to keep\
+      \ delta fixed at the\n--delta values for the entire inference procedure.\n"
+    info: null
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--convergence"
+    description: "The EM algorithm will be stopped if the maximum difference in the\
+      \ contamination\nestimates between the previous and current iterations is less\
+      \ than this.\n"
+    info: null
+    default:
+    - 0.001
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--iter_log_lik"
+    description: "Calculate log likelihood every --iter_log_lik iterations."
+    info: null
+    default:
+    - 10
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--var_genes"
+    description: "The number of variable genes to use in dimensionality reduction\
+      \ before clustering.\nVariability is calculated using the modelGeneVar function\
+      \ from the 'scran' package.\nUsed only when --input_obs_clusters is not provided.\n"
+    info: null
+    default:
+    - 5000
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "double"
+    name: "--dbscan_eps"
+    description: "The clustering resolution parameter used in 'dbscan' to estimate\
+      \ broad cell clusters.\nUsed only when --input_obs_clusters is not provided.\n"
+    info: null
+    default:
+    - 1.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--seed"
+    description: "Seed for reproducibility."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--logfile"
+    description: "If provided, log messages will be redirected to this file instead\
+      \ of stdout.\n"
+    info: null
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean"
+    name: "--verbose"
+    description: "Whether to print log messages. Use this flag to disable log messages."
+    info: null
+    default:
+    - false
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  description: "Output arguments."
+  arguments:
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output h5mu file, with contamination estimated and removed."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_layer"
+    description: "Name of the layer to store the decontaminated counts matrix in."
+    info: null
+    default:
+    - "decontx_counts"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_contamination"
+    description: "Name of the .obs column to store the estimated contamination proportion\
+      \ per cell in."
+    info: null
+    default:
+    - "decontx_contamination"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_clusters"
+    description: "Name of the .obs column to store the cell cluster labels used by\
+      \ DecontX in (either\npassed through from --input_obs_clusters or estimated\
+      \ internally).\n"
+    info: null
+    default:
+    - "decontx_clusters"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    description: "Compression format to use for the output AnnData and/or Mudata H5\
+      \ files.\nBy default no compression is applied.\n"
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "r_script"
+  path: "script.R"
+  is_executable: true
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "DecontX is a Bayesian method to estimate and remove contamination in\
+  \ individual cells.\nDecontX assumes the observed expression of a cell is a mixture\
+  \ of counts from two multinomial distributions:\n(1) a distribution of native transcript\
+  \ counts from the cell's actual population and\n(2) a distribution of contaminating\
+  \ transcript counts from all other cell populations captured in the assay.\n\nCampbell\
+  \ et al. 2020, Genome Biology\n"
+test_resources:
+- type: "python_script"
+  path: "test.py"
+  is_executable: true
+- type: "file"
+  path: "setup_logger.py"
+- type: "file"
+  path: "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+- type: "file"
+  path: "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+info: null
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "midmem"
+    - "midcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "rocker/r2u:24.04"
+  target_tag: "integration_build"
+  namespace_separator: "/"
+  setup:
+  - type: "r"
+    cran:
+    - "hdf5r"
+    bioc:
+    - "decontX"
+    - "anndataR"
+    - "rhdf5"
+    bioc_force_install: false
+    warnings_as_errors: true
+  test_setup:
+  - type: "docker"
+    env:
+    - "PIP_BREAK_SYSTEM_PACKAGES=1"
+  - type: "apt"
+    packages:
+    - "python3"
+    - "python3-pip"
+    - "python-is-python3"
+    interactive: false
+  - type: "python"
+    user: true
+    packages:
+    - "anndata~=0.12.16"
+    - "awkward"
+    - "scipy~=1.17.1"
+    - "mudata~=0.3.8"
+    script:
+    - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
+      \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
+      ).partition(\\\".\\\")[0]) > 2\")"
+    upgrade: true
+  - type: "apt"
+    packages:
+    - "git"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.10.0"
+    github:
+    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/correction/decontx_remove_background/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "docker"
+  output: "target/nextflow/correction/decontx_remove_background"
+  executable: "target/nextflow/correction/decontx_remove_background/main.nf"
+  viash_version: "0.9.7"
+  git_commit: "754f6d2a0ebeaa21b889695131e1f33a445f42c8"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.7"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"integration_build\""
+  - ".engines[.type == 'docker'].target_tag := 'integration_build'"
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"
