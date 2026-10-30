@@ -332,8 +332,7 @@ def get_fastq_to_library_id_mapping(
             all_fastq_libraries.index
         )
         assert keys_not_present.empty, (
-            f"No FASTQ files found for the following library ids: {','.join(keys_not_present)}. "
-            "Check that --library_id values match the FASTQ file names."
+            f"No FASTQ files found for the following library ids: {','.join(keys_not_present)}"
         )
         filtered_fastq_libraries = all_fastq_libraries.loc[library_ids]
 
