@@ -38,6 +38,8 @@
 
 ## NEW FEATURES
 
+* `annotate/azimuth_reference`: added a component to build a custom Azimuth reference (`ref.Rds` + `idx.annoy`) from an annotated Seurat object, for use with `annotate/azimuth --reference custom` (PR #1264).
+
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
 
 * `workflows/ingestion/cellranger_multi`: surface the `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
