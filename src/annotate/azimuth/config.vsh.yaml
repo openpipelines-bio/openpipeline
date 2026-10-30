@@ -1,0 +1,198 @@
+name: azimuth
+namespace: annotate
+scope: "private"
+description: |
+  Reference-based cell type annotation using Seurat's Azimuth (RunAzimuth()).
+  Unlike annotate/azimuth_panhuman (which uses a single fixed pan-human neural network
+  with no reference choice), this component lets you pick which annotated
+  reference dataset to map the query onto: one of the curated Azimuth
+  references (e.g. "pbmcref", "bonemarrowref", "lungref"; see
+  https://azimuth.hubmapconsortium.org/references/ for the full, up to date
+  list), or a local directory containing a custom "ref.Rds" + "idx.annoy"
+  reference pair.
+authors:
+  - __merge__: /src/authors/mirte_detemmerman.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    description: Input dataset (query) arguments
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: |
+          The input (query) data to be annotated. Should be an .rds file
+          containing a Seurat object with raw (unnormalized) counts in the
+          layer specified by `--input_layer`.
+        direction: input
+        required: true
+        example: input.rds
+      - name: "--assay"
+        type: string
+        default: "RNA"
+        description: |
+          Name of the Seurat assay in the input object to run the annotation on.
+      - name: "--input_layer"
+        type: string
+        default: "counts"
+        description: |
+          Layer of `--assay` containing the raw (unnormalized) counts.
+          RunAzimuth() normalizes these internally using SCTransform.
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          Column in the feature metadata of `--assay` containing gene symbols.
+          If not provided, the feature names of the assay are used. Azimuth
+          references use gene symbols; when the query features are Ensembl IDs,
+          Azimuth converts them using a homolog table downloaded at runtime.
+        example: gene_symbol
+      - name: "--input_reference_gene_overlap"
+        type: integer
+        default: 100
+        min: 1
+        description: |
+          Minimum number of genes that must overlap between the query and the
+          reference for the mapping to be performed.
+
+  - name: Reference
+    description: |
+      Arguments controlling which Azimuth reference to map the query onto.
+      There is no training step: RunAzimuth() maps the query directly onto
+      the chosen reference's precomputed embeddings.
+    arguments:
+      - name: "--reference"
+        type: string
+        required: true
+        choices: [ pbmcref, bonemarrowref, lungref, heartref, tonsilref, humancortexref, mousecortexref, kidneyref, pancreasref, adiposeref, fetusref, custom ]
+        description: |
+          Name of a curated Azimuth reference, downloaded and installed
+          automatically on first use via SeuratData. See
+          https://azimuth.hubmapconsortium.org/references/ for a description
+          of each reference. Set to "custom" to use a local reference instead,
+          provided via `--custom_reference`.
+        example: pbmcref
+      - name: "--custom_reference"
+        type: file
+        required: false
+        description: |
+          Path to a local directory containing a "ref.Rds" and "idx.annoy"
+          file pair for a custom reference. If provided, `--reference` must
+          be set to "custom".
+      - name: "--annotation_levels"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          Which annotation levels (columns in the reference's metadata,
+          e.g. "celltype.l1", "celltype.l2") to transfer. If not provided,
+          all annotation levels available in the reference are transferred.
+      - name: "--do_adt"
+        type: boolean_true
+        description: |
+          Whether to impute a protein (ADT) assay from the reference, if
+          the reference includes antibody-derived tag data.
+
+  - name: Mapping arguments
+    description: Lower-level arguments passed through to RunAzimuth().
+    arguments:
+      - name: "--k_weight"
+        type: integer
+        default: 50
+        min: 1
+        description: Number of neighbors to consider when weighting anchors during label/embedding transfer.
+      - name: "--n_trees"
+        type: integer
+        default: 20
+        min: 1
+        description: Number of trees used when building the annoy index for neighbor search.
+      - name: "--mapping_score_k"
+        type: integer
+        default: 100
+        min: 1
+        description: Number of neighbors used to compute the per-cell mapping score.
+
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        type: file
+        description: |
+          Output .rds file containing the input Seurat object, extended with
+          the Azimuth results: the predicted labels, prediction scores and
+          mapping score in the cell metadata (see `--output_obs_*`), the
+          reference projected UMAP and integrated reductions (see
+          `--output_obsm_*`), and a `prediction.score.<level>` assay per
+          annotation level (plus an `impADT` assay when `--do_adt` is set).
+        direction: output
+        required: true
+        example: output.rds
+      - name: "--output_compression"
+        type: string
+        choices: [gzip, bzip2, xz, none]
+        default: gzip
+        description: Compression used when writing the output .rds file.
+      - name: "--output_obs_predictions"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          In which cell metadata columns to store the predicted labels.
+          If provided, `--annotation_levels` must be provided as well, and both
+          must have the same length. If not provided, defaults to
+          `azimuth_pred_<level>`, with "." in the level name replaced by "_".
+      - name: "--output_obs_probability"
+        type: string
+        multiple: true
+        required: false
+        description: |
+          In which cell metadata columns to store the prediction scores.
+          If provided, `--annotation_levels` must be provided as well, and both
+          must have the same length. If not provided, defaults to
+          `azimuth_probability_<level>`, with "." in the level name replaced by "_".
+      - name: "--output_obs_mapping_score"
+        type: string
+        default: "azimuth_mapping_score"
+        description: In which cell metadata column to store the per-cell mapping score.
+      - name: "--output_obsm_umap"
+        type: string
+        default: "X_azimuth_umap"
+        description: |
+          Name of the reduction in which to store the query embedding projected
+          onto the reference UMAP.
+      - name: "--output_obsm_integrated"
+        type: string
+        default: "X_integrated_azimuth"
+        description: |
+          Name of the reduction in which to store the integrated
+          (reference-projected) embedding.
+
+resources:
+  - type: r_script
+    path: script.R
+
+test_resources:
+  - type: r_script
+    path: test.R
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.rds
+
+engines:
+  - type: docker
+    image: rocker/r2u:24.04
+    setup:
+      - type: apt
+        packages: [ libhdf5-dev, libgeos-dev ]
+      - type: r
+        cran: [ hdf5r, Seurat, SeuratObject, remotes ]
+      - type: r
+        github: [ satijalab/azimuth@ad5929686e005ae91d8452187a3a1d8c0563fdd5 ]
+    test_setup:
+      - type: r
+        cran: [ testthat, processx ]
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [highcpu, highmem, highdisk]

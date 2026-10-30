@@ -30,7 +30,7 @@ $meta_executable \
   --genome_fasta "$tmpdir/reference_small.fa.gz" \
   --transcriptome_gtf "$tmpdir/reference_small.gtf.gz" \
   --output "$tmpdir/myreference.tar.gz" \
-  ---cpus ${meta_memory_gb:-1} \
+  ---cpus ${meta_cpus:-1} \
   ---memory ${meta_memory_gb:-5}GB
 
 exit_code=$?

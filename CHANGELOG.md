@@ -20,6 +20,22 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
+* `mapping/cellranger_count`, `mapping/cellranger_multi`, `workflows/ingestion/cellranger_mapping`, `workflows/ingestion/cellranger_multi`: update Cell Ranger to 10.1.0 (from 9.0 for `cellranger_count`, from 10.0.0 for `cellranger_multi`) (PR #1252):
+  - Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples. Use the new `--disable_cell_annotation` (`cellranger_count`, `cellranger_mapping`) or `--skip_cell_annotation` (`cellranger_multi`) argument to turn this off.
+  - Removed the `SC3Pv3LT` chemistry from the `--chemistry` and `--gex_chemistry` choices, as Cell Ranger no longer supports it.
+  - `--gex_chemistry` (`cellranger_multi`): added the GEM-X Flex v2 (`Flex-v2-*`), CS1 (`*-CS1`) and OCM (`*-OCM*`) chemistries.
+  - `--chemistry` (`cellranger_count`, `cellranger_mapping`): added the `SC5PHT` chemistry, which Cell Ranger accepts but does not list in its help text. `cellranger_mapping` also gains the `SC3Pv4`, `SC5P-PE-v3`, `SC5P-R2-v3` and `ARC-v1` chemistries, aligning its choices with `cellranger_count`.
+
+* `qc/fastqc`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/fastqc](https://www.viash-hub.com/packages/biobox/latest/components/fastqc) instead (PR #1253)
+
+* `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
+
+* `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
+
+* `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
+
+
+
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -35,7 +51,11 @@
 * `convert/from_cellranger_multi_to_h5mu`: When processing non-multiplexed data, the value provided to Cell Ranger's `--id` parameter (as registered in the Cell Ranger multi output folder name) is now used as the sample name. For Cell Ranger output from openpipelines this is still `run`, but for externally generated data this implies a matching output file name  for the MuData object (PR #1227)
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
-* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234).
+* `annotate/azimuth`: added a component for reference-based cell type annotation using Seurat's Azimuth (`RunAzimuth()`) on a Seurat object (`.rds`), letting users pick from Azimuth's curated reference datasets (e.g. `pbmcref`, `bonemarrowref`, `lungref`) or supply a custom reference directory (PR #1235).
+
+* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234, PR #1269).
+
+* `correction/decontx_remove_background`: new component that estimates and removes ambient RNA contamination from single-cell RNA-seq count matrices using the DecontX algorithm, with optional support for an empty-droplet background dataset (PR #1223).
 
 * `mapping/cellranger_multi`: support libraries that were sequenced on multiple flow cells, resulting in FASTQ files with identical names in different directories (PR #1172):
   - Files with identical names are staged into separate directories. Files that belong together (e.g. R1 and R2) are matched using the name of the first read in each file: the part of the FASTQ header before the first space or `/`, like Cell Ranger does. An error is raised when the files can not be matched.
@@ -50,8 +70,13 @@
 
 * `mapping/cellranger_multi`: raise a descriptive error when no FASTQ files are found for a `--library_id`, when the same FASTQ file is passed to more than one input argument (e.g. `--input` and `--gex_input`), or when the number of values for `--library_subsample` or `--library_lanes` does not match the number of libraries (PR #1172).
 
+* `reference/build_cellranger_reference` and `reference/cellranger_mkgtf`: bump Cell Ranger to `10.1.0`, switch to the `quay.io/nf-core/cellranger` image and disable Cell Ranger telemetry (PR #1270).
 
 ## BUG FIXES
+
+* `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
+
+* `workflows/ingestion/cellranger_multi`: pass the `--cell_annotation_model` and `--tenx_cloud_token_path` arguments on to `mapping/cellranger_multi`. These arguments were listed in the workflow's interface, but setting them had no effect (PR #1252).
 
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
 
@@ -61,6 +86,8 @@
 * `qc/calculate_atac_qc_metrics`: merge the `anndata`/`mudata` and `scanpy` requirements into a single `__merge__` field. Two `__merge__` fields were specified for the same Python setup, of which only the last one was applied, leaving `anndata` and `mudata` unpinned (PR #1233).
 
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
+
+* `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
 
 # openpipelines 4.2.0
 
@@ -77,6 +104,8 @@
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
 * `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
+
+* `trajectory_inference/paga`: new component that infers the connectivity between cell clusters using PAGA (partition-based graph abstraction), producing a coarse-grained abstraction of the data's topology that can be used to reconstruct developmental trajectories (PR #1224).
 
 ## MINOR CHANGES
 

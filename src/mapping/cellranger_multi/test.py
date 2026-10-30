@@ -316,6 +316,39 @@ def test_cellranger_multi_applies_gex_options(run_component, random_path):
     assert expected_csv_content in config_contents
 
 
+def test_cellranger_multi_disable_cell_annotation(run_component, random_path):
+    outputpath = random_path()
+    args = [
+        "--output",
+        outputpath,
+        "--gex_input",
+        input1_R1,
+        "--gex_input",
+        input1_R2,
+        "--gex_reference",
+        gex_reference,
+        "--gex_generate_bam",
+        "false",
+        "--skip_cell_annotation",
+        "true",
+    ]
+    run_component(args)
+
+    config_path = outputpath / "config.csv"
+    assert config_path.is_file()
+    with config_path.open("r") as config_file:
+        config_contents = config_file.read()
+    expected_csv_content = (
+        r"\[gene-expression\]\n(?:[^\[\n].*\n)*skip-cell-annotation,True\n"
+    )
+    assert re.search(expected_csv_content, config_contents)
+
+    # By default, Cell Ranger runs the local Azimuth cell type annotation on human data.
+    # The stage is still scheduled ('ready') when annotation is disabled, but never started.
+    log_contents = (outputpath / "cellranger_multi.log").read_text()
+    assert not re.search(r"\(run:local\)\s+\S*CALL_AZIMUTH_CELL_TYPES", log_contents)
+
+
 def test_cellranger_multi_no_vdj_reference(run_component, random_path):
     # GH291
     outputpath = random_path()
