@@ -78,8 +78,6 @@ def test_join_uns_to_obs(
         index=pd.Index(["obs1", "obs2"]),
     ).astype(
         {
-            "Obs": "object",
-            "sample_id": "object",
             "uns_col1": "category",
             "uns_col2": "category",
         }

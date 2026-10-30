@@ -39,7 +39,7 @@ if par["input_metrics_summary"] and par["uns_metrics"]:
 
     metrics_summary = pd.read_csv(
         par["input_metrics_summary"], decimal=".", quotechar='"', thousands=","
-    ).applymap(read_percentage)
+    ).map(read_percentage)
 
     logger.info("Storing metrics summary in .uns['%s']", par["uns_metrics"])
     adata.uns[par["uns_metrics"]] = metrics_summary
