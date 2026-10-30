@@ -103,7 +103,7 @@ def test_run_pynndescent(run_component, tmp_path, n_obs, metric):
     # so the number of stored entries per row is not exactly num_neighbors - 1.
     distances = rna_out.obsp["distances"].copy()
     distances.eliminate_zeros()
-    assert (np.diff(distances.indptr) >= 14).all()
+    assert (np.diff(distances.indptr) >= num_neighbors - 1).all()
 
 
 if __name__ == "__main__":
