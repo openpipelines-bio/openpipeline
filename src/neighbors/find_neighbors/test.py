@@ -90,7 +90,7 @@ def test_run_pynndescent(run_component, tmp_path, n_obs, metric):
             "--metric",
             metric,
             "--num_neighbors",
-            num_neighbors,
+            str(num_neighbors),
         ]
     )
 
