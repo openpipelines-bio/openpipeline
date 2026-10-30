@@ -1,0 +1,204 @@
+name: "azimuth"
+namespace: "workflows/annotation"
+scope: "public"
+description: |
+  Cell type annotation workflow using Azimuth reference mapping (Seurat RunAzimuth()).
+  Accepts either an H5MU file (`--input`) or a Seurat object (`--input_seurat`) as query.
+
+  For H5MU input, the modalities are split, the modality selected with `--modality` is converted
+  to a Seurat object and mapped onto the Azimuth reference, and the annotated modality is converted
+  back and merged with the other (untouched) modalities. For Seurat input, the selected assay is
+  annotated and converted to an H5MU file containing a single modality.
+info:
+  name: "Azimuth reference mapping"
+  test_dependencies:
+    - name: azimuth_test
+      namespace: test_workflows/annotation
+authors:
+  - __merge__: /src/authors/mirte_detemmerman.yaml
+    roles: [ author ]
+
+argument_groups:
+  - name: Inputs
+    description: |
+      Input dataset (query) arguments. Exactly one of `--input` or `--input_seurat` must be provided.
+    arguments:
+      - name: "--input"
+        alternatives: [-i]
+        type: file
+        description: The input (query) data to be annotated. Should be an .h5mu file.
+        direction: input
+        required: false
+        example: input.h5mu
+      - name: "--input_seurat"
+        type: file
+        description: |
+          The input (query) data to be annotated. Should be an .rds file
+          containing a Seurat object with raw (unnormalized) counts.
+        direction: input
+        required: false
+        example: input.rds
+      - name: "--modality"
+        type: string
+        default: "rna"
+        required: false
+        description: |
+          Which modality of `--input` to annotate. When using `--input_seurat`, this is the
+          name of the modality the annotated assay is stored in in the output.
+      - name: "--input_seurat_assay"
+        type: string
+        default: "RNA"
+        description: |
+          Name of the Seurat assay in `--input_seurat` to run the annotation on.
+          Only used with `--input_seurat`.
+      - name: "--input_layer"
+        type: string
+        required: false
+        description: |
+          Layer containing the raw (unnormalized) counts. RunAzimuth() normalizes these
+          internally using SCTransform.
+          With `--input`, this is a layer of `--modality`; if not provided, .X is used.
+          With `--input_seurat`, this is a layer of `--input_seurat_assay`; if not provided, "counts" is used.
+      - name: "--input_var_gene_names"
+        type: string
+        required: false
+        description: |
+          Column in .var (`--input`) or in the feature metadata of `--input_seurat_assay`
+          (`--input_seurat`) containing gene symbols. If not provided, the feature names are used.
+          Azimuth references use gene symbols; when the query features are Ensembl IDs,
+          Azimuth converts them using a homolog table downloaded at runtime.
+        example: gene_symbol
+
+  - name: Reference
+    description: |
+      Arguments controlling which Azimuth reference to map the query onto.
+      There is no training step: RunAzimuth() maps the query directly onto
+      the chosen reference's precomputed embeddings.
+    arguments:
+      - name: "--reference"
+        type: string
+        required: true
+        description: |
+          Name of a curated Azimuth reference (e.g. "pbmcref",
+          "bonemarrowref", "lungref", "heartref", "tonsilref",
+          "humancortexref", "kidneyref", "pancreasref", "adiposeref",
+          "fetusref"; case-insensitive, downloaded/installed automatically
+          on first use via SeuratData), or a path to a local directory
+          containing a "ref.Rds" and "idx.annoy" file pair for a custom
+          reference.
+        example: pbmcref
+      - name: "--annotation_levels"
+        type: string
+        multiple: true
+        required: true
+        description: |
+          Which annotation levels (columns in the reference's metadata,
+          e.g. "celltype.l1", "celltype.l2") to transfer.
+        example: ["celltype.l1", "celltype.l2"]
+      - name: "--do_adt"
+        type: boolean_true
+        description: |
+          Whether to impute a protein (ADT) assay from the reference, if
+          the reference includes antibody-derived tag data. The imputed
+          expression is stored in a separate modality (see `--output_modality_imputed_adt`).
+
+  - name: Mapping arguments
+    description: Lower-level arguments passed through to RunAzimuth().
+    arguments:
+      - name: "--k_weight"
+        type: integer
+        default: 50
+        min: 1
+        description: Number of neighbors to consider when weighting anchors during label/embedding transfer.
+      - name: "--n_trees"
+        type: integer
+        default: 20
+        min: 1
+        description: Number of trees used when building the annoy index for neighbor search.
+      - name: "--mapping_score_k"
+        type: integer
+        default: 100
+        min: 1
+        description: Number of neighbors used to compute the per-cell mapping score.
+
+  - name: Outputs
+    description: Output arguments.
+    arguments:
+      - name: "--output"
+        type: file
+        description: The annotated output .h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--output_seurat"
+        type: file
+        description: |
+          If provided, also write the annotated Seurat object to this .rds file.
+          With `--input`, this object only contains the annotated `--modality`
+          (as assay "RNA"), not the other modalities.
+        direction: output
+        required: false
+        example: output.rds
+      - name: "--output_obs_predictions"
+        type: string
+        required: false
+        multiple: true
+        description: |
+          In which `.obs` slots to store the predicted cell labels.
+          If provided, must have the same length as `--annotation_levels`.
+          If empty, defaults to `azimuth_pred_<level>`, with "." in the level name replaced by "_".
+      - name: "--output_obs_probability"
+        type: string
+        required: false
+        multiple: true
+        description: |
+          In which `.obs` slots to store the prediction scores.
+          If provided, must have the same length as `--annotation_levels`.
+          If empty, defaults to `azimuth_probability_<level>`, with "." in the level name replaced by "_".
+      - name: "--output_obs_mapping_score"
+        type: string
+        default: "azimuth_mapping_score"
+        description: In which `.obs` slot to store the per-cell mapping score.
+      - name: "--output_obsm_umap"
+        type: string
+        default: "X_azimuth_umap"
+        description: In which `.obsm` slot to store the query embedding projected onto the reference UMAP.
+      - name: "--output_obsm_integrated"
+        type: string
+        default: "X_integrated_azimuth"
+        description: In which `.obsm` slot to store the integrated (reference-projected) embedding.
+      - name: "--output_modality_imputed_adt"
+        type: string
+        default: "prot_imputed"
+        description: |
+          Name of the modality in which the imputed protein expression is stored when `--do_adt` is set.
+          Must not already exist in `--input`.
+      - name: "--output_compression"
+        type: string
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+
+dependencies:
+  - name: workflows/multiomics/split_modalities
+  - name: convert/from_h5mu_or_h5ad_to_seurat
+  - name: annotate/azimuth
+  - name: convert/from_seurat_to_h5mu
+  - name: transform/delete_layer
+  - name: dataflow/merge
+
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+
+test_resources:
+  - type: nextflow_script
+    path: test.nf
+    entrypoint: test_wf
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.rds
+
+runners:
+  - type: nextflow
