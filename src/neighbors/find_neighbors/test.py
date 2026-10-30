@@ -80,7 +80,7 @@ def test_run_pynndescent(run_component, tmp_path, n_obs, metric):
     input_path = tmp_path / "input.h5mu"
     mu.MuData({"rna": rna}).write_h5mu(input_path)
     output = tmp_path / "output.h5mu"
-
+    num_neighbors = 15
     run_component(
         [
             "--input",
@@ -89,6 +89,8 @@ def test_run_pynndescent(run_component, tmp_path, n_obs, metric):
             str(output),
             "--metric",
             metric,
+            "--num_neighbors",
+            num_neighbors,
         ]
     )
 
