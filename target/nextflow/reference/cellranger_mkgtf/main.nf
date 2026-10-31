@@ -3259,7 +3259,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3272,7 +3272,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/cellranger_mkgtf",
     "viash_version" : "0.9.7",
-    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
+    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

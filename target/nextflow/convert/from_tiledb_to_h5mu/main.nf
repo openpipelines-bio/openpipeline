@@ -3184,6 +3184,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/base/tiledb/tiledbsoma.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3307,17 +3311,19 @@ meta = [
         {
           "type" : "python",
           "user" : false,
-          "packages" : [
-            "anndata~=0.12.16",
-            "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
-            "tiledbsoma"
-          ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "docker",
+          "copy" : [
+            "tiledbsoma.patch /opt/tiledbsoma.patch"
+          ],
+          "run" : [
+            "pip install --no-cache-dir tiledbsoma==2.2.0 && \\\\\npatch -p1 -d \\"$(python -c 'import site; print(site.getsitepackages()[0])')\\" < /opt/tiledbsoma.patch"
+          ]
         }
       ],
       "test_setup" : [
@@ -3335,7 +3341,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         },
@@ -3357,7 +3363,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_tiledb_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
+    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

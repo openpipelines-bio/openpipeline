@@ -3281,10 +3281,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8"
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3307,7 +3308,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3320,7 +3321,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs",
     "viash_version" : "0.9.7",
-    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
+    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3378,7 +3379,6 @@ tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
 import sys
 from functools import partial
-from pandas.errors import MergeError
 from mudata import read_h5ad
 
 ## VIASH START
@@ -3445,25 +3445,16 @@ obsm_matrix.rename(
     inplace=True,
 )
 
-original_n_obs = len(mod_data.obs)
-try:
-    logger.info(f".obs names: {mod_data.obs_names}")
-    logger.info(f".obsm index: {obsm_matrix.index}")
-    new_obs = mod_data.obs.drop(obsm_matrix.columns, axis=1, errors="ignore")
-    new_obs = new_obs.merge(
-        obsm_matrix,
-        how="left",
-        validate="one_to_one",
-        left_index=True,
-        right_index=True,
-    )
-    mod_data.obs = new_obs
-except MergeError:
-    raise ValueError(
-        f"Could not join .obsm matrix at {par['obsm_key']} to .obs because there "
-        "are some observation that are not overlapping between the two matrices "
-        "(indexes should overlap). This is either a bug or your mudata file is corrupt."
-    )
+logger.info(f".obs names: {mod_data.obs_names}")
+logger.info(f".obsm index: {obsm_matrix.index}")
+new_obs = mod_data.obs.drop(obsm_matrix.columns, axis=1, errors="ignore")
+new_obs = new_obs.merge(
+    obsm_matrix,
+    how="left",
+    left_index=True,
+    right_index=True,
+)
+mod_data.obs = new_obs
 del mod_data.obsm[par["obsm_key"]]
 
 logger.info(

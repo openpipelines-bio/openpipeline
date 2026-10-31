@@ -3718,10 +3718,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8"
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3742,6 +3743,7 @@ meta = [
           "user" : false,
           "packages" : [
             "scanpy~=1.11.4",
+            "pynndescent<0.7",
             "xgboost~=2.1.3",
             "scikit-learn<1.6"
           ],
@@ -3766,7 +3768,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.9.7",
-    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
+    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

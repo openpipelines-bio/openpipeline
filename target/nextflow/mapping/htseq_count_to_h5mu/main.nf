@@ -3302,11 +3302,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
-            "pyarrow~=18.0.0"
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3322,7 +3322,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
+    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3386,7 +3386,6 @@ import shutil
 import pandas as pd
 import mudata as md
 import anndata as ad
-import polars as pl
 import numpy as np
 import gtfparse
 
@@ -3509,21 +3508,19 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
     reference = gtfparse.read_gtf(str(par["reference"]))
 
 
-# This is a polars dataframe, not pandas
-reference_genes = reference.filter(
-    (pl.col("feature") == "gene") & (pl.col("gene_id").is_in(list(counts.columns)))
-).sort("gene_id")
+reference_genes = reference[
+    (reference["feature"] == "gene") & (reference["gene_id"].isin(counts.columns))
+].sort_values("gene_id")
 
-var = pd.DataFrame(
-    data={
-        "gene_ids": pd.Index(reference_genes.get_column("gene_id")),
-        "feature_types": "Gene Expression",
-        "gene_symbol": reference_genes.get_column("gene_name").to_pandas(),
-    }
-).set_index("gene_ids")
+var = (
+    reference_genes.set_index("gene_id")
+    .rename_axis("gene_ids")
+    .rename(columns={"gene_name": "gene_symbol"})
+    .assign(feature_types="Gene Expression")[["feature_types", "gene_symbol"]]
+)
 
 print("> construct anndata", flush=True)
-adata = ad.AnnData(X=counts, obsm={"qc_htseq": qc}, var=var, dtype=np.int32)
+adata = ad.AnnData(X=counts.astype(np.int32), obsm={"qc_htseq": qc}, var=var)
 
 print("> convert to mudata", flush=True)
 mdata = md.MuData(adata)

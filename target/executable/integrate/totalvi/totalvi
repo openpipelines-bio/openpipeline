@@ -446,17 +446,18 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
+FROM pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime
 ENTRYPOINT []
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" "scanpy~=1.11.4" "scvi-tools[cuda]~=1.4.1" && \
+  pip install --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "scanpy~=1.11.4" "pynndescent<0.7" "scvi-tools[cuda]~=1.5.1" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component integrate totalvi"
-LABEL org.opencontainers.image.created="2026-10-30T08:53:03Z"
+LABEL org.opencontainers.image.created="2026-10-31T07:41:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="754f6d2a0ebeaa21b889695131e1f33a445f42c8"
+LABEL org.opencontainers.image.revision="6552ba6f4c5c1129b2a3022a0bda21e66a29a801"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

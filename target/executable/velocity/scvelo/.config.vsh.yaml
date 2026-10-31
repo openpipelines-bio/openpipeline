@@ -178,7 +178,7 @@ argument_groups:
     multiple_sep: ";"
   - type: "boolean"
     name: "--log_transform"
-    description: "Do not log transform counts."
+    description: "Log transform the counts."
     info: null
     default:
     - true
@@ -217,6 +217,8 @@ resources:
   path: "setup_logger.py"
 - type: "file"
   path: "compress_h5mu.py"
+- type: "file"
+  path: "scvelo.patch"
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
@@ -312,6 +314,9 @@ engines:
   target_tag: "integration_build"
   namespace_separator: "/"
   setup:
+  - type: "docker"
+    copy:
+    - "scvelo.patch /opt/scvelo.patch"
   - type: "apt"
     packages:
     - "procps"
@@ -320,17 +325,23 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.12.16"
+    - "anndata~=0.13.4"
     - "awkward"
-    - "scipy~=1.17.1"
-    - "mudata~=0.3.8"
+    - "pandas>3"
+    - "scipy~=1.18.1"
+    - "mudata~=0.4.1"
     - "scanpy~=1.11.4"
-    - "scvelo~=0.3.3,!=0.3.4"
+    - "pynndescent<0.7"
     script:
     - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
       \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
       ).partition(\\\".\\\")[0]) > 2\")"
     upgrade: true
+  - type: "docker"
+    run:
+    - "git clone --depth 1 --branch v0.3.4 https://github.com/theislab/scvelo.git\
+      \ /tmp/scvelo && \\\ncd /tmp/scvelo && git apply /opt/scvelo.patch && \\\nSETUPTOOLS_SCM_PRETEND_VERSION=0.3.4\
+      \ pip install --no-cache-dir /tmp/scvelo && \\\ncd / && rm -rf /tmp/scvelo\n"
   test_setup:
   - type: "apt"
     packages:
@@ -341,7 +352,7 @@ engines:
     packages:
     - "viashpy==0.10.0"
     github:
-    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+    - "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -352,7 +363,7 @@ build_info:
   output: "target/executable/velocity/scvelo"
   executable: "target/executable/velocity/scvelo/scvelo"
   viash_version: "0.9.7"
-  git_commit: "754f6d2a0ebeaa21b889695131e1f33a445f42c8"
+  git_commit: "6552ba6f4c5c1129b2a3022a0bda21e66a29a801"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

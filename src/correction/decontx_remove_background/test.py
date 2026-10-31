@@ -102,9 +102,6 @@ def assert_decontx_output(
     del output_rna.layers[output_layer]
     output_obs_columns = [output_obs_contamination, output_obs_clusters]
     output_rna.obs = output_rna.obs.drop(columns=output_obs_columns)
-    output_mudata.obs = output_mudata.obs.drop(
-        columns=[f"rna:{col}" for col in output_obs_columns]
-    )
     output_mudata.update()
     assert_annotation_objects_equal(input_path, output_mudata)
 

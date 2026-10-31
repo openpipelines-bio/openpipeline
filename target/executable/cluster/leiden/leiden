@@ -453,14 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" "scanpy~=1.11.4" "leidenalg~=0.11.0" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "scanpy~=1.11.4" "pynndescent<0.7" "leidenalg~=0.11.0" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2026-10-30T08:53:07Z"
+LABEL org.opencontainers.image.created="2026-10-31T07:41:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="754f6d2a0ebeaa21b889695131e1f33a445f42c8"
+LABEL org.opencontainers.image.revision="6552ba6f4c5c1129b2a3022a0bda21e66a29a801"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1623,9 +1623,11 @@ def main():
         shutil.copyfile(par["input"], output_file_uncompressed)
         logger.info("Opening %s", output_file_uncompressed)
         with h5py.File(output_file_uncompressed, "a") as storage:
-            group_path = f"/mod/{par['modality']}/obsm/{par['obsm_name']}"
-            logger.info("Adding output to %s", group_path)
-            ad.io.write_elem(storage, k=group_path, elem=results)
+            obsm_path = f"/mod/{par['modality']}/obsm"
+            logger.info("Adding output to %s/%s", obsm_path, par["obsm_name"])
+            # Keys passed to write_elem can not contain '/'
+            obsm_group = storage.require_group(obsm_path)
+            ad.io.write_elem(obsm_group, k=par["obsm_name"], elem=results)
         if par["output_compression"]:
             compress_h5mu(
                 output_file_uncompressed,

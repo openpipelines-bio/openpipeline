@@ -3344,11 +3344,13 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
             "scanpy~=1.11.4",
+            "pynndescent<0.7",
             "leidenalg~=0.11.0"
           ],
           "script" : [
@@ -3372,7 +3374,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3385,7 +3387,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.7",
-    "git_commit" : "754f6d2a0ebeaa21b889695131e1f33a445f42c8",
+    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3784,9 +3786,11 @@ def main():
         shutil.copyfile(par["input"], output_file_uncompressed)
         logger.info("Opening %s", output_file_uncompressed)
         with h5py.File(output_file_uncompressed, "a") as storage:
-            group_path = f"/mod/{par['modality']}/obsm/{par['obsm_name']}"
-            logger.info("Adding output to %s", group_path)
-            ad.io.write_elem(storage, k=group_path, elem=results)
+            obsm_path = f"/mod/{par['modality']}/obsm"
+            logger.info("Adding output to %s/%s", obsm_path, par["obsm_name"])
+            # Keys passed to write_elem can not contain '/'
+            obsm_group = storage.require_group(obsm_path)
+            ad.io.write_elem(obsm_group, k=par["obsm_name"], elem=results)
         if par["output_compression"]:
             compress_h5mu(
                 output_file_uncompressed,

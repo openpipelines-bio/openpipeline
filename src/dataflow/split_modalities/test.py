@@ -3,7 +3,6 @@ import pytest
 import mudata as md
 import anndata as ad
 import pandas as pd
-import re
 from io import StringIO
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 from textwrap import dedent
@@ -107,20 +106,13 @@ def test_split(
     assert mod1.n_obs == input_h5mu.n_obs
     assert mod2.n_obs == input_h5mu.n_obs
 
-    # When a var_key is only present for one modality, it is prefixed by the name of the
-    # modality followed by a colon and the name of the key (in the global .var).
-    replace_regex = r"(^mod1:|^mod2:)"
-    expected_var_keys = {
-        re.sub(replace_regex, "", col_name)
-        for col_name in input_h5mu.var.columns.tolist()
-    }
-    assert (
-        set(mod1.var.columns.tolist()) | set(mod2.var.columns.tolist())
-        == expected_var_keys
-    )
+    assert mod1.var_names.equals(input_h5mu.mod["mod1"].var_names)
+    assert mod2.var_names.equals(input_h5mu.mod["mod2"].var_names)
 
-    assert set(mod1.var.columns.tolist()) == set(input_h5mu.mod["mod1"].var.columns)
-    assert set(mod2.var.columns.tolist()) == set(input_h5mu.mod["mod2"].var.columns)
+    # mudata >= 0.4 does not pull modality columns into the global .var,
+    # so the annotation is only checked at the modality level.
+    assert set(mod1.mod["mod1"].var.columns) == set(input_h5mu.mod["mod1"].var.columns)
+    assert set(mod2.mod["mod2"].var.columns) == set(input_h5mu.mod["mod2"].var.columns)
 
     expected_csv_output = dedent(
         f"""\
