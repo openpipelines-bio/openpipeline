@@ -3403,11 +3403,10 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1",
+            "scipy~=1.17.1",
+            "mudata~=0.3.8",
             "scanpy~=1.11.4",
             "pynndescent<0.7"
           ],
@@ -3432,7 +3431,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3445,7 +3444,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
+    "git_commit" : "77452f55da3ede0feb3bf61f79b84eeaab78db2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3567,7 +3566,7 @@ if par["input_metrics_summary"] and par["uns_metrics"]:
 
     metrics_summary = pd.read_csv(
         par["input_metrics_summary"], decimal=".", quotechar='"', thousands=","
-    ).map(read_percentage)
+    ).applymap(read_percentage)
 
     logger.info("Storing metrics summary in .uns['%s']", par["uns_metrics"])
     adata.uns[par["uns_metrics"]] = metrics_summary

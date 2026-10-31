@@ -3694,25 +3694,18 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime",
+      "image" : "pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
         {
-          "type" : "docker",
-          "env" : [
-            "PIP_BREAK_SYSTEM_PACKAGES=1"
-          ]
-        },
-        {
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1",
+            "scipy~=1.17.1",
+            "mudata~=0.3.8",
             "scanpy~=1.11.4",
             "pynndescent<0.7"
           ],
@@ -3725,9 +3718,9 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scvi-tools[cuda]~=1.5.1"
+            "scvi-tools[cuda]~=1.4.1"
           ],
-          "upgrade" : false
+          "upgrade" : true
         }
       ],
       "test_setup" : [
@@ -3735,8 +3728,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.10.0",
-            "dask"
+            "viashpy==0.10.0"
           ],
           "upgrade" : true
         }
@@ -3749,7 +3741,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.9.7",
-    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
+    "git_commit" : "77452f55da3ede0feb3bf61f79b84eeaab78db2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

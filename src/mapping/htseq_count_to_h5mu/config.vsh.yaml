@@ -58,6 +58,8 @@ engines:
       packages:
         - gtfparse
     - type: python
+      packages:
+        - pyarrow~=18.0.0
       __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
 
 runners:

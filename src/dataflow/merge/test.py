@@ -199,14 +199,17 @@ def test_boolean_and_na_types(
     )
 
     if not pd.isna(expected):
+        assert merged_data.var.loc["var1"][extra_var_column_name] == expected
         assert (
             merged_data.mod[first_sample_mod].var.loc["var1"][extra_var_column_name]
             == expected
         )
     else:
+        assert pd.isna(merged_data.var.loc["var1"][extra_var_column_name])
         assert pd.isna(
             merged_data.mod[first_sample_mod].var.loc["var1"][extra_var_column_name]
         )
+    assert pd.isna(merged_data.var.loc["var4"][extra_var_column_name])
     assert pd.isna(
         merged_data.mod[second_sample_mod].var.loc["var4"][extra_var_column_name]
     )

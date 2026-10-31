@@ -132,7 +132,7 @@
         },
         "log_transform": {
           "type": "boolean",
-          "description": "Log transform the counts.",
+          "description": "Do not log transform counts.",
           "help_text": "Type: `boolean`, multiple: `False`, default: `true`. ",
           "default": true
         }

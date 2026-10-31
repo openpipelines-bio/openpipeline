@@ -453,14 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow merge"
-LABEL org.opencontainers.image.created="2026-10-31T07:41:44Z"
+LABEL org.opencontainers.image.created="2026-10-31T08:51:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6552ba6f4c5c1129b2a3022a0bda21e66a29a801"
+LABEL org.opencontainers.image.revision="77452f55da3ede0feb3bf61f79b84eeaab78db2f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1103,6 +1103,8 @@ cat > "\$tempscript" << 'VIASHMAIN'
 from __future__ import annotations
 import sys
 import mudata as md
+import pandas as pd
+import numpy as np
 
 
 ### VIASH START
@@ -1159,6 +1161,44 @@ def main():
             sample_modalities[mod_name] = mod_data
 
     merged = md.MuData(sample_modalities)
+    merged.update()
+    for df_attr in ("var", "obs"):
+        df = getattr(merged, df_attr)
+        df = df.replace({pd.NA: np.nan}, inplace=False)
+
+        # MuData supports nullable booleans and ints
+        # ie. \`IntegerArray\` and \`BooleanArray\`
+        df = df.convert_dtypes(
+            infer_objects=True,
+            convert_integer=True,
+            convert_string=False,
+            convert_boolean=True,
+            convert_floating=False,
+        )
+
+        # pd.convert_dtypes does not convert already existing nullable dtypes
+        # to their native numpy dtypes.
+        # At this point, integer and boolean columns use a nullable dtype; and string columns
+        # might use 'object' or pd.StringDtype. This is OK.
+        # However, for example floating number columns might still use a nullable dtype
+        # from before the call to convert_dtypes. So we need to explicitly cast.
+        col_dtypes = df.select_dtypes(
+            exclude=["integer", "string", "object", "boolean"]
+        ).dtypes.to_dict()
+        numpy_dtypes = {
+            col_name: np.dtype(col_dtype.kind)
+            for col_name, col_dtype in col_dtypes.items()
+            if pd.api.types.is_extension_array_dtype(col_dtype)
+        }
+        df = df.astype(numpy_dtypes)
+
+        # Convert leftover 'object' columns to string
+        object_cols = df.select_dtypes(include="object").columns.values
+        for obj_col in object_cols:
+            df[obj_col] = df[obj_col].astype(str).astype("category")
+
+        setattr(merged, df_attr, df)
+
     merged.write_h5mu(par["output"], compression=par["output_compression"])
     logger.info("Finished")
 

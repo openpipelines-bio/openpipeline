@@ -1,5 +1,6 @@
 import sys
 from functools import partial
+from pandas.errors import MergeError
 from mudata import read_h5ad
 
 ## VIASH START
@@ -41,16 +42,25 @@ obsm_matrix.rename(
     inplace=True,
 )
 
-logger.info(f".obs names: {mod_data.obs_names}")
-logger.info(f".obsm index: {obsm_matrix.index}")
-new_obs = mod_data.obs.drop(obsm_matrix.columns, axis=1, errors="ignore")
-new_obs = new_obs.merge(
-    obsm_matrix,
-    how="left",
-    left_index=True,
-    right_index=True,
-)
-mod_data.obs = new_obs
+original_n_obs = len(mod_data.obs)
+try:
+    logger.info(f".obs names: {mod_data.obs_names}")
+    logger.info(f".obsm index: {obsm_matrix.index}")
+    new_obs = mod_data.obs.drop(obsm_matrix.columns, axis=1, errors="ignore")
+    new_obs = new_obs.merge(
+        obsm_matrix,
+        how="left",
+        validate="one_to_one",
+        left_index=True,
+        right_index=True,
+    )
+    mod_data.obs = new_obs
+except MergeError:
+    raise ValueError(
+        f"Could not join .obsm matrix at {par['obsm_key']} to .obs because there "
+        "are some observation that are not overlapping between the two matrices "
+        "(indexes should overlap). This is either a bug or your mudata file is corrupt."
+    )
 del mod_data.obsm[par["obsm_key"]]
 
 logger.info(

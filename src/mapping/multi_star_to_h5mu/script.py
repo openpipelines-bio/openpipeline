@@ -66,9 +66,7 @@ var = pd.DataFrame(
 
 print("> construct anndata", flush=True)
 adata = ad.AnnData(
-    X=counts.astype(np.int32),
-    obsm={"qc_star": qc_star, "qc_htseq": qc_htseq},
-    var=var,
+    X=counts, obsm={"qc_star": qc_star, "qc_htseq": qc_htseq}, var=var, dtype=np.int32
 )
 
 print("> convert to mudata", flush=True)

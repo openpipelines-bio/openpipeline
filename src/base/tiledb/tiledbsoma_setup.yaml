@@ -1,7 +1,0 @@
-# tiledbsoma 2.3.0 requires pandas<3. Version 2.2.0 is patched to work with pandas 3 and anndata 0.13.
-# Requires the 'patch' executable and '/src/base/tiledb/tiledbsoma.patch' to be added as a resource.
-type: docker
-copy: ["tiledbsoma.patch /opt/tiledbsoma.patch"]
-run: |
-  pip install --no-cache-dir tiledbsoma==2.2.0 && \
-  patch -p1 -d "$(python -c 'import site; print(site.getsitepackages()[0])')" < /opt/tiledbsoma.patch

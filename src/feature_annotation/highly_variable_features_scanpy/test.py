@@ -110,6 +110,7 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
     data.mod["rna"].var = data.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
     )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del data["rna"].varm["hvg"]
     assert_annotation_objects_equal(lognormed_test_data_path, data)
 
@@ -166,10 +167,14 @@ def test_filter_with_hvg_var_input(run_component, common_vars_data_path):
     mdata.mod["rna"].var = mdata.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
     )
+    mdata.var = mdata.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del mdata["rna"].varm["hvg"]
 
     common_vars.mod["rna"].var = common_vars.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
+    )
+    common_vars.var = common_vars.var.drop(
+        columns=["rna:filter_with_hvg"], errors="raise"
     )
     del common_vars["rna"].varm["hvg"]
 
@@ -221,6 +226,9 @@ def test_filter_with_hvg_batch_with_batch(
     output_data.mod["rna"].var = output_data.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
     )
+    output_data.var = output_data.var.drop(
+        columns=["rna:filter_with_hvg"], errors="raise"
+    )
     del output_data["rna"].varm["hvg"]
     assert_annotation_objects_equal(lognormed_batch_test_data_path, output_data)
 
@@ -265,6 +273,7 @@ def test_filter_with_hvg_seurat_v3(run_component, input_path):
     data.mod["rna"].var = data.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
     )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del data["rna"].varm["hvg"]
     assert_annotation_objects_equal(input_path, data)
 
@@ -288,6 +297,7 @@ def test_filter_with_hvg_cell_ranger(run_component, filter_data_path):
     data.mod["rna"].var = data.mod["rna"].var.drop(
         columns=["filter_with_hvg"], errors="raise"
     )
+    data.var = data.var.drop(columns=["rna:filter_with_hvg"], errors="raise")
     del data["rna"].varm["hvg"]
     assert_annotation_objects_equal(filter_data_path, data)
 

@@ -11,9 +11,7 @@ meta = {"resources_dir": "resources_test/pbmc_1k_protein_v3/"}
 def input_h5mu():
     input = mu.read_h5mu(f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu")
     input.mod["rna"].obs["filter_column"] = "group_2"
-    input.mod["rna"].obs.iloc[
-        :50, input.mod["rna"].obs.columns.get_loc("filter_column")
-    ] = "group_1"
+    input.mod["rna"].obs["filter_column"][:50] = "group_1"
     return input
 
 

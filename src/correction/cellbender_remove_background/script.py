@@ -181,7 +181,7 @@ with tempfile.TemporaryDirectory(
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
     adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
 
-    logger.info("CellBender output format: %s", adata_out)
+    logger.info("CellBender output format:", adata_out)
 
     # AnnData object with n_obs x n_vars = 6794880 x 33538
     #     obs: 'cellbender_analyzed'

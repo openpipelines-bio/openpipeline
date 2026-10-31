@@ -8,8 +8,7 @@ from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
-    "executable": "./target/executable/metadata/join_csv/join_csv",
-    "config": "./src/metadata/join_csv/config.vsh.yml",
+    "executable": "./target/executable/integrate/add_metadata/add_metadata",
 }
 ## VIASH END
 
@@ -79,7 +78,7 @@ def test_add_metadata_var(run_component, random_path, sample_h5mu, sample_h5mu_p
             "sample_id_var",
             "--csv_key",
             "id",
-            "--output_compression",
+            "--compression_output",
             "gzip",
         ]
     )
@@ -94,6 +93,7 @@ def test_add_metadata_var(run_component, random_path, sample_h5mu, sample_h5mu_p
         index=pd.Index(["var1", "var2", "var3"]),
     ).astype(
         {
+            "Feat": "object",
             "sample_id_var": "category",
             "foo": "category",
             "bar": "category",
@@ -104,9 +104,10 @@ def test_add_metadata_var(run_component, random_path, sample_h5mu, sample_h5mu_p
     assert_annotation_objects_equal(sample_h5mu, output_mudata)
 
 
-def test_add_metadata_obs(run_component, random_path, sample_h5mu, sample_h5mu_path):
-    input_csv = random_path("csv")
-    output_h5mu = random_path("h5mu")
+def test_add_metadata_matrix_sample_column(run_component, tmp_path, sample_h5mu):
+    input_h5mu, input_mudata = sample_h5mu
+    input_csv = tmp_path / "input.csv"
+    output_h5mu = tmp_path / "output.h5mu"
 
     # create csv
     csv = pd.DataFrame(
@@ -117,7 +118,7 @@ def test_add_metadata_obs(run_component, random_path, sample_h5mu, sample_h5mu_p
     run_component(
         [
             "--input",
-            str(sample_h5mu_path),
+            str(input_h5mu),
             "--input_csv",
             str(input_csv),
             "--output",
@@ -131,7 +132,7 @@ def test_add_metadata_obs(run_component, random_path, sample_h5mu, sample_h5mu_p
         ]
     )
 
-    output_mudata = read_h5mu(output_h5mu)
+    result = read_h5mu(output_h5mu)
     expected_obs = pd.DataFrame(
         {
             "Obs": ["A", "B"],
@@ -140,17 +141,17 @@ def test_add_metadata_obs(run_component, random_path, sample_h5mu, sample_h5mu_p
             "bar": ["x", "y"],
         },
         index=pd.Index(["obs1", "obs2"]),
-    )
+    ).astype({"Obs": "object", "foo": "object", "bar": "object"})
+    pd.testing.assert_frame_equal(result.mod["mod1"].obs, expected_obs)
+    pd.testing.assert_frame_equal(result.mod["mod1"].var, input_mudata.mod["mod1"].var)
+    pd.testing.assert_frame_equal(result.mod["mod2"].obs, input_mudata.mod["mod2"].obs)
+    pd.testing.assert_frame_equal(result.mod["mod2"].var, input_mudata.mod["mod2"].var)
 
-    sample_h5mu.mod["mod1"].obs = expected_obs
-    assert_annotation_objects_equal(sample_h5mu, output_mudata)
 
-
-def test_add_not_all_samples_in_csv_raises(
-    run_component, random_path, sample_h5mu_path
-):
-    input_csv = random_path("csv")
-    output_h5mu = random_path("h5mu")
+def test_add_not_all_samples_in_csv_raises(run_component, tmp_path, sample_h5mu):
+    input_h5mu, input_mudata = sample_h5mu
+    input_csv = tmp_path / "input.csv"
+    output_h5mu = tmp_path / "output.h5mu"
 
     csv = pd.DataFrame(
         {"id": ["sample1", "lorem"], "foo": ["v", "w"], "bar": ["x", "y"]}
@@ -161,7 +162,7 @@ def test_add_not_all_samples_in_csv_raises(
         run_component(
             [
                 "--input",
-                str(sample_h5mu_path),
+                str(input_h5mu),
                 "--input_csv",
                 str(input_csv),
                 "--output",
@@ -182,4 +183,4 @@ def test_add_not_all_samples_in_csv_raises(
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__, "-k", "test_add_metadata_var"]))

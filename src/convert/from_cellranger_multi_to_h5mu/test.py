@@ -205,7 +205,7 @@ def test_cellranger_multi_basic(run_component, tmp_path, input_anticmv):
         ["Metric Name", "Library Type", "Category"]
     )
     percentage = metrics_df_with_index.loc[
-        [("Confidently mapped reads in cells", "Gene Expression", "Cells")],
+        ("Confidently mapped reads in cells", "Gene Expression", "Cells"),
         "Metric Value",
     ]
     assert math.isclose(float(percentage.iloc[0]), 0.857, rel_tol=1e-2)

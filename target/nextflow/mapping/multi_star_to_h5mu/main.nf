@@ -3263,11 +3263,10 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1"
+            "scipy~=1.17.1",
+            "mudata~=0.3.8"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3283,7 +3282,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
+    "git_commit" : "77452f55da3ede0feb3bf61f79b84eeaab78db2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3435,9 +3434,7 @@ var = pd.DataFrame(
 
 print("> construct anndata", flush=True)
 adata = ad.AnnData(
-    X=counts.astype(np.int32),
-    obsm={"qc_star": qc_star, "qc_htseq": qc_htseq},
-    var=var,
+    X=counts, obsm={"qc_star": qc_star, "qc_htseq": qc_htseq}, var=var, dtype=np.int32
 )
 
 print("> convert to mudata", flush=True)

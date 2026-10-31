@@ -145,15 +145,12 @@ test_resources:
 
 engines:
 - type: docker
-  image: pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime
+  image: pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
   setup:
-    - type: docker
-      env: PIP_BREAK_SYSTEM_PACKAGES=1
     - type: python
-      upgrade: false
       __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
       packages:
-        - scvi-tools[cuda]~=1.5.1
+        - scvi-tools[cuda]~=1.4.1
   test_setup:
     - type: python
       __merge__: [ /src/base/requirements/viashpy.yaml, .]

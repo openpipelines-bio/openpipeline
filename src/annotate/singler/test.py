@@ -3,8 +3,6 @@ import os
 import scanpy as sc
 import pytest
 import mudata as mu
-import numpy as np
-import pandas as pd
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
@@ -30,19 +28,6 @@ def input_path(write_mudata_to_file):
     mdata = mu.read_h5mu(input_file)
     adata = mdata.mod["rna"].copy()
     adata_lognorm = log_normalize(adata)
-    n_obs = adata_lognorm.n_obs
-    adata_lognorm.obs = pd.DataFrame(
-        {
-            "int_col": np.arange(n_obs, dtype="int64"),
-            "nullable_int_col": pd.array(
-                [1, None] * (n_obs // 2) + [1] * (n_obs % 2), dtype="Int64"
-            ),
-            "nullable_bool_col": pd.array(
-                [True, None] * (n_obs // 2) + [True] * (n_obs % 2), dtype="boolean"
-            ),
-        },
-        index=adata_lognorm.obs_names,
-    )
     mdata.mod["rna"] = adata_lognorm
     return write_mudata_to_file(mdata)
 
@@ -69,12 +54,12 @@ def test_simple_execution(run_component, random_h5mu_path, input_path):
 
     assert os.path.exists(output_file), "Output file does not exist"
 
+    input_mudata = mu.read_h5mu(input_file)
     output_mudata = mu.read_h5mu(output_file)
 
+    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
+
     assert list(output_mudata.mod["rna"].obs.keys()) == [
-        "int_col",
-        "nullable_int_col",
-        "nullable_bool_col",
         "singler_pred",
         "singler_probability",
         "singler_delta_next",
@@ -106,18 +91,6 @@ def test_simple_execution(run_component, random_h5mu_path, input_path):
         ".obsm at singler_scores has values outside the range [-1, 1]"
     )
 
-    output_rna = output_mudata.mod["rna"]
-    output_rna.obs = output_rna.obs.drop(
-        columns=[
-            "singler_pred",
-            "singler_probability",
-            "singler_delta_next",
-            "singler_pruned_labels",
-        ]
-    )
-    del output_rna.obsm["singler_scores"]
-    assert_annotation_objects_equal(input_path, output_mudata)
-
 
 def test_params(run_component, random_h5mu_path, input_path):
     output_file = random_h5mu_path()
@@ -136,7 +109,7 @@ def test_params(run_component, random_h5mu_path, input_path):
             "ensemblid",
             "--reference_var_input",
             "highly_variable",
-            "--de_n_genes",
+            "de_n_genes",
             "600",
             "--de_method",
             "wilcox",
@@ -153,24 +126,17 @@ def test_params(run_component, random_h5mu_path, input_path):
 
     assert os.path.exists(output_file), "Output file does not exist"
 
+    input_mudata = mu.read_h5mu(input_file)
     output_mudata = mu.read_h5mu(output_file)
 
+    assert_annotation_objects_equal(input_mudata.mod["prot"], output_mudata.mod["prot"])
+
     assert list(output_mudata.mod["rna"].obs.keys()) == [
-        "int_col",
-        "nullable_int_col",
-        "nullable_bool_col",
         "singler_pred",
         "singler_probability",
         "singler_delta_next",
     ]
     assert list(output_mudata.mod["rna"].obsm.keys()) == ["singler_scores"]
-
-    output_rna = output_mudata.mod["rna"]
-    output_rna.obs = output_rna.obs.drop(
-        columns=["singler_pred", "singler_probability", "singler_delta_next"]
-    )
-    del output_rna.obsm["singler_scores"]
-    assert_annotation_objects_equal(input_path, output_mudata)
 
 
 if __name__ == "__main__":

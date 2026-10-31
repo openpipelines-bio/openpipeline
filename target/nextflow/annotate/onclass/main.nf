@@ -3486,7 +3486,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.12",
+      "image" : "python:3.11",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3494,11 +3494,10 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1",
+            "scipy~=1.17.1",
+            "mudata~=0.3.8",
             "OnClass~=1.3",
             "tensorflow",
             "obonet"
@@ -3524,7 +3523,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3537,7 +3536,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/onclass",
     "viash_version" : "0.9.7",
-    "git_commit" : "6552ba6f4c5c1129b2a3022a0bda21e66a29a801",
+    "git_commit" : "77452f55da3ede0feb3bf61f79b84eeaab78db2f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -30,17 +30,6 @@
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
-* Bumped `mudata` to `0.4.1` and `anndata` to `0.13.4` (PR #). When reading a `MuData` object, the per-modality metadata columns (`var` and `obs`)
-  columns are no longer synchronized to the global (across all modalities) dataframes. By default, components that process a single modality edit
-  to the metadata of said modality only. Components that process multiple modalities are changes as follows:
-    - `dataflow/concatenate_h5mu`: 
-      + String columns van not be stored as `categorical` when they have repeated values. 
-      + Global-only metadata columns are now kept in the output. When they conflict across samples in `var`, they follow `--other_axis_mode`; with `move` they go to global `varm`.
-
-* `velocity/scvelo`: bumped `scvelo` to `0.3.4`, installed from source with a patch that adds compatibility with `pandas` 3. Highly variable gene selection (`--n_top_genes`) and log transformation (`--log_transform`) are now performed using `scanpy`, as they were removed from `scvelo.pp.filter_and_normalize` (PR #1263).
-
-* `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0` and patched it to support `pandas` 3 and `anndata` 0.13 (PR #).
-
 * `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
 
 * `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
@@ -94,8 +83,6 @@
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
 * `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
-
-* `dataflow/concatenate_h5mu`: fixed checking for duplicate observations between samples when the two observations are in different modalities. Within one input, the same observation can still be in several modalities (PR #)
 
 # openpipelines 4.2.0
 
