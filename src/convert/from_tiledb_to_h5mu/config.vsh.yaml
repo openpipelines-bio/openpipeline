@@ -69,7 +69,6 @@ engines:
     image: python:3.12
     setup:
       - type: python
-        packages:
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - __merge__: /src/base/tiledb/tiledbsoma_setup.yaml
     test_setup:
