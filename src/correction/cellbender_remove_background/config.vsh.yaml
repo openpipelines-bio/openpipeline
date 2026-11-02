@@ -298,7 +298,7 @@ engines:
       user: true
       upgrade: false
       packages:
-        - cellbender==0.4.0
+        - git+https://github.com/broadinstitute/CellBender.git@c5f5d9f41a2926a0b46515ccc4a3383d52a9ffa9
       __merge__: /src/base/requirements/anndata_mudata.yaml
 
 runners:

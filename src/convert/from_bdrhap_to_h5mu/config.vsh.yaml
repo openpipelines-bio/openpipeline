@@ -42,7 +42,7 @@ test_resources:
   - path: /resources_test/bdrhap_5kjrt/processed/output_raw/sample.h5mu
 engines:
   - type: docker
-    image: python:3.12-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages:

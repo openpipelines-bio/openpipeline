@@ -454,14 +454,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping multi_star_to_h5mu"
-LABEL org.opencontainers.image.created="2026-11-02T08:19:40Z"
+LABEL org.opencontainers.image.created="2026-11-02T09:56:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="afe44046fb7cbf4cd3fa20b2a8b73fc18744a51c"
+LABEL org.opencontainers.image.revision="a258a7e1417b8f8dc4e86249f9e21e8ecc79f59d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1166,9 +1166,7 @@ var = pd.DataFrame(
 
 print("> construct anndata", flush=True)
 adata = ad.AnnData(
-    X=counts.astype(np.int32),
-    obsm={"qc_star": qc_star, "qc_htseq": qc_htseq},
-    var=var,
+    X=counts, obsm={"qc_star": qc_star, "qc_htseq": qc_htseq}, var=var, dtype=np.int32
 )
 
 print("> convert to mudata", flush=True)

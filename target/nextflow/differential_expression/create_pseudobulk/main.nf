@@ -3353,11 +3353,10 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1",
+            "scipy~=1.17.1",
+            "mudata~=0.3.8",
             "scanpy~=1.11.4",
             "pynndescent<0.7"
           ],
@@ -3382,7 +3381,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3395,7 +3394,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/differential_expression/create_pseudobulk",
     "viash_version" : "0.9.7",
-    "git_commit" : "afe44046fb7cbf4cd3fa20b2a8b73fc18744a51c",
+    "git_commit" : "a258a7e1417b8f8dc4e86249f9e21e8ecc79f59d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
