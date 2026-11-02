@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import re
+import gzip
 import subprocess
 from multiprocessing import cpu_count
 import tempfile
@@ -12,6 +13,7 @@ import tarfile
 from pathlib import Path
 import shutil
 from itertools import chain
+from collections import defaultdict
 
 CELL_RANGER_EXEC = shutil.which("cellranger")
 
@@ -20,6 +22,8 @@ CELL_RANGER_EXEC = shutil.which("cellranger")
 par = {
     "output": "./cellranger_test_output",
     "input": [
+        "/home/di/code/openpipeline/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
+        "/home/di/code/openpipeline/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
         "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz",
         "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz",
         "resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz",
@@ -41,6 +45,7 @@ par = {
     "vdj_t_input": None,
     "vdj_t_gd_input": None,
     "vdj_b_input": None,
+    "vdj_denovo": None,
     "agc_input": None,
     "library_lanes": None,
     "library_subsample": None,
@@ -236,29 +241,20 @@ def infer_library_id_from_path(input_path: str) -> str:
 
 
 def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
-    helper_input = {"input": [], "library_id": [], "library_type": []}
+    empty_result = pd.DataFrame(
+        [], index=pd.Index([], name="library_id"), columns=["fastqs", "library_type"]
+    )
+    input_type_result = [empty_result]
     for input_type, library_type in HELPER_INPUT.items():
         if par[input_type]:
-            par[input_type] = resolve_input_directories_to_fastq_paths(par[input_type])
+            fastqs = resolve_input_directories_to_fastq_paths(par[input_type])
+            input_type_result.append(
+                get_fastq_to_library_id_mapping(
+                    fastqs, defaultdict(lambda: library_type)
+                )
+            )
 
-            library_ids = [
-                infer_library_id_from_path(path.name) for path in par[input_type]
-            ]
-
-            library_id_dict = {}
-            for fastq, library_id in zip(par[input_type], library_ids):
-                library_id_dict.setdefault(library_id, []).append(fastq)
-
-            for library_id, input in library_id_dict.items():
-                helper_input["input"] += input
-                helper_input["library_id"].append(library_id)
-                helper_input["library_type"].append(library_type)
-
-    assert len(helper_input["library_id"]) == len(set(helper_input["library_id"])), (
-        "File names passed to feature type-specific inputs must be unique"
-    )
-
-    return helper_input
+    return pd.concat(input_type_result)
 
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
@@ -267,10 +263,6 @@ def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
         for key, li in dic.items()
         if li is not None and isinstance(li, (list, tuple, set))
     }
-
-
-def strip_margin(text: str) -> str:
-    return re.sub("(\n?)[ \t]*\|", "\\1", text)
 
 
 def subset_dict(
@@ -296,7 +288,7 @@ def check_subset_dict_equal_length(
 
 
 def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Path]:
-    input_paths = [Path(fastq) for fastq in input_paths]
+    input_paths = [Path(fastq).resolve() for fastq in input_paths]
     if len(input_paths) == 1 and input_paths[0].is_dir():
         logger.info(
             "Detected a directory in input paths, "
@@ -315,6 +307,62 @@ def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Pat
         )
 
     return input_paths
+
+
+def get_fastq_to_library_id_mapping(
+    fastq_files: list[Path], library_type_per_id: dict[str, str]
+):
+    # Get the library_ids from the actual FASTQ files.
+    fastq_library_ids = {}
+    for fastq_file in fastq_files:
+        fastq_library_id = infer_library_id_from_path(fastq_file.name)
+        # A library consists of multiple FASTQ files, which are staged into
+        # directories for Cell Ranger later on. Take the set.
+        fastq_library_ids.setdefault(fastq_library_id, set()).add(fastq_file)
+    all_fastq_libraries = (
+        pd.Series(fastq_library_ids)
+        .rename_axis("library_id")
+        .to_frame(name="fastqs")
+        .explode("fastqs")
+    )
+    # Because the FASTQ files may originate from globbing an input directory
+    # the list needs to be filtered with the requested libraries from the library_id argument
+    filtered_fastq_libraries = all_fastq_libraries
+    if library_type_per_id.keys():
+        library_ids = list(library_type_per_id.keys())
+        keys_not_present = pd.Index(library_ids, name="library_id").difference(
+            all_fastq_libraries.index
+        )
+        assert keys_not_present.empty, (
+            f"No FASTQ files found for the following library ids: {','.join(keys_not_present)}. "
+            "Check that --library_id values match the FASTQ file names."
+        )
+        filtered_fastq_libraries = all_fastq_libraries.loc[library_ids]
+
+    # Add the library_type from the input
+    return filtered_fastq_libraries.assign(
+        library_type=filtered_fastq_libraries.index.map(library_type_per_id)
+    )
+
+
+def transform_base_input(par):
+    if par["input"]:
+        assert len(par["library_type"]) > 0, (
+            "--library_type must be defined when passing input to --input"
+        )
+        assert len(par["library_id"]) > 0, (
+            "--library_id must be defined when passing input to --input"
+        )
+        # if par["input"] is a directory, look for fastq files
+        fastq_files = resolve_input_directories_to_fastq_paths(par["input"])
+        library_type_per_id = {
+            library_id: library_type
+            for library_id, library_type in zip(par["library_id"], par["library_type"])
+        }
+        return get_fastq_to_library_id_mapping(fastq_files, library_type_per_id)
+    return pd.DataFrame(
+        [], index=pd.Index([], name="library_id"), columns=["fastqs", "library_type"]
+    )
 
 
 def make_paths_absolute(par: dict[str, Any], config: Path | str):
@@ -343,6 +391,130 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
         )
         par[arg_name] = new_arg
     return par
+
+
+def get_first_read_name(fastq_file: Path) -> str:
+    """
+    Get the name of the first read in a FASTQ file. Like Cell Ranger, only use the part
+    of the header before the first space or forward slash: this part is identical for
+    the reads of a pair (e.g. '@A00123:8:HXXXXXXXX:1:1101:1000:1000 1:N:0:ACGT' and
+    '... 2:N:0:ACGT', or '@HWUSI-EAS100R:6:73:941:1973#0/1' and '.../2').
+    """
+    open_func = gzip.open if fastq_file.suffix == ".gz" else open
+    with open_func(fastq_file, "rt") as open_fastq:
+        header = open_fastq.readline().rstrip("\r\n")
+    if not header.startswith("@"):
+        raise ValueError(
+            f"Could not read the name of the first read from '{fastq_file}'. "
+            "Please check that it is a valid FASTQ file."
+        )
+    return re.split(r"[ /]", header[1:], maxsplit=1)[0]
+
+
+def pair_fastq_files(fastq_files: list[Path]) -> list[list[Path]]:
+    """
+    Split FASTQ files with the same sample name, S number, lane and chunk number
+    into read sets: the files that were sequenced together (e.g. R1, R2 and I1).
+
+    When each file name occurs only once, all files belong to a single read set.
+    Otherwise (e.g. a library that was sequenced on multiple flow cells),
+    files that start with the same read name are put in the same read set.
+    """
+    file_names = sorted({fastq_file.name for fastq_file in fastq_files})
+    if len(file_names) == len(fastq_files):
+        return [fastq_files]
+
+    first_read_names = {
+        fastq_file: get_first_read_name(fastq_file) for fastq_file in fastq_files
+    }
+    read_sets = {}
+    for fastq_file, read_name in first_read_names.items():
+        read_sets.setdefault(read_name, []).append(fastq_file)
+
+    # Each read set must contain exactly one file per file name
+    if any(
+        sorted(fastq_file.name for fastq_file in read_set) != file_names
+        for read_set in read_sets.values()
+    ):
+        found_read_names = "\n".join(
+            f"\t{fastq_file}: {read_name}"
+            for fastq_file, read_name in first_read_names.items()
+        )
+        raise ValueError(
+            "The following FASTQ files have identical file names and could not be paired "
+            f"using the name of the first read in each file:\n{found_read_names}\n"
+            "Files that belong together (e.g. R1 and R2) must start with the same read name, "
+            "which must differ from the read name of the other files with the same file name. "
+            "The read name is the part of the FASTQ header before the first space or '/'."
+        )
+    # Sort to make the result independent of the order of the input files
+    return [read_sets[read_name] for read_name in sorted(read_sets)]
+
+
+def handle_duplicate_fastq_file_names(
+    libraries_df: pd.DataFrame, staging_dir: Path
+) -> pd.DataFrame:
+    """
+    Stage the input FASTQ files into directories that can be passed to Cell Ranger,
+    which selects the FASTQ files for a library from a directory based on their names.
+    Files that belong together (e.g. R1 and R2) are staged into the same directory
+    and files with the same name (e.g. from multiple flow cells) into different directories.
+    """
+    duplicated_paths = libraries_df.loc[
+        libraries_df.duplicated(subset=["fastqs"]), "fastqs"
+    ]
+    if not duplicated_paths.empty:
+        raise ValueError(
+            "Duplicate input FASTQ files are not supported. Found: "
+            f"{', '.join(map(str, duplicated_paths.unique()))}"
+        )
+
+    staged_libraries = []
+    for (library_id, library_type), library_fastqs in libraries_df.groupby(
+        ["library_id", "library_type"], sort=False
+    ):
+        # Like Cell Ranger, group the files by sample name, S number, lane and chunk number
+        fastqs_per_group = defaultdict(list)
+        for fastq_file in library_fastqs["fastqs"]:
+            # Get the FASTQ library, read orientation, lane ID, and file suffix (this is always '001')
+            group = re.match(fastq_regex, fastq_file.name).group(1, 2, 4, 6)
+            fastqs_per_group[group].append(fastq_file)
+
+        # Use as few directories as possible, the read sets from the same group
+        # must end up in different directories.
+        fastqs_per_dir = defaultdict(list)
+        for fastq_files in fastqs_per_group.values():
+            for dir_index, read_set in enumerate(pair_fastq_files(fastq_files)):
+                fastqs_per_dir[dir_index] += read_set
+
+        # Cell Ranger groups directories into libraries using the physical_library_id.
+        # When not set, it is derived from the feature type, so all directories from a
+        # feature type end up in the same library. Setting it explicitly would conflict
+        # with this default for other libraries of the same feature type. However, only one
+        # directory with feature type 'VDJ' is allowed to use the default.
+        needs_physical_library_id = library_type == "VDJ" and len(fastqs_per_dir) > 1
+
+        for fastq_files in fastqs_per_dir.values():
+            fastq_dir = staging_dir / f"{len(staged_libraries)}_{library_id}"
+            fastq_dir.mkdir(parents=True)
+            for fastq_file in fastq_files:
+                logger.info("Staging %s to %s", fastq_file, fastq_dir)
+                (fastq_dir / fastq_file.name).symlink_to(fastq_file)
+            staged_libraries.append(
+                {
+                    "library_id": library_id,
+                    "fastqs": fastq_dir,
+                    "library_type": library_type,
+                    "physical_library_id": library_id
+                    if needs_physical_library_id
+                    else None,
+                }
+            )
+
+    return pd.DataFrame(
+        staged_libraries,
+        columns=["library_id", "fastqs", "library_type", "physical_library_id"],
+    ).set_index("library_id")
 
 
 def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> str:
@@ -378,31 +550,53 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
     return par
 
 
-def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
-    if par["input"]:
-        assert len(par["library_type"]) > 0, (
-            "--library_type must be defined when passing input to --input"
-        )
-        assert len(par["library_id"]) > 0, (
-            "--library_id must be defined when passing input to --input"
-        )
-
-        # if par["input"] is a directory, look for fastq files
-        par["input"] = resolve_input_directories_to_fastq_paths(par["input"])
-
-    # add helper input
+def process_params(
+    par: dict[str, Any], viash_config: Path | str, fastq_staging_dir: Path
+) -> str:
+    # Get input from base argument (--input)
+    base_input = transform_base_input(par)
+    # Get the input from the helper arguments (e.g. --gex_input)
     helper_input = transform_helper_inputs(par)
-    for key in ["input", "library_id", "library_type"]:
-        par[key] = (par[key] if par[key] else []) + helper_input[key]
 
-        assert len(par[key]) > 0, (
-            f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
-        )
+    all_input = pd.concat([base_input, helper_input])
+    all_input = handle_duplicate_fastq_file_names(all_input, fastq_staging_dir)
 
-    # check lengths of libraries metadata
-    library_dict = subset_dict(par, LIBRARY_PARAMS)
-    check_subset_dict_equal_length("Library", library_dict)
+    # Transfer the input to par
+    # TODO: This is a bit ugly, it is probably better to
+    # let this function return the all_input dataframe
+    # and use it as input for generating the Cell Ranger config
+    par["fastqs"] = all_input["fastqs"].to_list()
+    par["library_type"] = all_input["library_type"].to_list()
+    par["library_id"] = all_input.index.to_list()
+    # Only add the physical_library_id column to the config when it is used
+    par["physical_library_id"] = (
+        all_input["physical_library_id"].to_list()
+        if all_input["physical_library_id"].notna().any()
+        else None
+    )
 
+    # The library arguments that accept multiple values have one value per library:
+    # first the libraries from --library_id, then the libraries from the helper inputs.
+    # Repeat the values for libraries that were staged into multiple directories.
+    library_per_row, libraries = pd.MultiIndex.from_arrays(
+        [all_input.index, all_input["library_type"]]
+    ).factorize()
+    for library_param in ("library_subsample", "library_lanes"):
+        values = par[library_param]
+        if values is None:
+            continue
+        if len(values) != len(libraries):
+            found_libraries = ", ".join(
+                f"{library_id} ({library_type})"
+                for library_id, library_type in libraries
+            )
+            raise ValueError(
+                f"--{library_param} must have one value per library, but has "
+                f"{len(values)} value(s) for {len(libraries)} libraries: {found_libraries}."
+            )
+        par[library_param] = [values[library] for library in library_per_row]
+
+    # Check if inputs for the samples config section match lengths
     samples_dict = subset_dict(par, SAMPLE_PARAMS)
     check_subset_dict_equal_length("Samples", samples_dict)
 
@@ -425,11 +619,12 @@ def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[
     return title + values + [""]
 
 
-def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
+def generate_config(par: dict[str, Any]) -> str:
     content_list = []
-    par["fastqs"] = fastq_dir
-    libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})
-    # TODO: use the union (|) operator when python is updated to 3.9
+    libraries = LIBRARY_CONFIG_KEYS | {
+        "fastqs": "fastqs",
+        "physical_library_id": "physical_library_id",
+    }
     all_sections = REFERENCE_SECTIONS | {
         "libraries": (libraries, "columns"),
         "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns"),
@@ -473,28 +668,21 @@ def untar(tar_file, output_directory):
 
 
 def main(par: dict[str, Any], meta: dict[str, Any]):
-    logger.info("Processing params")
-    par = process_params(par, meta["config"])
-    logger.info(par)
-
     with tempfile.TemporaryDirectory(
         prefix="cellranger_multi-", dir=meta["temp_dir"]
     ) as temp_dir:
         logger.info("Using temporary directory %s", temp_dir)
         temp_dir_path = Path(temp_dir)
+
+        logger.info("Processing params")
+        par = process_params(par, meta["config"], temp_dir_path / "fastqs")
+        logger.info(par)
+
         for reference_par_name in REFERENCES:
             par[reference_par_name] = untar(par[reference_par_name], temp_dir_path)
 
-        logger.info("Creating symbolic links to temporary directory")
-        # Creating symlinks of fastq files to tempdir
-        input_symlinks_dir = temp_dir_path / "input_symlinks"
-        input_symlinks_dir.mkdir()
-        for fastq in par["input"]:
-            destination = input_symlinks_dir / fastq.name
-            destination.symlink_to(fastq)
-
         logger.info("Creating config file")
-        config_content = generate_config(par, input_symlinks_dir)
+        config_content = generate_config(par)
         logger.info("Using config: \n\t%s", config_content.replace("\n", "\n\t"))
         par["output"].mkdir(parents=True, exist_ok=True)
         config_file = par["output"] / "config.csv"
