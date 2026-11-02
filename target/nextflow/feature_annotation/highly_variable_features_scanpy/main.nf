@@ -3446,10 +3446,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
             "scanpy~=1.11.4",
             "pynndescent<0.7",
             "scikit-misc"
@@ -3475,7 +3476,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3488,7 +3489,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.9.7",
-    "git_commit" : "a1c553339813265a0a0327bae72481b7cf01dd87",
+    "git_commit" : "afe44046fb7cbf4cd3fa20b2a8b73fc18744a51c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

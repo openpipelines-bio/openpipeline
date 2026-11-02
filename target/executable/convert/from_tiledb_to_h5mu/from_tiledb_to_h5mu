@@ -449,14 +449,17 @@ function ViashDockerfile {
 FROM python:3.12
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" "tiledbsoma" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
+COPY tiledbsoma.patch /opt/tiledbsoma.patch
+RUN pip install --no-cache-dir tiledbsoma==2.2.0 && \
+patch -p1 -d "$(python -c 'import site; print(site.getsitepackages()[0])')" < /opt/tiledbsoma.patch
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_tiledb_to_h5mu"
-LABEL org.opencontainers.image.created="2026-11-01T09:31:57Z"
+LABEL org.opencontainers.image.created="2026-11-02T08:19:44Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a1c553339813265a0a0327bae72481b7cf01dd87"
+LABEL org.opencontainers.image.revision="afe44046fb7cbf4cd3fa20b2a8b73fc18744a51c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
