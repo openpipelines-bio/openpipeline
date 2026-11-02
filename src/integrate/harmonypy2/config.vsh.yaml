@@ -1,0 +1,157 @@
+name: harmonypy2
+namespace: "integrate"
+scope: "public"
+description: |
+  Performs Harmony integration as described in https://github.com/immunogenomics/harmony.
+  Uses harmonypy 2.x (https://github.com/slowkow/harmonypy), a C++ rewrite of harmonypy
+  that follows the R harmony2 package. Note that the default parameters follow R harmony2
+  and differ from `integrate/harmonypy` (e.g. lambda is estimated automatically).
+authors:
+  - __merge__: /src/authors/dries_schaumont.yaml
+    roles: [ author ]
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: "--input"
+        alternatives: ["-i"]
+        type: file
+        description: Input h5mu file
+        direction: input
+        example: input.h5mu
+        required: true
+      - name: "--modality"
+        description: |
+          Which modality from the input MuData file to process.
+        type: string
+        default: "rna"
+        required: false
+      - name: "--obsm_input"
+        type: string
+        default: "X_pca"
+        required: false
+        description: "Which .obsm slot to use as a starting PCA embedding."
+      - name: "--obs_covariates"
+        type: string
+        description: |
+          The .obs field(s) that define the covariate(s) to regress out.
+          Missing values are not allowed in these columns.
+        example: ["batch", "sample"]
+        required: true
+        multiple: true
+  - name: Outputs
+    arguments:
+      - name: "--output"
+        alternatives: ["-o"]
+        type: file
+        description: Output h5mu file.
+        direction: output
+        required: true
+        example: output.h5mu
+      - name: "--obsm_output"
+        type: string
+        default: "X_pca_integrated"
+        required: false
+        description: "In which .obsm slot to store the resulting integrated embedding."
+  - name: Harmony arguments
+    arguments:
+      - name: "--theta"
+        description: |
+          Diversity clustering penalty parameter. Can be set as a single value for all batches,
+          as one value per covariate (in the order of --obs_covariates), or as one value per batch
+          (the levels of each covariate in sorted order). theta=0 does not encourage any diversity.
+          Larger values of theta result in more diverse clusters.
+        type: double
+        default: [2]
+        multiple: true
+      - name: "--lambda"
+        description: |
+          Ridge regression penalty. Can be set as a single value for all batches, as one value per
+          covariate or as one value per batch, all positive. When not set (or set to -1),
+          lambda is estimated in each cluster from --alpha.
+        type: double
+        multiple: true
+      - name: "--alpha"
+        description: |
+          Used to estimate lambda when --lambda is not set.
+        type: double
+        default: 0.2
+      - name: "--sigma"
+        description: |
+          Width of soft kmeans clusters. Can be set as a single value for all clusters or
+          one value per cluster.
+        type: double
+        default: [0.1]
+        multiple: true
+      - name: "--nclust"
+        description: |
+          Number of clusters in the model. When not set, min(number of cells / 30, 100) is used.
+        type: integer
+        min: 1
+      - name: "--tau"
+        description: |
+          Protection against overclustering small datasets with large ones.
+          tau is the expected number of cells per cluster. 0 disables this protection.
+        type: double
+        default: 0
+      - name: "--block_size"
+        description: |
+          Proportion of cells to update during clustering. Between 0 and 1.
+        type: double
+        default: 0.05
+      - name: "--max_iter_harmony"
+        description: Maximum number of rounds to run Harmony.
+        type: integer
+        default: 10
+        min: 1
+      - name: "--max_iter_kmeans"
+        description: Maximum number of rounds to run clustering at each round of Harmony.
+        type: integer
+        default: 4
+        min: 1
+      - name: "--epsilon_cluster"
+        description: Convergence tolerance for the clustering round of Harmony.
+        type: double
+        default: 0.001
+      - name: "--epsilon_harmony"
+        description: Convergence tolerance for Harmony.
+        type: double
+        default: 0.01
+      - name: "--batch_prop_cutoff"
+        description: |
+          Minimum proportion of a batch's cells assigned to a cluster for that batch to be
+          corrected in that cluster.
+        type: double
+        default: 0.00001
+      - name: "--random_state"
+        description: Random seed for reproducibility.
+        type: integer
+        default: 0
+__merge__: [., /src/base/h5_compression_argument.yaml]
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/setup_logger.py
+  - path: /src/utils/compress_h5mu.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+
+engines:
+- type: docker
+  image: python:3.12-slim
+  setup:
+    - type: apt
+      packages:
+        - procps
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+      packages:
+        - harmonypy==2.1.0
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [highmem, highcpu, highdisk]
