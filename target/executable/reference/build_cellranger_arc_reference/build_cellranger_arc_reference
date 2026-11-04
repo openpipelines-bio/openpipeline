@@ -456,9 +456,9 @@ ENV PATH=/opt/cellranger-arc-2.0.2:$PATH
 COPY --from=quay.io/nf-core/cellranger-arc:2.0.2 /opt/cellranger-arc-2.0.2 /opt/cellranger-arc-2.0.2
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_arc_reference"
-LABEL org.opencontainers.image.created="2026-11-04T13:50:06Z"
+LABEL org.opencontainers.image.created="2026-11-04T15:05:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="14362b2425ced71737d5b37bb21849b502f37ea2"
+LABEL org.opencontainers.image.revision="3d3f4a2dd1a4399373469a59788a9186af759e85"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

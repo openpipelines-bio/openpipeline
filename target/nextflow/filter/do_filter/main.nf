@@ -3319,7 +3319,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter",
     "viash_version" : "0.9.7",
-    "git_commit" : "14362b2425ced71737d5b37bb21849b502f37ea2",
+    "git_commit" : "3d3f4a2dd1a4399373469a59788a9186af759e85",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
