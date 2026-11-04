@@ -127,7 +127,7 @@ engines:
       - type: r
         cran: [ hdf5r, Seurat, SeuratObject, remotes ]
       - type: r
-        # Azimuth is not on CRANThe latest release tag (v0.5.0) can no longer
+        # Azimuth is not on CRAN. The latest release tag (v0.5.0) can no longer
         # be installed: it depends on the deleted stuart-lab/signac@seurat5
         # branch. Pinned to master (v0.5.1, untagged), which also updates
         # deprecated Seurat 5 calls. Keep in sync with annotate/azimuth.
