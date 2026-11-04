@@ -9,27 +9,30 @@ workflow run_wf {
           "Either --input (h5mu) or --input_seurat (rds) must be provided."
         assert !(state.input && state.input_seurat) :
           "Provide only one of --input or --input_seurat."
-        def n_levels = state.annotation_levels.size()
-        assert !state.output_obs_predictions || state.output_obs_predictions.size() == n_levels :
-          "--output_obs_predictions should have the same length as --annotation_levels (${n_levels})."
-        assert !state.output_obs_probability || state.output_obs_probability.size() == n_levels :
-          "--output_obs_probability should have the same length as --annotation_levels (${n_levels})."
+        assert state.reference != "custom" || state.custom_reference :
+          "--custom_reference must be provided when --reference is 'custom'."
+        assert state.reference == "custom" || !state.custom_reference :
+          "--custom_reference can only be used with --reference 'custom'."
+        // The output names have to line up with the annotation levels, which are
+        // only known when --annotation_levels is provided.
+        ["output_obs_predictions", "output_obs_probability"].each { arg ->
+          if (state[arg]) {
+            assert state.annotation_levels :
+              "--${arg} can only be used together with --annotation_levels."
+            def n_levels = state.annotation_levels.size()
+            assert state[arg].size() == n_levels :
+              "--${arg} should have the same length as --annotation_levels (${n_levels})."
+          }
+        }
         [id, state]
       }
       | map {id, state ->
         def from_h5mu = state.input != null
-        // Viash fills in a '$id.$key.output_seurat.rds' template for optional outputs
-        // that were not provided. Only keep --output_seurat if it was requested.
-        def output_seurat = state.output_seurat
-        if (output_seurat && output_seurat.toString().contains('$key')) {
-          output_seurat = null
-        }
-
         def seurat_layer = from_h5mu ? (state.input_layer ?: "X") : (state.input_layer ?: "counts")
         def new_state = state + [
           // Set aside the output for this workflow to avoid conflicts
           "workflow_output": state.output,
-          "output_seurat": output_seurat,
+          "output_seurat": state.write_seurat ? state.output_seurat : null,
           "seurat_assay": from_h5mu ? "RNA" : state.input_seurat_assay,
           "seurat_layer": seurat_layer,
           "seurat_x_layer": from_h5mu ? "X" : seurat_layer
@@ -87,14 +90,16 @@ workflow run_wf {
       | map {id, state -> [id, state + ["current_modality": state.modality]]}
 
     annotated_ch = h5mu_query_ch.mix(seurat_query_ch)
-      | azimuth.run(
+      | azimuth_component.run(
         fromState: {id, state ->
           def args = [
             "input": state.input_seurat,
             "assay": state.seurat_assay,
             "input_layer": state.seurat_layer,
             "input_var_gene_names": state.input_var_gene_names,
+            "input_reference_gene_overlap": state.input_reference_gene_overlap,
             "reference": state.reference,
+            "custom_reference": state.custom_reference,
             "annotation_levels": state.annotation_levels,
             "do_adt": state.do_adt,
             "k_weight": state.k_weight,
@@ -104,7 +109,8 @@ workflow run_wf {
             "output_obs_probability": state.output_obs_probability,
             "output_obs_mapping_score": state.output_obs_mapping_score,
             "output_obsm_umap": state.output_obsm_umap,
-            "output_obsm_integrated": state.output_obsm_integrated
+            "output_obsm_integrated": state.output_obsm_integrated,
+            "output_compression": state.output_seurat_compression
           ]
           if (state.output_seurat) {
             args.output = state.output_seurat
@@ -178,7 +184,7 @@ workflow run_wf {
         toState: ["output": "output"]
       )
       | map {id, state ->
-        def new_state = state + ["output_seurat": state.output_seurat ? state.azimuth_output : null]
+        def new_state = state + ["output_seurat": state.write_seurat ? state.azimuth_output : null]
         [id, new_state]
       }
       | setState(["output", "output_seurat"])

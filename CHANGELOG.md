@@ -43,7 +43,7 @@
 
 * `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234).
 
-* `workflows/annotation/Azimuth`: added a wrapper workflow around the annotate/azimuth_seurat component to make it accept either H5MU or Seurat input (PR #1251).
+* `workflows/annotation/Azimuth`: implemented an Azimuth annotation workflow that accepts and writes either H5MU or Seurat file formats (PR #1251).
 
 ## MINOR CHANGES
 

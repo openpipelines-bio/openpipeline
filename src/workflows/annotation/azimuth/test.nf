@@ -22,6 +22,11 @@ workflow test_wf {
       "expected_obs_probability": ["custom_probability"],
       "expected_obs_mapping_score": "custom_mapping_score",
       "expected_obsm": ["X_custom_umap", "X_azimuth_integrated"]
+    ],
+    "custom_reference_test": [
+      "expected_modalities": ["rna", "prot"],
+      "expected_obs_predictions": ["azimuth_pred_cell_ontology_class", "azimuth_pred_cell_type"],
+      "expected_obs_probability": ["azimuth_probability_cell_ontology_class", "azimuth_probability_cell_type"]
     ]
   ]
 
@@ -50,7 +55,20 @@ workflow test_wf {
         output_obs_mapping_score: "custom_mapping_score",
         output_obsm_umap: "X_custom_umap",
         output_obsm_integrated: "X_azimuth_integrated",
+        write_seurat: true,
         output_seurat: "output.rds"
+      ],
+      // H5MU input with a custom reference: without --annotation_levels, all
+      // levels of the reference are transferred. --write_seurat without
+      // --output_seurat writes the Seurat object to the default output path.
+      [
+        id: "custom_reference_test",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        input_var_gene_names: "gene_symbol",
+        reference: "custom",
+        custom_reference: resources_test.resolve("annotation_test_data/azimuth_custom_reference"),
+        write_seurat: true,
+        output_seurat_compression: "none"
       ]
     ])
     | map{ state -> [state.id, state] }
@@ -69,8 +87,8 @@ workflow test_wf {
       assert state.output.isFile() : "'output' should be a file."
       assert state.output.toString().endsWith(".h5mu") : "Output file should end with '.h5mu'. Found: ${state.output}"
 
-      // --output_seurat is only returned when it was provided
-      if (id == "seurat_input_test") {
+      // --output_seurat is only returned when --write_seurat was set
+      if (id in ["seurat_input_test", "custom_reference_test"]) {
         assert state.containsKey("output_seurat") : "Output should contain key 'output_seurat'."
         assert state.output_seurat.isFile() : "'output_seurat' should be a file."
         assert state.output_seurat.toString().endsWith(".rds") : "Seurat output should end with '.rds'. Found: ${state.output_seurat}"
@@ -85,7 +103,7 @@ workflow test_wf {
     )
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
-      assert output_list.size() == 2 : "output channel should contain 2 events"
-      assert output_list.collect{it[0]} == ["h5mu_input_test", "seurat_input_test"]
+      assert output_list.size() == 3 : "output channel should contain 3 events"
+      assert output_list.collect{it[0]} == ["custom_reference_test", "h5mu_input_test", "seurat_input_test"]
     }
 }
