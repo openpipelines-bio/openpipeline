@@ -7,8 +7,7 @@ import pytest
 ##VIASH START
 par = {
     "input": "azimuth/output.h5mu",
-     "input_original": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-
+    "input_original": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "expected_modalities": ["rna", "prot", "prot_imputed"],
     "expected_obs_predictions": ["azimuth_pred_celltype_l1"],
