@@ -3351,6 +3351,10 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.rds"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/annotation_test_data/azimuth_custom_reference"
     }
   ],
   "status" : "enabled",
@@ -3500,7 +3504,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/annotate/azimuth",
     "viash_version" : "0.9.7",
-    "git_commit" : "3177ea5a6bd89098da23ad259ecdd526b8acad15",
+    "git_commit" : "afe14a7dff52cb52f98023bd03da9019eb1e05b1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

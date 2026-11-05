@@ -176,6 +176,7 @@ test_resources:
   - type: r_script
     path: test.R
   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.rds
+  - path: /resources_test/annotation_test_data/azimuth_custom_reference
 
 engines:
   - type: docker
