@@ -12,6 +12,14 @@ argument_groups:
         required: true
         description: Path to h5mu output.
         example: foo.final.h5mu
+      - name: "--input_original"
+        type: file
+        required: false
+        description: |
+          Path to the h5mu file that was passed to the workflow. When provided,
+          the annotated modality is checked to still contain all of its original
+          data.
+        example: input.h5mu
       - name: "--modality"
         type: string
         default: "rna"

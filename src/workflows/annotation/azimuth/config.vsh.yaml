@@ -214,6 +214,7 @@ dependencies:
   - name: convert/from_seurat_to_h5mu
   - name: transform/delete_layer
   - name: dataflow/merge
+  - name: metadata/copy_modality_slots
 
 resources:
   - type: nextflow_script

@@ -12,6 +12,7 @@ workflow test_wf {
   // What the output of each test is checked for by azimuth_test
   def expected = [
     "h5mu_input_test": [
+      "input_original": resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
       "expected_modalities": ["rna", "prot", "prot_imputed"],
       "expected_obs_predictions": ["azimuth_pred_celltype_l1", "azimuth_pred_celltype_l2"],
       "expected_obs_probability": ["azimuth_probability_celltype_l1", "azimuth_probability_celltype_l2"]
@@ -24,6 +25,7 @@ workflow test_wf {
       "expected_obsm": ["X_custom_umap", "X_azimuth_integrated"]
     ],
     "custom_reference_test": [
+      "input_original": resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
       "expected_modalities": ["rna", "prot"],
       "expected_obs_predictions": ["azimuth_pred_cell_ontology_class", "azimuth_pred_cell_type"],
       "expected_obs_probability": ["azimuth_probability_cell_ontology_class", "azimuth_probability_cell_type"]

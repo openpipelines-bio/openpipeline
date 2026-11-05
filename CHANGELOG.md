@@ -57,7 +57,7 @@
 
 * `correction/decontx_remove_background`: new component that estimates and removes ambient RNA contamination from single-cell RNA-seq count matrices using the DecontX algorithm, with optional support for an empty-droplet background dataset (PR #1223).
 
-* `workflows/annotation/Azimuth`: implemented an Azimuth annotation workflow that accepts and writes either H5MU or Seurat file formats (PR #1251).
+* `workflows/annotation/azimuth`: implemented an Azimuth annotation workflow that accepts and writes either H5MU or Seurat file formats (PR #1251).
 
 ## MINOR CHANGES
 

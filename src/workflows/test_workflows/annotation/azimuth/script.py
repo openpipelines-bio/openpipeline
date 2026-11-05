@@ -1,11 +1,14 @@
 from mudata import read_h5mu
 import numpy as np
+import pandas as pd
 import sys
 import pytest
 
 ##VIASH START
 par = {
     "input": "azimuth/output.h5mu",
+     "input_original": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+
     "modality": "rna",
     "expected_modalities": ["rna", "prot", "prot_imputed"],
     "expected_obs_predictions": ["azimuth_pred_celltype_l1"],
@@ -74,6 +77,38 @@ def test_counts_in_x(annotated):
     # The raw counts are stored in .X, and should not be duplicated in .layers
     assert annotated.X is not None, ".X should contain the raw counts."
     assert "X" not in annotated.layers, "Layer 'X' should have been removed."
+
+
+@pytest.fixture(scope="module")
+def original():
+    if not par["input_original"]:
+        pytest.skip("No --input_original provided.")
+    return read_h5mu(par["input_original"]).mod[par["modality"]]
+
+
+def test_original_data_preserved(annotated, original):
+    assert annotated.obs_names.equals(original.obs_names), (
+        "The cells of the annotated modality should be unchanged."
+    )
+    assert annotated.var_names.equals(original.var_names), (
+        "The features of the annotated modality should be unchanged."
+    )
+    x_diff = annotated.X != original.X
+    assert (x_diff.nnz if hasattr(x_diff, "nnz") else x_diff.sum()) == 0, (
+        ".X of the annotated modality should be unchanged."
+    )
+    missing_obs = set(original.obs.columns) - set(annotated.obs.columns)
+    assert not missing_obs, f"Missing original .obs columns: {missing_obs}."
+    pd.testing.assert_frame_equal(
+        annotated.obs[original.obs.columns],
+        original.obs,
+        check_dtype=False,
+        check_categorical=False,
+    )
+    pd.testing.assert_frame_equal(annotated.var, original.var, check_dtype=False)
+    for slot in ["layers", "obsm", "varm", "obsp", "uns"]:
+        missing = set(getattr(original, slot)) - set(getattr(annotated, slot))
+        assert not missing, f"Missing original .{slot} keys: {missing}."
 
 
 if __name__ == "__main__":

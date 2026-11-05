@@ -120,7 +120,52 @@ workflow run_wf {
         toState: ["azimuth_output": "output"]
       )
 
-    annotated_mod_ch = annotated_ch
+    // H5MU input: only the Azimuth results are converted back, and copied onto
+    // the original modality, so that its other slots are left untouched.
+    h5mu_annotated_mod_ch = annotated_ch
+      | filter {id, state -> state.input}
+      | from_seurat_to_h5mu.run(
+        key: "from_seurat_to_h5mu_results",
+        fromState: {id, state -> [
+          "input": state.azimuth_output,
+          "assay": state.seurat_assay,
+          "modality": state.modality,
+          "layers_mapping": "False",
+          "var_mapping": "False",
+          "uns_mapping": "False",
+          "varm_mapping": "False",
+          "obsp_mapping": "False",
+          "varp_mapping": "False"
+        ]},
+        toState: ["azimuth_results": "output"]
+      )
+      | copy_modality_slots.run(
+        fromState: {id, state ->
+          // The output column names are only known when --annotation_levels is provided.
+          // Otherwise, all .obs columns that are missing from the input are copied.
+          def obs_columns = null
+          if (state.annotation_levels) {
+            def level_names = state.annotation_levels.collect{level -> level.replace(".", "_")}
+            def obs_predictions = state.output_obs_predictions ?: level_names.collect{level -> "azimuth_pred_${level}".toString()}
+            def obs_probability = state.output_obs_probability ?: level_names.collect{level -> "azimuth_probability_${level}".toString()}
+            obs_columns = obs_predictions + obs_probability + [state.output_obs_mapping_score]
+          }
+          [
+            "input": state.input,
+            "source": state.azimuth_results,
+            "modality": state.modality,
+            "obs": obs_columns,
+            "obsm": [state.output_obsm_umap, state.output_obsm_integrated],
+            // Rerunning the annotation overwrites the previous results
+            "allow_overwrite": true
+          ]
+        },
+        toState: ["input": "output"]
+      )
+
+    // Seurat input: there is no original modality, the whole assay is converted.
+    seurat_annotated_mod_ch = annotated_ch
+      | filter {id, state -> !state.input}
       | from_seurat_to_h5mu.run(
         fromState: {id, state -> [
           "input": state.azimuth_output,
@@ -165,7 +210,8 @@ workflow run_wf {
         }
       )
 
-    output_ch = annotated_mod_ch.mix(imputed_adt_ch, other_mod_ch)
+    output_ch = h5mu_annotated_mod_ch.mix(seurat_annotated_mod_ch, imputed_adt_ch, other_mod_ch)
+
       | groupTuple(by: 0, sort: "hash")
       | map {id, states ->
         def modalities = states.collect{s -> s.current_modality}
