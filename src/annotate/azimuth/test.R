@@ -12,6 +12,10 @@ meta <- list(
 
 input_file <- file.path(meta[["resources_dir"]], "pbmc_1k_protein_v3_mms.rds")
 input <- readRDS(input_file)
+# Built from Tabula Sapiens blood cells with annotate/azimuth_reference
+custom_reference <- file.path(
+  meta[["resources_dir"]], "azimuth_custom_reference"
+)
 
 run_component <- function(args) {
   processx::run(
@@ -143,6 +147,84 @@ test_that("Annotation using Ensembl IDs with a subset of annotation levels", {
   ))
   expect_true("impADT" %in% Assays(output))
   expect_false("prediction.score.celltype.l2" %in% Assays(output))
+})
+
+test_that("Annotation using a custom reference", {
+  output_file <- tempfile(fileext = ".rds")
+  out <- run_component(c(
+    "--input", input_file,
+    "--input_layer", "X",
+    "--input_var_gene_names", "gene_symbol",
+    "--reference", "custom",
+    "--custom_reference", custom_reference,
+    "--output", output_file
+  ))
+  expect_equal(out$status, 0, info = out$stdout)
+  expect_true(file.exists(output_file))
+
+  output <- readRDS(output_file)
+  expect_input_preserved(output)
+
+  # Without --annotation_levels, all levels of the custom reference are
+  # transferred and stored under the default output names
+  expected_cols <- c(
+    paste0("azimuth_pred_", c("cell_ontology_class", "cell_type")),
+    paste0("azimuth_probability_", c("cell_ontology_class", "cell_type")),
+    "azimuth_mapping_score"
+  )
+  expect_true(all(expected_cols %in% colnames(output[[]])))
+  expect_false(any(grepl("^predicted\\.", colnames(output[[]]))))
+  expect_false(any(is.na(output$azimuth_pred_cell_ontology_class)))
+  # Predicted labels are restricted to the labels of the reference
+  reference_labels <- c(
+    "classical monocyte", "erythrocyte", "neutrophil", "plasma cell"
+  )
+  expect_true(all(
+    output$azimuth_pred_cell_ontology_class %in% reference_labels
+  ))
+  expect_true(all(
+    output$azimuth_probability_cell_ontology_class >= 0 &
+      output$azimuth_probability_cell_ontology_class <= 1 + 1e-8
+  ))
+  expect_true(all(
+    output$azimuth_mapping_score >= 0 & output$azimuth_mapping_score <= 1
+  ))
+
+  expect_true(all(
+    c("X_azimuth_umap", "X_integrated_azimuth") %in% Reductions(output)
+  ))
+  umap <- Embeddings(output, "X_azimuth_umap")
+  expect_equal(dim(umap), c(ncol(output), 2))
+  expect_equal(rownames(umap), Cells(output))
+  expect_true(all(
+    paste0("prediction.score.", c("cell_ontology_class", "cell_type")) %in%
+      Assays(output)
+  ))
+})
+
+test_that("Annotation using a subset of the custom reference levels", {
+  output_file <- tempfile(fileext = ".rds")
+  out <- run_component(c(
+    "--input", input_file,
+    "--input_layer", "X",
+    "--input_var_gene_names", "gene_symbol",
+    "--reference", "custom",
+    "--custom_reference", custom_reference,
+    "--annotation_levels", "cell_type",
+    "--output_obs_predictions", "custom_pred",
+    "--output_obs_probability", "custom_probability",
+    "--output", output_file
+  ))
+  expect_equal(out$status, 0, info = out$stdout)
+  expect_true(file.exists(output_file))
+
+  output <- readRDS(output_file)
+  expect_input_preserved(output)
+  expect_true(all(
+    c("custom_pred", "custom_probability") %in% colnames(output[[]])
+  ))
+  expect_false(any(grepl("cell_ontology_class", colnames(output[[]]))))
+  expect_false("prediction.score.cell_ontology_class" %in% Assays(output))
 })
 
 test_that("Fails on a missing input layer", {
