@@ -3411,7 +3411,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime",
+      "image" : "pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3425,8 +3425,7 @@ meta = [
           "type" : "docker",
           "env" : [
             "CFLAGS=\\"-mno-avx512f -mno-avx2\\"",
-            "CPPFLAGS=\\"-mno-avx512f -mno-avx2\\"",
-            "PIP_BREAK_SYSTEM_PACKAGES=1"
+            "CPPFLAGS=\\"-mno-avx512f -mno-avx2\\""
           ]
         },
         {
@@ -3449,11 +3448,10 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1"
+            "scipy~=1.17.1",
+            "mudata~=0.3.8"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3479,7 +3477,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.9.7",
-    "git_commit" : "0ee3479c2c0ce0dcacd78b640c7b0f7e6e76c38d",
+    "git_commit" : "bea507e6d0420ccd611e6a5c886ba71a7ba31199",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

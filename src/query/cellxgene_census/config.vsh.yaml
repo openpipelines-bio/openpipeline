@@ -124,7 +124,7 @@ test_resources:
     path: test.py
 engines:
   - type: docker
-    image: python:3.12
+    image: python:3.11
     setup:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]

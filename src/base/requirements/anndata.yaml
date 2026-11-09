@@ -1,5 +1,4 @@
 packages:
-  - anndata~=0.13.4
+  - anndata~=0.12.16
   - awkward #Required for reading VDJ data stored in AIRR format
-  - pandas>3
-  - scipy~=1.18.1 # Exclude scipy 1.17.0 because https://github.com/scverse/anndata/issues/339
+  - scipy~=1.17.1 # Exclude scipy 1.17.0 because https://github.com/scverse/anndata/issues/339

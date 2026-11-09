@@ -349,7 +349,7 @@ def process_metrics_summary(
         metrics_file = metrics_files[sample]
         metrics_summary = pd.read_csv(
             metrics_file, decimal=".", quotechar='"', thousands=","
-        ).map(read_percentage)
+        ).applymap(read_percentage)
 
         mudata_obj.uns[par["uns_metrics"]] = metrics_summary
         for colname, coldata in metrics_summary.items():

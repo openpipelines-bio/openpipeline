@@ -3333,7 +3333,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.12-slim",
+      "image" : "python:3.11-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3348,11 +3348,10 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1"
+            "scipy~=1.17.1",
+            "mudata~=0.3.8"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3375,7 +3374,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3388,7 +3387,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column",
     "viash_version" : "0.9.7",
-    "git_commit" : "0ee3479c2c0ce0dcacd78b640c7b0f7e6e76c38d",
+    "git_commit" : "bea507e6d0420ccd611e6a5c886ba71a7ba31199",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

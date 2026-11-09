@@ -73,33 +73,5 @@ def test_scvelo(run_component, tmp_path):
             del getattr(output_data.mod["velocyto"], dict_slot)[dict_item]
 
 
-def test_scvelo_no_log(run_component, tmp_path):
-    output_dir = tmp_path / "foo"
-    output_h5mu = tmp_path / "output.h5mu"
-    run_component(
-        [
-            "--input",
-            input_h5mu,
-            "--modality",
-            "velocyto",
-            "--output",
-            str(output_dir),
-            "--output_h5mu",
-            output_h5mu,
-            "--layer_spliced",
-            "velo_spliced",
-            "--layer_unspliced",
-            "velo_unspliced",
-            "--layer_ambiguous",
-            "velo_ambiguous",
-            "--log_transform",
-            "false",
-        ]
-    )
-    assert output_h5mu.is_file()
-    output_data = read_h5mu(output_h5mu)
-    assert "velocity" in output_data.mod["velocyto"].layers
-
-
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

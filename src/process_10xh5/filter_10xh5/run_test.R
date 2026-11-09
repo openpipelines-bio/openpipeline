@@ -25,11 +25,11 @@ orig_ad <- sc$read_10x_h5(input)
 out_ad <- sc$read_10x_h5(output)
 
 # check if matrix is not empty
-expect_gte(out_ad$n_obs, 100)
-expect_gte(out_ad$n_vars, 100)
+expect_gte(nrow(out_ad), 100)
+expect_gte(ncol(out_ad), 100)
 
 # check if filtering has been performed
-expect_lte(out_ad$n_obs, orig_ad$n_obs)
-expect_lte(out_ad$n_vars, orig_ad$n_vars)
+expect_lte(nrow(out_ad), nrow(orig_ad))
+expect_lte(ncol(out_ad), ncol(orig_ad))
 
 cat(">> All tests passed successfully!\n")
