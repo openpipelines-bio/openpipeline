@@ -449,14 +449,17 @@ function ViashDockerfile {
 FROM python:3.12
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" "tiledbsoma" "boto3" "awscli" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "boto3" "awscli" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
+COPY tiledbsoma.patch /opt/tiledbsoma.patch
+RUN pip install --no-cache-dir tiledbsoma==2.2.0 && \
+patch -p1 -d "$(python -c 'import site; print(site.getsitepackages()[0])')" < /opt/tiledbsoma.patch
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component tiledb move_mudata_obsm_to_tiledb"
-LABEL org.opencontainers.image.created="2026-11-07T09:04:50Z"
+LABEL org.opencontainers.image.created="2026-11-09T08:49:10Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f6453cdbb4387a1783c8e411fdf784d827d90d5b"
+LABEL org.opencontainers.image.revision="0ee3479c2c0ce0dcacd78b640c7b0f7e6e76c38d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

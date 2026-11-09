@@ -3440,10 +3440,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
             "scanpy~=1.11.4",
             "pynndescent<0.7",
             "scrublet",
@@ -3470,7 +3471,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         }
@@ -3483,7 +3484,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.9.7",
-    "git_commit" : "f6453cdbb4387a1783c8e411fdf784d827d90d5b",
+    "git_commit" : "0ee3479c2c0ce0dcacd78b640c7b0f7e6e76c38d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -1,2 +1,2 @@
 github:
-  - openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils
+  - openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils

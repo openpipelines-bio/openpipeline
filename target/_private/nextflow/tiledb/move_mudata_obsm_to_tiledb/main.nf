@@ -3181,6 +3181,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/base/tiledb/tiledbsoma.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3312,11 +3316,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
-            "tiledbsoma",
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
             "boto3",
             "awscli"
           ],
@@ -3324,6 +3328,15 @@ meta = [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "docker",
+          "copy" : [
+            "tiledbsoma.patch /opt/tiledbsoma.patch"
+          ],
+          "run" : [
+            "pip install --no-cache-dir tiledbsoma==2.2.0 && \\\\\npatch -p1 -d \\"$(python -c 'import site; print(site.getsitepackages()[0])')\\" < /opt/tiledbsoma.patch"
+          ]
         }
       ],
       "test_setup" : [
@@ -3341,7 +3354,7 @@ meta = [
             "viashpy==0.10.0"
           ],
           "github" : [
-            "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+            "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
           ],
           "upgrade" : true
         },
@@ -3362,7 +3375,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/tiledb/move_mudata_obsm_to_tiledb",
     "viash_version" : "0.9.7",
-    "git_commit" : "f6453cdbb4387a1783c8e411fdf784d827d90d5b",
+    "git_commit" : "0ee3479c2c0ce0dcacd78b640c7b0f7e6e76c38d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

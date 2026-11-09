@@ -332,9 +332,11 @@ def main():
         shutil.copyfile(par["input"], output_file_uncompressed)
         logger.info("Opening %s", output_file_uncompressed)
         with h5py.File(output_file_uncompressed, "a") as storage:
-            group_path = f"/mod/{par['modality']}/obsm/{par['obsm_name']}"
-            logger.info("Adding output to %s", group_path)
-            ad.io.write_elem(storage, k=group_path, elem=results)
+            obsm_path = f"/mod/{par['modality']}/obsm"
+            logger.info("Adding output to %s/%s", obsm_path, par["obsm_name"])
+            # Keys passed to write_elem can not contain '/'
+            obsm_group = storage.require_group(obsm_path)
+            ad.io.write_elem(obsm_group, k=par["obsm_name"], elem=results)
         if par["output_compression"]:
             compress_h5mu(
                 output_file_uncompressed,

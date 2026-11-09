@@ -3304,7 +3304,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_or_h5ad_to_seurat",
     "viash_version" : "0.9.7",
-    "git_commit" : "f6453cdbb4387a1783c8e411fdf784d827d90d5b",
+    "git_commit" : "0ee3479c2c0ce0dcacd78b640c7b0f7e6e76c38d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

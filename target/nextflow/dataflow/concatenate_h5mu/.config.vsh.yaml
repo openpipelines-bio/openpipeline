@@ -149,8 +149,6 @@ test_resources:
   path: "test.py"
   is_executable: true
 - type: "file"
-  path: "conftest.py"
-- type: "file"
   path: "e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
 - type: "file"
   path: "human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
@@ -247,10 +245,11 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.12.16"
+    - "anndata~=0.13.4"
     - "awkward"
-    - "scipy~=1.17.1"
-    - "mudata~=0.3.8"
+    - "pandas>3"
+    - "scipy~=1.18.1"
+    - "mudata~=0.4.1"
     script:
     - "exec(\"try:\\n  import zarr; from importlib.metadata import version\\nexcept\
       \ ModuleNotFoundError:\\n  exit(0)\\nelse:  assert int(version(\\\"zarr\\\"\
@@ -266,7 +265,7 @@ engines:
     packages:
     - "viashpy==0.10.0"
     github:
-    - "openpipelines-bio/core#subdirectory=packages/python/openpipeline_testutils"
+    - "openpipelines-bio/core@update_anndata_mudata#subdirectory=packages/python/openpipeline_testutils"
     upgrade: true
   - type: "python"
     user: false
@@ -283,7 +282,7 @@ build_info:
   output: "target/nextflow/dataflow/concatenate_h5mu"
   executable: "target/nextflow/dataflow/concatenate_h5mu/main.nf"
   viash_version: "0.9.7"
-  git_commit: "f6453cdbb4387a1783c8e411fdf784d827d90d5b"
+  git_commit: "0ee3479c2c0ce0dcacd78b640c7b0f7e6e76c38d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

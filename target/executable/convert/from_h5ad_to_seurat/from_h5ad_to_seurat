@@ -460,9 +460,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5ad_to_seurat"
-LABEL org.opencontainers.image.created="2026-11-07T09:04:49Z"
+LABEL org.opencontainers.image.created="2026-11-09T08:49:10Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f6453cdbb4387a1783c8e411fdf784d827d90d5b"
+LABEL org.opencontainers.image.revision="0ee3479c2c0ce0dcacd78b640c7b0f7e6e76c38d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
