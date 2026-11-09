@@ -79,6 +79,9 @@ workflow run_wf {
         "control_id": "control_id",
         "mhc_allele": "mhc_allele",
         "check_library_compatibility": "check_library_compatibility",
+        "skip_cell_annotation": "skip_cell_annotation",
+        "cell_annotation_model": "cell_annotation_model",
+        "tenx_cloud_token_path": "tenx_cloud_token_path",
         "output": "output_raw",
       ],
       toState: [
