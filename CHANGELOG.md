@@ -30,16 +30,18 @@
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
-* Bumped `mudata` to `0.4.1` and `anndata` to `0.13.4` (PR #). When reading a `MuData` object, the per-modality metadata columns (`var` and `obs`)
-  columns are no longer synchronized to the global (across all modalities) dataframes. By default, components that process a single modality edit
-  to the metadata of said modality only. Components that process multiple modalities are changes as follows:
-    - `dataflow/concatenate_h5mu`: 
-      + String columns van not be stored as `categorical` when they have repeated values. 
-      + Global-only metadata columns are now kept in the output. When they conflict across samples in `var`, they follow `--other_axis_mode`; with `move` they go to global `varm`.
+* Bumped `anndata` to `0.13.4`, `mudata` to `0.4.1` and `pandas` to `3` (PR #1263):
+  - Modality `.obs`/`.var` columns are no longer synced to the global `.obs`/`.var`. Single-modality components only update the modality.
+  - `dataflow/merge`: no longer copies modality columns to the global `.obs`/`.var` or converts their dtypes.
+  - `dataflow/concatenate_h5mu`: string columns are no longer always stored as `categorical`, but follow the `anndata` heuristic (`categorical` only when values repeat). Global-only columns are now kept; `.var` conflicts follow `--other_axis_mode` (`move` stores them in global `.varm`).
 
-* `velocity/scvelo`: bumped `scvelo` to `0.3.4`, installed from source with a patch that adds compatibility with `pandas` 3. Highly variable gene selection (`--n_top_genes`) and log transformation (`--log_transform`) are now performed using `scanpy`, as they were removed from `scvelo.pp.filter_and_normalize` (PR #1263).
+* `annotate/popv`, `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped the base image to PyTorch `2.13.0` with CUDA `13.2`, which requires a recent NVIDIA driver (PR #1263).
 
-* `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0` and patched it to support `pandas` 3 and `anndata` 0.13 (PR #).
+* `velocity/scvelo`: bumped `scvelo` to `0.3.4` (patched for `pandas` 3). Highly variable gene selection (`--n_top_genes`) and log transformation (`--log_transform`) are now done with `scanpy`, as `scvelo` no longer provides them (PR #1263).
+
+* `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0`, patched for `pandas` 3 and `anndata` 0.13 (PR #1263).
+
+* `interpret/lianapy`: bumped `liana` to `2.0.0` (PR #1263).
 
 * `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
 
@@ -77,6 +79,16 @@
 
 * Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #1275)
 
+* Bumped `scipy` to `1.18.1` (PR #1263).
+
+* `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
+
+* `qc/calculate_atac_qc_metrics`: bumped `muon` to `0.2.0` and `pysam` to `0.24.1` (PR #1263).
+
+* `annotate/onclass`, `convert/from_10xmtx_to_h5mu`, `convert/from_bdrhap_to_h5mu`, `dimred/lsi`, `feature_annotation/score_genes_cell_cycle_scanpy`, `feature_annotation/score_genes_scanpy`, `interpret/lianapy`, `metadata/add_id`, `metadata/grep_annotation_column`, `qc/calculate_atac_qc_metrics`, `query/cellxgene_census`: bumped the base image to Python 3.12. `tiledb/move_mudata_obs_to_tiledb` now uses Python 3.13 (PR #1263).
+
+* `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
+
 ## BUG FIXES
 
 * `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
@@ -94,7 +106,9 @@
 
 * `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
 
-* `dataflow/concatenate_h5mu`: fixed checking for duplicate observations between samples when the two observations are in different modalities. Within one input, the same observation can still be in several modalities (PR #)
+* `dataflow/concatenate_h5mu`: detect duplicate observations across samples when they are in different modalities. Within one sample, an observation can still be in several modalities (PR #1263).
+
+* `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
 
 ## INTERNAL CHANGES
 
