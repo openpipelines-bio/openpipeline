@@ -3283,10 +3283,11 @@ meta = [
           "type" : "python",
           "user" : true,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
             "scanpy~=1.11.4",
             "pynndescent<0.7"
           ],
@@ -3314,7 +3315,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5",
     "viash_version" : "0.9.7",
-    "git_commit" : "0c20dc78fc858a69e2af38c07d06717d63dbb34d",
+    "git_commit" : "8cea52e05296bc7ee05772ea254eb1736b2e12db",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

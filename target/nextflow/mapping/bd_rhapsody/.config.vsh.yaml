@@ -1104,7 +1104,7 @@ build_info:
   output: "target/nextflow/mapping/bd_rhapsody"
   executable: "target/nextflow/mapping/bd_rhapsody/main.nf"
   viash_version: "0.9.7"
-  git_commit: "0c20dc78fc858a69e2af38c07d06717d63dbb34d"
+  git_commit: "8cea52e05296bc7ee05772ea254eb1736b2e12db"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"
