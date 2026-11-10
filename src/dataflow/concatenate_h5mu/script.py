@@ -300,6 +300,104 @@ def get_modality_obs_names(input_file: Path, modalities: Iterable[str]) -> pd.In
     return obs_names
 
 
+def get_global_columns_to_pull(
+    input_files: list[Path],
+    axis: Literal["obs", "var"],
+    modality_columns: dict[str, set[str]],
+) -> set[str]:
+    """
+    Get the names of the modality columns that were pulled into the global
+    annotation frame (.obs or .var) of at least one sample.
+
+    A global column matches a modality column by its base name: either 'mod:column'
+    (split on the first colon, as mudata adds a single modality prefix) or 'column'.
+    Global columns that match no column of the output's modalities (global-only
+    columns, or columns pulled from a modality that is not being output) are dropped.
+    """
+    all_modality_columns = set().union(*modality_columns.values())
+    to_pull, dropped = set(), set()
+    for input_file in input_files:
+        with H5File(input_file, "r") as input_h5:
+            column_names = (
+                input_h5[axis].attrs.get("column-order", []) if axis in input_h5 else []
+            )
+        for column_name in column_names:
+            if isinstance(column_name, bytes):
+                column_name = column_name.decode()
+            prefix, sep, base_name = column_name.partition(":")
+            if sep and base_name in modality_columns.get(prefix, ()):
+                to_pull.add(base_name)
+            elif column_name in all_modality_columns:
+                to_pull.add(column_name)
+            else:
+                dropped.add(column_name)
+    if dropped:
+        logger.warning(
+            "Dropping global .%s columns that do not match a column of the output's "
+            "modalities: %s",
+            axis,
+            ", ".join(sorted(dropped)),
+        )
+    return to_pull
+
+
+def write_global_annotations(
+    output_file: Path, modalities: list[str], input_files: list[Path]
+) -> None:
+    """
+    Fill the global .obs and .var of the output with the modality columns that were
+    pulled into the global frames of the samples. The columns are pulled again from
+    the concatenated modalities, so they hold the current modality values and use
+    the mudata naming ('mod:column', or 'column' for .var columns that are present
+    in all modalities).
+    """
+    # Only the annotation frames are needed to pull the columns
+    with H5File(output_file, "r") as output_h5:
+        mdata = mu.MuData(
+            {
+                mod: anndata.AnnData(
+                    obs=anndata.io.read_elem(output_h5["mod"][mod]["obs"]),
+                    var=anndata.io.read_elem(output_h5["mod"][mod]["var"]),
+                )
+                for mod in modalities
+            }
+        )
+
+    with H5File(output_file, "r+") as output_h5:
+        for axis in ("obs", "var"):
+            modality_frames = {
+                mod: getattr(mod_data, axis) for mod, mod_data in mdata.mod.items()
+            }
+            columns_to_pull = get_global_columns_to_pull(
+                input_files,
+                axis,
+                {mod: set(frame.columns) for mod, frame in modality_frames.items()},
+            )
+            if not columns_to_pull:
+                continue
+            logger.info(
+                "Pulling global .%s columns: %s",
+                axis,
+                ", ".join(sorted(columns_to_pull)),
+            )
+            # mudata fails to pull a column that is categorical in one modality and
+            # not in a later one. Categoricals are restored when writing the frame.
+            for frame in modality_frames.values():
+                for column in frame.columns.intersection(list(columns_to_pull)):
+                    if isinstance(frame[column].dtype, pd.CategoricalDtype):
+                        frame[column] = frame[column].astype(object).infer_objects()
+            getattr(mdata, f"pull_{axis}")(columns=sorted(columns_to_pull))
+
+            # Write the global elements the same way mudata does
+            anndata.io.write_elem(
+                output_h5,
+                axis,
+                mdata.strings_to_categoricals(getattr(mdata, axis).copy()),
+            )
+            for element in (f"{axis}m", f"{axis}map"):
+                anndata.io.write_elem(output_h5, element, dict(getattr(mdata, element)))
+
+
 def concatenate_modalities(
     n_processes: int,
     modalities: list[str],
@@ -358,6 +456,8 @@ def concatenate_modalities(
             compression,
         )
         mu.write_h5ad(output_file_uncompressed, data=new_mod, mod=mod_name)
+
+    write_global_annotations(output_file_uncompressed, modalities, input_files)
 
     if compression:
         compress_h5mu(output_file_uncompressed, output_file, compression=compression)

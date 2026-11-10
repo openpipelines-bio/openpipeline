@@ -1215,6 +1215,7 @@ def test_subset_modalities(
     Test if outputting a subset of the modalities works
     """
     output_path = random_h5mu_path()
+    sample_1_h5mu.pull_obs()
     run_component(
         [
             "--input_id",
@@ -1236,6 +1237,8 @@ def test_subset_modalities(
     assert output_path.is_file()
     concatenated_data = md.read(output_path)
     assert set(concatenated_data.mod.keys()) == set(["mod1"])
+    # Global columns pulled from mod2 are dropped together with the modality
+    assert set(concatenated_data.obs.columns) == {"mod1:Obs1", "mod1:Shared_obs"}
 
 
 def test_concatenate_samples_with_same_observation_ids_in_other_modality_raises(
@@ -1273,6 +1276,216 @@ def test_concatenate_samples_with_same_observation_ids_in_other_modality_raises(
         "ValueError: Observations are not unique across samples."
         in err.value.stdout.decode("utf-8")
     )
+
+
+def test_concat_global_only_columns_are_dropped(
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    write_mudata_to_file,
+    random_h5mu_path,
+):
+    """
+    Test that global columns which do not exist in any modality are dropped.
+    """
+    output_path = random_h5mu_path()
+    sample_1_h5mu.obs["batch"] = "sample1"
+    sample_1_h5mu.var["global_only"] = "x"
+    sample_2_h5mu.var["global_only"] = "y"
+    run_component(
+        [
+            "--input_id",
+            "sample1;sample2",
+            "--input",
+            write_mudata_to_file(sample_1_h5mu),
+            "--input",
+            write_mudata_to_file(sample_2_h5mu),
+            "--output",
+            output_path,
+            "--other_axis_mode",
+            "move",
+        ]
+    )
+    concatenated_data = md.read(output_path)
+    assert concatenated_data.obs.columns.empty
+    assert concatenated_data.var.columns.empty
+    assert not any(key.startswith("conflict_") for key in concatenated_data.varm.keys())
+
+
+def test_concat_global_pulled_columns(
+    run_component,
+    sample_1_h5mu,
+    sample_2_h5mu,
+    write_mudata_to_file,
+    random_h5mu_path,
+):
+    """
+    Test that global columns that were pulled from a modality are pulled again
+    from the concatenated modalities, with the current modality values.
+    """
+    output_path = random_h5mu_path()
+    sample_1_h5mu["mod1"].obs["qc"] = [1.0, 2.0]
+    sample_1_h5mu.pull_obs(columns=["qc"])
+    # Makes the pulled global column 'mod1:qc' stale
+    sample_1_h5mu["mod1"].obs["qc"] = [10.0, 20.0]
+    sample_2_h5mu["mod1"].obs["qc"] = [3.0, 4.0, 5.0]
+    # Global column without a modality prefix
+    sample_2_h5mu.obs["qc"] = sample_2_h5mu["mod1"].obs["qc"]
+
+    for sample in (sample_1_h5mu, sample_2_h5mu):
+        for mod in sample.mod.values():
+            mod.var["is_hvg"] = True
+    sample_1_h5mu.pull_var(columns=["is_hvg"])
+    assert "is_hvg" in sample_1_h5mu.var
+
+    run_component(
+        [
+            "--input_id",
+            "sample1;sample2",
+            "--input",
+            write_mudata_to_file(sample_1_h5mu),
+            "--input",
+            write_mudata_to_file(sample_2_h5mu),
+            "--output",
+            output_path,
+            "--other_axis_mode",
+            "move",
+        ]
+    )
+    concatenated_data = md.read(output_path)
+
+    assert "qc" not in concatenated_data.obs
+    assert "mod2:qc" not in concatenated_data.obs
+    qc = concatenated_data.obs["mod1:qc"]
+    expected_qc = pd.concat(
+        [sample_1_h5mu["mod1"].obs["qc"], sample_2_h5mu["mod1"].obs["qc"]]
+    )
+    pd.testing.assert_series_equal(
+        qc.loc[expected_qc.index], expected_qc, check_names=False, check_dtype=False
+    )
+    mod2_only = concatenated_data.obs_names.difference(expected_qc.index)
+    assert not mod2_only.empty
+    assert qc.loc[mod2_only].isna().all()
+
+    # 'is_hvg' is present in all modalities of the output, so it is not prefixed
+    assert "is_hvg" in concatenated_data.var
+    assert concatenated_data.var["is_hvg"].all()
+    assert not any(
+        column.endswith(":is_hvg") for column in concatenated_data.var.columns
+    )
+
+
+def test_concat_global_pulled_columns_prefixed(
+    run_component,
+    sample_1_h5mu,
+    sample_3_h5mu,
+    write_mudata_to_file,
+    random_h5mu_path,
+):
+    """
+    Test that a global .var column without modality prefix is prefixed when
+    not all modalities of the concatenated output have the column.
+    """
+    output_path = random_h5mu_path()
+    for mod in sample_1_h5mu.mod.values():
+        mod.var["is_hvg"] = True
+    sample_1_h5mu.pull_var(columns=["is_hvg"])
+    assert "is_hvg" in sample_1_h5mu.var
+
+    run_component(
+        [
+            "--input_id",
+            "sample1;sample3",
+            "--input",
+            write_mudata_to_file(sample_1_h5mu),
+            "--input",
+            write_mudata_to_file(sample_3_h5mu),
+            "--output",
+            output_path,
+            "--other_axis_mode",
+            "move",
+        ]
+    )
+    concatenated_data = md.read(output_path)
+
+    # mod3 (from sample 3) does not have 'is_hvg'
+    is_hvg_columns = {
+        column for column in concatenated_data.var.columns if "is_hvg" in column
+    }
+    assert is_hvg_columns == {"mod1:is_hvg", "mod2:is_hvg"}
+    for mod_name in ("mod1", "mod2"):
+        column = concatenated_data.var[f"{mod_name}:is_hvg"]
+        mod_var_names = sample_1_h5mu[mod_name].var_names
+        assert column.loc[mod_var_names].all()
+
+
+def test_concat_global_pulled_columns_shared_features_mixed_dtypes(
+    run_component,
+    write_mudata_to_file,
+    random_h5mu_path,
+):
+    """
+    Test pulling global .var columns when a feature name is in several modalities,
+    and a column is categorical in one concatenated modality and plain strings in
+    another. String columns are only stored as categorical when values repeat, so
+    'type' becomes categorical in rna and 'symbol' in prot. One of them is categorical
+    in the first modality whatever the modality order is.
+    """
+    output_path = random_h5mu_path()
+    samples = []
+    for sample_name in ("sample1", "sample2"):
+        obs = pd.DataFrame(index=[f"{sample_name}_obs{i}" for i in range(3)])
+        rna = ad.AnnData(
+            np.ones((3, 2)),
+            obs=obs,
+            var=pd.DataFrame(
+                {
+                    "symbol": ["CD4", "G2"],
+                    "type": ["Gene", "Gene"],
+                },
+                index=["CD4", "G2"],
+            ),
+        )
+        prot = ad.AnnData(
+            np.ones((3, 2)),
+            obs=obs,
+            var=pd.DataFrame(
+                {
+                    "symbol": ["Protein", "Protein"],
+                    "type": ["A1", "A2"],
+                },
+                index=["CD4", "P2"],
+            ),
+        )
+        sample = md.MuData({"rna": rna, "prot": prot})
+        sample.pull_var()
+        samples.append(sample)
+
+    run_component(
+        [
+            "--input_id",
+            "sample1;sample2",
+            "--input",
+            write_mudata_to_file(samples[0]),
+            "--input",
+            write_mudata_to_file(samples[1]),
+            "--output",
+            output_path,
+            "--other_axis_mode",
+            "move",
+        ]
+    )
+    concatenated_data = md.read(output_path)
+
+    assert set(concatenated_data.var.columns) == {"symbol", "type"}
+    for mod_name, expected in {
+        "rna": {"symbol": ["CD4", "G2"], "type": ["Gene", "Gene"]},
+        "prot": {"symbol": ["Protein", "Protein"], "type": ["A1", "A2"]},
+    }.items():
+        mod_rows = concatenated_data.varmap[mod_name] > 0
+        global_var = concatenated_data.var[mod_rows]
+        for column, values in expected.items():
+            assert global_var[column].astype(str).tolist() == values
 
 
 def test_obsp_block_diag_concat(
