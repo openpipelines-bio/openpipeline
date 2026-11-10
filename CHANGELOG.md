@@ -33,7 +33,7 @@
 * Bumped `anndata` to `0.13.4`, `mudata` to `0.4.1` and `pandas` to `3` (PR #1263):
   - Modality `.obs`/`.var` columns are no longer synced to the global `.obs`/`.var`. Single-modality components only update the modality.
   - `dataflow/merge`: no longer copies modality columns to the global `.obs`/`.var` or converts their dtypes.
-  - `dataflow/concatenate_h5mu`: string columns are no longer always stored as `categorical`, but follow the `anndata` heuristic (`categorical` only when values repeat). Global-only columns are now kept; `.var` conflicts follow `--other_axis_mode` (`move` stores them in global `.varm`).
+  - `dataflow/concatenate_h5mu`: string columns are no longer always stored as `categorical`, but follow the `anndata` heuristic (`categorical` only when values repeat).
 
 * `annotate/popv`, `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped the base image to PyTorch `2.13.0` with CUDA `13.2`, which requires a recent NVIDIA driver (PR #1263).
 
