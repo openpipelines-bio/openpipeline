@@ -454,9 +454,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.description="Companion container for running component trajectory_inference paga_scanpy"
-LABEL org.opencontainers.image.created="2026-11-09T08:40:11Z"
+LABEL org.opencontainers.image.created="2026-11-10T09:53:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5a88e1ca6b5e4c1c28dccce617146b4456bb5bf0"
+LABEL org.opencontainers.image.revision="2d8ef49c8672bd369aeeb193db82df412b574319"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
