@@ -3674,7 +3674,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scvi_knn",
     "viash_version" : "0.9.7",
-    "git_commit" : "2d8ef49c8672bd369aeeb193db82df412b574319",
+    "git_commit" : "23b975426578a7bbe7d5e77a5fb5dac7ab9d227a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
