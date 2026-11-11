@@ -3454,7 +3454,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.12",
+      "image" : "python:3.11",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3464,11 +3464,10 @@ meta = [
           "packages" : [
             "scanpy~=1.11.4",
             "pynndescent<0.7",
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1"
+            "scipy~=1.17.1",
+            "mudata~=0.3.8"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3494,7 +3493,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/score_genes_cell_cycle_scanpy",
     "viash_version" : "0.9.7",
-    "git_commit" : "8cea52e05296bc7ee05772ea254eb1736b2e12db",
+    "git_commit" : "8581baa24755e29572e31fba35334689c2ff55d9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

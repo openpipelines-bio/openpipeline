@@ -3323,11 +3323,10 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.13.4",
+            "anndata~=0.12.16",
             "awkward",
-            "pandas>3",
-            "scipy~=1.18.1",
-            "mudata~=0.4.1",
+            "scipy~=1.17.1",
+            "mudata~=0.3.8",
             "scanpy~=1.11.4",
             "pynndescent<0.7",
             "scirpy"
@@ -3356,7 +3355,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "8cea52e05296bc7ee05772ea254eb1736b2e12db",
+    "git_commit" : "8581baa24755e29572e31fba35334689c2ff55d9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3787,7 +3786,7 @@ def process_metrics_summary(
         metrics_file = metrics_files[sample]
         metrics_summary = pd.read_csv(
             metrics_file, decimal=".", quotechar='"', thousands=","
-        ).map(read_percentage)
+        ).applymap(read_percentage)
 
         mudata_obj.uns[par["uns_metrics"]] = metrics_summary
         for colname, coldata in metrics_summary.items():
