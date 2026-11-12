@@ -1,0 +1,38 @@
+# Inputs
+# input: "input.h5mu"
+# input_seurat: "input.rds"
+modality: "rna"
+input_seurat_assay: "RNA"
+# input_layer: "foo"
+# input_var_gene_names: "gene_symbol"
+input_reference_gene_overlap: 100
+
+# Reference
+reference: # please fill in - example: "pbmcref"
+# custom_reference: "azimuth_reference"
+# annotation_levels: ["celltype.l1", "celltype.l2"]
+do_adt: false
+
+# Mapping arguments
+k_weight: 50
+n_trees: 20
+mapping_score_k: 100
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+write_seurat: false
+# output_seurat: "$id.$key.output_seurat.rds"
+output_seurat_compression: "gzip"
+# output_obs_predictions: ["foo"]
+# output_obs_probability: ["foo"]
+output_obs_mapping_score: "azimuth_mapping_score"
+output_obsm_umap: "X_azimuth_umap"
+output_obsm_integrated: "X_integrated_azimuth"
+output_modality_imputed_adt: "prot_imputed"
+# output_compression: "gzip"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+
+# Arguments

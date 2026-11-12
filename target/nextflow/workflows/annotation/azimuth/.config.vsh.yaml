@@ -1,0 +1,516 @@
+name: "azimuth"
+namespace: "workflows/annotation"
+version: "main_build"
+authors:
+- name: "Mirte De Temmerman"
+  roles:
+  - "author"
+  info:
+    links:
+      github: "mimi-DT"
+      linkedin: "mirtedt"
+argument_groups:
+- name: "Inputs"
+  description: "Input dataset (query) arguments. Exactly one of `--input` or `--input_seurat`\
+    \ must be provided.\n"
+  arguments:
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "The input (query) data to be annotated. Should be an .h5mu file."
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--input_seurat"
+    description: "The input (query) data to be annotated. Should be an .rds file\n\
+      containing a Seurat object with raw (unnormalized) counts.\n"
+    info: null
+    example:
+    - "input.rds"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--modality"
+    description: "Which modality of `--input` to annotate. When using `--input_seurat`,\
+      \ this is the\nname of the modality the annotated assay is stored in in the\
+      \ output.\n"
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_seurat_assay"
+    description: "Name of the Seurat assay in `--input_seurat` to run the annotation\
+      \ on.\nOnly used with `--input_seurat`.\n"
+    info: null
+    default:
+    - "RNA"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_layer"
+    description: "Layer containing the raw (unnormalized) counts. RunAzimuth() normalizes\
+      \ these\ninternally using SCTransform.\nWith `--input`, this is a layer of `--modality`;\
+      \ if not provided, .X is used.\nWith `--input_seurat`, this is a layer of `--input_seurat_assay`;\
+      \ if not provided, \"counts\" is used.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--input_var_gene_names"
+    description: "Column in .var (`--input`) or in the feature metadata of `--input_seurat_assay`\n\
+      (`--input_seurat`) containing gene symbols. If not provided, the feature names\
+      \ are used.\nAzimuth references use gene symbols; when the query features are\
+      \ Ensembl IDs,\nAzimuth converts them using a homolog table downloaded at runtime.\n"
+    info: null
+    example:
+    - "gene_symbol"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--input_reference_gene_overlap"
+    description: "Minimum number of genes that must overlap between the query and\
+      \ the\nreference for the mapping to be performed.\n"
+    info: null
+    default:
+    - 100
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Reference"
+  description: "Arguments controlling which Azimuth reference to map the query onto.\n\
+    There is no training step: RunAzimuth() maps the query directly onto\nthe chosen\
+    \ reference's precomputed embeddings.\n"
+  arguments:
+  - type: "string"
+    name: "--reference"
+    description: "Name of a curated Azimuth reference, downloaded and installed\n\
+      automatically on first use via SeuratData. See\nhttps://azimuth.hubmapconsortium.org/references/\
+      \ for a description\nof each reference. Set to \"custom\" to use a local reference\
+      \ instead,\nprovided via `--custom_reference`.\n"
+    info: null
+    example:
+    - "pbmcref"
+    required: true
+    choices:
+    - "pbmcref"
+    - "bonemarrowref"
+    - "lungref"
+    - "heartref"
+    - "tonsilref"
+    - "humancortexref"
+    - "mousecortexref"
+    - "kidneyref"
+    - "pancreasref"
+    - "adiposeref"
+    - "fetusref"
+    - "custom"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--custom_reference"
+    description: "Path to a local directory containing a \"ref.Rds\" and \"idx.annoy\"\
+      \nfile pair for a custom reference, e.g. as created by\nannotate/azimuth_reference.\
+      \ If provided, `--reference` must be set\nto \"custom\".\n"
+    info: null
+    example:
+    - "azimuth_reference"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--annotation_levels"
+    description: "Which annotation levels (columns in the reference's metadata,\n\
+      e.g. \"celltype.l1\", \"celltype.l2\") to transfer. If not provided,\nall annotation\
+      \ levels available in the reference are transferred.\n"
+    info: null
+    example:
+    - "celltype.l1"
+    - "celltype.l2"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--do_adt"
+    description: "Whether to impute a protein (ADT) assay from the reference, if\n\
+      the reference includes antibody-derived tag data. The imputed\nexpression is\
+      \ stored in a separate modality (see `--output_modality_imputed_adt`).\n"
+    info: null
+    direction: "input"
+- name: "Mapping arguments"
+  description: "Lower-level arguments passed through to RunAzimuth()."
+  arguments:
+  - type: "integer"
+    name: "--k_weight"
+    description: "Number of neighbors to consider when weighting anchors during label/embedding\
+      \ transfer."
+    info: null
+    default:
+    - 50
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--n_trees"
+    description: "Number of trees used when building the annoy index for neighbor\
+      \ search."
+    info: null
+    default:
+    - 20
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "integer"
+    name: "--mapping_score_k"
+    description: "Number of neighbors used to compute the per-cell mapping score."
+    info: null
+    default:
+    - 100
+    required: false
+    min: 1
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Outputs"
+  description: "Output arguments."
+  arguments:
+  - type: "file"
+    name: "--output"
+    description: "The annotated output .h5mu file."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--write_seurat"
+    description: "Whether to also write the annotated Seurat object to `--output_seurat`.\n"
+    info: null
+    direction: "input"
+  - type: "file"
+    name: "--output_seurat"
+    description: "The annotated Seurat object (.rds file). Only written when `--write_seurat`\
+      \ is set.\nWith `--input`, this object only contains the annotated `--modality`\n\
+      (as assay \"RNA\"), not the other modalities.\n"
+    info: null
+    example:
+    - "output.rds"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_seurat_compression"
+    description: "Compression used when writing `--output_seurat`."
+    info: null
+    default:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "bzip2"
+    - "xz"
+    - "none"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_predictions"
+    description: "In which `.obs` slots to store the predicted cell labels.\nIf provided,\
+      \ `--annotation_levels` must be provided as well, and both must have the same\
+      \ length.\nIf empty, defaults to `azimuth_pred_<level>`, with \".\" in the level\
+      \ name replaced by \"_\".\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_probability"
+    description: "In which `.obs` slots to store the prediction scores.\nIf provided,\
+      \ `--annotation_levels` must be provided as well, and both must have the same\
+      \ length.\nIf empty, defaults to `azimuth_probability_<level>`, with \".\" in\
+      \ the level name replaced by \"_\".\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obs_mapping_score"
+    description: "In which `.obs` slot to store the per-cell mapping score."
+    info: null
+    default:
+    - "azimuth_mapping_score"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obsm_umap"
+    description: "In which `.obsm` slot to store the query embedding projected onto\
+      \ the reference UMAP."
+    info: null
+    default:
+    - "X_azimuth_umap"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_obsm_integrated"
+    description: "In which `.obsm` slot to store the integrated (reference-projected)\
+      \ embedding."
+    info: null
+    default:
+    - "X_integrated_azimuth"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_modality_imputed_adt"
+    description: "Name of the modality in which the imputed protein expression is\
+      \ stored when `--do_adt` is set.\nMust not already exist in `--input`.\n"
+    info: null
+    default:
+    - "prot_imputed"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    description: "The compression format to be used on the output h5mu object."
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "nextflow_script"
+  path: "main.nf"
+  is_executable: true
+  entrypoint: "run_wf"
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Cell type annotation workflow using Azimuth reference mapping (Seurat\
+  \ RunAzimuth()).\nAccepts either an H5MU file (`--input`) or a Seurat object (`--input_seurat`)\
+  \ as query.\n\nFor H5MU input, the modalities are split, the modality selected with\
+  \ `--modality` is converted\nto a Seurat object and mapped onto the Azimuth reference,\
+  \ and the annotated modality is converted\nback and merged with the other (untouched)\
+  \ modalities. For Seurat input, the selected assay is\nannotated and converted to\
+  \ an H5MU file containing a single modality.\n"
+test_resources:
+- type: "nextflow_script"
+  path: "test.nf"
+  is_executable: true
+  entrypoint: "test_wf"
+- type: "file"
+  path: "pbmc_1k_protein_v3_mms.h5mu"
+- type: "file"
+  path: "pbmc_1k_protein_v3_mms.rds"
+- type: "file"
+  path: "azimuth_custom_reference"
+info:
+  name: "Azimuth reference mapping"
+  test_dependencies:
+  - name: "azimuth_test"
+    namespace: "test_workflows/annotation"
+status: "enabled"
+scope:
+  image: "public"
+  target: "public"
+dependencies:
+- name: "workflows/multiomics/split_modalities"
+  repository:
+    type: "local"
+- name: "convert/from_h5mu_or_h5ad_to_seurat"
+  repository:
+    type: "local"
+- name: "annotate/azimuth"
+  alias: "azimuth_component"
+  repository:
+    type: "local"
+- name: "convert/from_seurat_to_h5mu"
+  repository:
+    type: "local"
+- name: "transform/delete_layer"
+  repository:
+    type: "local"
+- name: "dataflow/merge"
+  repository:
+    type: "local"
+- name: "metadata/copy_modality_slots"
+  repository:
+    type: "local"
+license: "MIT"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+build_info:
+  config: "src/workflows/annotation/azimuth/config.vsh.yaml"
+  runner: "nextflow"
+  engine: "native"
+  output: "target/nextflow/workflows/annotation/azimuth"
+  executable: "target/nextflow/workflows/annotation/azimuth/main.nf"
+  viash_version: "0.9.7"
+  git_commit: "5b2d136f5f89c5151d276549fd881cd832346f61"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  dependencies:
+  - "target/_private/nextflow/workflows/multiomics/split_modalities"
+  - "target/nextflow/convert/from_h5mu_or_h5ad_to_seurat"
+  - "target/_private/nextflow/annotate/azimuth"
+  - "target/nextflow/convert/from_seurat_to_h5mu"
+  - "target/nextflow/transform/delete_layer"
+  - "target/nextflow/dataflow/merge"
+  - "target/nextflow/metadata/copy_modality_slots"
+package_config:
+  name: "openpipeline"
+  summary: "Best-practice workflows for single-cell multi-omics analyses.\n"
+  description: "OpenPipelines are extensible single cell analysis pipelines for reproducible\
+    \ and large-scale single cell processing using [Viash](https://viash.io) and [Nextflow](https://www.nextflow.io/).\n\
+    \nIn terms of workflows, the following has been made available, but keep in mind\
+    \ that\nindividual tools and functionality can be executed as standalone components\
+    \ as well.\n\n  * Demultiplexing: conversion of raw sequencing data to FASTQ objects.\n\
+    \  * Ingestion: Read mapping and generating a count matrix.\n  * Single sample\
+    \ processing: cell filtering and doublet detection.\n  * Multisample processing:\
+    \ Count transformation, normalization, QC metric calulations.\n  * Integration:\
+    \ Clustering, integration and batch correction using single and multimodal methods.\n\
+    \  * Downstream analysis workflows\n"
+  info:
+    test_resources:
+    - type: "s3"
+      path: "s3://openpipelines-data"
+      dest: "resources_test"
+    nextflow_labels_ci:
+    - path: "src/workflows/utils/labels_ci.config"
+      description: "Adds the correct memory and CPU labels when running on the Viash\
+        \ Hub CI."
+  viash_version: "0.9.7"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].config.script := 'includeConfig(\"nextflow_labels.config\"\
+    )'"
+  - ".version := \"main_build\""
+  keywords:
+  - "single-cell"
+  - "multimodal"
+  license: "MIT"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

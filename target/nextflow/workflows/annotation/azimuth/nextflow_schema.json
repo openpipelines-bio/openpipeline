@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "azimuth",
+  "description": "Cell type annotation workflow using Azimuth reference mapping (Seurat RunAzimuth()).\nAccepts either an H5MU file (`--input`) or a Seurat object (`--input_seurat`) as query.\n\nFor H5MU input, the modalities are split, the modality selected with `--modality` is converted\nto a Seurat object and mapped onto the Azimuth reference, and the annotated modality is converted\nback and merged with the other (untouched) modalities. For Seurat input, the selected assay is\nannotated and converted to an H5MU file containing a single modality.\n",
+  "type": "object",
+  "$defs": {
+    "Dataset input": {
+      "title": "Dataset input",
+      "type": "object",
+      "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+      "properties": {
+        "param_list": {
+          "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+          "type": "string",
+          "default": "",
+          "format": "file-path",
+          "mimetype": "text/csv"
+        }
+      }
+    },
+    "inputs": {
+      "title": "Inputs",
+      "type": "object",
+      "description": "Input dataset (query) arguments. Exactly one of `--input` or `--input_seurat` must be provided.\n",
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "path",
+          "description": "The input (query) data to be annotated",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.h5mu\"`. "
+        },
+        "input_seurat": {
+          "type": "string",
+          "format": "path",
+          "description": "The input (query) data to be annotated",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"input.rds\"`. "
+        },
+        "modality": {
+          "type": "string",
+          "description": "Which modality of `--input` to annotate",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"rna\"`. ",
+          "default": "rna"
+        },
+        "input_seurat_assay": {
+          "type": "string",
+          "description": "Name of the Seurat assay in `--input_seurat` to run the annotation on.\nOnly used with `--input_seurat`.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"RNA\"`. ",
+          "default": "RNA"
+        },
+        "input_layer": {
+          "type": "string",
+          "description": "Layer containing the raw (unnormalized) counts",
+          "help_text": "Type: `string`, multiple: `False`. "
+        },
+        "input_var_gene_names": {
+          "type": "string",
+          "description": "Column in .var (`--input`) or in the feature metadata of `--input_seurat_assay`\n(`--input_seurat`) containing gene symbols",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gene_symbol\"`. "
+        },
+        "input_reference_gene_overlap": {
+          "type": "integer",
+          "description": "Minimum number of genes that must overlap between the query and the\nreference for the mapping to be performed.\n",
+          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
+          "default": 100
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "Output arguments.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "The annotated output .h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
+          "default": "$id.$key.output.h5mu"
+        },
+        "write_seurat": {
+          "type": "boolean",
+          "description": "Whether to also write the annotated Seurat object to `--output_seurat`.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "output_seurat": {
+          "type": "string",
+          "format": "path",
+          "description": "The annotated Seurat object (.rds file)",
+          "help_text": "Type: `file`, multiple: `False`, default: `\"$id.$key.output_seurat.rds\"`, direction: `output`, example: `\"output.rds\"`. ",
+          "default": "$id.$key.output_seurat.rds"
+        },
+        "output_seurat_compression": {
+          "type": "string",
+          "description": "Compression used when writing `--output_seurat`.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"gzip\"`, choices: ``gzip`, `bzip2`, `xz`, `none``. ",
+          "enum": [
+            "gzip",
+            "bzip2",
+            "xz",
+            "none"
+          ],
+          "default": "gzip"
+        },
+        "output_obs_predictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "In which `.obs` slots to store the predicted cell labels.\nIf provided, `--annotation_levels` must be provided as well, and both must have the same length.\nIf empty, defaults to `azimuth_pred_<level>`, with \".\" in the level name replaced by \"_\".\n",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "output_obs_probability": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "In which `.obs` slots to store the prediction scores.\nIf provided, `--annotation_levels` must be provided as well, and both must have the same length.\nIf empty, defaults to `azimuth_probability_<level>`, with \".\" in the level name replaced by \"_\".\n",
+          "help_text": "Type: `string`, multiple: `True`. "
+        },
+        "output_obs_mapping_score": {
+          "type": "string",
+          "description": "In which `.obs` slot to store the per-cell mapping score.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"azimuth_mapping_score\"`. ",
+          "default": "azimuth_mapping_score"
+        },
+        "output_obsm_umap": {
+          "type": "string",
+          "description": "In which `.obsm` slot to store the query embedding projected onto the reference UMAP.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_azimuth_umap\"`. ",
+          "default": "X_azimuth_umap"
+        },
+        "output_obsm_integrated": {
+          "type": "string",
+          "description": "In which `.obsm` slot to store the integrated (reference-projected) embedding.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"X_integrated_azimuth\"`. ",
+          "default": "X_integrated_azimuth"
+        },
+        "output_modality_imputed_adt": {
+          "type": "string",
+          "description": "Name of the modality in which the imputed protein expression is stored when `--do_adt` is set.\nMust not already exist in `--input`.\n",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"prot_imputed\"`. ",
+          "default": "prot_imputed"
+        },
+        "output_compression": {
+          "type": "string",
+          "description": "The compression format to be used on the output h5mu object.",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+          "enum": [
+            "gzip",
+            "lzf"
+          ]
+        }
+      }
+    },
+    "reference": {
+      "title": "Reference",
+      "type": "object",
+      "description": "Arguments controlling which Azimuth reference to map the query onto.\nThere is no training step: RunAzimuth() maps the query directly onto\nthe chosen reference's precomputed embeddings.\n",
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "Name of a curated Azimuth reference, downloaded and installed\nautomatically on first use via SeuratData",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"pbmcref\"`, choices: ``pbmcref`, `bonemarrowref`, `lungref`, `heartref`, `tonsilref`, `humancortexref`, `mousecortexref`, `kidneyref`, `pancreasref`, `adiposeref`, `fetusref`, `custom``. ",
+          "enum": [
+            "pbmcref",
+            "bonemarrowref",
+            "lungref",
+            "heartref",
+            "tonsilref",
+            "humancortexref",
+            "mousecortexref",
+            "kidneyref",
+            "pancreasref",
+            "adiposeref",
+            "fetusref",
+            "custom"
+          ]
+        },
+        "custom_reference": {
+          "type": "string",
+          "format": "path",
+          "description": "Path to a local directory containing a \"ref.Rds\" and \"idx.annoy\"\nfile pair for a custom reference, e.g",
+          "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"azimuth_reference\"`. "
+        },
+        "annotation_levels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Which annotation levels (columns in the reference's metadata,\ne.g",
+          "help_text": "Type: `string`, multiple: `True`, example: `[\"celltype.l1\";\"celltype.l2\"]`. "
+        },
+        "do_adt": {
+          "type": "boolean",
+          "description": "Whether to impute a protein (ADT) assay from the reference, if\nthe reference includes antibody-derived tag data",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        }
+      }
+    },
+    "mapping arguments": {
+      "title": "Mapping arguments",
+      "type": "object",
+      "description": "Lower-level arguments passed through to RunAzimuth().",
+      "properties": {
+        "k_weight": {
+          "type": "integer",
+          "description": "Number of neighbors to consider when weighting anchors during label/embedding transfer.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
+          "default": 50
+        },
+        "n_trees": {
+          "type": "integer",
+          "description": "Number of trees used when building the annoy index for neighbor search.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `20`. ",
+          "default": 20
+        },
+        "mapping_score_k": {
+          "type": "integer",
+          "description": "Number of neighbors used to compute the per-cell mapping score.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `100`. ",
+          "default": 100
+        }
+      }
+    },
+    "nextflow input-output arguments": {
+      "title": "Nextflow input-output arguments",
+      "type": "object",
+      "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+      "properties": {
+        "publish_dir": {
+          "type": "string",
+          "description": "Path to an output directory.",
+          "help_text": "Type: `string`, multiple: `False`, required, example: `\"output/\"`. "
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/reference"
+    },
+    {
+      "$ref": "#/$defs/mapping arguments"
+    },
+    {
+      "$ref": "#/$defs/nextflow input-output arguments"
+    }
+  ]
+}
