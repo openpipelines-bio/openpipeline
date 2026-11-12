@@ -1,5 +1,5 @@
 {
-    "executablePath": "/usr/bin/chromium",
+    "executablePath": "/usr/bin/chromium-headless-shell",
     "args": [
         "--no-sandbox"
     ]

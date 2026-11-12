@@ -233,6 +233,7 @@ resources:
   - path: /src/utils/cross_check_genes.py
   - path: /src/utils/set_var_index.py
   - path: /src/utils/is_lognormalized.py
+  - path: panhumanpy.patch
 
 test_resources:
   - type: python_script
@@ -244,9 +245,17 @@ engines:
   - type: docker
     image: python:3.12-slim
     setup:
-      - type: python
+      - type: docker
+        copy: ["panhumanpy.patch /opt/panhumanpy.patch"]
+      - type: apt
         packages:
-          - panhumanpy[gpu]==1.0.0
+          - git
+      # Use numpy>2 by unpinning dependencies
+      - type: docker
+        run: |
+          cd /opt && git clone --depth 1 --branch v1.0.0-orion https://github.com/satijalab/panhumanpy.git && \
+          cd /opt/panhumanpy && git apply /opt/panhumanpy.patch && \
+          pip install --no-cache-dir "/opt/panhumanpy[gpu]"
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, . ]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]

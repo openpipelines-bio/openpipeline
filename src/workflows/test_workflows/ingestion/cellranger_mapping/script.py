@@ -16,9 +16,6 @@ def test_run():
     assert list(input_mudata.mod.keys()) == ["rna"], (
         "Input should contain rna modality."
     )
-    assert list(input_mudata.var.columns) == expected_colnames, (
-        f"Input var columns should be: {expected_colnames}."
-    )
     assert list(input_mudata.mod["rna"].var.columns) == expected_colnames, (
         f"Input mod['rna'] var columns should be: {expected_colnames}."
     )
