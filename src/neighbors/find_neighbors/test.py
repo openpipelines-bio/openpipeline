@@ -80,7 +80,7 @@ def test_run_pynndescent(run_component, tmp_path, n_obs, metric):
     input_path = tmp_path / "input.h5mu"
     mu.MuData({"rna": rna}).write_h5mu(input_path)
     output = tmp_path / "output.h5mu"
-
+    num_neighbors = 15
     run_component(
         [
             "--input",
@@ -89,6 +89,8 @@ def test_run_pynndescent(run_component, tmp_path, n_obs, metric):
             str(output),
             "--metric",
             metric,
+            "--num_neighbors",
+            str(num_neighbors),
         ]
     )
 
@@ -103,7 +105,7 @@ def test_run_pynndescent(run_component, tmp_path, n_obs, metric):
     # so the number of stored entries per row is not exactly num_neighbors - 1.
     distances = rna_out.obsp["distances"].copy()
     distances.eliminate_zeros()
-    assert (np.diff(distances.indptr) >= 14).all()
+    assert (np.diff(distances.indptr) >= num_neighbors - 1).all()
 
 
 if __name__ == "__main__":

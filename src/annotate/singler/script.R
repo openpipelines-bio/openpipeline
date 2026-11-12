@@ -3,6 +3,7 @@ library(Matrix)
 requireNamespace("anndata", quietly = TRUE)
 requireNamespace("reticulate", quietly = TRUE)
 mudata <- reticulate::import("mudata")
+pd <- reticulate::import("pandas", convert = FALSE)
 
 ### VIASH START
 par <- list(
@@ -37,6 +38,31 @@ meta <- list(
 
 ### VIASH END
 
+# pandas >= 3 string indices are not converted to R vectors by reticulate
+index_to_r <- function(index) {
+  as.character(reticulate::py_to_r(index$to_list()))
+}
+
+# Assigning through `adata$obs[[name]] <-` converts the full .obs to an R
+# data.frame and back, which alters the dtypes of the existing columns
+# (e.g. int64 -> float64, NA in nullable columns is lost)
+set_obs_column <- function(adata, name, values) {
+  obs <- reticulate::py_get_attr(adata, "obs")
+  if (is.character(values) || is.factor(values)) {
+    # NA in R character vectors are otherwise converted to the string "NA"
+    values <- pd$Series(
+      as.character(values),
+      index = reticulate::py_get_attr(obs, "index"),
+      dtype = "str"
+    )$mask(is.na(values))
+  }
+  obs$`__setitem__`(name, values)
+}
+
+set_obsm_item <- function(adata, name, values) {
+  reticulate::py_get_attr(adata, "obsm")$`__setitem__`(name, values)
+}
+
 get_layer <- function(adata, layer, var_gene_names) {
   # find data
   data <-
@@ -62,7 +88,7 @@ get_layer <- function(adata, layer, var_gene_names) {
 
   # Set matrix dimnames
   input_gene_names <- sanitize_ensembl_ids(adata, var_gene_names)
-  dimnames(data) <- list(adata$obs_names, input_gene_names)
+  dimnames(data) <- list(index_to_r(adata$obs_names), input_gene_names)
 
   # return output
   data
@@ -70,7 +96,7 @@ get_layer <- function(adata, layer, var_gene_names) {
 
 sanitize_ensembl_ids <- function(adata, gene_symbol = NULL) {
   if (is.null(gene_symbol)) {
-    gene_names <- adata$var_names
+    gene_names <- index_to_r(adata$var_names)
   } else {
     gene_names <- adata$var[[gene_symbol]]
   }
@@ -188,15 +214,20 @@ predictions <- SingleR(
 
 cat("Writing output data\n")
 # Writing output slots
-input_adata$obs[[par$output_obs_predictions]] <-
-  predictions$labels
-input_adata$obs[[par$output_obs_probability]] <-
-  apply(predictions$scores, 1, max)
-input_adata$obs[[par$output_obs_delta_next]] <-
-  predictions$delta.next
-input_adata$obs[[par$output_obs_pruned_predictions]] <-
-  predictions$pruned.labels
-input_adata$obsm[[par$output_obsm_scores]] <-
-  predictions$scores
+set_obs_column(
+  input_adata, par$output_obs_predictions, predictions$labels
+)
+set_obs_column(
+  input_adata, par$output_obs_probability, apply(predictions$scores, 1, max)
+)
+set_obs_column(
+  input_adata, par$output_obs_delta_next, predictions$delta.next
+)
+if (!is.null(predictions$pruned.labels)) {
+  set_obs_column(
+    input_adata, par$output_obs_pruned_predictions, predictions$pruned.labels
+  )
+}
+set_obsm_item(input_adata, par$output_obsm_scores, predictions$scores)
 # Writing output H5MU
 input_mdata$write(par$output, compression = par$output_compression)

@@ -1,6 +1,7 @@
 import sys
 import pytest
 import mudata
+import numpy as np
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
@@ -45,6 +46,9 @@ def test_harmonypy(run_component, random_h5mu_path):
         output_data.mod["rna"].obsm["X_pca_int"].shape
         == output_data.mod["rna"].obsm["X_pca"].shape
     )
+    integrated = output_data.mod["rna"].obsm["X_pca_int"]
+    assert integrated.dtype == np.float32
+    assert np.isfinite(integrated).all()
     # Delete output slots in order to tests for equality with
     # input data
     del output_data["rna"].obsm["X_pca_int"]
