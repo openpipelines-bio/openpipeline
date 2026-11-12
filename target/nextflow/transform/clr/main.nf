@@ -3307,9 +3307,9 @@ meta = [
             "pandas>3",
             "scipy~=1.18.1",
             "mudata~=0.4.1",
+            "muon==0.2.1",
             "scanpy~=1.11.4",
-            "pynndescent<0.7",
-            "muon~=0.1.9"
+            "pynndescent<0.7"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3335,7 +3335,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr",
     "viash_version" : "0.9.7",
-    "git_commit" : "e6b61182db071263353dfc5c1d23e9c58c4fdb80",
+    "git_commit" : "c6611cfdaf777023b1df17ba7d0dc418b8ea3ca1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
