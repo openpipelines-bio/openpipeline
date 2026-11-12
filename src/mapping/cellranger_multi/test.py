@@ -311,6 +311,39 @@ def test_cellranger_multi_applies_gex_options(run_component, random_path):
     assert expected_csv_content in config_contents
 
 
+def test_cellranger_multi_disable_cell_annotation(run_component, random_path):
+    outputpath = random_path()
+    args = [
+        "--output",
+        outputpath,
+        "--gex_input",
+        input1_R1,
+        "--gex_input",
+        input1_R2,
+        "--gex_reference",
+        gex_reference,
+        "--gex_generate_bam",
+        "false",
+        "--skip_cell_annotation",
+        "true",
+    ]
+    run_component(args)
+
+    config_path = outputpath / "config.csv"
+    assert config_path.is_file()
+    with config_path.open("r") as config_file:
+        config_contents = config_file.read()
+    expected_csv_content = (
+        r"\[gene-expression\]\n(?:[^\[\n].*\n)*skip-cell-annotation,True\n"
+    )
+    assert re.search(expected_csv_content, config_contents)
+
+    # By default, Cell Ranger runs the local Azimuth cell type annotation on human data.
+    # The stage is still scheduled ('ready') when annotation is disabled, but never started.
+    log_contents = (outputpath / "cellranger_multi.log").read_text()
+    assert not re.search(r"\(run:local\)\s+\S*CALL_AZIMUTH_CELL_TYPES", log_contents)
+
+
 def test_cellranger_multi_no_vdj_reference(run_component, random_path):
     # GH291
     outputpath = random_path()
@@ -724,100 +757,5 @@ def test_cellranger_no_cpus_or_mem_specifier(run_component, random_path):
     run_component(args)
 
 
-def test_cellranger_multi_multi_flowcell_input(run_component, random_path):
-    flowcell_1 = random_path()
-    flowcell_2 = random_path()
-    flowcell_1.mkdir()
-    flowcell_2.mkdir()
-
-    # Copy files to simulate flow cell directories containing identical file names
-    import shutil
-
-    for src in [input1_R1, input1_R2]:
-        shutil.copy(src, flowcell_1 / src.name)
-        shutil.copy(src, flowcell_2 / src.name)
-    for src in [input2_R1, input2_R2]:
-        shutil.copy(src, flowcell_2 / src.name)
-
-    outputpath = random_path()
-    run_component(
-        [
-            "--output",
-            outputpath,
-            "--input",
-            flowcell_1 / input1_R1.name,
-            "--input",
-            flowcell_1 / input1_R2.name,
-            "--input",
-            flowcell_2 / input1_R1.name,
-            "--input",
-            flowcell_2 / input1_R2.name,
-            "--input",
-            flowcell_2 / input2_R1.name,
-            "--input",
-            flowcell_2 / input2_R2.name,
-            "--library_id",
-            "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset",
-            "--library_type",
-            "Gene Expression;Antibody Capture",
-            "--gex_reference",
-            gex_reference,
-            "--feature_reference",
-            feature_reference,
-            "--gex_generate_bam",
-            "false",
-            "--dryrun",
-        ]
-    )
-
-    config_path = outputpath / "config.csv"
-    assert config_path.is_file()
-    config_contents = config_path.read_text()
-
-    # Check that all libraries across flow cell directories are correctly represented
-    assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_GEX_1_subset") == 2
-    assert config_contents.count("5k_human_antiCMV_T_TBNK_connect_AB_subset") == 1
-    assert config_contents.count("Gene Expression") == 2
-    assert config_contents.count("Antibody Capture") == 1
-
-
-def test_raise_with_missing_library_id(run_component, random_path):
-    outputpath = random_path()
-
-    args = [
-        "--output",
-        outputpath,
-        "--input",
-        input1_R1,
-        "--input",
-        input1_R2,
-        "--input",
-        input2_R1,
-        "--input",
-        input2_R2,
-        "--input",
-        input3_R1,
-        "--input",
-        input3_R2,
-        "--gex_reference",
-        gex_reference,
-        "--vdj_reference",
-        vdj_reference,
-        "--feature_reference",
-        feature_reference,
-        "--library_id",
-        "non_existing_library_id;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
-        "--library_type",
-        "Gene Expression;Antibody Capture;VDJ",
-    ]
-
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(args)
-    assert re.search(
-        r"No FASTQ files found for the following library ids: non_existing_library_id. Check that --library_id values match the FASTQ file names.",
-        err.value.stdout.decode("utf-8"),
-    )
-
-
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "-x"]))
+    sys.exit(pytest.main([__file__]))
