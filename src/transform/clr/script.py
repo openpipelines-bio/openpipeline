@@ -34,7 +34,6 @@ def main():
     normalized_counts = pt.pp.clr(
         input_data, axis=par["axis"], inplace=False, flavor="seurat"
     )
-
     if not normalized_counts:
         raise RuntimeError("CLR failed to return the requested output layer")
 
