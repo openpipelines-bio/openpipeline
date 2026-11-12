@@ -35,6 +35,19 @@
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
+* Bumped `anndata` to `0.13.4`, `mudata` to `0.4.1` and `pandas` to `3` (PR #1263):
+  - Modality `.obs`/`.var` columns are no longer synced to the global `.obs`/`.var`. Single-modality components only update the modality.
+  - `dataflow/merge`: no longer copies modality columns to the global `.obs`/`.var` or converts their dtypes.
+  - `dataflow/concatenate_h5mu`: string columns are no longer always stored as `categorical`, but follow the `anndata` heuristic (`categorical` only when values repeat). Global `.obs`/`.var` columns that were pulled from a modality are now kept, pulled again from the concatenated modalities. Columns that only exist in the global frame are still being dropped.
+
+* `annotate/popv`, `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped the base image to PyTorch `2.13.0` with CUDA `13.2`, which requires a recent NVIDIA driver (PR #1263).
+
+* `velocity/scvelo`: bumped `scvelo` to `0.3.4` (patched for `pandas` 3). Highly variable gene selection (`--n_top_genes`) and log transformation (`--log_transform`) are now done with `scanpy`, as `scvelo` no longer provides them (PR #1263).
+
+* `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0`, patched for `pandas` 3 and `anndata` 0.13 (PR #1263).
+
+* `interpret/lianapy`: bumped `liana` to `2.0.0` (PR #1263).
+
 * `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
 
 * `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
@@ -73,6 +86,16 @@
 
 * Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #1275)
 
+* Bumped `scipy` to `1.18.1` (PR #1263).
+
+* `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
+
+* `qc/calculate_atac_qc_metrics`: bumped `muon` to `0.2.0` and `pysam` to `0.24.1` (PR #1263).
+
+* `annotate/onclass`, `convert/from_10xmtx_to_h5mu`, `convert/from_bdrhap_to_h5mu`, `dimred/lsi`, `feature_annotation/score_genes_cell_cycle_scanpy`, `feature_annotation/score_genes_scanpy`, `interpret/lianapy`, `metadata/add_id`, `metadata/grep_annotation_column`, `qc/calculate_atac_qc_metrics`, `query/cellxgene_census`: bumped the base image to Python 3.12. `tiledb/move_mudata_obs_to_tiledb` now uses Python 3.13 (PR #1263).
+
+* `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
+
 ## BUG FIXES
 
 * `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
@@ -89,6 +112,10 @@
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
 * `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
+
+* `dataflow/concatenate_h5mu`: detect duplicate observations across samples when they are in different modalities. Within one sample, an observation can still be in several modalities (PR #1263).
+
+* `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
 
 ## INTERNAL CHANGES
 
