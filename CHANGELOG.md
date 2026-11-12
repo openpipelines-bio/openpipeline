@@ -84,7 +84,7 @@
 
 * `reference/build_cellranger_reference` and `reference/cellranger_mkgtf`: bump Cell Ranger to `10.1.0`, switch to the `quay.io/nf-core/cellranger` image and disable Cell Ranger telemetry (PR #1270).
 
-* Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #1275)
+* Several scanpy components: bumped `scanpy` to `1.12.5` (PR #1274).
 
 * Bumped `scipy` to `1.18.1` (PR #1263).
 
