@@ -20,6 +20,11 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
+* `integrate/harmonypy`, `workflows/integration/harmony_leiden`, `workflows/annotation/harmony_knn`: bump `harmonypy` from `0.0.x` (pinned as `~=0.0.6`) to `0.2.0`. The component arguments are unchanged, but the integrated embedding will differ slightly from previous releases (PR #1256):
+  - `harmonypy` was rewritten in PyTorch and now uses the diversity penalty formula of the R package, so the same `--theta` yields a slightly different embedding.  Downstream nearest neighbors and clusters may shift accordingly.
+  - The integrated embedding is now stored as `float32` instead of `float64`.
+  - A GPU (CUDA or MPS) is used automatically when one is available to the container, which may cause small numerical differences compared to running on CPU.
+
 * `mapping/cellranger_count`, `mapping/cellranger_multi`, `workflows/ingestion/cellranger_mapping`, `workflows/ingestion/cellranger_multi`: update Cell Ranger to 10.1.0 (from 9.0 for `cellranger_count`, from 10.0.0 for `cellranger_multi`) (PR #1252):
   - Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples. Use the new `--disable_cell_annotation` (`cellranger_count`, `cellranger_mapping`) or `--skip_cell_annotation` (`cellranger_multi`) argument to turn this off.
   - Removed the `SC3Pv3LT` chemistry from the `--chemistry` and `--gex_chemistry` choices, as Cell Ranger no longer supports it.
