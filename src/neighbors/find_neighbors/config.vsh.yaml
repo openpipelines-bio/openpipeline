@@ -91,6 +91,8 @@ engines:
         packages: 
           - procps
       - type: python
+        packages:
+          - umap-learn==0.5.12 # See https://github.com/scverse/scanpy/commit/c1f5350cbf1a77a09c43b082edec37f0c1ef623c 
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
     __merge__: [/src/base/requirements/python_test_setup.yaml, .]
 
