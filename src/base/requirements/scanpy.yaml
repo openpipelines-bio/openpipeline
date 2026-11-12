@@ -1,2 +1,3 @@
 packages:
   - scanpy~=1.12.5
+  - umap-learn==0.5.12 # see https://github.com/scverse/scanpy/commit/c1f5350cbf1a77a09c43b082edec37f0c1ef623c
