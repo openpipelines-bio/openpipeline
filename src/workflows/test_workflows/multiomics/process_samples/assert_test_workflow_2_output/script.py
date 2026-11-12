@@ -131,7 +131,7 @@ def test_rna_log_normalized_layer(get_sample_output, sample_1_h5mu, sample_2_h5m
         pd.testing.assert_index_equal(input_counts_df.index, output_counts.index)
         pd.testing.assert_index_equal(input_counts_df.columns, output_counts.columns)
         # Undo log1p transformation; there are just normalized counts to compare to the original raw counts
-        normalized_counts = np.expm1(output_counts_data)
+        normalized_counts = np.expm1(output_counts_data.astype(np.float64))
         assert not np.allclose(
             input_counts_data.mean(axis=1), normalized_counts.mean(axis=1)
         )
@@ -254,4 +254,14 @@ def test_prot_log_normalized_expressions(
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "--import-mode=importlib"]))
+    sys.exit(
+        pytest.main(
+            [
+                __file__,
+                "--import-mode=importlib",
+                "-o",
+                "markers=modality: only run tests that target specific modality\n"
+                "layer: only run tests that target specified layer",
+            ]
+        )
+    )

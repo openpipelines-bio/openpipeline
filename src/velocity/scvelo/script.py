@@ -7,6 +7,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 import matplotlib as mpl
 import scvelo
+import scanpy as sc
 
 ## VIASH START
 from collections import defaultdict
@@ -95,9 +96,20 @@ def main():
         min_cells_u=par["min_cells_u"],
         min_shared_counts=par["min_shared_counts"],
         min_shared_cells=par["min_shared_cells"],
-        n_top_genes=par["n_top_genes"],
-        log=par["log_transform"],
     )
+
+    # Since scvelo 0.3.4, filter_and_normalize no longer selects highly variable genes
+    # or log transforms the data. The 'seurat' flavor (the previous scvelo default)
+    # expects log transformed data, so the selection is done on log transformed counts.
+    adata_log = sc.pp.log1p(adata, copy=True)
+    if par["n_top_genes"]:
+        sc.pp.highly_variable_genes(
+            adata_log, flavor="seurat", n_top_genes=par["n_top_genes"], subset=True
+        )
+    if par["log_transform"]:
+        adata = adata_log
+    elif par["n_top_genes"]:
+        adata = adata[:, adata_log.var_names].copy()
 
     # Fitting
     scvelo.pp.moments(
