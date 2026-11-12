@@ -3587,26 +3587,33 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime",
+      "image" : "pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
         {
+          "type" : "docker",
+          "env" : [
+            "PIP_BREAK_SYSTEM_PACKAGES=1"
+          ]
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
             "scanpy~=1.11.4",
             "pynndescent<0.7",
-            "scvi-tools[cuda]~=1.4.1"
+            "scvi-tools[cuda]~=1.5.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
           ],
-          "upgrade" : true
+          "upgrade" : false
         }
       ],
       "test_setup" : [
@@ -3627,7 +3634,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.9.7",
-    "git_commit" : "5b2d136f5f89c5151d276549fd881cd832346f61",
+    "git_commit" : "e6b61182db071263353dfc5c1d23e9c58c4fdb80",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

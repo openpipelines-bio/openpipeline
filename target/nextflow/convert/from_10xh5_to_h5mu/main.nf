@@ -3403,10 +3403,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
             "scanpy~=1.11.4",
             "pynndescent<0.7"
           ],
@@ -3444,7 +3445,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "5b2d136f5f89c5151d276549fd881cd832346f61",
+    "git_commit" : "e6b61182db071263353dfc5c1d23e9c58c4fdb80",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3566,7 +3567,7 @@ if par["input_metrics_summary"] and par["uns_metrics"]:
 
     metrics_summary = pd.read_csv(
         par["input_metrics_summary"], decimal=".", quotechar='"', thousands=","
-    ).applymap(read_percentage)
+    ).map(read_percentage)
 
     logger.info("Storing metrics summary in .uns['%s']", par["uns_metrics"])
     adata.uns[par["uns_metrics"]] = metrics_summary
