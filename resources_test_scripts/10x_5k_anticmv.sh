@@ -167,8 +167,7 @@ output: "${orig_sample_id}_mms.h5mu"
 HERE
 
 nextflow \
-  run openpipelines-bio/openpipeline \
-  -r 3.0.0 \
+  run . \
   -main-script target/nextflow/workflows/multiomics/process_samples/main.nf \
   -resume \
   -profile docker,mount_temp \
