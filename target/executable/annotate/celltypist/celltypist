@@ -452,14 +452,14 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "celltypist==1.7.1" "cuml-cu13"
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.12.16" "awkward" "scipy~=1.17.1" "mudata~=0.3.8" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component annotate celltypist"
-LABEL org.opencontainers.image.created="2026-11-12T10:05:16Z"
+LABEL org.opencontainers.image.created="2026-11-12T15:00:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="433f83cee5efce8b54d08a138329da56a5437e17"
+LABEL org.opencontainers.image.revision="6c51a58507298267d057bf9d06d89113877b5c85"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

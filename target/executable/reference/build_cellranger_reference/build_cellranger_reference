@@ -455,9 +455,9 @@ apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
 RUN cellranger telemetry disable
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_reference"
-LABEL org.opencontainers.image.created="2026-11-12T10:05:08Z"
+LABEL org.opencontainers.image.created="2026-11-12T15:00:24Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="433f83cee5efce8b54d08a138329da56a5437e17"
+LABEL org.opencontainers.image.revision="6c51a58507298267d057bf9d06d89113877b5c85"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

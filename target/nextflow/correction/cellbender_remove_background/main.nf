@@ -3703,11 +3703,12 @@ meta = [
           "type" : "python",
           "user" : true,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
-            "git+https://github.com/broadinstitute/CellBender.git@c5f5d9f41a2926a0b46515ccc4a3383d52a9ffa9"
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
+            "cellbender==0.4.0"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3723,7 +3724,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.9.7",
-    "git_commit" : "433f83cee5efce8b54d08a138329da56a5437e17",
+    "git_commit" : "6c51a58507298267d057bf9d06d89113877b5c85",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3978,7 +3979,7 @@ with tempfile.TemporaryDirectory(
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
     adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
 
-    logger.info("CellBender output format:", adata_out)
+    logger.info("CellBender output format: %s", adata_out)
 
     # AnnData object with n_obs x n_vars = 6794880 x 33538
     #     obs: 'cellbender_analyzed'

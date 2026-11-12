@@ -20,6 +20,11 @@
  - `integrate/harmony`
  - `mapping/samtools_sort`
 
+* `integrate/harmonypy`, `workflows/integration/harmony_leiden`, `workflows/annotation/harmony_knn`: bump `harmonypy` from `0.0.x` (pinned as `~=0.0.6`) to `0.2.0`. The component arguments are unchanged, but the integrated embedding will differ slightly from previous releases (PR #1256):
+  - `harmonypy` was rewritten in PyTorch and now uses the diversity penalty formula of the R package, so the same `--theta` yields a slightly different embedding.  Downstream nearest neighbors and clusters may shift accordingly.
+  - The integrated embedding is now stored as `float32` instead of `float64`.
+  - A GPU (CUDA or MPS) is used automatically when one is available to the container, which may cause small numerical differences compared to running on CPU.
+
 * `mapping/cellranger_count`, `mapping/cellranger_multi`, `workflows/ingestion/cellranger_mapping`, `workflows/ingestion/cellranger_multi`: update Cell Ranger to 10.1.0 (from 9.0 for `cellranger_count`, from 10.0.0 for `cellranger_multi`) (PR #1252):
   - Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples. Use the new `--disable_cell_annotation` (`cellranger_count`, `cellranger_mapping`) or `--skip_cell_annotation` (`cellranger_multi`) argument to turn this off.
   - Removed the `SC3Pv3LT` chemistry from the `--chemistry` and `--gex_chemistry` choices, as Cell Ranger no longer supports it.
@@ -29,6 +34,19 @@
 * `qc/fastqc`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/fastqc](https://www.viash-hub.com/packages/biobox/latest/components/fastqc) instead (PR #1253)
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
+
+* Bumped `anndata` to `0.13.4`, `mudata` to `0.4.1` and `pandas` to `3` (PR #1263):
+  - Modality `.obs`/`.var` columns are no longer synced to the global `.obs`/`.var`. Single-modality components only update the modality.
+  - `dataflow/merge`: no longer copies modality columns to the global `.obs`/`.var` or converts their dtypes.
+  - `dataflow/concatenate_h5mu`: string columns are no longer always stored as `categorical`, but follow the `anndata` heuristic (`categorical` only when values repeat). Global `.obs`/`.var` columns that were pulled from a modality are now kept, pulled again from the concatenated modalities. Columns that only exist in the global frame are still being dropped.
+
+* `annotate/popv`, `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped the base image to PyTorch `2.13.0` with CUDA `13.2`, which requires a recent NVIDIA driver (PR #1263).
+
+* `velocity/scvelo`: bumped `scvelo` to `0.3.4` (patched for `pandas` 3). Highly variable gene selection (`--n_top_genes`) and log transformation (`--log_transform`) are now done with `scanpy`, as `scvelo` no longer provides them (PR #1263).
+
+* `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0`, patched for `pandas` 3 and `anndata` 0.13 (PR #1263).
+
+* `interpret/lianapy`: bumped `liana` to `2.0.0` (PR #1263).
 
 * `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
 
@@ -68,6 +86,16 @@
 
 * Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #1275)
 
+* Bumped `scipy` to `1.18.1` (PR #1263).
+
+* `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
+
+* `qc/calculate_atac_qc_metrics`: bumped `muon` to `0.2.0` and `pysam` to `0.24.1` (PR #1263).
+
+* `annotate/onclass`, `convert/from_10xmtx_to_h5mu`, `convert/from_bdrhap_to_h5mu`, `dimred/lsi`, `feature_annotation/score_genes_cell_cycle_scanpy`, `feature_annotation/score_genes_scanpy`, `interpret/lianapy`, `metadata/add_id`, `metadata/grep_annotation_column`, `qc/calculate_atac_qc_metrics`, `query/cellxgene_census`: bumped the base image to Python 3.12. `tiledb/move_mudata_obs_to_tiledb` now uses Python 3.13 (PR #1263).
+
+* `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
+
 ## BUG FIXES
 
 * `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
@@ -84,6 +112,10 @@
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
 * `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
+
+* `dataflow/concatenate_h5mu`: detect duplicate observations across samples when they are in different modalities. Within one sample, an observation can still be in several modalities (PR #1263).
+
+* `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
 
 ## INTERNAL CHANGES
 

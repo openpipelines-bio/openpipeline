@@ -3181,6 +3181,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "/src/base/tiledb/tiledbsoma.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3312,11 +3316,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.12.16",
+            "anndata~=0.13.4",
             "awkward",
-            "scipy~=1.17.1",
-            "mudata~=0.3.8",
-            "tiledbsoma",
+            "pandas>3",
+            "scipy~=1.18.1",
+            "mudata~=0.4.1",
             "boto3",
             "awscli"
           ],
@@ -3324,6 +3328,15 @@ meta = [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "docker",
+          "copy" : [
+            "tiledbsoma.patch /opt/tiledbsoma.patch"
+          ],
+          "run" : [
+            "pip install --no-cache-dir tiledbsoma==2.2.0 && \\\\\npatch -p1 -d \\"$(python -c 'import site; print(site.getsitepackages()[0])')\\" < /opt/tiledbsoma.patch"
+          ]
         }
       ],
       "test_setup" : [
@@ -3362,7 +3375,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/_private/nextflow/tiledb/move_mudata_obsm_to_tiledb",
     "viash_version" : "0.9.7",
-    "git_commit" : "433f83cee5efce8b54d08a138329da56a5437e17",
+    "git_commit" : "6c51a58507298267d057bf9d06d89113877b5c85",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
