@@ -56,10 +56,8 @@ engines:
         - procps
     - type: python
       packages:
-        - gtfparse
+        - gtfparse~=3.1
     - type: python
-      packages:
-        - pyarrow~=18.0.0
       __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
 
 runners:
