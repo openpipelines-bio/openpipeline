@@ -91,5 +91,39 @@ def test_popv_with_non_overlapping_cells(run_component, tmp_path):
     )
 
 
+@pytest.mark.parametrize(
+    "method,expected_col",
+    [
+        ("KNN_HARMONY", "knn_harmony_prediction"),
+        ("ONCLASS", "onclass_prediction"),
+    ],
+)
+def test_popv_methods(run_component, tmp_path, method, expected_col):
+    output_file = tmp_path / "output.h5mu"
+
+    run_component(
+        [
+            "--input",
+            input_file,
+            "--reference",
+            reference_file,
+            "--output",
+            output_file,
+            "--methods",
+            method,
+        ]
+    )
+
+    assert output_file.exists(), "Output file does not exist"
+
+    output = mu.read_h5mu(output_file)
+    popv_output = output.mod["rna"].obsm["popv_output"]
+    assert expected_col in popv_output.columns, (
+        f"could not find column .mod['rna'].obsm['popv_output']['{expected_col}']"
+    )
+    assert popv_output[expected_col].notna().all()
+    assert "popv_prediction" in output.mod["rna"].obs.columns
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
