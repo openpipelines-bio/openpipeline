@@ -3627,8 +3627,8 @@ meta = [
             "pandas>3",
             "scipy~=1.18.1",
             "mudata~=0.4.1",
-            "scanpy~=1.11.4",
-            "pynndescent<0.7",
+            "scanpy~=1.12.5",
+            "umap-learn==0.5.12",
             "cellxgene-census"
           ],
           "script" : [
@@ -3655,7 +3655,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.9.7",
-    "git_commit" : "fa5a90c2b1a41cf6e0c6bacf29f5c263e17b13f4",
+    "git_commit" : "2925906719898d84b777e11c2beebc52c787a0cf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -25,6 +25,12 @@
   - The integrated embedding is now stored as `float32` instead of `float64`.
   - A GPU (CUDA or MPS) is used automatically when one is available to the container, which may cause small numerical differences compared to running on CPU.
 
+* `labels_transfer/xgboost`: bump `xgboost` from `2.1.3` to `3.4.1` and remove the `scikit-learn<1.6` pin (PR #1274):
+  - Classifiers trained with openpipelines versions before `2.0.0` (`xgboost` `1.7`) are stored in a binary format that `xgboost` can no longer load. Use `--force_retrain` to retrain them when reusing a `--model_output` directory. Classifiers trained with later versions can still be loaded.
+  - `--use_gpu` now selects the GPU with the `device` parameter, as `xgboost` removed the `gpu_hist` tree method. Only NVIDIA GPUs (CUDA) are supported.
+  - Retrained classifiers may differ slightly from previous releases, as the intercept initialization for objectives with more than two classes changed in `xgboost` `3.2`.
+  - `--min_child_weight` now accepts decimal values.
+
 * `mapping/cellranger_count`, `mapping/cellranger_multi`, `workflows/ingestion/cellranger_mapping`, `workflows/ingestion/cellranger_multi`: update Cell Ranger to 10.1.0 (from 9.0 for `cellranger_count`, from 10.0.0 for `cellranger_multi`) (PR #1252):
   - Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples. Use the new `--disable_cell_annotation` (`cellranger_count`, `cellranger_mapping`) or `--skip_cell_annotation` (`cellranger_multi`) argument to turn this off.
   - Removed the `SC3Pv3LT` chemistry from the `--chemistry` and `--gex_chemistry` choices, as Cell Ranger no longer supports it.
@@ -91,7 +97,7 @@
 
 * `reference/build_cellranger_reference` and `reference/cellranger_mkgtf`: bump Cell Ranger to `10.1.0`, switch to the `quay.io/nf-core/cellranger` image and disable Cell Ranger telemetry (PR #1270).
 
-* Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #1275)
+* Several scanpy components: bumped `scanpy` to `1.12.5` (PR #1274).
 
 * Bumped `scipy` to `1.18.1` (PR #1263).
 
@@ -125,6 +131,8 @@
 * `dataflow/concatenate_h5mu`: detect duplicate observations across samples when they are in different modalities. Within one sample, an observation can still be in several modalities (PR #1263).
 
 * `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
+
+* `transform/normalize_total`: fix the normalization target being computed incorrectly for sparse input, a bug in `scanpy` `1.11.2` up to `1.12.3` that is fixed by the bump to `scanpy` `1.12.5`. The bug only occurs when `--target_sum` is not set, the input matrix is sparse and some cells have zero total counts. In that case, the median total count used as the normalization target included the empty cells, so it was too low (or `0` when more than half of the cells were empty, resulting in an all-zero matrix). This affects `workflows/rna/log_normalize` (when `--target_sum` is not set), `workflows/rna/rna_multisample` and `workflows/multiomics/process_batches` when their input contains cells without counts. `workflows/multiomics/process_samples` is not affected, because `workflows/rna/rna_singlesample` removes cells without counts before normalization, and neither is `workflows/annotation/celltypist`, which sets the target sum explicitly (PR #1274).
 
 ## INTERNAL CHANGES
 

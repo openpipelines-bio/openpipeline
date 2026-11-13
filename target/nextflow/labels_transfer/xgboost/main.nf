@@ -3327,7 +3327,7 @@ meta = [
         {
           "type" : "boolean",
           "name" : "--use_gpu",
-          "description" : "Use GPU during models training and inference (recommended).",
+          "description" : "Train and predict on an NVIDIA GPU using CUDA (recommended). Falls back to CPU with a warning if no GPU is available.",
           "default" : [
             false
           ],
@@ -3431,11 +3431,11 @@ meta = [
           "multiple_sep" : ";"
         },
         {
-          "type" : "integer",
+          "type" : "double",
           "name" : "--min_child_weight",
           "description" : "Minimum sum of instance weight (hessian) needed in a child. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
           "default" : [
-            1
+            1.0
           ],
           "required" : false,
           "direction" : "input",
@@ -3469,7 +3469,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--sampling_method",
-          "description" : "The method to use to sample the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "description" : "The method to use to sample the training instances. Only has an effect when `--subsample` is lower than 1. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
           "default" : [
             "uniform"
           ],
@@ -3551,7 +3551,7 @@ meta = [
         {
           "type" : "double",
           "name" : "--scale_pos_weight",
-          "description" : "Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+          "description" : "Control the balance of positive and negative weights, useful for unbalanced classes. Only used for targets with two classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
           "default" : [
             1.0
           ],
@@ -3742,10 +3742,9 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy~=1.11.4",
-            "pynndescent<0.7",
-            "xgboost~=2.1.3",
-            "scikit-learn<1.6"
+            "scanpy~=1.12.5",
+            "umap-learn==0.5.12",
+            "xgboost~=3.4.1"
           ],
           "upgrade" : true
         }
@@ -3768,7 +3767,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.9.7",
-    "git_commit" : "fa5a90c2b1a41cf6e0c6bacf29f5c263e17b13f4",
+    "git_commit" : "2925906719898d84b777e11c2beebc52c787a0cf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3861,7 +3860,7 @@ par = {
   'learning_rate': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_split_loss': $( if [ ! -z ${VIASH_PAR_MIN_SPLIT_LOSS+x} ]; then echo "float(r'${VIASH_PAR_MIN_SPLIT_LOSS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'max_depth': $( if [ ! -z ${VIASH_PAR_MAX_DEPTH+x} ]; then echo "int(r'${VIASH_PAR_MAX_DEPTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'min_child_weight': $( if [ ! -z ${VIASH_PAR_MIN_CHILD_WEIGHT+x} ]; then echo "int(r'${VIASH_PAR_MIN_CHILD_WEIGHT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'min_child_weight': $( if [ ! -z ${VIASH_PAR_MIN_CHILD_WEIGHT+x} ]; then echo "float(r'${VIASH_PAR_MIN_CHILD_WEIGHT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'max_delta_step': $( if [ ! -z ${VIASH_PAR_MAX_DELTA_STEP+x} ]; then echo "float(r'${VIASH_PAR_MAX_DELTA_STEP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'subsample': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE+x} ]; then echo "float(r'${VIASH_PAR_SUBSAMPLE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'sampling_method': $( if [ ! -z ${VIASH_PAR_SAMPLING_METHOD+x} ]; then echo "r'${VIASH_PAR_SAMPLING_METHOD//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3950,9 +3949,11 @@ def train_xgb_model(X_train, y_train, gpu=True) -> xgb.XGBClassifier:
     n_classes = len(np.unique(y_train))
     objective = "binary:logistic" if n_classes == 2 else "multi:softprob"
 
-    tree_method = "gpu_hist" if gpu else "hist"
     xgbc = xgb.XGBClassifier(
-        tree_method=tree_method, objective=objective, **training_params
+        tree_method="hist",
+        device="cuda" if gpu else "cpu",
+        objective=objective,
+        **training_params,
     )
     xgbc.fit(X_train, y_train)
 
@@ -4175,13 +4176,11 @@ def predict(
     Returns \\`obs\\` DataFrame with prediction columns appended
     """
 
-    tree_method = "gpu_hist" if use_gpu else "hist"
-
     labels = models_info["classifier_info"][annotation_column_name]["labels"]
 
     objective = "binary:logistic" if len(labels) == 2 else "multi:softprob"
     cell_type_classifier_model = xgb.XGBClassifier(
-        tree_method=tree_method, objective=objective
+        tree_method="hist", device="cuda" if use_gpu else "cpu", objective=objective
     )
 
     logger.info("Loading model")
