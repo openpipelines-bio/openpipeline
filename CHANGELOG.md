@@ -80,8 +80,6 @@
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
-* `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
-
 * `reference/build_cellranger_reference` and `reference/cellranger_mkgtf`: bump Cell Ranger to `10.1.0`, switch to the `quay.io/nf-core/cellranger` image and disable Cell Ranger telemetry (PR #1270).
 
 * Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #1275)
@@ -90,7 +88,9 @@
 
 * `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
 
-* `qc/calculate_atac_qc_metrics`: bumped `muon` to `0.2.0` and `pysam` to `0.24.1` (PR #1263).
+* `qc/calculate_atac_qc_metrics`: bumped `pysam` to `0.24.1` (PR #1263).
+
+* `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: bumped `muon` to `0.2.1` (PR #1232, PR #1263, PR #1273). `muon` `0.1.8` reimplemented `muon.prot.pp.clr`; `transform/clr` now sets the CLR `flavor` explicitly to `seurat` so a change to the `muon` default cannot silently alter the output. `qc/calculate_atac_qc_metrics` now fails when the fragments file cannot be opened, instead of silently skipping the fragment-based metrics.
 
 * `annotate/onclass`, `convert/from_10xmtx_to_h5mu`, `convert/from_bdrhap_to_h5mu`, `dimred/lsi`, `feature_annotation/score_genes_cell_cycle_scanpy`, `feature_annotation/score_genes_scanpy`, `interpret/lianapy`, `metadata/add_id`, `metadata/grep_annotation_column`, `qc/calculate_atac_qc_metrics`, `query/cellxgene_census`: bumped the base image to Python 3.12. `tiledb/move_mudata_obs_to_tiledb` now uses Python 3.13 (PR #1263).
 

@@ -3353,9 +3353,9 @@ meta = [
             "pandas>3",
             "scipy~=1.18.1",
             "mudata~=0.4.1",
+            "muon==0.2.1",
             "scanpy~=1.11.4",
             "pynndescent<0.7",
-            "muon~=0.2.0",
             "pysam~=0.24.1"
           ],
           "script" : [
@@ -3382,7 +3382,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_atac_qc_metrics",
     "viash_version" : "0.9.7",
-    "git_commit" : "6c51a58507298267d057bf9d06d89113877b5c85",
+    "git_commit" : "0c9458cc4c23d0d5cc40905ad678daecf1623ff5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
