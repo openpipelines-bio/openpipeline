@@ -6,6 +6,54 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of `boolean_false` (PR #1216).
 
+* `convert/from_cellranger_multi_to_h5mu`, `workflows/ingestion/cellranger_multi`: when processing Cell Ranger output from multiplexed experiments, filtered count matrices were being output. This is consistent when multiplexing is done using Cell Multiplexing Oligos (CMOs), as per-sample raw matrices are unavailable in this case. However, for other multiplexing methods (e.g. Flex) it is possible to assign all reads to a sample, meaning per-sample raw count matrices are available. Therefore, when dealing with multiplexed experiments, the following changes were made for consistency (PR #1227):
+  - Fixed outputting raw count matrices instead of filtered ones (when `output_filtered_data` is not set).
+  - When per-sample raw counts are not available, `NotImplementedError` will be thrown. 
+    Keep in mind that processing data from experiments using CMO multiplexing will now always result in a `NotImplementedError` when using default parameters.
+  - The original behavior (i.e. outputting filtered data) can be invoked by using the `output_filtered_data` argument.
+
+* Remove deprecated and disabled components (PR #1248):
+ - `compression/tar_extract`
+ - `convert/from_h5mu_to_seurat`
+ - `download/download_file`
+ - `files/make_params`
+ - `integrate/harmony`
+ - `mapping/samtools_sort`
+
+* `integrate/harmonypy`, `workflows/integration/harmony_leiden`, `workflows/annotation/harmony_knn`: bump `harmonypy` from `0.0.x` (pinned as `~=0.0.6`) to `0.2.0`. The component arguments are unchanged, but the integrated embedding will differ slightly from previous releases (PR #1256):
+  - `harmonypy` was rewritten in PyTorch and now uses the diversity penalty formula of the R package, so the same `--theta` yields a slightly different embedding.  Downstream nearest neighbors and clusters may shift accordingly.
+  - The integrated embedding is now stored as `float32` instead of `float64`.
+  - A GPU (CUDA or MPS) is used automatically when one is available to the container, which may cause small numerical differences compared to running on CPU.
+
+* `mapping/cellranger_count`, `mapping/cellranger_multi`, `workflows/ingestion/cellranger_mapping`, `workflows/ingestion/cellranger_multi`: update Cell Ranger to 10.1.0 (from 9.0 for `cellranger_count`, from 10.0.0 for `cellranger_multi`) (PR #1252):
+  - Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples. Use the new `--disable_cell_annotation` (`cellranger_count`, `cellranger_mapping`) or `--skip_cell_annotation` (`cellranger_multi`) argument to turn this off.
+  - Removed the `SC3Pv3LT` chemistry from the `--chemistry` and `--gex_chemistry` choices, as Cell Ranger no longer supports it.
+  - `--gex_chemistry` (`cellranger_multi`): added the GEM-X Flex v2 (`Flex-v2-*`), CS1 (`*-CS1`) and OCM (`*-OCM*`) chemistries.
+  - `--chemistry` (`cellranger_count`, `cellranger_mapping`): added the `SC5PHT` chemistry, which Cell Ranger accepts but does not list in its help text. `cellranger_mapping` also gains the `SC3Pv4`, `SC5P-PE-v3`, `SC5P-R2-v3` and `ARC-v1` chemistries, aligning its choices with `cellranger_count`.
+
+* `qc/fastqc`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/fastqc](https://www.viash-hub.com/packages/biobox/latest/components/fastqc) instead (PR #1253)
+
+* `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
+
+* Bumped `anndata` to `0.13.4`, `mudata` to `0.4.1` and `pandas` to `3` (PR #1263):
+  - Modality `.obs`/`.var` columns are no longer synced to the global `.obs`/`.var`. Single-modality components only update the modality.
+  - `dataflow/merge`: no longer copies modality columns to the global `.obs`/`.var` or converts their dtypes.
+  - `dataflow/concatenate_h5mu`: string columns are no longer always stored as `categorical`, but follow the `anndata` heuristic (`categorical` only when values repeat). Global `.obs`/`.var` columns that were pulled from a modality are now kept, pulled again from the concatenated modalities. Columns that only exist in the global frame are still being dropped.
+
+* `annotate/popv`, `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped the base image to PyTorch `2.13.0` with CUDA `13.2`, which requires a recent NVIDIA driver (PR #1263).
+
+* `velocity/scvelo`: bumped `scvelo` to `0.3.4` (patched for `pandas` 3). Highly variable gene selection (`--n_top_genes`) and log transformation (`--log_transform`) are now done with `scanpy`, as `scvelo` no longer provides them (PR #1263).
+
+* `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0`, patched for `pandas` 3 and `anndata` 0.13 (PR #1263).
+
+* `interpret/lianapy`: bumped `liana` to `2.0.0` (PR #1263).
+
+* `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
+
+* `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
+
+
+
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -18,24 +66,64 @@
 
 * `metadata/copy_modality_slots`: added a component to copy slots (`.obs`, `.var`, `.layers`, `.obsm`, `.varm`, `.obsp`, `.varp`, `.uns`) from a modality in a source MuData file into a modality in the input MuData file (PR #1166).
 
+* `convert/from_cellranger_multi_to_h5mu`: When processing non-multiplexed data, the value provided to Cell Ranger's `--id` parameter (as registered in the Cell Ranger multi output folder name) is now used as the sample name. For Cell Ranger output from openpipelines this is still `run`, but for externally generated data this implies a matching output file name  for the MuData object (PR #1227)
+
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
+
+* `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234, PR #1269).
+
+* `correction/decontx_remove_background`: new component that estimates and removes ambient RNA contamination from single-cell RNA-seq count matrices using the DecontX algorithm, with optional support for an empty-droplet background dataset (PR #1223).
+
+* `workflows/annotation/azimuth`: implemented an Azimuth annotation workflow that accepts and writes either H5MU or Seurat file formats (PR #1251).
 
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
-* `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
+* `reference/build_cellranger_reference` and `reference/cellranger_mkgtf`: bump Cell Ranger to `10.1.0`, switch to the `quay.io/nf-core/cellranger` image and disable Cell Ranger telemetry (PR #1270).
 
+* Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #1275)
+
+* Bumped `scipy` to `1.18.1` (PR #1263).
+
+* `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
+
+* `qc/calculate_atac_qc_metrics`: bumped `pysam` to `0.24.1` (PR #1263).
+
+* `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: bumped `muon` to `0.2.1` (PR #1232, PR #1263, PR #1273). `muon` `0.1.8` reimplemented `muon.prot.pp.clr`; `transform/clr` now sets the CLR `flavor` explicitly to `seurat` so a change to the `muon` default cannot silently alter the output. `qc/calculate_atac_qc_metrics` now fails when the fragments file cannot be opened, instead of silently skipping the fragment-based metrics.
+
+* `annotate/onclass`, `convert/from_10xmtx_to_h5mu`, `convert/from_bdrhap_to_h5mu`, `dimred/lsi`, `feature_annotation/score_genes_cell_cycle_scanpy`, `feature_annotation/score_genes_scanpy`, `interpret/lianapy`, `metadata/add_id`, `metadata/grep_annotation_column`, `qc/calculate_atac_qc_metrics`, `query/cellxgene_census`: bumped the base image to Python 3.12. `tiledb/move_mudata_obs_to_tiledb` now uses Python 3.13 (PR #1263).
+
+* `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
 
 ## BUG FIXES
 
+* `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
+
+* `workflows/ingestion/cellranger_multi`: pass the `--cell_annotation_model` and `--tenx_cloud_token_path` arguments on to `mapping/cellranger_multi`. These arguments were listed in the workflow's interface, but setting them had no effect (PR #1252).
+
 * `feature_annotation/highly_variable_features_scanpy`: always store details of highly variable features, regardless of the flavor used (PR #1186)
+
+* `feature_annotation/highly_variable_features_scanpy`: fix results being assigned to the wrong feature, when
+  `--obs_batch_key` is combined with `--var_input` or `--features_to_exclude` (PR #1247):
 
 * `qc/calculate_atac_qc_metrics`: merge the `anndata`/`mudata` and `scanpy` requirements into a single `__merge__` field. Two `__merge__` fields were specified for the same Python setup, of which only the last one was applied, leaving `anndata` and `mudata` unpinned (PR #1233).
 
 * `transform/clr`: compute the expected geometric mean in the unit tests over the sparse matrix, matching how `muon` calculates it since 0.1.8, instead of over a densified column (PR #1231).
 
+* `neighbors/bbknn`: no longer require AVX2 or AVX512 instruction sets to be available. This avoids `Illegal instruction` errors on some CPU architectures (PR #1259).
+
+* `dataflow/concatenate_h5mu`: detect duplicate observations across samples when they are in different modalities. Within one sample, an observation can still be in several modalities (PR #1263).
+
+* `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
+
 * `dimred/densmap`: use the distance metric of the neighbors stored in `--uns_neighbors`, instead of looking for it in a hard-coded `neighbors` slot, which caused the component to fail when the neighbors were stored elsewhere. The component now raises when the neighbors do not store their metric, instead of assuming `euclidean`. `--obsm_pca` is now optional and defaults to the representation used to compute the neighbors (PR #1258).
+
+## INTERNAL CHANGES
+
+* `annotate/azimuth_reference`: added a component to build a custom Azimuth reference (`ref.Rds` + `idx.annoy`) from an annotated Seurat object, for use with `annotate/azimuth --reference custom` (PR #1264).
+
+* `annotate/azimuth`: added a component for reference-based cell type annotation using Seurat's Azimuth (`RunAzimuth()`) on a Seurat object (`.rds`), letting users pick from Azimuth's curated reference datasets (e.g. `pbmcref`, `bonemarrowref`, `lungref`) or supply a custom reference directory (PR #1235).
 
 # openpipelines 4.2.0
 
@@ -52,6 +140,8 @@
 * `workflows/multiomics/process_singlesample`, `workflows/multiomics/process_samples` and `workflows/rna/rna_singlesample`: surfaced `--scrublet_score_threshold` argument to allow manually setting the doublet score threshold instead of relying on automatic detection (PR #1183).
 
 * `correction/cellbender_remove_background`: added `--output_raw` argument to enable publishing the complete CellBender output bundle (PR #1212).
+
+* `trajectory_inference/paga`: new component that infers the connectivity between cell clusters using PAGA (partition-based graph abstraction), producing a coarse-grained abstraction of the data's topology that can be used to reconstruct developmental trajectories (PR #1224).
 
 ## MINOR CHANGES
 

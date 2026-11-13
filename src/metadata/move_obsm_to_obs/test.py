@@ -91,8 +91,9 @@ def test_move_obsm_to_obs_non_overlapping_obs_fails(
     run_component, write_temp_h5mu, h5mu_with_non_overlapping_observations, tmp_path
 ):
     output = tmp_path / "output.h5mu"
-    # Mudata seems to handle this error, but keep this test in just in case mudata drops the ball.
-    with pytest.raises((CalledProcessError, ValueError)) as err:
+    # AnnData validates the .obsm index when the component reads the input,
+    # so the component fails before reaching its own merge check.
+    with pytest.raises(CalledProcessError) as err:
         run_component(
             [
                 "--input",
@@ -105,11 +106,10 @@ def test_move_obsm_to_obs_non_overlapping_obs_fails(
                 output,
             ]
         )
-    expected_message = r"value.index does not match parent’s obs names"
-    if isinstance(err, CalledProcessError):
-        assert re.search(expected_message, err.value.stdout.decode("utf-8"))
-    else:
-        assert re.search(expected_message, str(err))
+    assert re.search(
+        r"value.index does not match parent’s obs names",
+        err.value.stdout.decode("utf-8"),
+    )
 
 
 def test_error_non_existing_modality(run_component, h5mu, write_temp_h5mu, tmp_path):

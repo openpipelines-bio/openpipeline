@@ -40,13 +40,11 @@ argument_groups:
       - name: --output
         type: file
         direction: output
-        default: output.h5mu
         example: output.h5mu
         description: Path to the output MuData H5MU file.
       - name: --output_markers
         type: file
         direction: output
-        default: markers.csv
         example: markers.csv
         description: Path to the output CSV file where marker genes will be saved.
       - name: --uns_output

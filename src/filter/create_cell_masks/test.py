@@ -77,12 +77,6 @@ def _assert_rest_unchanged(
     for key in new_uns_keys:
         del adata.uns[key]
 
-    # The new .obs columns are also pulled into the global .obs of the MuData.
-    output_data.obs = output_data.obs.drop(
-        columns=[f"{modality}:{col}" for col in new_obs_cols]
-    )
-    output_data.update()
-
     assert_annotation_objects_equal(input_path, output_data)
 
 

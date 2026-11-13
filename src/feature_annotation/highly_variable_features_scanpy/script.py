@@ -1,9 +1,13 @@
 import scanpy as sc
 import mudata as mu
 import anndata as ad
+import numpy as np
 import pandas as pd
 import sys
 import re
+
+ad.settings.allow_write_nullable_strings = True
+
 
 ## VIASH START
 par = {
@@ -12,20 +16,22 @@ par = {
     "output": "output.h5mu",
     "var_name_filter": "filter_with_hvg",
     "do_subset": False,
-    "flavor": "seurat",
-    "n_top_features": None,
+    "flavor": "seurat_v3",
+    "n_top_features": 20,
     "min_mean": 0.0125,
     "max_mean": 3.0,
     "min_disp": 0.5,
     "span": 0.3,
     "n_bins": 20,
+    "var_input": None,
+    "features_to_exclude": ["ENSG00000237613"],
+    "output_compression": "gzip",
     "varm_name": "hvg",
     "obs_batch_key": "batch",
     "layer": "log_transformed",
-    "features_to_exclude": None,
 }
 
-meta = {"resources_dir": "."}
+meta = {"resources_dir": "src/utils/"}
 
 mu_in = mu.read_h5mu(
     "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
@@ -40,6 +46,8 @@ rna_in.obs["batch"] = "A"
 column_index = rna_in.obs.columns.get_indexer(["batch"])
 rna_in.obs.iloc[slice(rna_in.n_obs // 2, None), column_index] = "B"
 rna_in.var["common_vars"] = False
+column_index = rna_in.var.columns.get_indexer(["common_vars"])
+rna_in.var.iloc[:10000, column_index] = True
 rna_in.var["common_vars"].iloc[:10000] = True
 mu_in.write_h5mu(temp_h5mu)
 par["input"] = temp_h5mu
@@ -75,9 +83,6 @@ input_anndata = ad.AnnData(X=input_layer.copy(), obs=obs, var=var)
 if "log1p" in data.uns:
     input_anndata.uns["log1p"] = data.uns["log1p"]
 
-# Workaround for issue
-# https://github.com/scverse/scanpy/issues/2239
-# https://github.com/scverse/scanpy/issues/2181
 if par["flavor"] != "seurat_v3":
     # This component requires log normalized data when flavor is not seurat_v3
     # We assume that the data is correctly normalized but scanpy will look at
@@ -94,8 +99,6 @@ if par["flavor"] != "seurat_v3":
             "data using --layer."
         )
         input_anndata.uns["log1p"] = {"base": None}
-    elif "log1p" in input_anndata.uns and "base" not in input_anndata.uns["log1p"]:
-        input_anndata.uns["log1p"]["base"] = None
 
 # Enable calculating the HVG only on a subset of vars
 # e.g for cell type annotation, only calculate HVG on variables that are common between query and reference
@@ -129,8 +132,6 @@ if par.get("features_to_exclude"):
             f"All features ({n_excluded}) are in the exclusion list. "
             "Please check your --features_to_exclude list."
         )
-    # Store original var_names for later reindexing
-    original_var_names = input_anndata.var_names.copy()
     # Subset to non-excluded features for HVG calculation using subset_vars
     input_anndata = subset_vars(input_anndata, ~excluded_features_mask)
     logger.info("\t%d features remaining for HVG calculation", input_anndata.n_vars)
@@ -169,33 +170,61 @@ if par["flavor"] == "seurat_v3" and not par["n_top_features"]:
         "When flavor is set to 'seurat_v3', you are required to set 'n_top_features'."
     )
 
+
+def align_output_to_var(df_with_missing_elements, target_var):
+    # Make sure string columns become a nullable dtype
+    df_with_missing_elements = df_with_missing_elements.convert_dtypes(
+        infer_objects=True,
+        convert_string=True,
+        convert_integer=False,
+        convert_boolean=False,
+        convert_floating=False,
+    )
+    # The reindex below matches rows by feature name. If the index of the output
+    # does not hold the feature names, every row would silently become NA
+    # (and all features would be marked as not highly variable).
+    unknown_features = ~df_with_missing_elements.index.isin(target_var.index)
+    assert not unknown_features.any(), (
+        f"'highly_variable_genes' output contains {unknown_features.sum()} "
+        "features that are not present in the input, expected the index to "
+        "contain the feature names."
+    )
+
+    fill_vals = {
+        "means": np.nan,
+        "gene_name": pd.NA,
+        "mean_bin": np.nan,
+        "highly_variable": False,
+        "dispersions": np.nan,
+        "dispersions_norm": np.nan,
+        "variances": np.nan,
+        "variances_norm": np.nan,
+        "highly_variable_rank": np.nan,
+        "highly_variable_nbatches": np.nan,
+        "highly_variable_intersection": False,
+    }
+    unexpected_columns = df_with_missing_elements.columns.difference(fill_vals.keys())
+    if not unexpected_columns.empty:
+        raise RuntimeError(
+            f"'highly_variable_genes' output contains unexpected columns: {''.join(unexpected_columns.to_list())}"
+        )
+
+    # Reindex each column separately with its own fill value. Filling while
+    # reindexing keeps the dtype (e.g. bool), while reindexing first and
+    # calling fillna afterwards would turn bool columns into object columns.
+    return pd.DataFrame(
+        {
+            column: values.reindex(target_var.index, fill_value=fill_vals[column])
+            for column, values in df_with_missing_elements.items()
+        },
+        index=target_var.index,
+    )
+
+
 # call function
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
-    if par["var_input"] is not None:
-        out.index = input_anndata.var.index
-        out = out.reindex(index=data.var.index, method=None)
-        out.highly_variable = out.highly_variable.fillna(False)
-        assert (out.index == data.var.index).all(), (
-            "Expected output index values to be equivalent to the input index"
-        )
-    elif par.get("features_to_exclude") is not None:
-        # Reindex to include excluded features, marking them as non-HVG
-        out.index = input_anndata.var.index
-        out = out.reindex(index=original_var_names, method=None)
-        out.highly_variable = out.highly_variable.fillna(False)
-        # Further reindex to match data.var.index (for consistency with var_input path)
-        out = out.reindex(index=data.var.index, method=None)
-        out.highly_variable = out.highly_variable.fillna(False)
-        assert (out.index == data.var.index).all(), (
-            "Expected output index values to be equivalent to the input index"
-        )
-    elif par["obs_batch_key"] is not None:
-        out = out.reindex(index=data.var.index, method=None)
-        assert (out.index == data.var.index).all(), (
-            "Expected output index values to be equivalent to the input index"
-        )
-
+    out = align_output_to_var(out, data.var)
 except ValueError as err:
     if str(err) == "cannot specify integer `bins` when input data contains infinity":
         err.args = (
@@ -210,7 +239,6 @@ except ValueError as err:
         ) from err
     raise err
 
-out.index = data.var.index
 logger.info("\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]

@@ -54,6 +54,8 @@ if [ "$par_secondary_analysis" == "false" ]; then
   no_secondary_analysis="true"
 fi
 
+[[ "$par_disable_cell_annotation" == "false" ]] && unset par_disable_cell_annotation
+
 IFS=","
 id=myoutput
 cellranger count \
@@ -70,6 +72,7 @@ cellranger count \
   ${par_force_cells:+--force-cells=$par_force_cells} \
   ${par_chemistry:+--chemistry="$par_chemistry"} \
   ${par_generate_bam:+--create-bam=$par_generate_bam} \
+  ${par_disable_cell_annotation:+--disable-cell-annotation} \
   ${no_secondary_analysis:+--nosecondary} \
   ${par_r1_length:+--r1-length=$par_r1_length} \
   ${par_r2_length:+--r2-length=$par_r2_length} \

@@ -70,6 +70,7 @@ par = {
     "probe_set": None,
     "check_library_compatibility": True,
     "tenx_cloud_token_path": False,
+    "skip_cell_annotation": None,
     "filter_probes": None,
     "cell_annotation_model": None,
     "emptydrops_minimum_umis": None,
@@ -147,6 +148,7 @@ GEX_CONFIG_KEYS = {
     "filter_probes": "filter-probes",
     "gex_r1_length": "r1-length",
     "gex_r2_length": "r2-length",
+    "skip_cell_annotation": "skip-cell-annotation",
     "tenx_cloud_token_path": "tenx-cloud-token-path",
     "cell_annotation_model": "cell-annotation-model",
     "emptydrops_minimum_umis": "emptydrops_minimum_umis",
@@ -461,9 +463,11 @@ def untar(tar_file, output_directory):
             # strip that directory name from the destination folder
             if len(root_dirs) == 1:
                 for mem in members:
-                    mem.path = Path(*Path(mem.path).parts[1:])
-            members_to_move = [mem for mem in members if mem.path != Path(".")]
-            open_tar.extractall(unpacked_directory, members=members_to_move)
+                    mem.name = mem.name.partition("/")[2]
+            members_to_move = [mem for mem in members if mem.name not in ("", ".")]
+            open_tar.extractall(
+                unpacked_directory, members=members_to_move, filter="data"
+            )
         return unpacked_directory
     return tar_file
 
