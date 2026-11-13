@@ -1,13 +1,6 @@
 import sys
-import numpy as np
-
-numpy_module = sys.modules["numpy"]
-numpy_module.float_ = np.float64
-sys.modules["numpy"] = numpy_module
-
 import mudata as mu
 import scanpy as sc
-import sys
 
 ## VIASH START
 par = {

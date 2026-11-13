@@ -1,7 +1,9 @@
 import sys
 import pytest
 import mudata as mu
+import anndata as ad
 import numpy as np
+from scipy.sparse import csr_matrix
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
@@ -85,6 +87,24 @@ def test_target_sum(run_component, random_h5mu_path):
     # Copy over X so that the rest of the object can be compared
     mu_input["rna"].X = mu_output["rna"].X
     assert_annotation_objects_equal(mu_input, mu_output)
+
+
+def test_sparse_zero_count_cells(run_component, random_h5mu_path):
+    # Regression test for a bug in scanpy 1.11.2 up to 1.12.3 (PR #1274):
+    # for sparse input, the median total count used as the default target sum
+    # included cells with zero counts.
+    # Row sums are [0, 0, 10, 20, 30]: the median of the non-empty cells is 20,
+    # while the median over all cells (the buggy behaviour) is 10.
+    X = csr_matrix(
+        np.array([[0, 0], [0, 0], [4, 6], [8, 12], [12, 18]], dtype=np.float32)
+    )
+    input_path = random_h5mu_path()
+    mu.MuData({"rna": ad.AnnData(X)}).write_h5mu(input_path)
+    output = random_h5mu_path()
+    run_component(["--input", input_path, "--output", output])
+
+    totals = np.ravel(mu.read_h5mu(output).mod["rna"].X.sum(axis=1))
+    np.testing.assert_allclose(totals, [0, 0, 20, 20, 20])
 
 
 if __name__ == "__main__":

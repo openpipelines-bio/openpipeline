@@ -108,9 +108,11 @@ def train_xgb_model(X_train, y_train, gpu=True) -> xgb.XGBClassifier:
     n_classes = len(np.unique(y_train))
     objective = "binary:logistic" if n_classes == 2 else "multi:softprob"
 
-    tree_method = "gpu_hist" if gpu else "hist"
     xgbc = xgb.XGBClassifier(
-        tree_method=tree_method, objective=objective, **training_params
+        tree_method="hist",
+        device="cuda" if gpu else "cpu",
+        objective=objective,
+        **training_params,
     )
     xgbc.fit(X_train, y_train)
 
@@ -333,13 +335,11 @@ def predict(
     Returns `obs` DataFrame with prediction columns appended
     """
 
-    tree_method = "gpu_hist" if use_gpu else "hist"
-
     labels = models_info["classifier_info"][annotation_column_name]["labels"]
 
     objective = "binary:logistic" if len(labels) == 2 else "multi:softprob"
     cell_type_classifier_model = xgb.XGBClassifier(
-        tree_method=tree_method, objective=objective
+        tree_method="hist", device="cuda" if use_gpu else "cpu", objective=objective
     )
 
     logger.info("Loading model")
