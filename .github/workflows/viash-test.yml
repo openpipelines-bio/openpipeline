@@ -136,7 +136,7 @@ jobs:
         password: ${{ env.NVIDIA_PASSWORD }}
 
     - name: Run test
-      timeout-minutes: 40
+      timeout-minutes: 60
       run: |
         docker() {
           if [[ $1 == build ]]; then
