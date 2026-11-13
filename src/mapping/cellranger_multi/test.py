@@ -1090,5 +1090,36 @@ def test_raise_with_missing_library_id(run_component, random_path):
     )
 
 
+def test_raise_with_mismatched_library_id_and_type_lengths(run_component, random_path):
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--output",
+                random_path(),
+                "--input",
+                input1_R1,
+                "--input",
+                input1_R2,
+                "--input",
+                input2_R1,
+                "--input",
+                input2_R2,
+                "--library_id",
+                "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset",
+                "--library_type",
+                "Gene Expression",
+                "--gex_reference",
+                gex_reference,
+                "--feature_reference",
+                feature_reference,
+                "--dryrun",
+            ]
+        )
+    assert (
+        "--library_id (2 value(s)) and --library_type (1 value(s)) "
+        "must have the same length."
+    ) in err.value.stdout.decode("utf-8")
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-x"]))

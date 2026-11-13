@@ -353,11 +353,17 @@ def transform_base_input(par):
         assert len(par["library_id"]) > 0, (
             "--library_id must be defined when passing input to --input"
         )
+        assert len(par["library_id"]) == len(par["library_type"]), (
+            f"--library_id ({len(par['library_id'])} value(s)) and --library_type "
+            f"({len(par['library_type'])} value(s)) must have the same length."
+        )
         # if par["input"] is a directory, look for fastq files
         fastq_files = resolve_input_directories_to_fastq_paths(par["input"])
         library_type_per_id = {
             library_id: library_type
-            for library_id, library_type in zip(par["library_id"], par["library_type"])
+            for library_id, library_type in zip(
+                par["library_id"], par["library_type"], strict=True
+            )
         }
         return get_fastq_to_library_id_mapping(fastq_files, library_type_per_id)
     return pd.DataFrame(
