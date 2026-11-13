@@ -6,6 +6,8 @@
 
 * `workflows/rna/rna_multisample`, `workflows/multiomics/process_samples`, `workflows/multiomics/process_batches`: the RNA scaling zero-center argument is now a regular `boolean` (default behaviour remains unaltered and is set explicitly to `true`) instead of `boolean_false` (PR #1216).
 
+* `transform/bpcells_regress_out`: add a an `--output_layer_compression` argument to optionally set a gzip level (1-9). The `--output_compression` argument was removed, the resulting file maintains the same level of compression as the input file (PR #1237)
+
 * `convert/from_cellranger_multi_to_h5mu`, `workflows/ingestion/cellranger_multi`: when processing Cell Ranger output from multiplexed experiments, filtered count matrices were being output. This is consistent when multiplexing is done using Cell Multiplexing Oligos (CMOs), as per-sample raw matrices are unavailable in this case. However, for other multiplexing methods (e.g. Flex) it is possible to assign all reads to a sample, meaning per-sample raw count matrices are available. Therefore, when dealing with multiplexed experiments, the following changes were made for consistency (PR #1227):
   - Fixed outputting raw count matrices instead of filtered ones (when `output_filtered_data` is not set).
   - When per-sample raw counts are not available, `NotImplementedError` will be thrown. 
@@ -70,6 +72,10 @@
 
 * `filter/create_cell_masks`: added a component to create boolean cell masks from a set of user-provided filters (PR #1165).
 
+* `transform/regress_out`, `transform/bpcells_regress_out`: add `--var_input` to only regress out the genes selected by a boolean `.var` column (e.g. highly variable genes) (PR #1237).
+
+* `transform/bpcells_regress_out`: add an optional PCA on the regressed data, enabled by `--obsm_pca_output`. The PCA is computed with BPCells while streaming from disk, so the dense regressed matrix is never held in memory (PR #1237).
+
 * `annotate/azimuth_panhuman`: added a component for cell type annotation using Pan-human Azimuth (`panhumanpy`), a pre-trained neural network requiring no reference/training step (PR #1234, PR #1269).
 
 * `correction/decontx_remove_background`: new component that estimates and removes ambient RNA contamination from single-cell RNA-seq count matrices using the DecontX algorithm, with optional support for an empty-droplet background dataset (PR #1223).
@@ -89,6 +95,8 @@
 * `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
 
 * `qc/calculate_atac_qc_metrics`: bumped `pysam` to `0.24.1` (PR #1263).
+
+* `transform/bpcells_regress_out`: improve resource usage by reading the input lazily from disk and streaming the regressed values straight to the output, so the full MuData and dense result are not held in memory (PR #1237).
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: bumped `muon` to `0.2.1` (PR #1232, PR #1263, PR #1273). `muon` `0.1.8` reimplemented `muon.prot.pp.clr`; `transform/clr` now sets the CLR `flavor` explicitly to `seurat` so a change to the `muon` default cannot silently alter the output. `qc/calculate_atac_qc_metrics` now fails when the fragments file cannot be opened, instead of silently skipping the fragment-based metrics.
 

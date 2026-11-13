@@ -38,6 +38,14 @@ arguments:
     description: |
       The layer of the adata object to regress on.
       If not provided, the X attribute of the adata object will be used.
+  - name: "--var_input"
+    type: string
+    required: false
+    example: filter_with_hvg
+    description: |
+      Boolean column in .var used to select which genes to regress out (e.g. highly variable genes).
+      The output is stored as a sparse matrix in which the non-selected genes are set to 0.
+      If not provided, all genes are used.
   - name: "--output_layer"
     type: string
     example: X_regressed
@@ -54,7 +62,7 @@ resources:
 test_resources:
   - type: python_script
     path: test.py
-  - path: /resources_test/pbmc_1k_protein_v3
+  - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 engines:
   - type: docker
     image: python:3.13-slim
