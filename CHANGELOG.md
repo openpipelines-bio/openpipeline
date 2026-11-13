@@ -117,6 +117,8 @@
 
 * `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
 
+* `dimred/densmap`: use the distance metric of the neighbors stored in `--uns_neighbors`, instead of looking for it in a hard-coded `neighbors` slot, which caused the component to fail when the neighbors were stored elsewhere. The component now raises when the neighbors do not store their metric, instead of assuming `euclidean`. `--obsm_pca` is now optional and defaults to the representation used to compute the neighbors (PR #1258).
+
 ## INTERNAL CHANGES
 
 * `annotate/azimuth_reference`: added a component to build a custom Azimuth reference (`ref.Rds` + `idx.annoy`) from an annotated Seurat object, for use with `annotate/azimuth --reference custom` (PR #1264).
