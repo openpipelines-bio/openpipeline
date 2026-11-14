@@ -236,7 +236,8 @@ argument_groups:
     direction: "input"
   - type: "boolean"
     name: "--use_gpu"
-    description: "Use GPU during models training and inference (recommended)."
+    description: "Train and predict on an NVIDIA GPU using CUDA (recommended). Falls\
+      \ back to CPU with a warning if no GPU is available."
     info: null
     default:
     - false
@@ -325,14 +326,14 @@ argument_groups:
     direction: "input"
     multiple: false
     multiple_sep: ";"
-  - type: "integer"
+  - type: "double"
     name: "--min_child_weight"
     description: "Minimum sum of instance weight (hessian) needed in a child. See\
       \ https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster\
       \ for the reference"
     info: null
     default:
-    - 1
+    - 1.0
     required: false
     direction: "input"
     multiple: false
@@ -361,7 +362,8 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--sampling_method"
-    description: "The method to use to sample the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster\
+    description: "The method to use to sample the training instances. Only has an\
+      \ effect when `--subsample` is lower than 1. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster\
       \ for the reference"
     info: null
     default:
@@ -436,7 +438,7 @@ argument_groups:
   - type: "double"
     name: "--scale_pos_weight"
     description: "Control the balance of positive and negative weights, useful for\
-      \ unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster\
+      \ unbalanced classes. Only used for targets with two classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster\
       \ for the reference"
     info: null
     default:
@@ -582,10 +584,9 @@ engines:
   - type: "python"
     user: false
     packages:
-    - "scanpy~=1.11.4"
-    - "pynndescent<0.7"
-    - "xgboost~=2.1.3"
-    - "scikit-learn<1.6"
+    - "scanpy~=1.12.5"
+    - "umap-learn==0.5.12"
+    - "xgboost~=3.4.1"
     upgrade: true
   test_setup:
   - type: "python"
@@ -602,7 +603,7 @@ build_info:
   output: "target/nextflow/labels_transfer/xgboost"
   executable: "target/nextflow/labels_transfer/xgboost/main.nf"
   viash_version: "0.9.7"
-  git_commit: "0c9458cc4c23d0d5cc40905ad678daecf1623ff5"
+  git_commit: "2af0f77e63acd9e21426c8f4fed06678eb38699b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

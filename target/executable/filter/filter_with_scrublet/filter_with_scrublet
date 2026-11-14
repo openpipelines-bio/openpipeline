@@ -454,14 +454,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "scanpy~=1.11.4" "pynndescent<0.7" "scrublet" "annoy==1.17.3" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "scanpy~=1.12.5" "umap-learn==0.5.12" "scrublet" "annoy==1.17.3" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-LABEL org.opencontainers.image.created="2026-11-13T09:52:10Z"
+LABEL org.opencontainers.image.created="2026-11-14T09:15:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0c9458cc4c23d0d5cc40905ad678daecf1623ff5"
+LABEL org.opencontainers.image.revision="2af0f77e63acd9e21426c8f4fed06678eb38699b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

@@ -460,9 +460,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 
 LABEL org.opencontainers.image.authors="Mirte De Temmerman"
 LABEL org.opencontainers.image.description="Companion container for running component annotate azimuth"
-LABEL org.opencontainers.image.created="2026-11-13T09:52:14Z"
+LABEL org.opencontainers.image.created="2026-11-14T09:16:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0c9458cc4c23d0d5cc40905ad678daecf1623ff5"
+LABEL org.opencontainers.image.revision="2af0f77e63acd9e21426c8f4fed06678eb38699b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

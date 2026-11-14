@@ -3393,8 +3393,8 @@ meta = [
             "pandas>3",
             "scipy~=1.18.1",
             "mudata~=0.4.1",
-            "scanpy~=1.11.4",
-            "pynndescent<0.7"
+            "scanpy~=1.12.5",
+            "umap-learn==0.5.12"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3430,7 +3430,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca",
     "viash_version" : "0.9.7",
-    "git_commit" : "0c9458cc4c23d0d5cc40905ad678daecf1623ff5",
+    "git_commit" : "2af0f77e63acd9e21426c8f4fed06678eb38699b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

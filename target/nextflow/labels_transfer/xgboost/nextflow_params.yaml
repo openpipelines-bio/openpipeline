@@ -25,7 +25,7 @@ output_uns_parameters: "xgboost_parameters"
 learning_rate: 0.3
 min_split_loss: 0.0
 max_depth: 6
-min_child_weight: 1
+min_child_weight: 1.0
 max_delta_step: 0.0
 subsample: 1.0
 sampling_method: "uniform"
