@@ -10,6 +10,7 @@ workflow run_wf {
         "output": "output_raw",
         "expect_cells": "expect_cells",
         "chemistry": "chemistry",
+        "disable_cell_annotation": "disable_cell_annotation",
         "secondary_analysis": "secondary_analysis",
         "generate_bam": "generate_bam",
         "include_introns": "include_introns",

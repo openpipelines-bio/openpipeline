@@ -82,6 +82,17 @@ viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml --engine docker -- \
 
 rm "${OUT}/tmp_TS_Blood_filtered.h5ad"
 
+echo "> Converting to Seurat"
+viash run src/convert/from_h5mu_or_h5ad_to_seurat/config.vsh.yaml --engine docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5mu" \
+    --output "${OUT}/TS_Blood_filtered.rds"
+
+echo "> Creating custom Azimuth reference"
+viash run src/annotate/azimuth_reference/config.vsh.yaml --engine docker -- \
+    --input "${OUT}/TS_Blood_filtered.rds" \
+    --annotation_levels "cell_ontology_class;cell_type" \
+    --output "${OUT}/azimuth_custom_reference"
+
 echo "> Downloading pretrained CellTypist model and sample test data"
 wget https://celltypist.cog.sanger.ac.uk/models/Pan_Immune_CellTypist/v2/Immune_All_Low.pkl \
     -O "${OUT}/celltypist_model_Immune_All_Low.pkl"

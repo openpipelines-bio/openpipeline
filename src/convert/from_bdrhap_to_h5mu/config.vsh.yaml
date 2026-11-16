@@ -59,7 +59,7 @@ test_resources:
     dest: bdrhap_vdj/sample_VDJ_Unfiltered_Contigs_AIRR.tsv.gz
 engines:
   - type: docker
-    image: python:3.11-slim
+    image: python:3.12-slim
     setup:
       - type: apt
         packages:

@@ -46,7 +46,6 @@ arguments:
     direction: output
     description: The folder to store the demux results
     example: "/path/to/output"
-    default: fastqs
     required: true
   - type: file
     name: "--reports"

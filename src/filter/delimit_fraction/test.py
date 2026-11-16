@@ -85,8 +85,6 @@ def test_filter_nothing(run_component, input_path, random_h5mu_path):
     assert mu_out.mod["rna"].obs["test_output"].all()
 
     mu_out.mod["rna"].obs = mu_out.mod["rna"].obs.drop(["test_output"], axis=1)
-    mu_out.obs = mu_out.obs.drop(["rna:test_output"], axis=1)
-    mu_out.update()
     assert_annotation_objects_equal(input_path, mu_out)
 
 
@@ -117,8 +115,6 @@ def test_filtering_a_little(run_component, input_path, random_h5mu_path):
     assert mu_out.mod["rna"].obs["test_output"].any()
 
     mu_out.mod["rna"].obs = mu_out.mod["rna"].obs.drop(["test_output"], axis=1)
-    mu_out.obs = mu_out.obs.drop(["rna:test_output"], axis=1)
-    mu_out.update()
     assert_annotation_objects_equal(input_path, mu_out)
 
 

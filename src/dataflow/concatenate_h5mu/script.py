@@ -166,15 +166,10 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
         convert_floating=False,
     )
 
-    # Convert leftover 'object' columns to string
-    # However, na values are supported, so convert all values except NA's to string
-    object_cols = result.select_dtypes(include="object").columns.values
-    for obj_col in object_cols:
-        result[obj_col] = (
-            result[obj_col]
-            .where(result[obj_col].isna(), result[obj_col].astype(str))
-            .astype("category")
-        )
+    # Convert leftover 'object' columns (strings or mixed types) to the 'str' dtype,
+    # which keeps NA values and can be written by anndata
+    object_cols = result.columns[result.dtypes == "object"]
+    result[object_cols] = result[object_cols].astype("str")
     return result
 
 
@@ -238,7 +233,6 @@ def concatenate_modality(
     uns_merge_mode_to_apply = uns_merge_modes.get(uns_merge_mode, uns_merge_mode)
 
     mod_data = {}
-    mod_indices_combined = pd.Index([])
     for input_id, input_file in zip(input_ids, input_files):
         if mod is not None:
             try:
@@ -254,7 +248,6 @@ def concatenate_modality(
                         pass
 
                 mod_data[input_id] = data
-                mod_indices_combined = mod_indices_combined.append(data.obs.index)
 
             except KeyError as e:  # Modality does not exist for this sample, skip it
                 if (
@@ -266,12 +259,9 @@ def concatenate_modality(
         else:  # When mod=None, process the 'global' h5mu state
             with H5File(input_file, "r") as input_h5:
                 if "uns" in input_h5.keys():
-                    uns_data = anndata.experimental.read_elem(input_h5["uns"])
+                    uns_data = anndata.io.read_elem(input_h5["uns"])
                     if uns_data:
                         mod_data[input_id] = anndata.AnnData(uns=uns_data)
-
-    if not mod_indices_combined.is_unique:
-        raise ValueError("Observations are not unique across samples.")
 
     if not mod_data:
         return anndata.AnnData()
@@ -295,6 +285,119 @@ def concatenate_modality(
     return concatenated_data
 
 
+def get_modality_obs_names(input_file: Path, modalities: Iterable[str]) -> pd.Index:
+    """
+    Get the observation names of the selected modalities of a sample.
+    """
+    obs_names = pd.Index([])
+    with H5File(input_file, "r") as input_h5:
+        for mod in modalities:
+            if mod not in input_h5["mod"]:
+                continue
+            obs_group = input_h5["mod"][mod]["obs"]
+            index = anndata.io.read_elem(obs_group[obs_group.attrs["_index"]])
+            obs_names = obs_names.union(pd.Index(index))
+    return obs_names
+
+
+def get_global_columns_to_pull(
+    input_files: list[Path],
+    axis: Literal["obs", "var"],
+    modality_columns: dict[str, set[str]],
+) -> set[str]:
+    """
+    Get the names of the modality columns that were pulled into the global
+    annotation frame (.obs or .var) of at least one sample.
+
+    A global column matches a modality column by its base name: either 'mod:column'
+    (split on the first colon, as mudata adds a single modality prefix) or 'column'.
+    Global columns that match no column of the output's modalities (global-only
+    columns, or columns pulled from a modality that is not being output) are dropped.
+    """
+    all_modality_columns = set().union(*modality_columns.values())
+    to_pull, dropped = set(), set()
+    for input_file in input_files:
+        with H5File(input_file, "r") as input_h5:
+            column_names = (
+                input_h5[axis].attrs.get("column-order", []) if axis in input_h5 else []
+            )
+        for column_name in column_names:
+            if isinstance(column_name, bytes):
+                column_name = column_name.decode()
+            prefix, sep, base_name = column_name.partition(":")
+            if sep and base_name in modality_columns.get(prefix, ()):
+                to_pull.add(base_name)
+            elif column_name in all_modality_columns:
+                to_pull.add(column_name)
+            else:
+                dropped.add(column_name)
+    if dropped:
+        logger.warning(
+            "Dropping global .%s columns that do not match a column of the output's "
+            "modalities: %s",
+            axis,
+            ", ".join(sorted(dropped)),
+        )
+    return to_pull
+
+
+def write_global_annotations(
+    output_file: Path, modalities: list[str], input_files: list[Path]
+) -> None:
+    """
+    Fill the global .obs and .var of the output with the modality columns that were
+    pulled into the global frames of the samples. The columns are pulled again from
+    the concatenated modalities, so they hold the current modality values and use
+    the mudata naming ('mod:column', or 'column' for .var columns that are present
+    in all modalities).
+    """
+    # Only the annotation frames are needed to pull the columns
+    with H5File(output_file, "r") as output_h5:
+        mdata = mu.MuData(
+            {
+                mod: anndata.AnnData(
+                    obs=anndata.io.read_elem(output_h5["mod"][mod]["obs"]),
+                    var=anndata.io.read_elem(output_h5["mod"][mod]["var"]),
+                )
+                for mod in modalities
+            }
+        )
+
+    with H5File(output_file, "r+") as output_h5:
+        for axis in ("obs", "var"):
+            modality_frames = {
+                mod: getattr(mod_data, axis) for mod, mod_data in mdata.mod.items()
+            }
+            columns_to_pull = get_global_columns_to_pull(
+                input_files,
+                axis,
+                {mod: set(frame.columns) for mod, frame in modality_frames.items()},
+            )
+            if not columns_to_pull:
+                continue
+            logger.info(
+                "Pulling global .%s columns: %s",
+                axis,
+                ", ".join(sorted(columns_to_pull)),
+            )
+            # mudata fails to pull a column that is categorical in one modality and
+            # not in a later one. Categoricals are restored when writing the frame.
+            for frame in modality_frames.values():
+                for column in frame.columns.intersection(list(columns_to_pull)):
+                    if isinstance(frame[column].dtype, pd.CategoricalDtype):
+                        frame[column] = frame[column].astype(object).infer_objects()
+            getattr(mdata, f"pull_{axis}")(columns=sorted(columns_to_pull))
+
+            # Write the global elements the same way mudata does
+            anndata.io.write_elem(
+                output_h5,
+                axis,
+                mdata.strings_to_categoricals(getattr(mdata, axis).copy()),
+            )
+            for element in (f"{axis}m", f"{axis}map"):
+                anndata.io.write_elem(output_h5, element, dict(getattr(mdata, element)))
+
+
 def concatenate_modalities(
     n_processes: int,
     modalities: list[str],
@@ -313,6 +416,14 @@ def concatenate_modalities(
         Path(output_file),
         [Path(input_file) for input_file in input_files],
     )
+    # The same observation can be in different modalities of different samples,
+    # which is not detected when checking each modality separately.
+    sample_obs_names = [
+        get_modality_obs_names(input_file, modalities) for input_file in input_files
+    ]
+    if not pd.Index([]).append(sample_obs_names).is_unique:
+        raise ValueError("Observations are not unique across samples.")
+
     output_file_uncompressed = output_file.with_name(
         output_file.stem + "_uncompressed.h5mu"
     )
@@ -336,9 +447,7 @@ def concatenate_modalities(
         if mod_name is None:
             if new_mod.uns:
                 with H5File(output_file_uncompressed, "r+") as open_h5mu_file:
-                    anndata.experimental.write_elem(
-                        open_h5mu_file, "uns", dict(new_mod.uns)
-                    )
+                    anndata.io.write_elem(open_h5mu_file, "uns", dict(new_mod.uns))
             continue
         logger.info(
             "Writing out modality '%s' to '%s' with compression '%s'.",
@@ -347,6 +456,8 @@ def concatenate_modalities(
             compression,
         )
         mu.write_h5ad(output_file_uncompressed, data=new_mod, mod=mod_name)
+
+    write_global_annotations(output_file_uncompressed, modalities, input_files)
 
     if compression:
         compress_h5mu(output_file_uncompressed, output_file, compression=compression)
