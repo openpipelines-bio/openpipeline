@@ -1,11 +1,12 @@
-import sys
-import pytest
-from mudata import read_h5mu, MuData
-import numpy as np
-import anndata
-import pandas as pd
-import subprocess
 import re
+import subprocess
+import sys
+
+import anndata
+import numpy as np
+import pandas as pd
+import pytest
+from mudata import MuData, read_h5mu
 
 ## VIASH START
 meta = {
@@ -36,7 +37,7 @@ def test_clr(run_component, tmp_path):
     )
     assert output_file.is_file()
     output_h5mu = read_h5mu(output_file)
-    assert "clr" in output_h5mu.mod["prot"].layers.keys()
+    assert "clr" in output_h5mu.mod["prot"].layers
     assert output_h5mu.mod["prot"].layers["clr"] is not None
     input = read_h5mu(input_file)
     # Match muon: take the mean over the sparse matrix, CSC for axis 0.
@@ -108,8 +109,47 @@ def test_clr_select_input_layer(run_component, tmp_path):
     )
     assert output_file.is_file()
     output_h5mu = read_h5mu(output_file)
-    assert "clr" in output_h5mu.mod["prot"].layers.keys()
+    assert "clr" in output_h5mu.mod["prot"].layers
     assert output_h5mu.mod["prot"].layers["clr"] is not None
+    # The rest of the modality must be left untouched
+    output_prot, input_prot = output_h5mu.mod["prot"], input_data.mod["prot"]
+    assert "test_layer" in output_prot.layers
+    assert output_prot.X is None
+    assert output_prot.obs_names.equals(input_prot.obs_names)
+    assert output_prot.var_names.equals(input_prot.var_names)
+    pd.testing.assert_frame_equal(output_prot.var, input_prot.var)
+
+
+@pytest.mark.parametrize("dtype", ["int32", "int64", "uint32"])
+def test_clr_integer_counts(run_component, tmp_path, dtype):
+    input_data = read_h5mu(input_file)
+    input_data.mod["prot"].X = input_data.mod["prot"].X.astype(dtype)
+    integer_input_file = tmp_path / "integer_input.h5mu"
+    input_data.write(integer_input_file)
+
+    outputs = {}
+    for name, path in {"integer": integer_input_file, "float": input_file}.items():
+        outputs[name] = tmp_path / f"output_{name}.h5mu"
+        run_component(
+            [
+                "--input",
+                path,
+                "--output",
+                str(outputs[name]),
+                "--output_layer",
+                "clr",
+            ]
+        )
+
+    output_integer = read_h5mu(outputs["integer"]).mod["prot"]
+    output_float = read_h5mu(outputs["float"]).mod["prot"]
+    # The input counts must not be altered
+    assert output_integer.X.dtype == dtype
+    np.testing.assert_allclose(
+        output_integer.layers["clr"].toarray(),
+        output_float.layers["clr"].toarray(),
+        rtol=1e-6,
+    )
 
 
 def test_clr_output_to_x(run_component, tmp_path):
@@ -158,7 +198,7 @@ def test_clr_set_axis(run_component, tmp_path):
     )
     assert output_file.is_file()
     output_h5mu = read_h5mu(output_file)
-    assert "clr" in output_h5mu.mod["prot"].layers.keys()
+    assert "clr" in output_h5mu.mod["prot"].layers
     assert output_h5mu.mod["prot"].layers["clr"] is not None
     input = read_h5mu(input_file)
     # Match muon: take the mean over the sparse matrix, CSR for axis 1.

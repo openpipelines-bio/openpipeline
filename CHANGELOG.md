@@ -149,6 +149,8 @@
 
 * `transform/normalize_total`: fix the normalization target being computed incorrectly for sparse input, a bug in `scanpy` `1.11.2` up to `1.12.3` that is fixed by the bump to `scanpy` `1.12.5`. The bug only occurs when `--target_sum` is not set, the input matrix is sparse and some cells have zero total counts. In that case, the median total count used as the normalization target included the empty cells, so it was too low (or `0` when more than half of the cells were empty, resulting in an all-zero matrix). This affects `workflows/rna/log_normalize` (when `--target_sum` is not set), `workflows/rna/rna_multisample` and `workflows/multiomics/process_batches` when their input contains cells without counts. `workflows/multiomics/process_samples` is not affected, because `workflows/rna/rna_singlesample` removes cells without counts before normalization, and neither is `workflows/annotation/celltypist`, which sets the target sum explicitly (PR #1274).
 
+* `transform/clr`: fix the component failing when the input counts are stored as integers. `muon` computes the CLR transformation in place, which is not possible for an integer matrix, so the counts are now converted to `float32` first. Input with floating point counts is not affected (PR #1284).
+
 ## INTERNAL CHANGES
 
 * `annotate/azimuth_reference`: added a component to build a custom Azimuth reference (`ref.Rds` + `idx.annoy`) from an annotated Seurat object, for use with `annotate/azimuth --reference custom` (PR #1264).
