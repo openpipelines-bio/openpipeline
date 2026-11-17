@@ -123,7 +123,10 @@ argument_groups:
     - name: "--output"
       type: file
       direction: output
-      description: "The processed output file in h5mu format."
+      description: |
+        The processed output file in h5mu format, created with `convert/from_bdrhap_to_h5mu`.
+        The gene ids are used as `.var` index, the gene symbols are stored in `.var['gene_symbol']`
+        and the feature types in `.var['feature_types']`.
       example: output.h5mu
       required: true
     - name: "--output_raw"

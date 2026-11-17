@@ -4,6 +4,14 @@ scope: "public"
 description: |
   Convert the output of the BD Rhapsody Sequence Analysis pipeline to a MuData h5 file.
 
+  The gene ids (e.g. Ensembl ids) are used as `.var` index, the gene symbols are stored in `.var['gene_symbol']`
+  and the feature types in `.var['feature_types']`. For targeted assays and AbSeq, the gene id is equal to the
+  feature name. Only the putative cells are included in the 'rna' and 'prot' modalities.
+
+  The sample tag and sample name of each cell (when using sample multiplexing) are stored in `.obs['sample_tag']`
+  and `.obs['sample_name']`. The t-SNE and UMAP coordinates calculated by the BD Rhapsody pipeline are
+  stored in `.obsm['X_tsne_bd_rhapsody']` and `.obsm['X_umap_bd_rhapsody']`.
+
   The TCR/BCR contigs are stored in the 'vdj_t', 'vdj_t_gd' and 'vdj_b' modalities, using the
   scirpy data structure. These modalities contain all contigs for all cell labels, not only for
   the putative cells. Whether a cell label is a putative cell is stored in the 'putative_cell'

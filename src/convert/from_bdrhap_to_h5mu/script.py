@@ -47,20 +47,43 @@ def process_modality_inline(adata, modality, pipeline_inputs):
     adata.obs["cell_id"] = adata.obs.index
     adata.obs["run_id"] = par["id"]
 
+    # 'sample_id' is not used for the sample name, because it is overwritten
+    # with the sample id of the input when processing multiple samples.
     adata.obs.rename(
-        columns={"Sample_Tag": "sample_tag", "Sample_Name": "sample_id"}, inplace=True
+        columns={"Sample_Tag": "sample_tag", "Sample_Name": "sample_name"},
+        inplace=True,
     )
 
-    # BD Rhapsody >= v3.0 stores the gene ids (e.g. Ensembl ids) in .var["gene_id"]
-    adata.var["gene_ids"] = (
-        adata.var["gene_id"] if "gene_id" in adata.var else adata.var.index
-    )
+    # The dimensionality reductions calculated by the BD Rhapsody pipeline are
+    # renamed to avoid them being confused with (or overwritten by) dimensionality
+    # reductions calculated downstream.
+    for key in ["X_tsne", "X_umap"]:
+        if key in adata.obsm:
+            adata.obsm[f"{key}_bd_rhapsody"] = adata.obsm.pop(key)
 
-    if "gene_name" not in adata.var:
-        adata.var["gene_name"] = adata.var.index
+    # The VDJ modalities do not contain features
+    if modality in LOCUS_TO_MODALITY.values():
+        return
+
+    # Use the gene ids as index and store the gene symbols in .var['gene_symbol'].
+    # BD Rhapsody >= v3.0 stores the gene ids (e.g. Ensembl ids) in .var["gene_id"].
+    # For targeted assays and AbSeq, the gene id is equal to the feature name.
+    gene_symbols = (
+        adata.var.pop("gene_name") if "gene_name" in adata.var else adata.var.index
+    )
+    adata.var["gene_symbol"] = gene_symbols.to_numpy()
+    if "gene_id" in adata.var:
+        gene_ids = adata.var.pop("gene_id")
+        if not gene_ids.is_unique:
+            raise ValueError(
+                f"The gene ids of modality '{modality}' are not unique: "
+                f"{gene_ids[gene_ids.duplicated()].unique().tolist()[:10]}"
+            )
+        adata.var.index = gene_ids.to_numpy()
+    adata.var.index.name = None
 
     if modality == "rna":
-        adata.var["feature_type"] = "Gene Expression"
+        adata.var["feature_types"] = "Gene Expression"
         # WTA runs use a reference archive, targeted runs use targeted reference fasta files
         if "Reference_Archive" in pipeline_inputs:
             adata.var["reference_file"] = pipeline_inputs["Reference_Archive"]
@@ -70,7 +93,7 @@ def process_modality_inline(adata, modality, pipeline_inputs):
             )
 
     elif modality == "prot":
-        adata.var["feature_type"] = "Antibody Capture"
+        adata.var["feature_types"] = "Antibody Capture"
         adata.var["reference_file"] = " & ".join(pipeline_inputs["AbSeq_Reference"])
 
     # TODO: add other modalities
@@ -90,9 +113,11 @@ def process_vdj_contigs(contigs_file):
         contigs["locus"].map(LOCUS_TO_MODALITY)
     ):
         print(f">> Creating modality '{modality}' from VDJ contigs", flush=True)
-        vdj_modalities[modality] = ir.io.read_airr(
-            contigs_modality, cell_attributes=["putative_cell"]
-        )
+        adata = ir.io.read_airr(contigs_modality, cell_attributes=["putative_cell"])
+        # scirpy names the index 'cell_id', which clashes with the 'cell_id' column
+        # once the index is altered (e.g. prefixed with the sample id by add_id).
+        adata.obs.index.name = None
+        vdj_modalities[modality] = adata
     return vdj_modalities
 
 

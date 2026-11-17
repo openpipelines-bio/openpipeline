@@ -1,7 +1,8 @@
-from mudata import read_h5mu
-import numpy as np
 import sys
+
+import numpy as np
 import pytest
+from mudata import read_h5mu
 
 ##VIASH START
 par = {"input": "input.h5mu", "expected_modalities": ["rna", "prot"]}
@@ -15,7 +16,7 @@ VDJ_MODALITIES = ["vdj_t", "vdj_t_gd", "vdj_b"]
 
 def test_run():
     input_mudata = read_h5mu(par["input"])
-    expected_var = ["gene_name", "feature_type", "reference_file", "gene_ids"]
+    expected_var = ["gene_symbol", "feature_types", "reference_file"]
     expected_obs = ["run_id", "library_id", "cell_id"]
 
     assert set(input_mudata.mod.keys()) == set(par["expected_modalities"]), (
@@ -33,7 +34,7 @@ def test_run():
         assert all(key in list(adata.obs.columns) for key in expected_obs), (
             f"Input mod['{modality}'] obs columns should be: {expected_obs}, found: {adata.obs.keys()}."
         )
-        assert np.array_equal(adata.var["feature_type"].unique(), [feature_type]), (
+        assert np.array_equal(adata.var["feature_types"].unique(), [feature_type]), (
             f"Input mod['{modality}'] should only contain {feature_type} vars."
         )
 
