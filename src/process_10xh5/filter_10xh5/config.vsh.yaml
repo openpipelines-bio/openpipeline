@@ -59,7 +59,7 @@ engines:
           - procps
       - type: python
         packages:
-          - h5py
+          - h5py~=3.16
           - numpy
           - scipy~=1.18.1
     test_setup:
