@@ -3206,6 +3206,18 @@ meta = [
     }
   ],
   "description" : "Split 10x Cell Ranger output directory into separate output fields.",
+  "test_resources" : [
+    {
+      "type" : "bash_script",
+      "path" : "test.sh",
+      "is_executable" : true
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/cellranger_tiny_fastq/bam",
+      "dest" : "cellranger_count_output"
+    }
+  ],
   "status" : "enabled",
   "scope" : {
     "image" : "public",
@@ -3297,14 +3309,14 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ubuntu:jammy",
+      "image" : "debian:latest",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
         {
           "type" : "docker",
           "run" : [
-            "apt update && apt upgrade -y"
+            "apt-get update && apt-get upgrade -y"
           ]
         }
       ]
@@ -3316,7 +3328,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count_split",
     "viash_version" : "0.9.7",
-    "git_commit" : "30ba70ad5d39bb449c28455418ff23e402ba63b2",
+    "git_commit" : "ce44623496322f3787b9d345a9e60291011dfe0d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

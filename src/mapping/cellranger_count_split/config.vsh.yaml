@@ -61,13 +61,18 @@ arguments:
 resources:
   - type: bash_script
     path: script.sh
+test_resources:
+  - type: bash_script
+    path: test.sh
+  - path: /resources_test/cellranger_tiny_fastq/bam
+    dest: cellranger_count_output
 
 engines:
 - type: docker
-  image: "ubuntu:jammy"
+  image: "debian:latest"
   setup:
     - type: docker
-      run: apt update && apt upgrade -y
+      run: apt-get update && apt-get upgrade -y
 
 runners:
 - type: executable
