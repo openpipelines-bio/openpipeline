@@ -41,7 +41,7 @@
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
-* `mapping/cellranger_count_split`: this component has been removed. The `workflows/ingestion/cellranger_mapping` workflow no longer uses it and selects the required files from the Cell Ranger output directory directly (PR #xxxx).
+* `mapping/cellranger_count_split`: this component has been removed. The `workflows/ingestion/cellranger_mapping` workflow no longer uses it and selects the required files from the Cell Ranger output directory directly (PR #1289).
 
 * Bumped `anndata` to `0.13.4`, `mudata` to `0.4.1` and `pandas` to `3` (PR #1263):
   - Modality `.obs`/`.var` columns are no longer synced to the global `.obs`/`.var`. Single-modality components only update the modality.
