@@ -115,6 +115,8 @@
 
 * `cellranger_count_split`: update image to `debian:latest` (PR #1288).
 
+* `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
+
 ## BUG FIXES
 
 * `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
