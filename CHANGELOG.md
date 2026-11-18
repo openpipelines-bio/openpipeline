@@ -99,6 +99,8 @@
 
 * Several scanpy components: bumped `scanpy` to `1.12.5` (PR #1274).
 
+* `genetic_demux/dsc_pileup`: bumped the base image from `ubuntu:20.04` to `ubuntu:24.04` (PR #1285).
+
 * Bumped `scipy` to `1.18.1` (PR #1263).
 
 * `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
