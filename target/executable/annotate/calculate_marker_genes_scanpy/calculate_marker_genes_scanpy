@@ -450,9 +450,9 @@ RUN pip install --upgrade pip && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.description="Companion container for running component annotate calculate_marker_genes_scanpy"
-LABEL org.opencontainers.image.created="2026-11-18T12:39:58Z"
+LABEL org.opencontainers.image.created="2026-11-18T13:03:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="01611822963372503099f1c5fda808b83980a630"
+LABEL org.opencontainers.image.revision="9acfb502da666814dd4346e6559bec12c22a4969"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
