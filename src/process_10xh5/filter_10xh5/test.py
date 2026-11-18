@@ -89,10 +89,14 @@ def test_filter(run_filter, tmp_path):
         assert set(h5_out["matrix/features"].keys()) == set(
             h5_in["matrix/features"].keys()
         )
-        np.testing.assert_array_equal(
-            h5_out["matrix/features/_all_tag_keys"][()],
-            h5_in["matrix/features/_all_tag_keys"][()],
-        )
+        for key, dataset in h5_in["matrix/features"].items():
+            out = h5_out[f"matrix/features/{key}"]
+            # _all_tag_keys lists the extra feature fields, it is not per feature
+            expected = (
+                dataset[()] if key == "_all_tag_keys" else dataset[()][feature_mask]
+            )
+            assert out.dtype == dataset.dtype
+            np.testing.assert_array_equal(out[()], expected)
         for name in ["data", "indices", "indptr", "shape", "barcodes"]:
             assert h5_out[f"matrix/{name}"].dtype == h5_in[f"matrix/{name}"].dtype
 
