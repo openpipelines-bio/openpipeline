@@ -3327,6 +3327,10 @@ meta = [
     },
     {
       "type" : "file",
+      "path" : "popscle.patch"
+    },
+    {
+      "type" : "file",
       "path" : "/src/workflows/utils/labels.config",
       "dest" : "nextflow_labels.config"
     }
@@ -3438,10 +3442,16 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ubuntu:20.04",
+      "image" : "ubuntu:24.04",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
+        {
+          "type" : "docker",
+          "copy" : [
+            "popscle.patch /opt/popscle.patch"
+          ]
+        },
         {
           "type" : "apt",
           "packages" : [
@@ -3468,7 +3478,7 @@ meta = [
         {
           "type" : "docker",
           "run" : [
-            "git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin"
+            "git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && cd /tmp/popscle && git apply /opt/popscle.patch && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin"
           ]
         }
       ]
@@ -3480,7 +3490,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/dsc_pileup",
     "viash_version" : "0.9.7",
-    "git_commit" : "507b3f2907e150ddd02d7ac683f30e6a7087b8e8",
+    "git_commit" : "94e6311e5473c84733dce712457c4a78807e248b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

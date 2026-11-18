@@ -446,19 +446,20 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 ENTRYPOINT []
+COPY popscle.patch /opt/popscle.patch
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf wget git build-essential libcurl4-openssl-dev cmake libbz2-dev libssl-dev liblzma-dev zlib1g-dev r-base && \
   rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
-RUN git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
+RUN git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && cd /tmp/popscle && git apply /opt/popscle.patch && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux dsc_pileup"
-LABEL org.opencontainers.image.created="2026-11-17T10:59:18Z"
+LABEL org.opencontainers.image.created="2026-11-18T10:48:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="507b3f2907e150ddd02d7ac683f30e6a7087b8e8"
+LABEL org.opencontainers.image.revision="94e6311e5473c84733dce712457c4a78807e248b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

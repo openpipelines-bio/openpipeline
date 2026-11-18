@@ -47,7 +47,7 @@ test_resources:
     path: test.sh
 engines:
   - type: docker
-    image: "amazon/aws-cli:2.17.11"
+    image: "amazon/aws-cli:latest"
     setup:
       - type: yum
         packages: [wget]

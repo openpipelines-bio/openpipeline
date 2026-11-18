@@ -99,6 +99,8 @@
 
 * Several scanpy components: bumped `scanpy` to `1.12.5` (PR #1274).
 
+* `genetic_demux/dsc_pileup`: bumped the base image from `ubuntu:20.04` to `ubuntu:24.04` (PR #1285).
+
 * Bumped `scipy` to `1.18.1` (PR #1263).
 
 * `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
@@ -110,6 +112,8 @@
 * `annotate/onclass`, `convert/from_10xmtx_to_h5mu`, `convert/from_bdrhap_to_h5mu`, `dimred/lsi`, `feature_annotation/score_genes_cell_cycle_scanpy`, `feature_annotation/score_genes_scanpy`, `interpret/lianapy`, `metadata/add_id`, `metadata/grep_annotation_column`, `qc/calculate_atac_qc_metrics`, `query/cellxgene_census`: bumped the base image to Python 3.12. `tiledb/move_mudata_obs_to_tiledb` now uses Python 3.13 (PR #1263).
 
 * `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
+
+* `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
 ## BUG FIXES
 
@@ -133,6 +137,8 @@
 * `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
 
 * `transform/normalize_total`: fix the normalization target being computed incorrectly for sparse input, a bug in `scanpy` `1.11.2` up to `1.12.3` that is fixed by the bump to `scanpy` `1.12.5`. The bug only occurs when `--target_sum` is not set, the input matrix is sparse and some cells have zero total counts. In that case, the median total count used as the normalization target included the empty cells, so it was too low (or `0` when more than half of the cells were empty, resulting in an all-zero matrix). This affects `workflows/rna/log_normalize` (when `--target_sum` is not set), `workflows/rna/rna_multisample` and `workflows/multiomics/process_batches` when their input contains cells without counts. `workflows/multiomics/process_samples` is not affected, because `workflows/rna/rna_singlesample` removes cells without counts before normalization, and neither is `workflows/annotation/celltypist`, which sets the target sum explicitly (PR #1274).
+
+* `transform/clr`: fix the component failing when the input counts are stored as integers. `muon` computes the CLR transformation in place, which is not possible for an integer matrix, so the counts are now converted to `float32` first. Input with floating point counts is not affected (PR #1284).
 
 ## INTERNAL CHANGES
 
