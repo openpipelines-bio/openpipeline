@@ -116,7 +116,6 @@
 * `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
 
 * `cellranger_count_split`: update image to `debian:latest` (PR #1288).
-
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
 ## BUG FIXES
