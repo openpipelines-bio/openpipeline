@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from uuid import uuid4
 
 import mudata as md
 import pytest
@@ -23,6 +24,15 @@ reads = [
     for library in ["12WTA", "12ABC"]
     for read in ["R1", "R2"]
 ]
+
+
+@pytest.fixture
+def random_path(tmp_path):
+    def wrapper(extension=None):
+        extension = f".{extension}" if extension else ""
+        return tmp_path / f"{uuid4()}{extension}"
+
+    return wrapper
 
 
 def test_wta_abseq(run_component, random_path):
