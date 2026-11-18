@@ -89,6 +89,8 @@
 
 ## MINOR CHANGES
 
+* `process_10xh5/filter_10xh5`: reimplement the component in Python (using `scanpy`, with `h5py` to write the output) instead of R, removing the dependency on `reticulate`. Feature metadata which was previously dropped (e.g. `pattern`, `read` and `sequence`) is now subset and kept in the output (PR #1286).
+
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
