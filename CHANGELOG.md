@@ -60,8 +60,6 @@
 
 * `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
 
-
-
 ## NEW FEATURES
 
 * `convert/from_cellranger_multi_to_h5mu`: add `--output_filtered_data` flag to convert the per-sample filtered count matrices instead of the aggregated raw count matrix (PR #1170).
@@ -116,6 +114,7 @@
 * `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
 
 * `cellranger_count_split`: update image to `debian:latest` (PR #1288).
+
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
 ## BUG FIXES
