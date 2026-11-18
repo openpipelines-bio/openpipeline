@@ -25,6 +25,12 @@
   - The integrated embedding is now stored as `float32` instead of `float64`.
   - A GPU (CUDA or MPS) is used automatically when one is available to the container, which may cause small numerical differences compared to running on CPU.
 
+* `labels_transfer/xgboost`: bump `xgboost` from `2.1.3` to `3.4.1` and remove the `scikit-learn<1.6` pin (PR #1274):
+  - Classifiers trained with openpipelines versions before `2.0.0` (`xgboost` `1.7`) are stored in a binary format that `xgboost` can no longer load. Use `--force_retrain` to retrain them when reusing a `--model_output` directory. Classifiers trained with later versions can still be loaded.
+  - `--use_gpu` now selects the GPU with the `device` parameter, as `xgboost` removed the `gpu_hist` tree method. Only NVIDIA GPUs (CUDA) are supported.
+  - Retrained classifiers may differ slightly from previous releases, as the intercept initialization for objectives with more than two classes changed in `xgboost` `3.2`.
+  - `--min_child_weight` now accepts decimal values.
+
 * `mapping/cellranger_count`, `mapping/cellranger_multi`, `workflows/ingestion/cellranger_mapping`, `workflows/ingestion/cellranger_multi`: update Cell Ranger to 10.1.0 (from 9.0 for `cellranger_count`, from 10.0.0 for `cellranger_multi`) (PR #1252):
   - Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples. Use the new `--disable_cell_annotation` (`cellranger_count`, `cellranger_mapping`) or `--skip_cell_annotation` (`cellranger_multi`) argument to turn this off.
   - Removed the `SC3Pv3LT` chemistry from the `--chemistry` and `--gex_chemistry` choices, as Cell Ranger no longer supports it.
@@ -74,15 +80,26 @@
 
 * `correction/decontx_remove_background`: new component that estimates and removes ambient RNA contamination from single-cell RNA-seq count matrices using the DecontX algorithm, with optional support for an empty-droplet background dataset (PR #1223).
 
+* `mapping/cellranger_multi`: support libraries that were sequenced on multiple flow cells, resulting in FASTQ files with identical names in different directories (PR #1172):
+  - Files with identical names are staged into separate directories. Files that belong together (e.g. R1 and R2) are matched using the name of the first read in each file: the part of the FASTQ header before the first space or `/`, like Cell Ranger does. An error is raised when the files can not be matched.
+  - The `physical_library_id` column is added to the Cell Ranger config for split libraries with feature type `VDJ`, as required by Cell Ranger.
+  - The values of `--library_subsample` and `--library_lanes` are applied to all directories of a library.
+
 * `workflows/annotation/azimuth`: implemented an Azimuth annotation workflow that accepts and writes either H5MU or Seurat file formats (PR #1251).
 
 ## MINOR CHANGES
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
+* `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
+
+* `mapping/cellranger_multi`: raise a descriptive error when no FASTQ files are found for a `--library_id`, when the same FASTQ file is passed to more than one input argument (e.g. `--input` and `--gex_input`), or when the number of values for `--library_subsample` or `--library_lanes` does not match the number of libraries (PR #1172).
+
 * `reference/build_cellranger_reference` and `reference/cellranger_mkgtf`: bump Cell Ranger to `10.1.0`, switch to the `quay.io/nf-core/cellranger` image and disable Cell Ranger telemetry (PR #1270).
 
-* Several scanpy components: pin `pynndescent` to `<0.7.0` to avoid it returning a `scipy.sparse.csr_array` instead of a `csr_matrix` (PR #1275)
+* Several scanpy components: bumped `scanpy` to `1.12.5` (PR #1274).
+
+* `genetic_demux/dsc_pileup`: bumped the base image from `ubuntu:20.04` to `ubuntu:24.04` (PR #1285).
 
 * Bumped `scipy` to `1.18.1` (PR #1263).
 
@@ -95,6 +112,10 @@
 * `annotate/onclass`, `convert/from_10xmtx_to_h5mu`, `convert/from_bdrhap_to_h5mu`, `dimred/lsi`, `feature_annotation/score_genes_cell_cycle_scanpy`, `feature_annotation/score_genes_scanpy`, `interpret/lianapy`, `metadata/add_id`, `metadata/grep_annotation_column`, `qc/calculate_atac_qc_metrics`, `query/cellxgene_census`: bumped the base image to Python 3.12. `tiledb/move_mudata_obs_to_tiledb` now uses Python 3.13 (PR #1263).
 
 * `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
+
+* `cellranger_count_split`: update image to `debian:latest` (PR #1288).
+
+* `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
 ## BUG FIXES
 
@@ -118,6 +139,10 @@
 * `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
 
 * `dimred/densmap`: use the distance metric of the neighbors stored in `--uns_neighbors`, instead of looking for it in a hard-coded `neighbors` slot, which caused the component to fail when the neighbors were stored elsewhere. The component now raises when the neighbors do not store their metric, instead of assuming `euclidean`. `--obsm_pca` is now optional and defaults to the representation used to compute the neighbors (PR #1258).
+
+* `transform/normalize_total`: fix the normalization target being computed incorrectly for sparse input, a bug in `scanpy` `1.11.2` up to `1.12.3` that is fixed by the bump to `scanpy` `1.12.5`. The bug only occurs when `--target_sum` is not set, the input matrix is sparse and some cells have zero total counts. In that case, the median total count used as the normalization target included the empty cells, so it was too low (or `0` when more than half of the cells were empty, resulting in an all-zero matrix). This affects `workflows/rna/log_normalize` (when `--target_sum` is not set), `workflows/rna/rna_multisample` and `workflows/multiomics/process_batches` when their input contains cells without counts. `workflows/multiomics/process_samples` is not affected, because `workflows/rna/rna_singlesample` removes cells without counts before normalization, and neither is `workflows/annotation/celltypist`, which sets the target sum explicitly (PR #1274).
+
+* `transform/clr`: fix the component failing when the input counts are stored as integers. `muon` computes the CLR transformation in place, which is not possible for an integer matrix, so the counts are now converted to `float32` first. Input with floating point counts is not affected (PR #1284).
 
 ## INTERNAL CHANGES
 
