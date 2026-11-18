@@ -1,4 +1,3 @@
-import subprocess
 import sys
 
 import h5py
@@ -10,11 +9,16 @@ import scipy.sparse as sp
 ## VIASH START
 meta = {
     "executable": "./target/executable/process_10xh5/filter_10xh5/filter_10xh5",
+    "config": "./src/process_10xh5/filter_10xh5/config.vsh.yaml",
     "resources_dir": "resources_test/pbmc_1k_protein_v3",
 }
 ## VIASH END
 
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5"
+# Cell Ranger Flex output, with matrix/features/target_sets
+probe_input_path = (
+    f"{meta['resources_dir']}/10x_4plex_dtc_sample_filtered_feature_bc_matrix.h5"
+)
 
 
 def read_matrix(path):
@@ -30,26 +34,26 @@ def read_matrix(path):
     return mat, barcodes, ids, feature_types
 
 
-def run_component(output_path, *args):
-    subprocess.run(
-        [
-            meta["executable"],
-            "--input",
-            input_path,
-            "--output",
-            str(output_path),
-            "--verbose",
-            *args,
-        ],
-        check=True,
-    )
+@pytest.fixture
+def run_filter(run_component):
+    def wrapper(output_path, *args, input=input_path):
+        run_component(
+            [
+                "--input",
+                str(input),
+                "--output",
+                str(output_path),
+                "--verbose",
+                *args,
+            ]
+        )
+
+    return wrapper
 
 
-def test_filter(tmp_path):
+def test_filter(run_filter, tmp_path):
     output_path = tmp_path / "out.h5"
-    run_component(
-        output_path, "--min_library_size", "1000", "--min_cells_per_gene", "300"
-    )
+    run_filter(output_path, "--min_library_size", "1000", "--min_cells_per_gene", "300")
     assert output_path.is_file()
 
     orig_mat, orig_barcodes, orig_ids, _ = read_matrix(input_path)
@@ -93,9 +97,9 @@ def test_filter(tmp_path):
             assert h5_out[f"matrix/{name}"].dtype == h5_in[f"matrix/{name}"].dtype
 
 
-def test_keep_feature_types(tmp_path):
+def test_keep_feature_types(run_filter, tmp_path):
     output_path = tmp_path / "out.h5"
-    run_component(
+    run_filter(
         output_path,
         "--min_cells_per_gene",
         "100000",
@@ -111,9 +115,41 @@ def test_keep_feature_types(tmp_path):
     assert set(feature_types) == {"Antibody Capture"}
 
 
-def test_no_filtering(tmp_path):
+def test_target_sets(run_filter, tmp_path):
     output_path = tmp_path / "out.h5"
-    run_component(output_path)
+    run_filter(
+        output_path,
+        "--min_library_size",
+        "5",
+        "--min_cells_per_gene",
+        "5",
+        input=probe_input_path,
+    )
+
+    _, _, orig_ids, _ = read_matrix(probe_input_path)
+    _, _, ids, _ = read_matrix(output_path)
+    assert len(ids) < len(orig_ids)
+    kept_ids = set(ids)
+    with (
+        h5py.File(probe_input_path, "r") as h5_in,
+        h5py.File(output_path, "r") as h5_out,
+    ):
+        orig_target_sets = h5_in["matrix/features/target_sets"]
+        target_sets = h5_out["matrix/features/target_sets"]
+        assert set(target_sets.keys()) == set(orig_target_sets.keys())
+        for panel, orig_dataset in orig_target_sets.items():
+            # the panel targets the same features, now indexed in the output
+            assert target_sets[panel].dtype == orig_dataset.dtype
+            orig_indices = orig_dataset[()].astype(int)
+            indices = target_sets[panel][()].astype(int)
+            expected = [id_ for id_ in orig_ids[orig_indices] if id_ in kept_ids]
+            assert 0 < len(expected) < len(orig_indices)
+            np.testing.assert_array_equal(ids[indices], expected)
+
+
+def test_no_filtering(run_filter, tmp_path):
+    output_path = tmp_path / "out.h5"
+    run_filter(output_path)
     orig_mat, orig_barcodes, orig_ids, _ = read_matrix(input_path)
     mat, barcodes, ids, _ = read_matrix(output_path)
     assert (mat != orig_mat).nnz == 0

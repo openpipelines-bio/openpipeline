@@ -1,7 +1,8 @@
 import sys
 
 import h5py
-import scanpy as sc
+import numpy as np
+import scipy.sparse as sp
 
 ## VIASH START
 par = {
@@ -22,33 +23,37 @@ logger = setup_logger()
 if not par["verbose"]:
     logger.setLevel("WARNING")
 
-logger.info("Reading '%s'", par["input"])
-adata = sc.read_10x_h5(par["input"], gex_only=False)
-
-logger.info("Filtering out cells with library size < %d", par["min_library_size"])
-cell_mask, _ = sc.pp.filter_cells(
-    adata, min_counts=par["min_library_size"], inplace=False
-)
-
-logger.info("Filtering out features with num cells < %d", par["min_cells_per_gene"])
-gene_mask, _ = sc.pp.filter_genes(
-    adata[cell_mask], min_cells=par["min_cells_per_gene"], inplace=False
-)
-keep_types = par["keep_feature_types"] or []
-feature_mask = gene_mask | adata.var["feature_types"].isin(keep_types).to_numpy()
-
-# 10x h5 files store a features x barcodes matrix in CSC format
-mat = adata[cell_mask, feature_mask].X.T.tocsc()
-mat.sort_indices()
-logger.info("Kept %d cells and %d features", mat.shape[1], mat.shape[0])
-
-# scanpy cannot write 10x h5 files, so write the output with h5py,
-# using the same dtypes and file attributes as the input.
-logger.info("Writing '%s'", par["output"])
 with (
     h5py.File(par["input"], "r") as h5_in,
     h5py.File(par["output"], "w") as h5_out,
 ):
+    # 10x h5 files store a features x barcodes matrix in CSC format.
+    # Read only the matrix itself, keeping the original integer dtype.
+    logger.info("Reading '%s'", par["input"])
+    matrix = h5_in["matrix"]
+    mat = sp.csc_matrix(
+        (matrix["data"][()], matrix["indices"][()], matrix["indptr"][()]),
+        shape=tuple(matrix["shape"][()]),
+    )
+
+    logger.info("Filtering out cells with library size < %d", par["min_library_size"])
+    library_size = np.asarray(mat.sum(axis=0, dtype=np.int64)).ravel()
+    cell_mask = library_size >= par["min_library_size"]
+    mat = mat[:, cell_mask]
+
+    logger.info("Filtering out features with num cells < %d", par["min_cells_per_gene"])
+    cells_per_feature = np.bincount(mat.indices[mat.data > 0], minlength=mat.shape[0])
+    gene_mask = cells_per_feature >= par["min_cells_per_gene"]
+    keep_types = par["keep_feature_types"] or []
+    feature_types = matrix["features/feature_type"][()].astype(str)
+    feature_mask = gene_mask | np.isin(feature_types, keep_types)
+
+    mat = mat[feature_mask, :].tocsc()
+    mat.sort_indices()
+    logger.info("Kept %d cells and %d features", mat.shape[1], mat.shape[0])
+
+    # Write the output using the same dtypes and file attributes as the input.
+    logger.info("Writing '%s'", par["output"])
 
     def write(path, value):
         dtype = h5_in[path].dtype
@@ -60,9 +65,23 @@ with (
     write("matrix/indptr", mat.indptr)
     write("matrix/shape", mat.shape)
     write("matrix/barcodes", h5_in["matrix/barcodes"][()][cell_mask])
-    for key, dataset in h5_in["matrix/features"].items():
-        value = dataset[()]
-        # _all_tag_keys lists the names of extra feature fields, it is not per feature
-        if key != "_all_tag_keys":
-            value = value[feature_mask]
-        write(f"matrix/features/{key}", value)
+    # Position of each kept feature in the output, used to update feature indices
+    new_feature_index = np.cumsum(feature_mask) - 1
+    for key, item in h5_in["matrix/features"].items():
+        path = f"matrix/features/{key}"
+        if key == "target_sets":
+            # Probe-based matrices (Flex, Targeted GEX, Visium FFPE) have one
+            # dataset per panel, listing the indices of the targeted features
+            # (stored as strings by Cell Ranger).
+            for panel, dataset in item.items():
+                indices = dataset[()].astype(np.int64)
+                indices = indices[feature_mask[indices]]
+                new_indices = new_feature_index[indices].astype(dataset.dtype)
+                write(f"{path}/{panel}", new_indices)
+        elif isinstance(item, h5py.Group):
+            raise ValueError(f"Unsupported group '{path}' in '{par['input']}'")
+        elif key == "_all_tag_keys":
+            # Lists the names of extra feature fields, it is not per feature
+            write(path, item[()])
+        else:
+            write(path, item[()][feature_mask])
