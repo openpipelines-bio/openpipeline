@@ -69,10 +69,10 @@ test_resources:
 
 engines:
 - type: docker
-  image: "ubuntu:latest"
+  image: "debian:latest"
   setup:
     - type: docker
-      run: apt update && apt upgrade -y
+      run: apt-get update && apt-get upgrade -y
 
 runners:
 - type: executable
