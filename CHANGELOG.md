@@ -95,6 +95,8 @@
 
 ## MINOR CHANGES
 
+* `process_10xh5/filter_10xh5`: reimplement the component in Python (using `h5py` and `scipy`) instead of R, removing the dependency on `reticulate` (PR #1286).
+
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
@@ -124,6 +126,8 @@
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
 ## BUG FIXES
+
+* `process_10xh5/filter_10xh5`: no longer drop feature metadata from the output. Fields other than `feature_type`, `genome`, `id` and `name` (e.g. `pattern`, `read` and `sequence`) are now subset and kept, as is `target_sets` in probe-based matrices (e.g. Cell Ranger Flex), with its feature indices updated to match the kept features (PR #1286).
 
 * `annotate/popv`: install PopV from source with a patch that relaxes its `harmonypy` and `tensorflow` pins, which forced `numpy<2` and broke the component (PR #1257).
 
