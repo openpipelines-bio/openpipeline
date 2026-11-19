@@ -44,6 +44,19 @@ def unlist(value):
 
 
 def main():
+    # harmonypy computes the number of blocks as ceil(1 / block_size)
+    # and does not validate block_size itself.
+    if par["block_size"] <= 0:
+        raise ValueError(
+            f"--block_size must be greater than 0 (got {par['block_size']}). "
+            "It is the proportion of cells updated per clustering block, in (0, 1]."
+        )
+
+    # Without --nclust, the number of clusters depends on the number of cells,
+    # so a per-cluster sigma cannot be specified reliably.
+    if len(par["sigma"]) > 1 and par["nclust"] is None:
+        raise ValueError("Multiple --sigma values require --nclust to be set.")
+
     logger.info("Reading %s from %s", par["modality"], par["input"])
     mod = mudata.read_h5ad(par["input"].strip(), mod=par["modality"])
     logger.info("Selecting embedding %s", par["obsm_input"])

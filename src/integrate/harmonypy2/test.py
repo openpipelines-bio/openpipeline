@@ -158,5 +158,74 @@ def test_harmonypy2_unknown_covariate_raises(run_component, random_h5mu_path):
     )
 
 
+def test_harmonypy2_zero_block_size_raises(run_component, random_h5mu_path):
+    output_path = random_h5mu_path()
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_file,
+                "--obs_covariates",
+                "harmony_integration_leiden_1.0",
+                "--block_size",
+                "0",
+                "--output",
+                output_path,
+            ]
+        )
+    assert "--block_size must be greater than 0 (got 0.0)." in err.value.stdout.decode(
+        "utf-8"
+    )
+
+
+def test_harmonypy2_multiple_sigma_without_nclust_raises(
+    run_component, random_h5mu_path
+):
+    output_path = random_h5mu_path()
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_file,
+                "--obs_covariates",
+                "harmony_integration_leiden_1.0",
+                "--sigma",
+                "0.1;0.2",
+                "--output",
+                output_path,
+            ]
+        )
+    assert (
+        "Multiple --sigma values require --nclust to be set."
+        in err.value.stdout.decode("utf-8")
+    )
+
+
+def test_harmonypy2_sigma_nclust_mismatch_raises(run_component, random_h5mu_path):
+    # The number of --sigma values must match --nclust; this is validated by harmonypy.
+    output_path = random_h5mu_path()
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(
+            [
+                "--input",
+                input_file,
+                "--obs_covariates",
+                "harmony_integration_leiden_1.0",
+                "--sigma",
+                "0.1;0.2",
+                "--nclust",
+                "3",
+                "--output",
+                output_path,
+            ]
+        )
+    assert "sigma must have one value per cluster (nclust)" in err.value.stdout.decode(
+        "utf-8"
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

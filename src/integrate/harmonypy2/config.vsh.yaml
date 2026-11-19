@@ -78,7 +78,8 @@ argument_groups:
       - name: "--sigma"
         description: |
           Width of soft kmeans clusters. Can be set as a single value for all clusters or
-          one value per cluster.
+          one value per cluster. Multiple values require --nclust to be set to the number
+          of values.
         type: double
         default: [0.1]
         multiple: true
@@ -95,9 +96,11 @@ argument_groups:
         default: 0
       - name: "--block_size"
         description: |
-          Proportion of cells to update during clustering. Between 0 and 1.
+          Proportion of cells to update during clustering.
         type: double
         default: 0.05
+        min: 0
+        max: 1
       - name: "--max_iter_harmony"
         description: Maximum number of rounds to run Harmony.
         type: integer
