@@ -72,7 +72,7 @@
 
 * `convert/from_h5mu_or_h5ad_to_tiledb`, `convert/from_tiledb_to_h5mu`, `tiledb/move_mudata_obs_to_tiledb`, `tiledb/move_mudata_obsm_to_tiledb`, `tiledb/move_mudata_obsp_to_tiledb`: pinned `tiledbsoma` to `2.2.0`, patched for `pandas` 3 and `anndata` 0.13 (PR #1263).
 
-* `interpret/lianapy`: bumped `liana` to `2.0.0` (PR #1263).
+* `interpret/lianapy`: bumped `liana` to `2.1.1` (PR #1263, PR #1301).
 
 * `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
 
@@ -152,6 +152,8 @@
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
 ## BUG FIXES
+
+* `interpret/lianapy`: fix the error message raised when the `--groupby` column does not exist, which itself failed with a `KeyError` (PR #1301).
 
 * `process_10xh5/filter_10xh5`: no longer drop feature metadata from the output. Fields other than `feature_type`, `genome`, `id` and `name` (e.g. `pattern`, `read` and `sequence`) are now subset and kept, as is `target_sets` in probe-based matrices (e.g. Cell Ranger Flex), with its feature indices updated to match the kept features (PR #1286).
 
