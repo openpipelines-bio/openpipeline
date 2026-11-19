@@ -78,6 +78,22 @@
 
 ## NEW FEATURES
 
+* BEYOND methodology, part 2 of 5 (PR #TBD):
+
+  - `metadata/calculate_obs_label_proportions`: computes a group x label cell
+    proportion matrix from a single-cell dataset (`--obs_group`, e.g. a participant or
+    sample, x `--obs_label`, e.g. a cell type); omitting `--obs_group` gives the overall
+    label proportions. `--obs_normalize_within` takes the proportion within a broader
+    class that the labels nest under (subpopulation prevalence within cell type, as the
+    BEYOND reference implementation does) instead of over all of a group's cells. Writes
+    a new, group-level h5mu with one modality (`--output_modality`, `proportions` by
+    default): one observation per group, one variable per label, the proportions in
+    `.X` and a copy in `.obsm["X_proportions"]`, the cell counts in
+    `.layers["counts"]`, and the coarser label of every label in `.var` when
+    `--obs_normalize_within` is given. The input file is not modified.
+    This is the only step of the BEYOND trajectory workflow that reads cell-level data;
+    every step after it reads and extends the group-level object.
+
 * BEYOND methodology, part 1 of 5 (stack: subpopulation clustering -> proportions -> trajectory components -> analysis components -> trajectory workflow) (PR #TBD):
 
   - `workflows/beyond/subpopulation_clustering`: splits an annotated atlas by broad cell
