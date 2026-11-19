@@ -78,6 +78,30 @@
 
 ## NEW FEATURES
 
+* BEYOND methodology, part 5 of 5 (PR #TBD):
+
+  - `workflows/beyond/trajectory_analysis`: full BEYOND trajectory inference from an
+    annotated atlas h5mu - runs 6 steps (proportions -> PHATE -> Palantir ->
+    proportion dynamics -> subpopulation communities -> trait associations). The BEYOND
+    cellular landscape is a landscape of participants, not of cells: step 1 turns the
+    atlas into a new participant-level h5mu (participant x subpopulation proportions),
+    the participant traits are joined onto it with `metadata/join_csv`, and steps 2-5
+    add their results to it. Emits that h5mu plus the association table as a CSV; the
+    atlas is not modified.
+    Trait-association p-values are corrected within each trait by default
+    (`--fdr_scope per_predictor`), as in the reference implementation.
+    Pathway enrichment is not part of it: it belongs with the DE results it runs on, so
+    `interpret/gseapy` is run on its own.
+
+  - `resources_test_scripts/beyond_trajectory_simulated_test_data.py`: the previous
+    simulation, kept alongside the real fixture rather than replaced by it. The real
+    cohort carries no compositional association that survives multiple testing at 152
+    donors (scanned over 3 annotation levels x 5 donor traits; closest is
+    `AD_status` x `OPC` at class level, q = 0.053), so it can only be asserted on
+    structurally. The simulation plants a severity gradient, which is what lets the
+    workflow test check that the true trait associations are found and the null one is
+    not. The two fixtures answer different questions and the workflow test runs both.
+
 * BEYOND methodology, part 4 of 5 (PR #TBD):
 
   - `cluster/subpopulation_communities`: groups labels into communities by combining
