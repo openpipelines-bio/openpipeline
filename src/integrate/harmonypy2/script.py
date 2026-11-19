@@ -84,7 +84,9 @@ def main():
         ", ".join(par["obs_covariates"]),
     )
     ho = run_harmony(
-        pca_embedding,
+        # harmonypy expects PCs x cells; transposing avoids its orientation
+        # guess, which picks the wrong one when n_cells == n_PCs.
+        pca_embedding.T,
         metadata,
         par["obs_covariates"],
         theta=unlist(par["theta"]),

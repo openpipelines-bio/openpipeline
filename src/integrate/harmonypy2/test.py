@@ -1,8 +1,10 @@
 import sys
 import subprocess
 import pytest
+import anndata as ad
 import mudata
 import numpy as np
+import pandas as pd
 from openpipeline_testutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
@@ -114,6 +116,52 @@ def test_harmonypy2_multiple_covariates_and_parameters(
     integrated = output_data.mod["rna"].obsm["X_pca_integrated"]
     assert integrated.shape == output_data.mod["rna"].obsm["X_pca"].shape
     assert np.all(np.isfinite(integrated))
+
+
+def test_harmonypy2_square_embedding(
+    run_component, random_h5mu_path, write_mudata_to_file
+):
+    """
+    Harmony accepts the embedding either as cells x PCs or as PCs x cells.
+    It guesses which one you passed by comparing the shape to the number of
+    cells N in the metadata. If the number of cells equals the number of PCs,
+    it always assumes PCs x cells, so a cells x PCs embedding (as stored in
+    .obsm) would silently be read with cells and PCs swapped. This test uses
+    such a square embedding to check that the component passes the
+    orientation explicitly.
+    """
+    # As many cells as PCs, with the last PCs all zero. Harmony corrects each PC
+    # linearly, so zero PCs must stay zero; if cells and PCs were swapped,
+    # these columns would be treated as cells and become non-zero.
+    n = 50
+    rng = np.random.default_rng(0)
+    batch = np.array(["a", "b"] * (n // 2))
+    pca = rng.normal(size=(n, n))
+    pca[batch == "b", :40] += 1
+    pca[:, 40:] = 0
+    rna = ad.AnnData(
+        X=np.zeros((n, 1)),
+        obs=pd.DataFrame({"batch": batch}, index=[f"cell_{i}" for i in range(n)]),
+        obsm={"X_pca": pca},
+    )
+    input_path = write_mudata_to_file(mudata.MuData({"rna": rna}))
+    output_path = random_h5mu_path()
+
+    run_component(
+        [
+            "--input",
+            input_path,
+            "--obs_covariates",
+            "batch",
+            "--output",
+            output_path,
+        ]
+    )
+
+    integrated = mudata.read_h5mu(output_path).mod["rna"].obsm["X_pca_integrated"]
+    assert integrated.shape == (50, 50)
+    assert np.all(np.isfinite(integrated))
+    np.testing.assert_array_equal(integrated[:, 40:], 0)
 
 
 def test_harmonypy2_missing_covariate_values_raises(
