@@ -121,6 +121,11 @@
 
 ## MINOR CHANGES
 
+* `genetic_demux/souporcell`: update souporcell to `3.0` by switching the base image from `cumulusprod/souporcell:2022.12` to `quay.io/biocontainers/souporcell:3.0--hfa8f182_0` (PR #XXXX):
+  - Added the `--clustering_method` (`em` or `khm`), `--souporcell3`, `--max_base_mem`, `--no_umi` and `--umi_tag` arguments.
+  - `--known_genotypes_sample_names` now accepts multiple values.
+  - `--ploidy` is restricted to `1` or `2`.
+
 * `process_10xh5/filter_10xh5`: reimplement the component in Python (using `h5py` and `scipy`) instead of R, removing the dependency on `reticulate` (PR #1286).
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
@@ -152,6 +157,8 @@
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
 ## BUG FIXES
+
+* `genetic_demux/souporcell`: the number of threads was always set to 1 instead of the number of CPUs allocated to the component (PR #1305).
 
 * `interpret/lianapy`: fix the error message raised when the `--groupby` column does not exist, which itself failed with a `KeyError` (PR #1301).
 

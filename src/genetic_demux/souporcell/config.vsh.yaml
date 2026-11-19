@@ -30,7 +30,20 @@ argument_groups:
   - name: "--ploidy"
     type: integer
     default: 2
+    choices: [1, 2]
     description: ploidy, must be 1 or 2
+  - name: "--clustering_method"
+    type: string
+    choices: ["em", "khm"]
+    description: |
+      Clustering method: expectation maximization (em) or k harmonic means (khm).
+      When not specified, souporcell uses its default (em). For datasets with more than 16 donors,
+      khm in combination with --souporcell3 is recommended.
+  - name: "--souporcell3"
+    type: boolean_true
+    description: |
+      Use souporcell3, which iterates multiple times to refine the results.
+      Suitable for datasets with a high number of donors (>16).
   - name: "--min_alt"
     type: integer
     default: 10
@@ -45,7 +58,9 @@ argument_groups:
     description: max loci per cell, affects speed
   - name: "--restarts"
     type: integer
-    description: number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima
+    description: |
+      Number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima.
+      When not specified, souporcell uses its default (100).
   - name: "--common_variants"
     type: file
     example: common_variants.vcf
@@ -56,13 +71,29 @@ argument_groups:
     example: known_variants.vcf
   - name: "--known_genotypes_sample_names"
     type: string
-    description: which samples in population vcf from known genotypes option represent the donors in your sample
+    multiple: true
+    description: |
+      Which samples in the population vcf from the known genotypes option represent the donors in your sample.
+      The number of sample names must be equal to the number of clusters.
   - name: "--skip_remap"
     type: boolean_true
-    description: dont remap with minimap2 (not recommended unless in conjunction with --common_variants
+    description: dont remap with minimap2 (not recommended unless in conjunction with --common_variants)
+  - name: "--max_base_mem"
+    type: string
+    example: "4G"
+    description: |
+      Maximum number of target bases loaded into RAM by minimap2 for indexing (minimap2 -I).
+      Increase this when minimap2 splits the index, which interferes with the retagging step.
+  - name: "--no_umi"
+    type: boolean_true
+    description: Set if your BAM file has no UMI tag. Overrides --umi_tag.
+  - name: "--umi_tag"
+    type: string
+    default: "UB"
+    description: The BAM tag containing the UMI.
   - name: "--ignore"
     type: boolean_true
-    description: set to True to ignore data error assertions
+    description: ignore data error assertions
 - name: "Output"
   arguments:
   - name: "--output"
@@ -81,7 +112,15 @@ test_resources:
 
 engines:
 - type: docker
-  image: cumulusprod/souporcell:2022.12
+  image: quay.io/biocontainers/souporcell:3.0--hfa8f182_0
+  setup:
+    # The conda environment (including the compilers pystan needs to build its
+    # model at runtime in consensus.py) is normally activated by the image entrypoint,
+    # which is bypassed when running the component. Non-interactive bash shells
+    # source the file in BASH_ENV on startup, so use that to activate it instead.
+    - type: docker
+      env:
+        - BASH_ENV=/usr/local/env-activate.sh
 
 runners:
 - type: executable
