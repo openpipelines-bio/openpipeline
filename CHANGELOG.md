@@ -119,6 +119,8 @@
 
 ## MINOR CHANGES
 
+* `annotate/popv`: update the base image from `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` to `pytorch/pytorch:2.15.0-cuda13.2-cudnn9-runtime` (PR #XXXX).
+
 * `process_10xh5/filter_10xh5`: reimplement the component in Python (using `h5py` and `scipy`) instead of R, removing the dependency on `reticulate` (PR #1286).
 
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
