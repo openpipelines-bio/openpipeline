@@ -33,6 +33,8 @@
   - Retrained classifiers may differ slightly from previous releases, as the intercept initialization for objectives with more than two classes changed in `xgboost` `3.2`.
   - `--min_child_weight` now accepts decimal values.
 
+* `cluster/leiden` and workflows using it (e.g. `workflows/integration/*_leiden`): bump `leidenalg` from `0.11.0` to `0.12.0`. The component arguments are unchanged, but with `--flavor leidenalg` the cluster assignments will differ from previous releases for the same `--seed` and `--resolution`, due to changes in the refinement step and seed handling of `leidenalg`. (PR #1302).
+
 * `mapping/cellranger_count`, `mapping/cellranger_multi`, `workflows/ingestion/cellranger_mapping`, `workflows/ingestion/cellranger_multi`: update Cell Ranger to 10.1.0 (from 9.0 for `cellranger_count`, from 10.0.0 for `cellranger_multi`) (PR #1252):
   - Cell Ranger now runs cell type annotation with the local Pan-Human Azimuth model by default for human samples. Use the new `--disable_cell_annotation` (`cellranger_count`, `cellranger_mapping`) or `--skip_cell_annotation` (`cellranger_multi`) argument to turn this off.
   - Removed the `SC3Pv3LT` chemistry from the `--chemistry` and `--gex_chemistry` choices, as Cell Ranger no longer supports it.
