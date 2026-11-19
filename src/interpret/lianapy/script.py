@@ -36,7 +36,7 @@ def main():
     # Add dummy grouping labels when they do not exist
     if par["groupby"] not in mod.obs:
         raise ValueError(
-            f"Column {par['groupy']} does not exist in "
+            f"Column {par['groupby']} does not exist in "
             f".obs for modality {par['modality']}."
         )
     mod_col = mod.obs[par["groupby"]]
