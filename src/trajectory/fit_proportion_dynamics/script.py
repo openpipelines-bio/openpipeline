@@ -1,0 +1,171 @@
+import sys
+import numpy as np
+import pandas as pd
+import mudata as mu
+from scipy.interpolate import UnivariateSpline
+from scipy.stats import f as f_dist
+
+## VIASH START
+par = {
+    "input": "proportions.h5mu",
+    "modality": "proportions",
+    "obs_pseudotime": "palantir_pseudotime",
+    "lam": 0.6,
+    "n_pseudotime_bins": 100,
+    "min_groups": 5,
+    "output": "dynamics.h5mu",
+    "varm_output": "proportion_dynamics",
+    "uns_output": "proportion_dynamics_pseudotime",
+    "var_prefix": "dynamics_",
+    "output_compression": None,
+}
+meta = {
+    "resources_dir": "src/trajectory/fit_proportion_dynamics/",
+    "cpus": None,
+}
+## VIASH END
+
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+from compress_h5mu import write_h5ad_to_h5mu_with_compression
+
+logger = setup_logger()
+
+
+def _read_pseudotime(adata, column):
+    """Return the pseudotime per group, with the groups lacking a value dropped."""
+    if column not in adata.obs.columns:
+        raise ValueError(
+            f"--obs_pseudotime '{column}' not found in .obs. "
+            f"Available: {list(adata.obs.columns)}"
+        )
+    values = adata.obs[column]
+    if not pd.api.types.is_numeric_dtype(values):
+        raise ValueError(
+            f"--obs_pseudotime '{column}' must be numeric, found dtype {values.dtype}."
+        )
+    n_missing = int(values.isna().sum())
+    if n_missing:
+        logger.warning(
+            "Dropping %d group(s) with a missing '%s' value.", n_missing, column
+        )
+    return values.notna().to_numpy(), values.to_numpy(dtype=float)
+
+
+def _fit_spline(pt_vals, prop_vals, lam, n_bins):
+    """Fit a smoothing spline; return fitted curve, peak, R^2, p-value."""
+    x = pt_vals.values if hasattr(pt_vals, "values") else np.asarray(pt_vals)
+    y = prop_vals.values if hasattr(prop_vals, "values") else np.asarray(prop_vals)
+
+    # Sort by pseudotime (required by UnivariateSpline)
+    order = np.argsort(x)
+    x, y = x[order], y[order]
+
+    n = len(x)
+    # smoothing_factor s ~ lam * n  (larger = smoother)
+    s_factor = lam * n
+    spl = UnivariateSpline(x, y, k=3, s=s_factor)
+
+    grid = np.linspace(x.min(), x.max(), n_bins)
+    y_fit_grid = spl(grid)
+    y_fit_train = spl(x)
+
+    peak_idx = int(np.argmax(y_fit_grid))
+
+    # R^2
+    ss_res = float(np.sum((y - y_fit_train) ** 2))
+    ss_tot = float(np.sum((y - y.mean()) ** 2))
+    r_sq = 1.0 - ss_res / ss_tot if ss_tot > 1e-12 else 0.0
+
+    # F-test: spline vs. intercept-only
+    k_spline = max(1, int(spl._data[10]))  # effective degrees of freedom
+    df_model = max(1, k_spline - 1)
+    df_resid = max(1, n - k_spline)
+    ss_mean = ss_tot
+    if ss_mean > 1e-12 and df_resid > 0:
+        F = ((ss_mean - ss_res) / df_model) / (ss_res / df_resid + 1e-12)
+        p_val = float(1.0 - f_dist.cdf(max(0.0, F), df_model, df_resid))
+    else:
+        p_val = float("nan")
+
+    return {
+        "pseudotime_grid": grid,
+        "proportion_fitted": y_fit_grid,
+        "peak_pseudotime": float(grid[peak_idx]),
+        "r_squared": float(np.clip(r_sq, 0.0, 1.0)),
+        "p_value": p_val,
+    }
+
+
+def main():
+    logger.info("Reading %s, modality '%s'.", par["input"], par["modality"])
+    adata = mu.read_h5ad(par["input"], mod=par["modality"])
+    logger.info("Proportions: %d groups x %d labels.", adata.n_obs, adata.n_vars)
+
+    keep, pt = _read_pseudotime(adata, par["obs_pseudotime"])
+    n_groups = int(keep.sum())
+    if n_groups < par["min_groups"]:
+        raise ValueError(
+            f"Only {n_groups} group(s) have a pseudotime value; "
+            f"--min_groups is {par['min_groups']}."
+        )
+    X = adata.X.toarray() if hasattr(adata.X, "toarray") else np.asarray(adata.X)
+    X = X[keep].astype(float)
+    pt = pt[keep]
+    logger.info("Fitting splines for %d labels over %d groups.", adata.n_vars, n_groups)
+
+    n_bins = par["n_pseudotime_bins"]
+    curves = np.full((adata.n_vars, n_bins), np.nan)
+    stats = {
+        "peak_pseudotime": np.full(adata.n_vars, np.nan),
+        "r_squared": np.full(adata.n_vars, np.nan),
+        "p_value": np.full(adata.n_vars, np.nan),
+    }
+    grid = None
+    n_fitted = 0
+    for i, label in enumerate(adata.var_names):
+        try:
+            result = _fit_spline(pt, X[:, i], par["lam"], n_bins)
+        except Exception as exc:
+            logger.warning("  Spline fit failed for '%s': %s", label, exc)
+            continue
+        n_fitted += 1
+        grid = result["pseudotime_grid"]
+        curves[i] = result["proportion_fitted"]
+        for key in stats:
+            stats[key][i] = result[key]
+        logger.info(
+            "  %-20s peak_pt=%.3f  R^2=%.3f  p=%.4f",
+            label,
+            result["peak_pseudotime"],
+            result["r_squared"],
+            result["p_value"],
+        )
+
+    if not n_fitted:
+        raise ValueError("No label could be fitted; see the warnings above.")
+
+    adata.varm[par["varm_output"]] = curves
+    adata.uns[par["uns_output"]] = grid
+    prefix = par["var_prefix"]
+    for key, values in stats.items():
+        adata.var[f"{prefix}{key}"] = values
+    adata.var[f"{prefix}n_groups"] = n_groups
+    logger.info(
+        "Stored %d fitted curves in .varm['%s'] and per-label statistics in .var.",
+        n_fitted,
+        par["varm_output"],
+    )
+
+    logger.info("Writing output to %s.", par["output"])
+    write_h5ad_to_h5mu_with_compression(
+        par["output"],
+        par["input"],
+        par["modality"],
+        adata,
+        par["output_compression"],
+    )
+
+
+if __name__ == "__main__":
+    main()
