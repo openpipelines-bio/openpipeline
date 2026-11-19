@@ -78,6 +78,25 @@
 
 ## NEW FEATURES
 
+* BEYOND methodology, part 1 of 5 (stack: subpopulation clustering -> proportions -> trajectory components -> analysis components -> trajectory workflow) (PR #TBD):
+
+  - `workflows/beyond/subpopulation_clustering`: splits an annotated atlas by broad cell
+    type and clusters each cell type separately (split_h5mu -> pca -> neighbors_leiden_umap
+    -> concatenate_h5mu), producing the within-cell-type subpopulation labels that the
+    trajectory workflow needs. Everything upstream of it (QC, integration, annotation) is
+    left to the existing `multiomics/process_samples`, `integration/harmony_leiden` and
+    `annotation/celltypist` workflows.
+
+  - `resources_test_scripts/beyond_trajectory_test_data.py`: builds the fixture from a
+    real cohort - PsychAD `RADC_Cohort` (dorsolateral prefrontal cortex, 152 donors,
+    693682 nuclei x 34176 genes), distributed by CZ CELLxGENE Discover under **CC-BY
+    4.0**, collection `84ce6837-548d-4a1f-919f-0bc0d9a3952f`, doi
+    `10.1101/2024.10.31.24316513`. Its `class` (8) / `subclass` (27) / `subtype` (65)
+    annotation is the three-level hierarchy BEYOND is written for. `atlas.h5mu` carries
+    a 32377-nucleus subsample (all 152 donors, stratified by subtype within donor, which
+    approximately keeps each donor's composition) plus `traits.csv` with the donor
+    metadata.
+
 * `mapping/bd_rhapsody`, `workflows/ingestion/bd_rhapsody`: add `--multiple_alignment_handling` and `--multiple_alignment_gene_selection` arguments, add the `--biotype_counts` output and allow `VDJ` as `--cell_calling_data` (PR #1283).
 
 * `mapping/bd_rhapsody`: when `---memory` or `---cpus` is set, cwltool now schedules the pipeline steps within these limits instead of the resources of the host, and each step's resource requirements are capped to them instead of all being overwritten with them, so steps can run in parallel. `---cpus` is also passed to the pipeline as `Maximum_Threads` (PR #1283).
