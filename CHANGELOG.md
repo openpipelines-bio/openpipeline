@@ -55,6 +55,8 @@
   - The t-SNE and UMAP coordinates calculated by the BD Rhapsody pipeline were moved from `.obsm["X_tsne"]` and `.obsm["X_umap"]` to `.obsm["X_tsne_bd_rhapsody"]` and `.obsm["X_umap_bd_rhapsody"]`.
   - Fixed the VDJ modalities failing to be written after `metadata/add_id` altered their `.obs` index.
 
+* `mapping/cellranger_count_split`: this component has been removed. The `workflows/ingestion/cellranger_mapping` workflow no longer uses it and selects the required files from the Cell Ranger output directory directly (PR #1289).
+
 * Bumped `anndata` to `0.13.4`, `mudata` to `0.4.1` and `pandas` to `3` (PR #1263):
   - Modality `.obs`/`.var` columns are no longer synced to the global `.obs`/`.var`. Single-modality components only update the modality.
   - `dataflow/merge`: no longer copies modality columns to the global `.obs`/`.var` or converts their dtypes.
@@ -71,8 +73,6 @@
 * `report/mermaid`: the `--width` and `--height` arguments were replaced by a single `--size` argument, following the update to `mermaid-cli` 12 (PR #1267).
 
 * `annotate/calculate_marker_genes_scanpy`, `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dataflow/split_modalities`, `demux/cellranger_atac_mkfastq`, `demux/cellranger_mkfastq`, `filter/create_cell_masks`, `transform/bpcells_regress_out`, `transform/clear_slots`, `transform/clr`, `transform/delete_layer`, `transform/log1p`, `transform/normalize_total`, `transform/regress_out`, `transform/scale`: removed default values from `file` input and output arguments, using `example` instead where appropriate. Users relying on these defaults must now provide the file paths explicitly (PR #1261).
-
-
 
 ## NEW FEATURES
 
@@ -121,6 +121,8 @@
 
 * Several scanpy components: bumped `scanpy` to `1.12.5` (PR #1274).
 
+* `genetic_demux/dsc_pileup`: bumped the base image from `ubuntu:20.04` to `ubuntu:24.04` (PR #1285).
+
 * Bumped `scipy` to `1.18.1` (PR #1263).
 
 * `correction/cellbender_remove_background`: install `cellbender` `0.4.0` from PyPI instead of from a git commit (PR #1263).
@@ -132,6 +134,8 @@
 * `annotate/onclass`, `convert/from_10xmtx_to_h5mu`, `convert/from_bdrhap_to_h5mu`, `dimred/lsi`, `feature_annotation/score_genes_cell_cycle_scanpy`, `feature_annotation/score_genes_scanpy`, `interpret/lianapy`, `metadata/add_id`, `metadata/grep_annotation_column`, `qc/calculate_atac_qc_metrics`, `query/cellxgene_census`: bumped the base image to Python 3.12. `tiledb/move_mudata_obs_to_tiledb` now uses Python 3.13 (PR #1263).
 
 * `annotate/scanvi`, `integrate/scvi`, `integrate/totalvi`, `integrate/scarches`, `integrate/totalvi_scarches`: bumped `scvi-tools` to `1.5.1` (PR #1263).
+
+* `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
 ## BUG FIXES
 
@@ -153,6 +157,8 @@
 * `dataflow/concatenate_h5mu`: detect duplicate observations across samples when they are in different modalities. Within one sample, an observation can still be in several modalities (PR #1263).
 
 * `annotate/singler`: preserve dtypes of existing `.obs` columns, and store missing predictions as NA instead of the string `"NA"` (PR #1263).
+
+* `dimred/densmap`: use the distance metric of the neighbors stored in `--uns_neighbors`, instead of looking for it in a hard-coded `neighbors` slot, which caused the component to fail when the neighbors were stored elsewhere. The component now raises when the neighbors do not store their metric, instead of assuming `euclidean`. `--obsm_pca` is now optional and defaults to the representation used to compute the neighbors (PR #1258).
 
 * `transform/normalize_total`: fix the normalization target being computed incorrectly for sparse input, a bug in `scanpy` `1.11.2` up to `1.12.3` that is fixed by the bump to `scanpy` `1.12.5`. The bug only occurs when `--target_sum` is not set, the input matrix is sparse and some cells have zero total counts. In that case, the median total count used as the normalization target included the empty cells, so it was too low (or `0` when more than half of the cells were empty, resulting in an all-zero matrix). This affects `workflows/rna/log_normalize` (when `--target_sum` is not set), `workflows/rna/rna_multisample` and `workflows/multiomics/process_batches` when their input contains cells without counts. `workflows/multiomics/process_samples` is not affected, because `workflows/rna/rna_singlesample` removes cells without counts before normalization, and neither is `workflows/annotation/celltypist`, which sets the target sum explicitly (PR #1274).
 
