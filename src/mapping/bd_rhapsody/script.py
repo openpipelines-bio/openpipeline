@@ -1,4 +1,6 @@
+import json
 import os
+import sys
 import re
 import subprocess
 import tempfile
@@ -28,6 +30,8 @@ par = {
     "exact_cell_count": 4900,
     "expected_cell_count": None,
     "exclude_intronic_reads": None,
+    "multiple_alignment_handling": None,
+    "multiple_alignment_gene_selection": None,
     "sample_tags_version": None,
     "tag_names": [],
     "vdj_version": None,
@@ -50,6 +54,7 @@ par = {
     "bam": None,
     "bam_index": None,
     "bioproduct_stats": None,
+    "biotype_counts": None,
     "dimred_tsne": None,
     "dimred_umap": None,
     "immune_cell_classification": None,
@@ -94,6 +99,11 @@ meta = {
 }
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+
+logger = setup_logger()
+
 
 def clean_arg(argument):
     argument["clean_name"] = re.sub("^-*", "", argument["name"])
@@ -111,10 +121,6 @@ def read_config(path: str) -> dict[str, Any]:
     return config
 
 
-def strip_margin(text: str) -> str:
-    return re.sub("(\n?)[ \t]*\|", "\\1", text)
-
-
 def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     # check input parameters
     assert par["reads"] or par["reads_atac"], (
@@ -127,9 +133,8 @@ def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
 
     # checking sample prefix
     if par["run_name"] and re.match("[^A-Za-z0-9]", par["run_name"]):
-        print(
-            "--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.",
-            flush=True,
+        logger.warning(
+            "--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'."
         )
         par["run_name"] = re.sub("[^A-Za-z0-9\\-]", "-", par["run_name"])
 
@@ -148,124 +153,166 @@ def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     return par
 
 
-def generate_config(par: dict[str, Any], config) -> str:
-    content_list = [
-        strip_margin("""\
-        |#!/usr/bin/env cwl-runner
-        |
-        |cwl:tool: rhapsody
-        |""")
-    ]
-
+def generate_config(par: dict[str, Any], config, meta: dict[str, Any]) -> str:
+    job_inputs = {}
     for argument in config["arguments"]:
-        arg_info = argument.get("info") or {}
-        config_key = arg_info.get("config_key")
-        if par[argument["clean_name"]] and config_key:
-            if argument["type"] == "file":
-                str = strip_margin(f"""\
-                    |{config_key}:
-                    |""")
-                if isinstance(par[argument["clean_name"]], list):
-                    for file in par[argument["clean_name"]]:
-                        str += strip_margin(f"""\
-                            | - class: File
-                            |   location: "{file}"
-                            |""")
-                else:
-                    str += strip_margin(f"""\
-                        |   class: File
-                        |   location: "{par[argument["clean_name"]]}"
-                        |""")
-                content_list.append(str)
+        config_key = (argument.get("info") or {}).get("config_key")
+        value = par[argument["clean_name"]]
+        if not (value and config_key):
+            continue
+        if argument["type"] == "file":
+            if isinstance(value, list):
+                value = [{"class": "File", "location": file} for file in value]
             else:
-                content_list.append(
-                    strip_margin(f"""\
-                    |{config_key}: {par[argument["clean_name"]]}
-                    |""")
-                )
+                value = {"class": "File", "location": value}
+        job_inputs[config_key] = value
 
-    ## Write config to file
-    return "".join(content_list)
+    # Limit the number of threads used within each pipeline step
+    if meta["cpus"]:
+        job_inputs["Maximum_Threads"] = int(meta["cpus"])
+
+    return yaml.safe_dump(job_inputs, sort_keys=False)
 
 
 def generate_config_file(
-    par: dict[str, Any], config: dict[str, Any], temp_dir: str
+    par: dict[str, Any], config: dict[str, Any], meta: dict[str, Any], temp_dir: str
 ) -> str:
     config_file = os.path.join(temp_dir, "config.yml")
-    config_content = generate_config(par, config)
+    config_content = generate_config(par, config, meta)
     with open(config_file, "w") as f:
         f.write(config_content)
     return config_file
 
 
+def cap_resource(value: float | str, budget: int) -> float | str:
+    """Cap a ResourceRequirement value, which is either a number or a CWL expression."""
+    if isinstance(value, (int, float)):
+        return min(value, budget)
+    expression = value.strip() if isinstance(value, str) else ""
+    if expression.startswith("${") and expression.endswith("}"):
+        body = expression[2:-1]
+        return f"${{ return Math.min((function() {{ {body} }})(), {budget}); }}"
+    return budget
+
+
+def cap_resource_requirements(node: Any, memory: int | None, cpus: int | None):
+    """Recursively cap all ResourceRequirements in a CWL document."""
+    if isinstance(node, dict):
+        if node.get("class") == "ResourceRequirement":
+            if memory and "ramMin" in node:
+                node["ramMin"] = cap_resource(node["ramMin"], memory)
+            if cpus and "coresMin" in node:
+                node["coresMin"] = cap_resource(node["coresMin"], cpus)
+        for child in node.values():
+            cap_resource_requirements(child, memory, cpus)
+    elif isinstance(node, list):
+        for child in node:
+            cap_resource_requirements(child, memory, cpus)
+
+
+def get_resource_budget(meta: dict[str, Any]) -> tuple[int | None, int | None]:
+    """The memory (in MB) and cpus available to the pipeline."""
+    memory = (
+        int(meta["memory_mb"]) - 2000 if meta["memory_mb"] else None
+    )  # keep 2gb for OS
+    cpus = int(meta["cpus"]) if meta["cpus"] else None
+    return memory, cpus
+
+
 def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
     # create cwl file (if need be)
-    orig_cwl_file = os.path.join(
-        meta["resources_dir"], "rhapsody_pipeline_2.2.1_nodocker.cwl"
+    orig_cwl_file = os.path.abspath(
+        os.path.join(meta["resources_dir"], "rhapsody_pipeline_4.0.cwl")
     )
 
-    # Inject computational requirements into pipeline
-    if meta["memory_mb"] or meta["cpus"]:
-        cwl_file = os.path.join(dir, "pipeline.cwl")
+    if not (meta["memory_mb"] or meta["cpus"]):
+        return orig_cwl_file
 
-        # Read in the file
-        with open(orig_cwl_file, "r") as file:
-            cwl_data = file.read()
+    # Steps requesting more resources than available are never started by cwltool.
+    # Cap the requirements of each step to the resources available to this component.
+    with open(orig_cwl_file, "r") as file:
+        cwl_text = file.read()
+    cwl_data = json.loads(cwl_text.removeprefix("#!/usr/bin/env cwl-runner\n"))
 
-        # Inject computational requirements into pipeline
-        if meta["memory_mb"]:
-            memory = int(meta["memory_mb"]) - 2000  # keep 2gb for OS
-            cwl_data = re.sub(
-                '"ramMin": [^\n]*[^,](,?)\n', f'"ramMin": {memory}\\1\n', cwl_data
-            )
-        if meta["cpus"]:
-            cwl_data = re.sub(
-                '"coresMin": [^\n]*[^,](,?)\n',
-                f'"coresMin": {meta["cpus"]}\\1\n',
-                cwl_data,
-            )
+    memory, cpus = get_resource_budget(meta)
+    cap_resource_requirements(cwl_data, memory, cpus)
 
-        # Write the file out again
-        with open(cwl_file, "w") as file:
-            file.write(cwl_data)
-    else:
-        cwl_file = orig_cwl_file
+    cwl_file = os.path.join(dir, "pipeline.cwl")
+    with open(cwl_file, "w") as file:
+        json.dump(cwl_data, file, indent=4)
 
     return cwl_file
 
 
-def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
-    for arg in config["arguments"]:
-        par_value = par[arg["clean_name"]]
-        if par_value and arg["type"] == "file" and arg["direction"] == "output":
-            # example template: '[sample_name]_(assay)_cell_type_experimental.csv'
-            template = (arg.get("info") or {}).get("template")
-            if template:
-                template_glob = (
-                    template.replace("sample", par["run_name"])
-                    .replace("assay", "*")
-                    .replace("number", "*")
-                )
-                files = glob.glob(os.path.join(par["output_dir"], template_glob))
-                if len(files) == 0 and arg["required"]:
-                    raise ValueError(
-                        f"Expected output file '{template_glob}' not found."
-                    )
-                elif len(files) > 1 and not arg["multiple"]:
-                    raise ValueError(
-                        f"Expected single output file '{template_glob}', but found multiple."
-                    )
+# Output files of the BD Rhapsody pipeline, as glob patterns relative to the output directory
+OUTPUT_FILES = {
+    "output_seurat": "{run_name}_Seurat.rds",
+    "output_mudata": "{run_name}.cellismo",
+    "metrics_summary": "{run_name}_Metrics_Summary.csv",
+    "pipeline_report": "{run_name}_Pipeline_Report.html",
+    "rsec_mols_per_cell": "{run_name}_RSEC_MolsPerCell_MEX.zip",
+    "dbec_mols_per_cell": "{run_name}_DBEC_MolsPerCell_MEX.zip",
+    "rsec_mols_per_cell_unfiltered": "{run_name}_RSEC_MolsPerCell_Unfiltered_MEX.zip",
+    # the BAM files can be prefixed, e.g. 'Combined_sample_Bioproduct.bam'
+    "bam": "*{run_name}_Bioproduct.bam",
+    "bam_index": "*{run_name}_Bioproduct.bam.*",
+    "bioproduct_stats": "{run_name}_Bioproduct_Stats.csv",
+    "biotype_counts": "{run_name}_biotypeCounts.csv",
+    "dimred_tsne": "{run_name}_tSNE_coordinates.csv",
+    "dimred_umap": "{run_name}_UMAP_coordinates.csv",
+    "immune_cell_classification": "{run_name}_cell_type_experimental.csv",
+    "sample_tag_metrics": "{run_name}_Sample_Tag_Metrics.csv",
+    "sample_tag_calls": "{run_name}_Sample_Tag_Calls.csv",
+    "sample_tag_counts": "{run_name}_Sample*Tag*.zip",
+    "sample_tag_counts_unassigned": "{run_name}_Multiplet_and_Undetermined.zip",
+    "vdj_metrics": "{run_name}_VDJ_metrics.csv",
+    "vdj_per_cell": "{run_name}_VDJ_perCell.csv",
+    "vdj_per_cell_uncorrected": "{run_name}_VDJ_perCell_uncorrected.csv.gz",
+    "vdj_dominant_contigs": "{run_name}_VDJ_Dominant_Contigs_AIRR.tsv",
+    "vdj_unfiltered_contigs": "{run_name}_VDJ_Unfiltered_Contigs_AIRR.tsv.gz",
+    "atac_metrics": "{run_name}_ATAC_Metrics.csv",
+    "atac_metrics_json": "{run_name}_ATAC_Metrics.json",
+    "atac_fragments": "{run_name}_ATAC_Fragments.bed.gz",
+    "atac_fragments_index": "{run_name}_ATAC_Fragments.bed.gz.tbi",
+    "atac_transposase_sites": "{run_name}_ATAC_Transposase_Sites.bed.gz",
+    "atac_transposase_sites_index": "{run_name}_ATAC_Transposase_Sites.bed.gz.tbi",
+    "atac_peaks": "{run_name}_ATAC_Peaks.bed.gz",
+    "atac_peaks_index": "{run_name}_ATAC_Peaks.bed.gz.tbi",
+    "atac_peak_annotation": "{run_name}_peak_annotation.tsv.gz",
+    "atac_cell_by_peak": "{run_name}_ATAC_Cell_by_Peak_MEX.zip",
+    "atac_cell_by_peak_unfiltered": "{run_name}_ATAC_Cell_by_Peak_Unfiltered_MEX.zip",
+    "atac_bam": "*{run_name}_ATAC.bam",
+    "atac_bam_index": "*{run_name}_ATAC.bam.*",
+    "protein_aggregates_experimental": "{run_name}_Protein_Aggregates_Experimental.csv",
+}
 
-                if not arg["multiple"]:
-                    try:
-                        shutil.copy(files[0], par_value)
-                        print(f"Copied {files[0]} to {par_value}")
-                    except IndexError:
-                        print(f"Unable to copy {template_glob} to {par_value}")
-                else:
-                    # replace '*' in par_value with index
-                    for i, file in enumerate(files):
-                        shutil.copy(file, par_value.replace("*", str(i)))
+
+def copy_outputs(par: dict[str, Any]):
+    for argument, pattern in OUTPUT_FILES.items():
+        destination = par[argument]
+        if not destination:
+            continue
+        pattern = pattern.format(run_name=par["run_name"])
+        files = sorted(glob.glob(os.path.join(par["output_dir"], pattern)))
+        if isinstance(destination, list):  # multiple: true
+            # replace the '*' with the file name without run name and extension
+            # e.g. 'sample_SampleTag01_hs.zip' -> 'SampleTag01_hs'
+            suffix = pattern.rsplit("*", 1)[1]
+            for file in files:
+                name = (
+                    os.path.basename(file)
+                    .removeprefix(f"{par['run_name']}_")
+                    .removesuffix(suffix)
+                )
+                shutil.copy(file, destination[0].replace("*", name))
+                logger.info("Copied %s to --%s", file, argument)
+        elif len(files) == 1:
+            shutil.copy(files[0], destination)
+            logger.info("Copied %s to --%s", files[0], argument)
+        elif not files:
+            logger.warning("No output file found for --%s ('%s')", argument, pattern)
+        else:
+            raise ValueError(f"Multiple output files found for --{argument}: {files}")
 
 
 def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
@@ -275,12 +322,25 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     par = process_params(par, config, temp_dir)
 
     ## Process parameters
+    # Run cwltool through a wrapper which limits the resources used by the parallel
+    # executor to the resources available to this component instead of the host.
+    memory, cpus = get_resource_budget(meta)
     cmd = [
-        "cwl-runner",
+        sys.executable,
+        os.path.abspath(os.path.join(meta["resources_dir"], "run_cwltool.py")),
+    ]
+    if memory:
+        cmd += ["--max_ram_mb", str(memory)]
+    if cpus:
+        cmd += ["--max_cores", str(cpus)]
+    cmd += [
         "--no-container",
         "--preserve-entire-environment",
         "--outdir",
         par["output_dir"],
+        # temporary directories and intermediate outputs of the pipeline steps
+        "--tmpdir-prefix",
+        os.path.join(temp_dir, ""),
     ]
 
     if par["parallel"]:
@@ -294,23 +354,36 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     cmd.append(cwl_file)
 
     # Create params file
-    config_file = generate_config_file(par, config, temp_dir)
+    config_file = generate_config_file(par, config, meta, temp_dir)
     cmd.append(config_file)
-
-    # keep environment variables but set TMPDIR to temp_dir
-    env = dict(os.environ)
-    env["TMPDIR"] = temp_dir
 
     # Create output dir if not exists
     if not os.path.exists(par["output_dir"]):
         os.makedirs(par["output_dir"])
 
     # Run command
-    print("> " + " ".join(cmd), flush=True)
-    _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file), env=env)
+    logger.info("> %s", " ".join(cmd))
+    with (
+        subprocess.Popen(
+            cmd,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            bufsize=1,
+            cwd=os.path.dirname(config_file),
+        ) as process,
+        open(os.path.join(par["output_dir"], "bd_rhapsody.log"), "w") as open_log,
+    ):
+        for line in process.stdout:
+            print(line.strip(), flush=True)
+            open_log.write(line)
+    logger.info("Checking exit code.")
+    # Popen objects do not have a check_exitcode method.
+    if process.returncode != 0:
+        raise RuntimeError("BD Rhapsody pipeline returned a nonzero exitcode!")
 
     # Copy outputs
-    copy_outputs(par, config)
+    copy_outputs(par)
 
 
 if __name__ == "__main__":

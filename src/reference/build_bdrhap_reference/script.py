@@ -5,21 +5,29 @@ import tempfile
 from typing import Any
 import yaml
 import shutil
+import glob
 
 ## VIASH START
 par = {
     "genome_fasta": ["resources_test/reference_gencodev41_chr1/reference.fa.gz"],
     "gtf": ["resources_test/reference_gencodev41_chr1/reference.gtf.gz"],
     "extra_sequences": None,
+    "transcription_factor_motif_pfm": None,
     "mitochondrial_contigs": None,
     "filtering_off": False,
+    "disable_readthrough_filtering": False,
+    "filter_pars": False,
+    "combine_same_gene_names": False,
     "wta_only_index": False,
+    "disable_fasta_validation": False,
+    "repair_gtf": False,
+    "gtf_validation_complete_mode": False,
     "extra_star_params": "--genomeSAindexNbases 4",
     "reference_archive": "output.tar.gz",
 }
 meta = {
     "config": "target/nextflow/reference/build_bdrhap_reference/.config.vsh.yaml",
-    "resources_dir": os.path.abspath("src/reference/build_bdrhap_2_reference"),
+    "resources_dir": os.path.abspath("src/reference/build_bdrhap_reference"),
     "temp_dir": os.getenv("VIASH_TEMP"),
     "memory_mb": None,
     "cpus": None,
@@ -41,10 +49,6 @@ def read_config(path: str) -> dict[str, Any]:
     ]
 
     return config
-
-
-def strip_margin(text: str) -> str:
-    return re.sub("(\n?)[ \t]*\|", "\\1", text)
 
 
 def process_params(par: dict[str, Any], config) -> str:
@@ -71,59 +75,28 @@ def process_params(par: dict[str, Any], config) -> str:
 
 
 def generate_config(par: dict[str, Any], meta, config) -> str:
-    content_list = [
-        strip_margin("""\
-        |#!/usr/bin/env cwl-runner
-        |
-        |""")
-    ]
-
-    config_key_value_pairs = []
+    job_inputs = {}
     for argument in config["arguments"]:
         config_key = (argument.get("info") or {}).get("config_key")
-        arg_type = argument["type"]
-        par_value = par[argument["clean_name"]]
-        if par_value and config_key:
-            config_key_value_pairs.append((config_key, arg_type, par_value))
+        value = par[argument["clean_name"]]
+        if not (value and config_key):
+            continue
+        if argument["type"] == "file":
+            if isinstance(value, list):
+                value = [{"class": "File", "location": file} for file in value]
+            else:
+                value = {"class": "File", "location": value}
+        job_inputs[config_key] = value
 
     if meta["cpus"]:
-        config_key_value_pairs.append(("Maximum_threads", "integer", meta["cpus"]))
+        job_inputs["Maximum_threads"] = int(meta["cpus"])
 
-    # print(config_key_value_pairs)
-
-    for config_key, arg_type, par_value in config_key_value_pairs:
-        if arg_type == "file":
-            str = strip_margin(f"""\
-                |{config_key}:
-                |""")
-            if isinstance(par_value, list):
-                for file in par_value:
-                    str += strip_margin(f"""\
-                        | - class: File
-                        |   location: "{file}"
-                        |""")
-            else:
-                str += strip_margin(f"""\
-                    |   class: File
-                    |   location: "{par_value}"
-                    |""")
-            content_list.append(str)
-        else:
-            content_list.append(
-                strip_margin(f"""\
-                |{config_key}: {par_value}
-                |""")
-            )
-
-    ## Write config to file
-    return "".join(content_list)
+    return yaml.safe_dump(job_inputs, sort_keys=False)
 
 
 def get_cwl_file(meta: dict[str, Any]) -> str:
     # create cwl file (if need be)
-    cwl_file = os.path.join(
-        meta["resources_dir"], "make_rhap_reference_2.2.1_nodocker.cwl"
-    )
+    cwl_file = os.path.join(meta["resources_dir"], "make_rhap_reference_4.0.cwl")
 
     return os.path.abspath(cwl_file)
 
@@ -158,19 +131,21 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             "--preserve-entire-environment",
             "--outdir",
             temp_dir,
+            # temporary directories and intermediate outputs of the pipeline steps
+            "--tmpdir-prefix",
+            os.path.join(temp_dir, ""),
             cwl_file,
             config_file,
         ]
 
-        env = dict(os.environ)
-        env["TMPDIR"] = temp_dir
-
         print("> " + " ".join(cmd), flush=True)
-        _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file), env=env)
+        _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file))
 
-        shutil.move(
-            os.path.join(temp_dir, "Rhap_reference.tar.gz"), par["reference_archive"]
+        archives = glob.glob(os.path.join(temp_dir, "*.tar.gz"))
+        assert len(archives) == 1, (
+            f"Expected exactly one reference archive, found: {archives}"
         )
+        shutil.move(archives[0], par["reference_archive"])
 
 
 if __name__ == "__main__":
