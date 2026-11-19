@@ -3068,7 +3068,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--genome_fasta",
-          "description" : "Reference genome file in FASTA or FASTA.GZ format. The BD Rhapsody Sequencing Analysis Pipeline uses GRCh38 for Human and GRCm39 for Mouse.",
+          "description" : "Reference genome file in FASTA or FASTA.GZ format. The pre-built BD reference archive files use GRCh38 for Human and GRCm39 for Mouse.",
           "info" : {
             "config_key" : "Genome_fasta"
           },
@@ -3102,13 +3102,30 @@ meta = [
         {
           "type" : "file",
           "name" : "--extra_sequences",
-          "description" : "File path to additional sequences in FASTA format to use when building the STAR index. (e.g. transgenes or CRISPR guide barcodes).\nGTF lines for these sequences will be automatically generated and combined with the main GTF.\n",
+          "description" : "File path to additional sequences in FASTA format to use when building the STAR and bwa-mem2 indices. (e.g. transgenes or CRISPR guide barcodes).\nGTF lines for these sequences will be automatically generated and combined with the main GTF.\n",
           "info" : {
             "config_key" : "Extra_sequences"
           },
           "example" : [
             "extra_sequence_1.fa.gz",
             "extra_sequence_2.fa.gz"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "file",
+          "name" : "--transcription_factor_motif_pfm",
+          "description" : "Text file of Transcription Factor Motif position frequency matrices in JASPAR format. Used to compute a\nTF motif-by-cell matrix in the ATAC-Seq analysis pipeline.\nThe pre-built BD reference archive files use the JASPAR2024_CORE_vertebrates_non-redundant_pfms_jaspar.txt file\nfor both Human and Mouse. See https://jaspar.elixir.no/download/data/2024/CORE/.\n",
+          "info" : {
+            "config_key" : "Transcription_Factor_Motif_PFM"
+          },
+          "example" : [
+            "JASPAR2024_CORE_vertebrates_non-redundant_pfms_jaspar.txt"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3146,7 +3163,7 @@ meta = [
           "name" : "--mitochondrial_contigs",
           "description" : "Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are\nidentified as 'nuclear fragments' in the ATACseq analysis pipeline.\n",
           "info" : {
-            "config_key" : "Mitochondrial_contigs"
+            "config_key" : "Mitochondrial_Contigs"
           },
           "default" : [
             "chrM",
@@ -3162,9 +3179,36 @@ meta = [
         {
           "type" : "boolean_true",
           "name" : "--filtering_off",
-          "description" : "By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features \nhaving the following attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.\n",
+          "description" : "By default, the input GTF files are filtered based on the gene_type, gene_biotype, or transcript_type attributes.\nOnly genes with a gene_type or gene_biotype matching one of the accepted values are retained, and each gene must\nhave at least one transcript with a valid transcript_type. An exception is made to the transcript requirement if\nthe gene does not overlap with any other gene that has a valid biotype.\n\nAccepted biotypes include:\n\n  - protein_coding\n  - protein_coding_LOF\n  - lncRNA (lincRNA and antisense for Gencode < v31/M22/Ensembl97)\n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_D_pseudogene\n  - IG_J_gene\n  - IG_J_pseudogene\n  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.\n",
           "info" : {
-            "config_key" : "Filtering_off"
+            "config_key" : "Disable_Biotype_Filtering"
+          },
+          "direction" : "input"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--disable_readthrough_filtering",
+          "description" : "By default genes with only readthrough transcripts are removed. Any readthrough_transcript feature is also removed\nif its parent gene overlaps with another gene that meets the biotype requirement. Set this option to disable this behaviour.\n",
+          "info" : {
+            "config_key" : "Disable_Readthrough_Filtering"
+          },
+          "direction" : "input"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--filter_pars",
+          "description" : "Remove features in the 2 Pseudo-Autosomal Regions (PARs) on the Y chromosome. This applies only to a Human build 38 reference.\n",
+          "info" : {
+            "config_key" : "Filter_PARs"
+          },
+          "direction" : "input"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--combine_same_gene_names",
+          "description" : "Combine genes with the same gene name, even when gene ids are different. If not enabled (default), chromosome, start,\nand strand information will be appended to the duplicated gene names.\n",
+          "info" : {
+            "config_key" : "Combine_Same_Gene_Names"
           },
           "direction" : "input"
         },
@@ -3173,7 +3217,34 @@ meta = [
           "name" : "--wta_only_index",
           "description" : "Build a WTA only index, otherwise builds a WTA + ATAC index.",
           "info" : {
-            "config_key" : "Wta_Only"
+            "config_key" : "WTA_Only"
+          },
+          "direction" : "input"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--disable_fasta_validation",
+          "description" : "Skip validation that the FASTA files contain the contigs referenced in the GTF files. Only use this in rare cases\nwhere you deliberately want to bypass the contig compatibility check.\n",
+          "info" : {
+            "config_key" : "Disable_FASTA_Validation"
+          },
+          "direction" : "input"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--repair_gtf",
+          "description" : "Attempt to repair invalid GTF files using the built-in repair functionality. The validator will try to fix common\nGTF format issues and use the repaired files for downstream processing.\n",
+          "info" : {
+            "config_key" : "Repair_GTF"
+          },
+          "direction" : "input"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--gtf_validation_complete_mode",
+          "description" : "Generate a full report about errors and warnings in the GTF, instead of failing when the first fatal error is encountered.\n",
+          "info" : {
+            "config_key" : "GTF_Validation_Complete_Mode"
           },
           "direction" : "input"
         },
@@ -3185,7 +3256,7 @@ meta = [
             "config_key" : "Extra_STAR_params"
           },
           "example" : [
-            "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+            "--limitGenomeGenerateRAM 48000000000 --genomeSAindexNbases 11"
           ],
           "required" : false,
           "direction" : "input",
@@ -3203,7 +3274,7 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "make_rhap_reference_2.2.1_nodocker.cwl"
+      "path" : "make_rhap_reference_4.0.cwl"
     },
     {
       "type" : "file",
@@ -3322,7 +3393,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "bdgenomics/rhapsody:2.2.1",
+      "image" : "bdgenomics/rhapsody:4.0",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3352,7 +3423,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference",
     "viash_version" : "0.9.7",
-    "git_commit" : "0ffb7f4241f64cc3d83094293461c8630ce51d6c",
+    "git_commit" : "bd233728404a51b1d07551c87ff4774152c479e9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3415,6 +3486,7 @@ import tempfile
 from typing import Any
 import yaml
 import shutil
+import glob
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -3422,10 +3494,17 @@ par = {
   'genome_fasta': $( if [ ! -z ${VIASH_PAR_GENOME_FASTA+x} ]; then echo "r'${VIASH_PAR_GENOME_FASTA//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'gtf': $( if [ ! -z ${VIASH_PAR_GTF+x} ]; then echo "r'${VIASH_PAR_GTF//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'extra_sequences': $( if [ ! -z ${VIASH_PAR_EXTRA_SEQUENCES+x} ]; then echo "r'${VIASH_PAR_EXTRA_SEQUENCES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'transcription_factor_motif_pfm': $( if [ ! -z ${VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM+x} ]; then echo "r'${VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'reference_archive': $( if [ ! -z ${VIASH_PAR_REFERENCE_ARCHIVE+x} ]; then echo "r'${VIASH_PAR_REFERENCE_ARCHIVE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'mitochondrial_contigs': $( if [ ! -z ${VIASH_PAR_MITOCHONDRIAL_CONTIGS+x} ]; then echo "r'${VIASH_PAR_MITOCHONDRIAL_CONTIGS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'filtering_off': $( if [ ! -z ${VIASH_PAR_FILTERING_OFF+x} ]; then echo "r'${VIASH_PAR_FILTERING_OFF//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'disable_readthrough_filtering': $( if [ ! -z ${VIASH_PAR_DISABLE_READTHROUGH_FILTERING+x} ]; then echo "r'${VIASH_PAR_DISABLE_READTHROUGH_FILTERING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'filter_pars': $( if [ ! -z ${VIASH_PAR_FILTER_PARS+x} ]; then echo "r'${VIASH_PAR_FILTER_PARS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'combine_same_gene_names': $( if [ ! -z ${VIASH_PAR_COMBINE_SAME_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_COMBINE_SAME_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'wta_only_index': $( if [ ! -z ${VIASH_PAR_WTA_ONLY_INDEX+x} ]; then echo "r'${VIASH_PAR_WTA_ONLY_INDEX//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'disable_fasta_validation': $( if [ ! -z ${VIASH_PAR_DISABLE_FASTA_VALIDATION+x} ]; then echo "r'${VIASH_PAR_DISABLE_FASTA_VALIDATION//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'repair_gtf': $( if [ ! -z ${VIASH_PAR_REPAIR_GTF+x} ]; then echo "r'${VIASH_PAR_REPAIR_GTF//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'gtf_validation_complete_mode': $( if [ ! -z ${VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE+x} ]; then echo "r'${VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'extra_star_params': $( if [ ! -z ${VIASH_PAR_EXTRA_STAR_PARAMS+x} ]; then echo "r'${VIASH_PAR_EXTRA_STAR_PARAMS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
@@ -3471,10 +3550,6 @@ def read_config(path: str) -> dict[str, Any]:
     return config
 
 
-def strip_margin(text: str) -> str:
-    return re.sub("(\\\\n?)[ \\\\t]*\\\\|", "\\\\\\\\1", text)
-
-
 def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
@@ -3499,59 +3574,28 @@ def process_params(par: dict[str, Any], config) -> str:
 
 
 def generate_config(par: dict[str, Any], meta, config) -> str:
-    content_list = [
-        strip_margin("""\\\\
-#!/usr/bin/env cwl-runner
-
-""")
-    ]
-
-    config_key_value_pairs = []
+    job_inputs = {}
     for argument in config["arguments"]:
         config_key = (argument.get("info") or {}).get("config_key")
-        arg_type = argument["type"]
-        par_value = par[argument["clean_name"]]
-        if par_value and config_key:
-            config_key_value_pairs.append((config_key, arg_type, par_value))
+        value = par[argument["clean_name"]]
+        if not (value and config_key):
+            continue
+        if argument["type"] == "file":
+            if isinstance(value, list):
+                value = [{"class": "File", "location": file} for file in value]
+            else:
+                value = {"class": "File", "location": value}
+        job_inputs[config_key] = value
 
     if meta["cpus"]:
-        config_key_value_pairs.append(("Maximum_threads", "integer", meta["cpus"]))
+        job_inputs["Maximum_threads"] = int(meta["cpus"])
 
-    # print(config_key_value_pairs)
-
-    for config_key, arg_type, par_value in config_key_value_pairs:
-        if arg_type == "file":
-            str = strip_margin(f"""\\\\
-{config_key}:
-""")
-            if isinstance(par_value, list):
-                for file in par_value:
-                    str += strip_margin(f"""\\\\
- - class: File
-   location: "{file}"
-""")
-            else:
-                str += strip_margin(f"""\\\\
-   class: File
-   location: "{par_value}"
-""")
-            content_list.append(str)
-        else:
-            content_list.append(
-                strip_margin(f"""\\\\
-{config_key}: {par_value}
-""")
-            )
-
-    ## Write config to file
-    return "".join(content_list)
+    return yaml.safe_dump(job_inputs, sort_keys=False)
 
 
 def get_cwl_file(meta: dict[str, Any]) -> str:
     # create cwl file (if need be)
-    cwl_file = os.path.join(
-        meta["resources_dir"], "make_rhap_reference_2.2.1_nodocker.cwl"
-    )
+    cwl_file = os.path.join(meta["resources_dir"], "make_rhap_reference_4.0.cwl")
 
     return os.path.abspath(cwl_file)
 
@@ -3586,19 +3630,21 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             "--preserve-entire-environment",
             "--outdir",
             temp_dir,
+            # temporary directories and intermediate outputs of the pipeline steps
+            "--tmpdir-prefix",
+            os.path.join(temp_dir, ""),
             cwl_file,
             config_file,
         ]
 
-        env = dict(os.environ)
-        env["TMPDIR"] = temp_dir
-
         print("> " + " ".join(cmd), flush=True)
-        _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file), env=env)
+        _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file))
 
-        shutil.move(
-            os.path.join(temp_dir, "Rhap_reference.tar.gz"), par["reference_archive"]
+        archives = glob.glob(os.path.join(temp_dir, "*.tar.gz"))
+        assert len(archives) == 1, (
+            f"Expected exactly one reference archive, found: {archives}"
         )
+        shutil.move(archives[0], par["reference_archive"])
 
 
 if __name__ == "__main__":

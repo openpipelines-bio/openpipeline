@@ -3,7 +3,7 @@
 # reads_atac: ["ATACLibrary_S2_L001_R1_001.fastq.gz", "ATACLibrary_S2_L001_R2_001.fastq.gz", "ATACLibrary_S2_L001_I2_001.fastq.gz"]
 
 # References
-# reference_archive: "RhapRef_Human_WTA_2023-02.tar.gz"
+# reference_archive: "RhapRef_Human_WTA_2025-10.tar.gz"
 # targeted_reference: ["BD_Rhapsody_Immune_Response_Panel_Hs.fasta"]
 # abseq_reference: ["AbSeq_reference.fasta"]
 # supplemental_reference: ["supplemental_reference.fasta"]
@@ -22,6 +22,10 @@
 # Intronic Reads Settings
 # exclude_intronic_reads: false
 
+# Multiple Alignment Settings
+# multiple_alignment_handling: "Discard"
+# multiple_alignment_gene_selection: "Any Overlap"
+
 # Multiplex Settings
 # sample_tags_version: "human"
 # tag_names: ["4-mySample", "9-myOtherSample", "6-alsoThisSample"]
@@ -39,7 +43,7 @@ generate_bam: false
 
 # Advanced options
 # custom_star_params: "--alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed 2000000"
-# custom_bwa_mem2_params: "-k 16 -w 200 -r"
+# custom_bwa_mem2_params: "-k 16 -w 200 -r 1.5"
 
 # CWL-runner arguments
 parallel: true

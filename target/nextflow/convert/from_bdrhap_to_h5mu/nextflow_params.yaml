@@ -3,7 +3,8 @@
 
 # Inputs
 id: # please fill in - example: "my_id"
-input: # please fill in - example: "sample.h5mu"
+input: # please fill in - example: "sample.cellismo"
+# input_vdj_contigs: "sample_VDJ_Unfiltered_Contigs_AIRR.tsv.gz"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

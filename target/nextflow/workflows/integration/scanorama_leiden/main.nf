@@ -3481,7 +3481,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scanorama_leiden",
     "viash_version" : "0.9.7",
-    "git_commit" : "0ffb7f4241f64cc3d83094293461c8630ce51d6c",
+    "git_commit" : "bd233728404a51b1d07551c87ff4774152c479e9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

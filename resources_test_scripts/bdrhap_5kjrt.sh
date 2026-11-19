@@ -38,8 +38,18 @@ if [[ ! -d "$tar_dir" ]]; then
     rm "$tar_dir.tar"
 fi
 
+# the WTA subsets are created by mapping the reads to chr1, which requires the
+# reference genome. Skip these steps when the subsets already exist.
+wta_r1_file="$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
+wta_r2_file="$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
+if [[ -f "$wta_r1_file" && -f "$wta_r2_file" ]]; then
+  wta_subsets_exist=true
+else
+  wta_subsets_exist=false
+fi
+
 genome_dir="$raw_dir/temp_reference_gencodev41_chr1"
-if [[ ! -d "$genome_dir" ]]; then
+if [[ "$wta_subsets_exist" == false && ! -d "$genome_dir" ]]; then
   echo "> Untarring genome"
   mkdir -p "$genome_dir"
   tar -xvf "$genome_tar" -C "$genome_dir"
@@ -48,7 +58,7 @@ fi
 # process WTA fastq files
 # map to chr1, subsample chr1 reads 
 mapping_dir="$raw_dir/temp_mapping_chr_1"
-if [[ ! -f "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" ]]; then
+if [[ "$wta_subsets_exist" == false && ! -f "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" ]]; then
   echo "> Processing 12WTA_S1_L432_R[12]_001.fastq.gz"
   mkdir -p "$mapping_dir"
   # MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
@@ -106,12 +116,10 @@ if [[ ! -f "$abc_r2_file" ]]; then
   echo "> Processing `basename $abc_r2_file`"
   seqkit head -n 500000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$abc_r2_file"
 fi
-wta_r1_file="$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
 if [[ ! -f "$wta_r1_file" ]]; then
   echo "> Processing `basename $wta_r1_file`"
   gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$wta_r1_file"
 fi
-wta_r2_file="$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
 if [[ ! -f "$wta_r2_file" ]]; then
   echo "> Processing `basename $wta_r2_file`"
   gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$wta_r2_file"
@@ -124,16 +132,18 @@ fi
 
 genome_tar="$reference_dir/reference_bd_rhapsody.tar.gz"
 
+# remove previously generated output, so no outdated files are left behind
+rm -rf "$OUT/processed"
+
 nextflow run . \
   -main-script target/nextflow/workflows/ingestion/bd_rhapsody/main.nf  \
   -resume \
   -profile docker,mount_temp \
-  -c src/workflows/utils/labels_ci.config \
-  -c src/workflows/utils/errorstrat_ignore.config \
+  -c src/workflows/utils/labels.config \
   --reads "$wta_r1_file;$wta_r2_file;$abc_r1_file;$abc_r2_file;$smk_r1_file;$smk_r2_file" \
   --reference_archive "$genome_tar" \
   --abseq_reference "$fasta_file" \
-  --sample_tags_version "hs" \
+  --sample_tags_version "human" \
   --tag_names "1-Jurkat;2-Ramos;3-THP1" \
   --output_raw "output_raw" \
   --output "output.h5mu" \

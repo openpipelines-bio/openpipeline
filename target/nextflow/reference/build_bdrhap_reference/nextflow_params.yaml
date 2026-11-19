@@ -2,6 +2,7 @@
 genome_fasta: # please fill in - example: ["genome_sequence.fa.gz"]
 gtf: # please fill in - example: ["transcriptome_annotation.gtf.gz"]
 # extra_sequences: ["extra_sequence_1.fa.gz", "extra_sequence_2.fa.gz"]
+# transcription_factor_motif_pfm: ["JASPAR2024_CORE_vertebrates_non-redundant_pfms_jaspar.txt"]
 
 # Outputs
 # reference_archive: "$id.$key.reference_archive.gz"
@@ -9,8 +10,14 @@ gtf: # please fill in - example: ["transcriptome_annotation.gtf.gz"]
 # Arguments
 mitochondrial_contigs: ["chrM", "chrMT", "M", "MT"]
 filtering_off: false
+disable_readthrough_filtering: false
+filter_pars: false
+combine_same_gene_names: false
 wta_only_index: false
-# extra_star_params: "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+disable_fasta_validation: false
+repair_gtf: false
+gtf_validation_complete_mode: false
+# extra_star_params: "--limitGenomeGenerateRAM 48000000000 --genomeSAindexNbases 11"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

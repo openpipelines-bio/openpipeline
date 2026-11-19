@@ -1,5 +1,7 @@
 import subprocess
 from os import path
+
+import awkward as ak
 import mudata as mu
 import numpy as np
 
@@ -10,7 +12,7 @@ meta = {
 }
 ## VIASH END
 
-input = meta["resources_dir"] + "/sample.h5mu"
+input = meta["resources_dir"] + "/sample.cellismo"
 output = "output1.h5mu"
 
 cmd_pars = [
@@ -36,24 +38,37 @@ rna_adata = data.mod["rna"]
 prot_adata = data.mod["prot"]
 
 # check whether correct feature types are detected
-assert np.array_equal(rna_adata.var["feature_type"].unique(), ["Gene Expression"]), (
+assert np.array_equal(rna_adata.var["feature_types"].unique(), ["Gene Expression"]), (
     "RNA expression should only contain Gene Expression vars."
+)
+assert rna_adata.var_names[0].startswith("ENSG"), (
+    "Gene ids should be used as var index."
+)
+assert {"gene_symbol", "feature_types", "reference_file"} <= set(rna_adata.var), (
+    f"Unexpected .var columns: {list(rna_adata.var)}"
+)
+assert not {"gene_name", "gene_id", "gene_ids", "feature_type"} & set(rna_adata.var), (
+    f"Unexpected .var columns: {list(rna_adata.var)}"
+)
+assert {"X_tsne_bd_rhapsody", "X_umap_bd_rhapsody"} == set(rna_adata.obsm), (
+    f"Unexpected .obsm keys: {list(rna_adata.obsm)}"
 )
 assert np.array_equal(
     rna_adata.var["reference_file"].unique(), ["reference_bd_rhapsody.tar.gz"]
 ), "Wrong reference file detected for Gene Expression vars."
-assert "ADAMTSL4" in rna_adata.var_names, 'RNA modality should contain gene "ADAMTS4".'
+assert "ADAMTSL4" in rna_adata.var["gene_symbol"].values, (
+    'RNA modality should contain gene "ADAMTSL4".'
+)
 assert np.array_equal(
     rna_adata.obs["library_id"].unique(), ["12ABC & 12SMK & 12WTA"]
 ), "Gene Expression .obs library_id should equal '12ABC & 12WTA."
-assert "sample_tag" in rna_adata.obs.keys(), (
-    "RNA modality should contain column 'sample_id'."
-)
-assert "sample_id" in rna_adata.obs.keys(), (
+assert "sample_tag" in rna_adata.obs, "RNA modality should contain column 'sample_tag'."
+assert "sample_name" in rna_adata.obs, (
     "RNA modality should contain column 'sample_name'."
 )
+assert set(rna_adata.obs["sample_name"].cat.categories) >= {"Jurkat", "Ramos", "THP1"}
 
-assert np.array_equal(prot_adata.var["feature_type"].unique(), ["Antibody Capture"]), (
+assert np.array_equal(prot_adata.var["feature_types"].unique(), ["Antibody Capture"]), (
     "RNA expression should only contain Antibody Capture vars."
 )
 assert np.array_equal(
@@ -65,17 +80,98 @@ assert "CD279:EH12-1|PDCD1|AHS0014|pAbO" in prot_adata.var_names, (
 assert np.array_equal(
     prot_adata.obs["library_id"].unique(), ["12ABC & 12SMK & 12WTA"]
 ), "Antibody Capture .obs library_id should equal '12ABC & 12WTA."
-assert "sample_tag" in prot_adata.obs.keys(), (
-    "Protein modality should contain column 'sample_id'."
+assert "sample_tag" in prot_adata.obs, (
+    "Protein modality should contain column 'sample_tag'."
 )
-assert "sample_id" in prot_adata.obs.keys(), (
+assert "sample_name" in prot_adata.obs, (
     "Protein modality should contain column 'sample_name'."
 )
 
 # check whether gene was found
-assert "PDE4DIP" in data.var_names, 'Output should contain gex column "PDE4DIP".'
+assert "PDE4DIP" in data.mod["rna"].var["gene_symbol"].values, (
+    'Output should contain gex column "PDE4DIP".'
+)
 assert "CD279:EH12-1|PDCD1|AHS0014|pAbO" in data.var_names, (
     'Output should contain abc column "CD279:EH12-1|PDCD1|AHS0014|pAbO".'
+)
+
+print(">> Run with VDJ data", flush=True)
+vdj_input = meta["resources_dir"] + "/bdrhap_vdj/sample.cellismo"
+vdj_contigs = (
+    meta["resources_dir"] + "/bdrhap_vdj/sample_VDJ_Unfiltered_Contigs_AIRR.tsv.gz"
+)
+vdj_output = "output_vdj.h5mu"
+
+subprocess.check_output(
+    [
+        meta["executable"],
+        "--input",
+        vdj_input,
+        "--input_vdj_contigs",
+        vdj_contigs,
+        "--output",
+        vdj_output,
+        "--id",
+        "foo",
+    ]
+)
+assert path.exists(vdj_output), "No output was created."
+
+vdj_data = mu.read_h5mu(vdj_output)
+assert set(vdj_data.mod.keys()) == {"rna", "vdj_t", "vdj_t_gd", "vdj_b"}, (
+    f"Unexpected modalities: {list(vdj_data.mod.keys())}"
+)
+
+rna_adata = vdj_data.mod["rna"]
+assert np.array_equal(
+    rna_adata.var["reference_file"].unique(),
+    ["BD_Rhapsody_Immune_Response_Panel_Hs.fasta"],
+), "Targeted reference file should be used as reference file for targeted runs."
+
+for modality in ["vdj_t", "vdj_t_gd", "vdj_b"]:
+    vdj_adata = vdj_data.mod[modality]
+    assert "airr" in vdj_adata.obsm, f"{modality} should contain .obsm['airr']."
+    assert vdj_adata.n_obs > 0, f"{modality} should contain cells."
+    # all contigs of all cell labels are included, not only those of putative cells
+    putative = vdj_adata.obs["putative_cell"]
+    assert putative.any() and not putative.all(), (
+        f"{modality} should contain both putative and non-putative cells."
+    )
+    # putative cells correspond with the cells in the rna modality
+    assert set(vdj_adata.obs_names[putative]) <= set(rna_adata.obs_names), (
+        f"Putative cells of {modality} should be present in the rna modality."
+    )
+    assert (vdj_adata.obs["run_id"] == "foo").all()
+
+loci = {
+    "vdj_t": {"TRA", "TRB"},
+    "vdj_t_gd": {"TRG", "TRD"},
+    "vdj_b": {"IGH", "IGK", "IGL"},
+}
+for modality, expected_loci in loci.items():
+    found_loci = set(ak.flatten(vdj_data.mod[modality].obsm["airr"]["locus"]))
+    assert found_loci <= expected_loci, (
+        f"{modality} contains unexpected loci: {found_loci - expected_loci}"
+    )
+
+print(">> Check that VDJ data without contigs file fails", flush=True)
+result = subprocess.run(
+    [
+        meta["executable"],
+        "--input",
+        vdj_input,
+        "--output",
+        "output_vdj_fail.h5mu",
+        "--id",
+        "foo",
+    ],
+    capture_output=True,
+    text=True,
+    check=False,
+)
+assert result.returncode != 0, "Conversion should fail without --input_vdj_contigs."
+assert "--input_vdj_contigs" in result.stderr, (
+    "Error message should mention --input_vdj_contigs."
 )
 
 print("> Test successful", flush=True)
