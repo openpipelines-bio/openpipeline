@@ -156,7 +156,7 @@
 
 ## BUG FIXES
 
-* `genetic_demux/souporcell`: the number of threads was always set to 1 instead of the number of CPUs allocated to the component (PR #XXXX).
+* `genetic_demux/souporcell`: the number of threads was always set to 1 instead of the number of CPUs allocated to the component (PR #1305).
 
 * `process_10xh5/filter_10xh5`: no longer drop feature metadata from the output. Fields other than `feature_type`, `genome`, `id` and `name` (e.g. `pattern`, `read` and `sequence`) are now subset and kept, as is `target_sets` in probe-based matrices (e.g. Cell Ranger Flex), with its feature indices updated to match the kept features (PR #1286).
 
