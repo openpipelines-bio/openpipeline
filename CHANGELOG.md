@@ -149,7 +149,7 @@
 
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
-* `genetic_demux/bcftools`: bumped `bcftools` from `1.16` to `1.25`.
+* `genetic_demux/bcftools`: bumped `bcftools` from `1.16` to `1.25` (PR 1292). 
 
 ## BUG FIXES
 
