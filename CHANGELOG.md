@@ -115,6 +115,8 @@
 
 * `workflows/annotation/azimuth`: implemented an Azimuth annotation workflow that accepts and writes either H5MU or Seurat file formats (PR #1251).
 
+* `integrate/harmonypy2`: added a Harmony integration component based on harmonypy 2.1.0, which follows R harmony2. In addition to the arguments of `integrate/harmonypy`, it exposes the other Harmony parameters (e.g. `--lambda`, `--sigma`, `--nclust`, `--max_iter_harmony`, `--random_state`). Note that the defaults follow R harmony2 and differ from `integrate/harmonypy` (e.g. lambda is estimated automatically) and that missing values in the covariates are not allowed (PR #1255).
+
 ## MINOR CHANGES
 
 * `process_10xh5/filter_10xh5`: reimplement the component in Python (using `h5py` and `scipy`) instead of R, removing the dependency on `reticulate` (PR #1286).
