@@ -1,12 +1,25 @@
-# Arguments
+# Inputs
 input: # please fill in - example: "input.h5mu"
-# output: "$id.$key.output.h5mu"
 modality: "rna"
-# obs_keys: ["foo"]
+obs_keys: # please fill in - example: ["foo"]
 # input_layer: "X_normalized"
-# output_layer: "X_regressed"
-# output_compression: "gzip"
+# var_input: "filter_with_hvg"
+
+# PCA arguments
+num_components: 50
+# scale_max_value: 123.0
+overwrite: false
+
+# Outputs
+# output: "output.h5mu"
+output_layer: "regressed"
+# output_layer_compression: 123
+# obsm_pca_output: "regressed_pca"
+varm_pca_output: "regressed_pca_loadings"
+uns_pca_output: "regressed_pca_variance"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

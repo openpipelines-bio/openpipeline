@@ -449,26 +449,20 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM rocker/r2u:24.04
 ENTRYPOINT []
-ENV PIP_BREAK_SYSTEM_PACKAGES=1
-ENV RETICULATE_PYTHON=/usr/bin/python
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev python3 python3-pip python3-dev python-is-python3 && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev && \
   rm -rf /var/lib/apt/lists/*
 
 RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
-  Rscript -e 'options(warn = 2); remotes::install_cran(c("anndata", "reticulate"), repos = "https://cran.rstudio.com")'
-
-RUN --mount=type=secret,id=GITHUB_TOKEN,env=GTIHUB_TOKEN
-RUN Rscript -e 'options(warn = 2); remotes::install_github(c("bnprks/BPCells/r"), repos = "https://cran.rstudio.com")'
-RUN pip install --user --upgrade pip && \
-  pip install --user --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" && \
-  python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
+  Rscript -e 'options(warn = 2); if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")' && \
+  Rscript -e 'options(warn = 2); if (!requireNamespace("rhdf5", quietly = TRUE)) BiocManager::install("rhdf5")' && \
+  Rscript -e 'options(warn = 2); remotes::install_github(c("bnprks/BPCells/r", "scverse/anndataR@v1.2.2"), repos = "https://cran.rstudio.com")'
 
 LABEL org.opencontainers.image.authors="Dorien Roosen, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform bpcells_regress_out"
-LABEL org.opencontainers.image.created="2026-11-18T13:03:46Z"
+LABEL org.opencontainers.image.created="2026-11-19T09:05:25Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9acfb502da666814dd4346e6559bec12c22a4969"
+LABEL org.opencontainers.image.revision="0ffb7f4241f64cc3d83094293461c8630ce51d6c"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -591,16 +585,11 @@ function ViashHelp {
   echo "Regress out the effects of confounding variables using a linear least squares"
   echo "regression model with BPCells."
   echo ""
-  echo "Arguments:"
+  echo "Inputs:"
   echo "    --input"
   echo "        type: file, required parameter, file must exist"
   echo "        example: input.h5mu"
   echo "        Input h5mu file"
-  echo ""
-  echo "    -o, --output"
-  echo "        type: file, required parameter, output, file must exist"
-  echo "        example: output.h5mu"
-  echo "        Output h5mu file."
   echo ""
   echo "    --modality"
   echo "        type: string"
@@ -608,7 +597,7 @@ function ViashHelp {
   echo "        The modality to run this component on."
   echo ""
   echo "    --obs_keys"
-  echo "        type: string, multiple values allowed"
+  echo "        type: string, required parameter, multiple values allowed"
   echo "        The .obs keys to regress on."
   echo ""
   echo "    --input_layer"
@@ -617,18 +606,74 @@ function ViashHelp {
   echo "        The layer of the adata object to regress on."
   echo "        If not provided, the X attribute of the adata object will be used."
   echo ""
+  echo "    --var_input"
+  echo "        type: string"
+  echo "        example: filter_with_hvg"
+  echo "        Boolean column in .var used to select which genes to regress out (e.g."
+  echo "        highly variable genes)."
+  echo "        The output is stored as a sparse matrix in which the non-selected genes"
+  echo "        are set to 0."
+  echo "        If not provided, all genes are used."
+  echo ""
+  echo "PCA arguments:"
+  echo "    --num_components"
+  echo "        type: integer"
+  echo "        default: 50"
+  echo "        min: 1"
+  echo "        Number of principal components to compute."
+  echo ""
+  echo "    --scale_max_value"
+  echo "        type: double"
+  echo "        min: 0.0"
+  echo "        Clip the scaled data to the interval [-scale_max_value, scale_max_value]"
+  echo "        before running the PCA. Does not clip by default."
+  echo ""
+  echo "    --overwrite"
+  echo "        type: boolean_true"
+  echo "        Allow overwriting the .obsm, .varm and .uns PCA slots."
+  echo ""
+  echo "Outputs:"
+  echo "    -o, --output"
+  echo "        type: file, required parameter, output, file must exist"
+  echo "        default: output.h5mu"
+  echo "        Output h5mu file."
+  echo ""
   echo "    --output_layer"
   echo "        type: string"
-  echo "        example: X_regressed"
-  echo "        The layer of the adata object containing the regressed count data."
-  echo "        If not provided, the X attribute of the adata object will be used."
+  echo "        default: regressed"
+  echo "        The new layer of the adata object in which the regressed data is stored."
+  echo "        Pass an empty value (or null from Nextflow) to not store the regressed"
+  echo "        data, e.g. when only the PCA is needed."
+  echo "        At least one of --output_layer or --obsm_pca_output must be provided."
   echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        example: gzip"
-  echo "        choices: [ gzip, lzf ]"
-  echo "        Compression format to use for the output AnnData and/or Mudata H5 files."
+  echo "    --output_layer_compression"
+  echo "        type: integer"
+  echo "        min: 1"
+  echo "        max: 9"
+  echo "        GZIP compression level to use for the regressed output layer."
   echo "        By default no compression is applied."
+  echo ""
+  echo "    --obsm_pca_output"
+  echo "        type: string"
+  echo "        example: regressed_pca"
+  echo "        If provided, the regressed data is scaled and a PCA is computed with"
+  echo "        BPCells,"
+  echo "        without loading the regressed data into memory. The resulting embedding"
+  echo "        is stored in this .obsm slot."
+  echo "        Scaling centers each gene and divides it by its standard deviation, as"
+  echo "        in transform/scale."
+  echo "        At least one of --output_layer or --obsm_pca_output must be provided."
+  echo ""
+  echo "    --varm_pca_output"
+  echo "        type: string"
+  echo "        default: regressed_pca_loadings"
+  echo "        In which .varm slot to store the PCA loadings. Genes not selected by"
+  echo "        --var_input get zero loadings."
+  echo ""
+  echo "    --uns_pca_output"
+  echo "        type: string"
+  echo "        default: regressed_pca_variance"
+  echo "        In which .uns slot to store the PCA variance and variance ratio."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -691,23 +736,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output)
-            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output=*)
-            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        -o)
-            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'-o\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
         --modality)
             [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_MODALITY="$2"
@@ -747,6 +775,61 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --var_input)
+            [ -n "$VIASH_PAR_VAR_INPUT" ] && ViashError Bad arguments for option \'--var_input\': \'$VIASH_PAR_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_input. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --var_input=*)
+            [ -n "$VIASH_PAR_VAR_INPUT" ] && ViashError Bad arguments for option \'--var_input=*\': \'$VIASH_PAR_VAR_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_INPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --num_components)
+            [ -n "$VIASH_PAR_NUM_COMPONENTS" ] && ViashError Bad arguments for option \'--num_components\': \'$VIASH_PAR_NUM_COMPONENTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_NUM_COMPONENTS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --num_components. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --num_components=*)
+            [ -n "$VIASH_PAR_NUM_COMPONENTS" ] && ViashError Bad arguments for option \'--num_components=*\': \'$VIASH_PAR_NUM_COMPONENTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_NUM_COMPONENTS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --scale_max_value)
+            [ -n "$VIASH_PAR_SCALE_MAX_VALUE" ] && ViashError Bad arguments for option \'--scale_max_value\': \'$VIASH_PAR_SCALE_MAX_VALUE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SCALE_MAX_VALUE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --scale_max_value. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --scale_max_value=*)
+            [ -n "$VIASH_PAR_SCALE_MAX_VALUE" ] && ViashError Bad arguments for option \'--scale_max_value=*\': \'$VIASH_PAR_SCALE_MAX_VALUE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SCALE_MAX_VALUE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --overwrite)
+            [ -n "$VIASH_PAR_OVERWRITE" ] && ViashError Bad arguments for option \'--overwrite\': \'$VIASH_PAR_OVERWRITE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OVERWRITE=true
+            shift 1
+            ;;
+        --output)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output=*)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        -o)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'-o\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
         --output_layer)
             [ -n "$VIASH_PAR_OUTPUT_LAYER" ] && ViashError Bad arguments for option \'--output_layer\': \'$VIASH_PAR_OUTPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_LAYER="$2"
@@ -758,15 +841,48 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+        --output_layer_compression)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER_COMPRESSION" ] && ViashError Bad arguments for option \'--output_layer_compression\': \'$VIASH_PAR_OUTPUT_LAYER_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_layer_compression. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
+        --output_layer_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER_COMPRESSION" ] && ViashError Bad arguments for option \'--output_layer_compression=*\': \'$VIASH_PAR_OUTPUT_LAYER_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER_COMPRESSION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --obsm_pca_output)
+            [ -n "$VIASH_PAR_OBSM_PCA_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_pca_output\': \'$VIASH_PAR_OBSM_PCA_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_PCA_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_pca_output. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obsm_pca_output=*)
+            [ -n "$VIASH_PAR_OBSM_PCA_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_pca_output=*\': \'$VIASH_PAR_OBSM_PCA_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_PCA_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --varm_pca_output)
+            [ -n "$VIASH_PAR_VARM_PCA_OUTPUT" ] && ViashError Bad arguments for option \'--varm_pca_output\': \'$VIASH_PAR_VARM_PCA_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VARM_PCA_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --varm_pca_output. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --varm_pca_output=*)
+            [ -n "$VIASH_PAR_VARM_PCA_OUTPUT" ] && ViashError Bad arguments for option \'--varm_pca_output=*\': \'$VIASH_PAR_VARM_PCA_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VARM_PCA_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --uns_pca_output)
+            [ -n "$VIASH_PAR_UNS_PCA_OUTPUT" ] && ViashError Bad arguments for option \'--uns_pca_output\': \'$VIASH_PAR_UNS_PCA_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_PCA_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --uns_pca_output. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --uns_pca_output=*)
+            [ -n "$VIASH_PAR_UNS_PCA_OUTPUT" ] && ViashError Bad arguments for option \'--uns_pca_output=*\': \'$VIASH_PAR_UNS_PCA_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_PCA_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -943,6 +1059,10 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+if [ -z ${VIASH_PAR_OBS_KEYS+x} ]; then
+  ViashError '--obs_keys' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -976,6 +1096,21 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then
+  VIASH_PAR_NUM_COMPONENTS="50"
+fi
+if [ -z ${VIASH_PAR_OVERWRITE+x} ]; then
+  VIASH_PAR_OVERWRITE="false"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then
+  VIASH_PAR_OUTPUT_LAYER="regressed"
+fi
+if [ -z ${VIASH_PAR_VARM_PCA_OUTPUT+x} ]; then
+  VIASH_PAR_VARM_PCA_OUTPUT="regressed_pca_loadings"
+fi
+if [ -z ${VIASH_PAR_UNS_PCA_OUTPUT+x} ]; then
+  VIASH_PAR_UNS_PCA_OUTPUT="regressed_pca_variance"
+fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -984,6 +1119,55 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_NUM_COMPONENTS" ]]; then
+  if ! [[ "$VIASH_PAR_NUM_COMPONENTS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--num_components' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_NUM_COMPONENTS -lt 1 ]]; then
+    ViashError '--num_components' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_SCALE_MAX_VALUE" ]]; then
+  if ! [[ "$VIASH_PAR_SCALE_MAX_VALUE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--scale_max_value' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if command -v bc &> /dev/null; then
+    if ! [[ `echo $VIASH_PAR_SCALE_MAX_VALUE '>=' 0.0 | bc` -eq 1 ]]; then
+      ViashError '--scale_max_value' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  elif command -v awk &> /dev/null; then
+    if ! [[ `awk -v n1=$VIASH_PAR_SCALE_MAX_VALUE -v n2=0.0 'BEGIN { print (n1 >= n2) ? "1" : "0" }'` -eq 1 ]]; then
+      ViashError '--scale_max_value' has be more than or equal to 0.0. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  else
+    ViashWarning '--scale_max_value' specifies a minimum value but the value was not verified as neither \'bc\' or \`awk\` are present on the system.
+  fi
+fi
+if [[ -n "$VIASH_PAR_OVERWRITE" ]]; then
+  if ! [[ "$VIASH_PAR_OVERWRITE" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--overwrite' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_OUTPUT_LAYER_COMPRESSION" ]]; then
+  if ! [[ "$VIASH_PAR_OUTPUT_LAYER_COMPRESSION" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--output_layer_compression' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_OUTPUT_LAYER_COMPRESSION -lt 1 ]]; then
+    ViashError '--output_layer_compression' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_OUTPUT_LAYER_COMPRESSION -gt 9 ]]; then
+    ViashError '--output_layer_compression' has be less than or equal to 9. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1055,19 +1239,6 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
     ViashError 'memory_pib' has to be a long. Use "--help" to get more information on the parameters.
     exit 1
   fi
-fi
-
-# check whether value is belongs to a set of choices
-if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
-  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
-  IFS=';'
-  set -f
-  if ! [[ ";${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]};" =~ ";$VIASH_PAR_OUTPUT_COMPRESSION;" ]]; then
-    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-  set +f
-  unset IFS
 fi
 
 # create parent directories of output files, if so desired
@@ -1157,9 +1328,24 @@ cat > "\$tempscript" << 'VIASHMAIN'
 cat("Loading libraries\\n")
 library(glue)
 library(BPCells)
-requireNamespace("anndata", quietly = TRUE)
-requireNamespace("reticulate", quietly = TRUE)
-mudata <- reticulate::import("mudata")
+requireNamespace("anndataR", quietly = TRUE)
+
+# These anndataR functions are not exported
+open_h5 <- function(path, readonly) {
+  flags <- if (readonly) "H5F_ACC_RDONLY" else "H5F_ACC_RDWR"
+  # anndataR expects a handle in the non-native (row-major) orientation
+  rhdf5::H5Fopen(path, flags = flags, native = FALSE)
+}
+h5_exists <- function(h5, name) {
+  # Also FALSE when a parent group is missing
+  anndataR:::hdf5_path_exists(h5, name)
+}
+read_elem <- function(h5, name) {
+  anndataR:::read_h5ad_element(h5, name, stop_on_error = TRUE)
+}
+write_elem <- function(h5, name, value) {
+  anndataR:::write_h5ad_element(value, h5, name, stop_on_error = TRUE)
+}
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -1168,12 +1354,19 @@ mudata <- reticulate::import("mudata")
 
 par <- list(
   "input" = $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_INPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
-  "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
   "modality" = $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_MODALITY" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
   "obs_keys" = $( if [ ! -z ${VIASH_PAR_OBS_KEYS+x} ]; then echo -n "strsplit('"; echo -n "$VIASH_PAR_OBS_KEYS" | sed "s#['\\]#\\\\&#g"; echo "', split = ';')[[1]]"; else echo NULL; fi ),
   "input_layer" = $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_INPUT_LAYER" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "var_input" = $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_VAR_INPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "num_components" = $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo -n "as.integer('"; echo -n "$VIASH_PAR_NUM_COMPONENTS" | sed "s#['\\]#\\\\&#g"; echo "')"; else echo NULL; fi ),
+  "scale_max_value" = $( if [ ! -z ${VIASH_PAR_SCALE_MAX_VALUE+x} ]; then echo -n "as.numeric('"; echo -n "$VIASH_PAR_SCALE_MAX_VALUE" | sed "s#['\\]#\\\\&#g"; echo "')"; else echo NULL; fi ),
+  "overwrite" = $( if [ ! -z ${VIASH_PAR_OVERWRITE+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_OVERWRITE" | sed "s#['\\]#\\\\&#g"; echo "'))"; else echo NULL; fi ),
+  "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
   "output_layer" = $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_LAYER" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
-  "output_compression" = $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_COMPRESSION" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi )
+  "output_layer_compression" = $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER_COMPRESSION+x} ]; then echo -n "as.integer('"; echo -n "$VIASH_PAR_OUTPUT_LAYER_COMPRESSION" | sed "s#['\\]#\\\\&#g"; echo "')"; else echo NULL; fi ),
+  "obsm_pca_output" = $( if [ ! -z ${VIASH_PAR_OBSM_PCA_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OBSM_PCA_OUTPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "varm_pca_output" = $( if [ ! -z ${VIASH_PAR_VARM_PCA_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_VARM_PCA_OUTPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "uns_pca_output" = $( if [ ! -z ${VIASH_PAR_UNS_PCA_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_UNS_PCA_OUTPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi )
 )
 meta <- list(
   "name" = $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo -n "'"; echo -n "$VIASH_META_NAME" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
@@ -1206,55 +1399,223 @@ rm(.viash_orig_warn)
 
 ## VIASH END
 
-# Read the h5mu file and make var names unique
-mdata <- mudata\$read_h5mu(par\$input)
+# An empty --output_layer (e.g. \`--output_layer ""\` on the command line)
+# disables storing the regressed data, the same as passing null from Nextflow
+if (identical(par\$output_layer, "")) {
+  par\$output_layer <- NULL
+}
+run_pca <- !is.null(par\$obsm_pca_output)
+if (is.null(par\$output_layer) && !run_pca) {
+  stop("At least one of --output_layer or --obsm_pca_output must be provided.",
+    call. = FALSE
+  )
+}
+
+# Start from a copy of the input, the regressed data is written directly to disk
+file.copy(par\$input, par\$output, overwrite = TRUE)
 
 # Regress out
-if (!is.null(par\$obs_keys) && length(par\$obs_keys) > 0) {
-  cat("Regress out variables ", par\$obs_keys, " on modality ",
-    par\$modality, "\\n",
+cat("Regress out variables ", par\$obs_keys, " on modality ",
+  par\$modality, "\\n",
+  sep = ""
+)
+
+mod_path <- file.path("mod", par\$modality)
+
+# Fetch the input layer
+input_layer <-
+  if (is.null(par\$input_layer)) {
+    cat("Using .X as input layer\\n")
+    file.path(mod_path, "X")
+  } else {
+    cat("Using .layers ", par\$input_layer, " as input layer\\n", sep = "")
+    file.path(mod_path, "layers", par\$input_layer)
+  }
+
+output_layer <- NULL
+if (!is.null(par\$output_layer)) {
+  cat("Using .layers ", par\$output_layer, " as output layer\\n", sep = "")
+  output_layer <- file.path(mod_path, "layers", par\$output_layer)
+}
+
+# Read the input layer lazily from disk (genes x cells)
+imat <- open_matrix_anndata_hdf5(par\$input, group = input_layer)
+dimnames(imat) <- NULL
+cat("Input matrix: ", ncol(imat), " cells x ", nrow(imat), " genes\\n",
+  sep = ""
+)
+
+h5 <- open_h5(par\$input, readonly = TRUE)
+# Only read obs and var from the modality
+obs <- read_elem(h5, file.path(mod_path, "obs"))
+var <- read_elem(h5, file.path(mod_path, "var"))
+# Make sure output layer does not exist in the data yet
+output_exists <- !is.null(output_layer) && h5_exists(h5, output_layer)
+# PCA slots can only be replaced when --overwrite is set
+pca_slots <- character(0)
+if (run_pca) {
+  pca_slots <- c(
+    file.path(mod_path, "obsm", par\$obsm_pca_output),
+    file.path(mod_path, "varm", par\$varm_pca_output),
+    file.path(mod_path, "uns", par\$uns_pca_output)
+  )
+}
+existing_pca_slots <- Filter(function(slot) h5_exists(h5, slot), pca_slots)
+rhdf5::H5Fclose(h5)
+if (output_exists) {
+  stop("Output layer ", par\$output_layer, " already exists in modality ",
+    par\$modality, ", please choose a new layer name.",
+    call. = FALSE
+  )
+}
+if (length(existing_pca_slots) > 0 && !isTRUE(par\$overwrite)) {
+  stop("PCA slot(s) ", paste(existing_pca_slots, collapse = ", "),
+    " already exist, use --overwrite to replace them.",
+    call. = FALSE
+  )
+}
+
+# select and sanitize obs names to for regression formula
+obs <- as.data.frame(obs[, par\$obs_keys, drop = FALSE])
+colnames(obs) <- make.names(colnames(obs), unique = TRUE)
+
+# subset to HVG if requested
+mask_var <- NULL
+if (!is.null(par\$var_input)) {
+  mask_var <- as.logical(var[[par\$var_input]])
+  cat("Regressing out on ", sum(mask_var), " genes selected by .var column ",
+    par\$var_input, "\\n",
+    sep = ""
+  )
+  imat <- imat[mask_var, ]
+} else {
+  cat("No .var column provided, regressing out on all ", nrow(imat),
+    " genes\\n",
+    sep = ""
+  )
+}
+
+# The PCA reads the input many times, store it in the fast BPCells format
+# instead of decompressing the h5 layer on every pass
+if (run_pca) {
+  cat("Storing input matrix in a temporary BPCells directory\\n")
+  imat <- write_matrix_dir(
+    imat, tempfile("bpcells_input_", tmpdir = meta\$temp_dir)
+  )
+}
+
+# Regress out using BPCells
+cat("Setting up regression with covariates: ",
+  paste(colnames(obs), collapse = ", "), "\\n",
+  sep = ""
+)
+regressed_data <- regress_out(imat, obs, prediction_axis = "row")
+
+if (!is.null(output_layer)) {
+  output_data <- regressed_data
+  # Non-selected genes are set to 0
+  if (!is.null(mask_var)) {
+    cat("Setting ", sum(!mask_var), " non-selected genes to 0\\n", sep = "")
+    zeros <- as(
+      Matrix::sparseMatrix(
+        i = integer(0), j = integer(0), x = numeric(0),
+        dims = c(sum(!mask_var), ncol(output_data))
+      ),
+      "IterableMatrix"
+    )
+    output_data <- rbind(output_data, zeros)
+    output_data <- output_data[
+      order(c(which(mask_var), which(!mask_var))),
+    ]
+  }
+
+  # BPCells only supports gzip compression
+  gzip_level <-
+    if (is.null(par\$output_layer_compression)) {
+      0L
+    } else {
+      par\$output_layer_compression
+    }
+  cat("Writing regressed data to ", output_layer, " with gzip level ",
+    gzip_level, "\\n",
     sep = ""
   )
 
-  # Fetch modality AnnData and convert to an iterable matrix
-  adata <- mdata\$mod[[par\$modality]]
-
-  # Fetch the input layer
-  mat <-
-    if (is.null(par\$input_layer)) {
-      cat("Using .X as input layer\\n")
-      adata\$X
-    } else {
-      cat("Using .layers ", par\$input_layer, " as input layer\\n", sep = "")
-      adata\$layers[[par\$input_layer]]
-    }
-
-  imat <- as(as(mat, "CsparseMatrix"), "IterableMatrix")
-  dimnames(imat) <- NULL
-
-  # obs_keys is not NULL and not empty
-  latent_data <- as.data.frame(adata\$obs[, par\$obs_keys])
-
-  # Regress out using BPCells
-  regressed_data <- regress_out(imat, latent_data, prediction_axis = "col")
-
-  # Convert iterable matrix back to C sparse matrix
-  rmat <- as(regressed_data, "dgCMatrix")
-
-  # Assign regressed out data back to AnnData object
-  if (is.null(par\$output_layer)) {
-    cat("Using .X as output layer\\n")
-    adata\$X <- rmat
-  } else {
-    cat("Using .layers ", par\$output_layer, " as output layer\\n", sep = "")
-    adata\$layers[[par\$output_layer]] <- rmat
-  }
-} else {
-  cat("No obs_keys provided, skipping regression\\n")
+  # Regressed values are computed while they are written to disk
+  write_matrix_anndata_hdf5(
+    output_data, par\$output,
+    group = output_layer, gzip_level = gzip_level
+  )
 }
 
-# Write to output h5mu file
-mdata\$write(par\$output, compression = par\$output_compression)
+if (run_pca) {
+  num_components <- par\$num_components
+
+  # Scale each gene to unit variance, genes without variance are only centered
+  cat("Scaling regressed data\\n")
+  regressed_stats <- matrix_stats(regressed_data, row_stats = "variance")
+  gene_mean <- regressed_stats\$row_stats["mean", ]
+  gene_variance <- regressed_stats\$row_stats["variance", ]
+  gene_sd <- sqrt(gene_variance)
+  gene_sd[gene_sd == 0] <- 1
+  scaled_data <- (regressed_data - gene_mean) / gene_sd
+  # Every scaled gene with variance has unit variance
+  total_variance <- sum(gene_variance > 0)
+
+  if (!is.null(par\$scale_max_value)) {
+    max_value <- par\$scale_max_value
+    cat("Clipping scaled data to [-", max_value, ", ", max_value, "]\\n",
+      sep = ""
+    )
+    # BPCells only clips from above, the lower bound is applied to the
+    # negated values
+    scaled_data <- min_scalar(scaled_data, max_value)
+    scaled_data <- min_scalar(scaled_data * -1, max_value) * -1
+
+    # Clipping shifts the gene means and variances, so center again before
+    # the PCA (as scanpy does)
+    scaled_stats <- matrix_stats(scaled_data, row_stats = "variance")
+    scaled_data <- scaled_data - scaled_stats\$row_stats["mean", ]
+    total_variance <- sum(scaled_stats\$row_stats["variance", ])
+  }
+
+  # Matrix products with the lazy matrix are computed while streaming from disk
+  cat("Computing ", num_components, " principal components\\n", sep = "")
+  pca <- svds(scaled_data, k = num_components)
+
+  embedding <- sweep(pca\$v, 2, pca\$d, "*")
+  loadings <- pca\$u
+  # Non-selected genes get zero loadings
+  if (!is.null(mask_var)) {
+    loadings <- matrix(0, nrow = length(mask_var), ncol = num_components)
+    loadings[mask_var, ] <- pca\$u
+  }
+  variance <- pca\$d^2 / (ncol(scaled_data) - 1)
+
+  cat("Writing PCA to .obsm ", par\$obsm_pca_output,
+    ", .varm ", par\$varm_pca_output, " and .uns ", par\$uns_pca_output, "\\n",
+    sep = ""
+  )
+  h5 <- open_h5(par\$output, readonly = FALSE)
+  for (slot in existing_pca_slots) {
+    rhdf5::h5delete(h5, slot)
+  }
+  write_mod_elem <- function(slot, key, value) {
+    # The writer does not create missing parent groups
+    group_path <- file.path(mod_path, slot)
+    if (!h5_exists(h5, group_path)) {
+      rhdf5::h5createGroup(h5, group_path)
+    }
+    write_elem(h5, file.path(group_path, key), value)
+  }
+  write_mod_elem("obsm", par\$obsm_pca_output, embedding)
+  write_mod_elem("varm", par\$varm_pca_output, loadings)
+  write_mod_elem("uns", par\$uns_pca_output, list(
+    variance = variance,
+    variance_ratio = variance / total_variance
+  ))
+  rhdf5::H5Fclose(h5)
+}
 VIASHMAIN
 Rscript "\$tempscript" &
 wait "\$!"

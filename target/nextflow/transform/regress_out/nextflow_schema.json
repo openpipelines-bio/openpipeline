@@ -56,6 +56,11 @@
           "description": "The layer of the adata object to regress on.\nIf not provided, the X attribute of the adata object will be used.\n",
           "help_text": "Type: `string`, multiple: `False`, example: `\"X_normalized\"`. "
         },
+        "var_input": {
+          "type": "string",
+          "description": "Boolean column in .var used to select which genes to regress out (e.g",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"filter_with_hvg\"`. "
+        },
         "output_layer": {
           "type": "string",
           "description": "The layer of the adata object containing the regressed count data.\nIf not provided, the X attribute of the adata object will be used.\n",
