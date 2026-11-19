@@ -78,7 +78,7 @@
 
 ## NEW FEATURES
 
-* BEYOND methodology, part 5 of 5 (PR #TBD):
+* BEYOND methodology, part 5 of 5 (PR #1299):
 
   - `workflows/beyond/trajectory_analysis`: full BEYOND trajectory inference from an
     annotated atlas h5mu - runs 6 steps (proportions -> PHATE -> Palantir ->
@@ -102,7 +102,7 @@
     workflow test check that the true trait associations are found and the null one is
     not. The two fixtures answer different questions and the workflow test runs both.
 
-* BEYOND methodology, part 4 of 5 (PR #TBD):
+* BEYOND methodology, part 4 of 5 (PR #1298):
 
   - `cluster/subpopulation_communities`: groups labels into communities by combining
     co-occurrence similarity (correlation of group proportion vectors, Spearman by
@@ -129,7 +129,7 @@
     genes warns and writes an empty table instead of failing, so a workflow survives
     a DE run without hits.
 
-* BEYOND methodology, part 3 of 5 (PR #TBD):
+* BEYOND methodology, part 3 of 5 (PR #1297):
 
   - `dimred/phate`: computes a PHATE embedding of any `.obsm` matrix (e.g. `X_pca` for
     cells, or `X_proportions` of a group-level object, as BEYOND uses it), result in
@@ -153,7 +153,7 @@
     bin values in `.uns`) and the per-label peak pseudotime, R^2, p-value and number of
     groups to `.var` (`dynamics_*`).
 
-* BEYOND methodology, part 2 of 5 (PR #TBD):
+* BEYOND methodology, part 2 of 5 (PR #1295):
 
   - `metadata/calculate_obs_label_proportions`: computes a group x label cell
     proportion matrix from a single-cell dataset (`--obs_group`, e.g. a participant or
@@ -169,7 +169,7 @@
     This is the only step of the BEYOND trajectory workflow that reads cell-level data;
     every step after it reads and extends the group-level object.
 
-* BEYOND methodology, part 1 of 5 (stack: subpopulation clustering -> proportions -> trajectory components -> analysis components -> trajectory workflow) (PR #TBD):
+* BEYOND methodology, part 1 of 5 (stack: subpopulation clustering -> proportions -> trajectory components -> analysis components -> trajectory workflow) (PR #1294):
 
   - `workflows/beyond/subpopulation_clustering`: splits an annotated atlas by broad cell
     type and clusters each cell type separately (split_h5mu -> pca -> neighbors_leiden_umap
