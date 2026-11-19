@@ -149,6 +149,10 @@
 
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
+* `genetic_demux/bcftools`: install `bcftools` from the Debian `apt` repository instead of building version `1.16` from source, which bumps `bcftools` to `1.21`. The base image changed from `ubuntu:latest` to `debian:latest` (PR #xxxx).
+
+* `genetic_demux/cellsnp`: build `cellsnp-lite` against `htslib` from the Debian `apt` repository (`libhts-dev`) instead of building `htslib` version `1.16` from source, which bumps `htslib` to `1.21`. The unused build dependencies were removed and the base image changed from `ubuntu:latest` to `debian:latest` (PR #xxxx).
+
 ## BUG FIXES
 
 * `process_10xh5/filter_10xh5`: no longer drop feature metadata from the output. Fields other than `feature_type`, `genome`, `id` and `name` (e.g. `pattern`, `read` and `sequence`) are now subset and kept, as is `target_sets` in probe-based matrices (e.g. Cell Ranger Flex), with its feature indices updated to match the kept features (PR #1286).
