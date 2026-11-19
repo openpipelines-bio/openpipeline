@@ -3120,17 +3120,17 @@ meta = [
     },
     {
       "name" : "References",
-      "description" : "Assay type will be inferred from the provided reference(s).\nDo not provide both reference_archive and targeted_reference at the same time.\n  \nValid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference: WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference: Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can be generated with the `reference/build_bdrhap_reference` component.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2023-02.tar.gz\n  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2023-02.tar.gz\n",
+      "description" : "Assay type will be inferred from the provided reference(s).\nDo not provide both reference_archive and targeted_reference at the same time.\n  \nValid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference: WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference: Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can be generated with the `reference/build_bdrhap_reference` component.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2025-10.tar.gz\n  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2025-10.tar.gz\n",
       "arguments" : [
         {
           "type" : "file",
           "name" : "--reference_archive",
-          "description" : "Path to Rhapsody WTA Reference in the tar.gz format.\n\nStructure of the reference archive:\n  \n- `BD_Rhapsody_Reference_Files/`: top level folder\n  - `star_index/`: sub-folder containing STAR index, that is files created with `STAR --runMode genomeGenerate`\n  - GTF for gene-transcript-annotation e.g. \\"gencode.v43.primary_assembly.annotation.gtf\\"\n",
+          "description" : "Path to Rhapsody WTA Reference in the tar.gz format.\n\nStructure of the reference archive:\n  \n- `BD_Rhapsody_Reference_Files/`: top level folder\n  - `star_index/`: sub-folder containing STAR index, that is files created with `STAR --runMode genomeGenerate`\n  - GTF for gene-transcript-annotation e.g. \\"gencode.v49.primary_assembly.annotation.gtf\\"\n",
           "info" : {
             "config_key" : "Reference_Archive"
           },
           "example" : [
-            "RhapRef_Human_WTA_2023-02.tar.gz"
+            "RhapRef_Human_WTA_2025-10.tar.gz"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3202,7 +3202,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--output",
-          "description" : "The processed output file in h5mu format.",
+          "description" : "The processed output file in h5mu format, created with `convert/from_bdrhap_to_h5mu`.\nThe gene ids are used as `.var` index, the gene symbols are stored in `.var['gene_symbol']`\nand the feature types in `.var['feature_types']`.\n",
           "example" : [
             "output.h5mu"
           ],
@@ -3238,7 +3238,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--cell_calling_data",
-          "description" : "Specify the dataset to be used for putative cell calling: mRNA, AbSeq, ATAC, mRNA_and_ATAC\n  \nFor putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.\n  \nFor putative cell calling using an ATAC dataset, please provide a WTA+ATAC-Seq Reference_Archive file above.\n  \nThe default data for putative cell calling, will be determined the following way:\n  \n- If mRNA Reads and ATAC Reads exist: mRNA_and_ATAC\n- If only ATAC Reads exist: ATAC\n- Otherwise: mRNA\n",
+          "description" : "Specify the dataset to be used for putative cell calling: mRNA, AbSeq, ATAC, mRNA_and_ATAC, VDJ\n  \nFor putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.\n  \nFor putative cell calling using an ATAC dataset, please provide a WTA+ATAC-Seq Reference_Archive file above.\n\nFor putative cell calling using a VDJ dataset (VDJ only runs), please specify --vdj_version.\n  \nThe default data for putative cell calling, will be determined the following way:\n  \n- If mRNA Reads and ATAC Reads exist: mRNA_and_ATAC\n- If only ATAC Reads exist: ATAC\n- Otherwise: mRNA\n",
           "info" : {
             "config_key" : "Cell_Calling_Data"
           },
@@ -3250,7 +3250,8 @@ meta = [
             "mRNA",
             "AbSeq",
             "ATAC",
-            "mRNA_and_ATAC"
+            "mRNA_and_ATAC",
+            "VDJ"
           ],
           "direction" : "input",
           "multiple" : false,
@@ -3342,6 +3343,49 @@ meta = [
             false
           ],
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Multiple Alignment Settings",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--multiple_alignment_handling",
+          "description" : "Specify how to handle reads that align equally well to more than one gene:\n\n* Discard (default): reads with multiple alignments are discarded.\n* Uniform Random: the read is assigned to one of the candidate genes at random.\n",
+          "info" : {
+            "config_key" : "Multiple_Alignment_Handling"
+          },
+          "example" : [
+            "Discard"
+          ],
+          "required" : false,
+          "choices" : [
+            "Discard",
+            "Uniform Random"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--multiple_alignment_gene_selection",
+          "description" : "Specify the gene selection strategy for reads that map to multiple genes, either through multiple genomic\nalignments or through a single alignment that falls within overlapping genes: Any Overlap (default) or Most Base Overlap.\n",
+          "info" : {
+            "config_key" : "Multiple_Alignment_Gene_Selection"
+          },
+          "example" : [
+            "Any Overlap"
+          ],
+          "required" : false,
+          "choices" : [
+            "Any Overlap",
+            "Most Base Overlap"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3496,7 +3540,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--custom_star_params",
-          "description" : "Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline.\nFor reference this is the default that is used:\n\n  Short Reads: `--outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000`\n  Long Reads: Same as Short Reads + `--seedPerReadNmax 10000`\n\nThis applies to fastqs provided in the Reads user input \nDo NOT set any non-mapping related params like `--genomeDir`, `--outSAMtype`, `--outSAMunmapped`, `--readFilesIn`, `--runThreadN`, etc.\nWe use STAR version 2.7.10b\n",
+          "description" : "Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline.\nFor reference this is the default that is used:\n\n  Short Reads: `--outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000`\n  Long Reads: Same as Short Reads + `--seedPerReadNmax 10000`\n\nThis applies to fastqs provided in the Reads user input \nDo NOT set any non-mapping related params like `--genomeDir`, `--outSAMtype`, `--outSAMunmapped`, `--readFilesIn`, `--runThreadN`, etc.\nWe use STAR version 2.7.10b\n",
           "info" : {
             "config_key" : "Custom_STAR_Params"
           },
@@ -3516,7 +3560,7 @@ meta = [
             "config_key" : "Custom_bwa_mem2_Params"
           },
           "example" : [
-            "-k 16 -w 200 -r"
+            "-k 16 -w 200 -r 1.5"
           ],
           "required" : false,
           "direction" : "input",
@@ -3576,7 +3620,7 @@ meta = [
         {
           "type" : "double",
           "name" : "--vdj_jgene_evalue",
-          "description" : "e-value threshold for J gene. The e-value threshold for J gene call by IgBlast/PyIR, default is set as 0.001\n",
+          "description" : "e-value threshold for J gene. The e-value threshold for J gene call by IgBlast, default is set as 0.001\n",
           "info" : {
             "config_key" : "VDJ_JGene_Evalue"
           },
@@ -3588,7 +3632,7 @@ meta = [
         {
           "type" : "double",
           "name" : "--vdj_vgene_evalue",
-          "description" : "e-value threshold for V gene. The e-value threshold for V gene call by IgBlast/PyIR, default is set as 0.001\n",
+          "description" : "e-value threshold for V gene. The e-value threshold for V gene call by IgBlast, default is set as 0.001\n",
           "info" : {
             "config_key" : "VDJ_VGene_Evalue"
           },
@@ -3628,7 +3672,7 @@ meta = [
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "BD Rhapsody Sequence Analysis CWL pipeline v2.2.1\n\nThis pipeline performs analysis of single-cell multiomic sequence read (FASTQ) data. The supported\nsequencing libraries are those generated by the BD Rhapsody assay kits, including: Whole Transcriptome\nmRNA, Targeted mRNA, AbSeq Antibody-Oligonucleotides, Single-Cell Multiplexing, TCR/BCR, and\nATAC-Seq\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl' and removing all objects with class 'DockerRequirement' from the YAML.\n",
+  "description" : "BD Rhapsody Sequence Analysis CWL pipeline v4.0\n\nThis pipeline performs analysis of single-cell multiomic sequence read (FASTQ) data. The supported\nsequencing libraries are those generated by the BD Rhapsody assay kits, including: Whole Transcriptome\nmRNA, Targeted mRNA, AbSeq Antibody-Oligonucleotides, Single-Cell Multiplexing, TCR/BCR, and\nATAC-Seq\n\nThe CWL pipeline file is copied unmodified from 'https://bitbucket.org/CRSwDev/cwl'.\n",
   "test_resources" : [
     {
       "type" : "nextflow_script",
@@ -3639,6 +3683,11 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/bdrhap_5kjrt"
+    },
+    {
+      "type" : "file",
+      "path" : "/resources_test/bdrhap_vdj/raw",
+      "dest" : "bdrhap_vdj/raw"
     },
     {
       "type" : "file",
@@ -3763,7 +3812,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/bd_rhapsody",
     "viash_version" : "0.9.7",
-    "git_commit" : "94e6311e5473c84733dce712457c4a78807e248b",
+    "git_commit" : "7fdb57b0124d196dd50c43c752f6b3dd9825e55f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3836,6 +3885,7 @@ workflow run_wf {
       },
       toState: [
         "input": "output_mudata",
+        "input_vdj_contigs": "vdj_unfiltered_contigs",
         "output_raw": "output_dir"
       ]
     )
@@ -3846,6 +3896,7 @@ workflow run_wf {
         [
           id: id,
           input: state.input,
+          input_vdj_contigs: state.input_vdj_contigs,
           output: state.output,
           output_compression: "gzip"
         ]

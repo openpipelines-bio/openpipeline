@@ -1,0 +1,31 @@
+# Arguments
+# output_compression: "gzip"
+
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+obsm_input: "X_pca"
+obs_covariates: # please fill in - example: ["batch", "sample"]
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+obsm_output: "X_pca_integrated"
+
+# Harmony arguments
+theta: [2.0]
+# lambda: [123.0]
+alpha: 0.2
+sigma: [0.1]
+# nclust: 123
+tau: 0.0
+block_size: 0.05
+max_iter_harmony: 10
+max_iter_kmeans: 4
+epsilon_cluster: 0.001
+epsilon_harmony: 0.01
+batch_prop_cutoff: 1.0E-5
+random_state: 0
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

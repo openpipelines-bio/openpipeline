@@ -15,8 +15,8 @@ argument_groups:
   arguments:
   - type: "file"
     name: "--genome_fasta"
-    description: "Reference genome file in FASTA or FASTA.GZ format. The BD Rhapsody\
-      \ Sequencing Analysis Pipeline uses GRCh38 for Human and GRCm39 for Mouse."
+    description: "Reference genome file in FASTA or FASTA.GZ format. The pre-built\
+      \ BD reference archive files use GRCh38 for Human and GRCm39 for Mouse."
     info:
       config_key: "Genome_fasta"
     example:
@@ -49,14 +49,30 @@ argument_groups:
   - type: "file"
     name: "--extra_sequences"
     description: "File path to additional sequences in FASTA format to use when building\
-      \ the STAR index. (e.g. transgenes or CRISPR guide barcodes).\nGTF lines for\
-      \ these sequences will be automatically generated and combined with the main\
-      \ GTF.\n"
+      \ the STAR and bwa-mem2 indices. (e.g. transgenes or CRISPR guide barcodes).\n\
+      GTF lines for these sequences will be automatically generated and combined with\
+      \ the main GTF.\n"
     info:
       config_key: "Extra_sequences"
     example:
     - "extra_sequence_1.fa.gz"
     - "extra_sequence_2.fa.gz"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--transcription_factor_motif_pfm"
+    description: "Text file of Transcription Factor Motif position frequency matrices\
+      \ in JASPAR format. Used to compute a\nTF motif-by-cell matrix in the ATAC-Seq\
+      \ analysis pipeline.\nThe pre-built BD reference archive files use the JASPAR2024_CORE_vertebrates_non-redundant_pfms_jaspar.txt\
+      \ file\nfor both Human and Mouse. See https://jaspar.elixir.no/download/data/2024/CORE/.\n"
+    info:
+      config_key: "Transcription_Factor_Motif_PFM"
+    example:
+    - "JASPAR2024_CORE_vertebrates_non-redundant_pfms_jaspar.txt"
     must_exist: true
     create_parent: true
     required: false
@@ -87,7 +103,7 @@ argument_groups:
       \ Fragments originating from contigs other than these are\nidentified as 'nuclear\
       \ fragments' in the ATACseq analysis pipeline.\n"
     info:
-      config_key: "Mitochondrial_contigs"
+      config_key: "Mitochondrial_Contigs"
     default:
     - "chrM"
     - "chrMT"
@@ -99,22 +115,74 @@ argument_groups:
     multiple_sep: ";"
   - type: "boolean_true"
     name: "--filtering_off"
-    description: "By default the input Transcript Annotation files are filtered based\
-      \ on the gene_type/gene_biotype attribute. Only features \nhaving the following\
-      \ attribute values are kept:\n\n  - protein_coding\n  - lncRNA \n  - IG_LV_gene\n\
-      \  - IG_V_gene\n  - IG_V_pseudogene\n  - IG_D_gene\n  - IG_J_gene\n  - IG_J_pseudogene\n\
-      \  - IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  -\
-      \ TR_D_gene\n  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have\
-      \ already pre-filtered the input Annotation files and/or wish to turn-off the\
-      \ filtering, please set this option to True.\n"
+    description: "By default, the input GTF files are filtered based on the gene_type,\
+      \ gene_biotype, or transcript_type attributes.\nOnly genes with a gene_type\
+      \ or gene_biotype matching one of the accepted values are retained, and each\
+      \ gene must\nhave at least one transcript with a valid transcript_type. An exception\
+      \ is made to the transcript requirement if\nthe gene does not overlap with any\
+      \ other gene that has a valid biotype.\n\nAccepted biotypes include:\n\n  -\
+      \ protein_coding\n  - protein_coding_LOF\n  - lncRNA (lincRNA and antisense\
+      \ for Gencode < v31/M22/Ensembl97)\n  - IG_LV_gene\n  - IG_V_gene\n  - IG_V_pseudogene\n\
+      \  - IG_D_gene\n  - IG_D_pseudogene\n  - IG_J_gene\n  - IG_J_pseudogene\n  -\
+      \ IG_C_gene\n  - IG_C_pseudogene\n  - TR_V_gene\n  - TR_V_pseudogene\n  - TR_D_gene\n\
+      \  - TR_J_gene\n  - TR_J_pseudogene\n  - TR_C_gene\n\n  If you have already\
+      \ pre-filtered the input Annotation files and/or wish to turn-off the filtering,\
+      \ please set this option to True.\n"
     info:
-      config_key: "Filtering_off"
+      config_key: "Disable_Biotype_Filtering"
+    direction: "input"
+  - type: "boolean_true"
+    name: "--disable_readthrough_filtering"
+    description: "By default genes with only readthrough transcripts are removed.\
+      \ Any readthrough_transcript feature is also removed\nif its parent gene overlaps\
+      \ with another gene that meets the biotype requirement. Set this option to disable\
+      \ this behaviour.\n"
+    info:
+      config_key: "Disable_Readthrough_Filtering"
+    direction: "input"
+  - type: "boolean_true"
+    name: "--filter_pars"
+    description: "Remove features in the 2 Pseudo-Autosomal Regions (PARs) on the\
+      \ Y chromosome. This applies only to a Human build 38 reference.\n"
+    info:
+      config_key: "Filter_PARs"
+    direction: "input"
+  - type: "boolean_true"
+    name: "--combine_same_gene_names"
+    description: "Combine genes with the same gene name, even when gene ids are different.\
+      \ If not enabled (default), chromosome, start,\nand strand information will\
+      \ be appended to the duplicated gene names.\n"
+    info:
+      config_key: "Combine_Same_Gene_Names"
     direction: "input"
   - type: "boolean_true"
     name: "--wta_only_index"
     description: "Build a WTA only index, otherwise builds a WTA + ATAC index."
     info:
-      config_key: "Wta_Only"
+      config_key: "WTA_Only"
+    direction: "input"
+  - type: "boolean_true"
+    name: "--disable_fasta_validation"
+    description: "Skip validation that the FASTA files contain the contigs referenced\
+      \ in the GTF files. Only use this in rare cases\nwhere you deliberately want\
+      \ to bypass the contig compatibility check.\n"
+    info:
+      config_key: "Disable_FASTA_Validation"
+    direction: "input"
+  - type: "boolean_true"
+    name: "--repair_gtf"
+    description: "Attempt to repair invalid GTF files using the built-in repair functionality.\
+      \ The validator will try to fix common\nGTF format issues and use the repaired\
+      \ files for downstream processing.\n"
+    info:
+      config_key: "Repair_GTF"
+    direction: "input"
+  - type: "boolean_true"
+    name: "--gtf_validation_complete_mode"
+    description: "Generate a full report about errors and warnings in the GTF, instead\
+      \ of failing when the first fatal error is encountered.\n"
+    info:
+      config_key: "GTF_Validation_Complete_Mode"
     direction: "input"
   - type: "string"
     name: "--extra_star_params"
@@ -123,7 +191,7 @@ argument_groups:
     info:
       config_key: "Extra_STAR_params"
     example:
-    - "--limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+    - "--limitGenomeGenerateRAM 48000000000 --genomeSAindexNbases 11"
     required: false
     direction: "input"
     multiple: false
@@ -133,7 +201,7 @@ resources:
   path: "script.py"
   is_executable: true
 - type: "file"
-  path: "make_rhap_reference_2.2.1_nodocker.cwl"
+  path: "make_rhap_reference_4.0.cwl"
 - type: "file"
   path: "nextflow_labels.config"
   dest: "nextflow_labels.config"
@@ -232,7 +300,7 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "bdgenomics/rhapsody:2.2.1"
+  image: "bdgenomics/rhapsody:4.0"
   target_tag: "integration_build"
   namespace_separator: "/"
   setup:
@@ -256,7 +324,7 @@ build_info:
   output: "target/executable/reference/build_bdrhap_reference"
   executable: "target/executable/reference/build_bdrhap_reference/build_bdrhap_reference"
   viash_version: "0.9.7"
-  git_commit: "94e6311e5473c84733dce712457c4a78807e248b"
+  git_commit: "7fdb57b0124d196dd50c43c752f6b3dd9825e55f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

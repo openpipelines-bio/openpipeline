@@ -3331,12 +3331,6 @@ meta = [
       }
     },
     {
-      "name" : "mapping/cellranger_count_split",
-      "repository" : {
-        "type" : "local"
-      }
-    },
-    {
       "name" : "convert/from_10xh5_to_h5mu",
       "repository" : {
         "type" : "local"
@@ -3432,7 +3426,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping",
     "viash_version" : "0.9.7",
-    "git_commit" : "94e6311e5473c84733dce712457c4a78807e248b",
+    "git_commit" : "7fdb57b0124d196dd50c43c752f6b3dd9825e55f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3481,7 +3475,6 @@ meta = [
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
 include { cellranger_count } from "${meta.resources_dir}/../../../../nextflow/mapping/cellranger_count/main.nf"
-include { cellranger_count_split } from "${meta.resources_dir}/../../../../nextflow/mapping/cellranger_count_split/main.nf"
 include { from_10xh5_to_h5mu } from "${meta.resources_dir}/../../../../nextflow/convert/from_10xh5_to_h5mu/main.nf"
 
 // inner workflow
@@ -3504,37 +3497,18 @@ workflow run_wf {
         "include_introns": "include_introns",
         "reference": "reference"
       ],
-      toState: [
-        "input": "output",
-        "output_raw": "output"
-      ]
-    )
-    // split output dir into map
-    | cellranger_count_split.run(
-      fromState: {id, state -> 
-        def stateMapping = [
-          "input": state.input,
-        ]
-        outputType = state.output_type == "raw" ? "raw_h5" : "filtered_h5"
-        stateMapping += [outputType: "\$id.\$key.${outputType}.h5"]
-        stateMapping += ["metrics_summary": "\$id.\$key.metrics_summary.csv"]
-        return stateMapping
-      },
-      toState: {id, output, state -> 
-        def outputFile = state.output_type == "raw" ? output.raw_h5 : output.filtered_h5
-        def newState = state + [ "input": outputFile ] 
-        return newState
-      }
+      toState: ["output_raw": "output"]
     )
     // convert to h5mu
     | from_10xh5_to_h5mu.run(
       fromState: {id, state ->
+        def h5File = state.output_type == "raw" ? "raw_feature_bc_matrix.h5" : "filtered_feature_bc_matrix.h5"
         [
-          "input": state.input,
+          "input": state.output_raw.resolve(h5File),
           "output_compression": "gzip",
           "output": state.output_h5mu,
           "uns_metrics": state.uns_metrics,
-          "input_metrics_summary": state.metrics_summary
+          "input_metrics_summary": state.output_raw.resolve("metrics_summary.csv")
         ]
       },
       toState: ["output_h5mu": "output"]

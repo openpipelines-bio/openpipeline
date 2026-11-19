@@ -3106,17 +3106,17 @@ meta = [
     },
     {
       "name" : "References",
-      "description" : "Assay type will be inferred from the provided reference(s).\nDo not provide both reference_archive and targeted_reference at the same time.\n  \nValid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference: WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference: Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can be generated with the bd_rhapsody_make_reference component.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2023-02.tar.gz\n  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2023-02.tar.gz\n",
+      "description" : "Assay type will be inferred from the provided reference(s).\nDo not provide both reference_archive and targeted_reference at the same time.\n  \nValid reference input combinations:\n  - reference_archive: WTA only\n  - reference_archive & abseq_reference: WTA + AbSeq\n  - reference_archive & supplemental_reference: WTA + extra transgenes\n  - reference_archive & abseq_reference & supplemental_reference: WTA + AbSeq + extra transgenes\n  - reference_archive: WTA + ATAC or ATAC only\n  - reference_archive & supplemental_reference: WTA + ATAC + extra transgenes\n  - targeted_reference: Targeted only\n  - targeted_reference & abseq_reference: Targeted + AbSeq\n  - abseq_reference: AbSeq only\n\nThe reference_archive can be generated with the bd_rhapsody_make_reference component.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Human_WTA_2025-10.tar.gz\n  - Mouse: https://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/Pipeline-version2.x_WTA_references/RhapRef_Mouse_WTA_2025-10.tar.gz\n",
       "arguments" : [
         {
           "type" : "file",
           "name" : "--reference_archive",
-          "description" : "Path to Rhapsody WTA Reference in the tar.gz format.\n\nStructure of the reference archive:\n  \n- `BD_Rhapsody_Reference_Files/`: top level folder\n  - `star_index/`: sub-folder containing STAR index, that is files created with `STAR --runMode genomeGenerate`\n  - GTF for gene-transcript-annotation e.g. \\"gencode.v43.primary_assembly.annotation.gtf\\"\n",
+          "description" : "Path to Rhapsody WTA Reference in the tar.gz format.\n\nStructure of the reference archive:\n  \n- `BD_Rhapsody_Reference_Files/`: top level folder\n  - `star_index/`: sub-folder containing STAR index, that is files created with `STAR --runMode genomeGenerate`\n  - GTF for gene-transcript-annotation e.g. \\"gencode.v49.primary_assembly.annotation.gtf\\"\n",
           "info" : {
             "config_key" : "Reference_Archive"
           },
           "example" : [
-            "RhapRef_Human_WTA_2023-02.tar.gz"
+            "RhapRef_Human_WTA_2025-10.tar.gz"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3206,9 +3206,6 @@ meta = [
           "type" : "file",
           "name" : "--output_seurat",
           "description" : "Single-cell analysis tool inputs. Seurat (.rds) input file containing RSEC molecules data table and all cell annotation metadata.",
-          "info" : {
-            "template" : "sample_Seurat.rds"
-          },
           "example" : [
             "output_seurat.rds"
           ],
@@ -3222,9 +3219,7 @@ meta = [
         {
           "type" : "file",
           "name" : "--output_mudata",
-          "info" : {
-            "template" : "sample.h5mu"
-          },
+          "description" : "Cellismo file (.cellismo). A MuData (.h5mu) file containing the RSEC molecules data table and all cell annotation\nmetadata, for use in BD Cellismo. This file replaces the '.h5mu' output of pipeline versions before v2.3.\n",
           "example" : [
             "output_mudata.h5mu"
           ],
@@ -3239,9 +3234,6 @@ meta = [
           "type" : "file",
           "name" : "--metrics_summary",
           "description" : "Metrics Summary. Report containing sequencing, molecules, and cell metrics.",
-          "info" : {
-            "template" : "sample_Metrics_Summary.csv"
-          },
           "example" : [
             "metrics_summary.csv"
           ],
@@ -3256,9 +3248,6 @@ meta = [
           "type" : "file",
           "name" : "--pipeline_report",
           "description" : "Pipeline Report. Summary report containing the results from the sequencing analysis pipeline run.",
-          "info" : {
-            "template" : "sample_Pipeline_Report.html"
-          },
           "example" : [
             "pipeline_report.html"
           ],
@@ -3273,9 +3262,6 @@ meta = [
           "type" : "file",
           "name" : "--rsec_mols_per_cell",
           "description" : "Molecules per bioproduct per cell bassed on RSEC",
-          "info" : {
-            "template" : "sample_RSEC_MolsPerCell_MEX.zip"
-          },
           "example" : [
             "RSEC_MolsPerCell_MEX.zip"
           ],
@@ -3290,9 +3276,6 @@ meta = [
           "type" : "file",
           "name" : "--dbec_mols_per_cell",
           "description" : "Molecules per bioproduct per cell bassed on DBEC. DBEC data table is only output if the experiment includes targeted mRNA or AbSeq bioproducts.",
-          "info" : {
-            "template" : "sample_DBEC_MolsPerCell_MEX.zip"
-          },
           "example" : [
             "DBEC_MolsPerCell_MEX.zip"
           ],
@@ -3307,9 +3290,6 @@ meta = [
           "type" : "file",
           "name" : "--rsec_mols_per_cell_unfiltered",
           "description" : "Unfiltered tables containing all cell labels with 10 reads.",
-          "info" : {
-            "template" : "sample_RSEC_MolsPerCell_Unfiltered_MEX.zip"
-          },
           "example" : [
             "RSEC_MolsPerCell_Unfiltered_MEX.zip"
           ],
@@ -3324,9 +3304,6 @@ meta = [
           "type" : "file",
           "name" : "--bam",
           "description" : "Alignment file of R2 with associated R1 annotations for Bioproduct.",
-          "info" : {
-            "template" : "sample_Bioproduct.bam"
-          },
           "example" : [
             "BioProduct.bam"
           ],
@@ -3341,9 +3318,6 @@ meta = [
           "type" : "file",
           "name" : "--bam_index",
           "description" : "Index file for the alignment file.",
-          "info" : {
-            "template" : "sample_Bioproduct.bam.bai"
-          },
           "example" : [
             "BioProduct.bam.bai"
           ],
@@ -3358,9 +3332,6 @@ meta = [
           "type" : "file",
           "name" : "--bioproduct_stats",
           "description" : "Bioproduct Stats. Metrics from RSEC and DBEC Unique Molecular Identifier adjustment algorithms on a per-bioproduct basis.",
-          "info" : {
-            "template" : "sample_Bioproduct_Stats.csv"
-          },
           "example" : [
             "Bioproduct_Stats.csv"
           ],
@@ -3373,11 +3344,22 @@ meta = [
         },
         {
           "type" : "file",
+          "name" : "--biotype_counts",
+          "description" : "Biotype Counts. Counts summarized per gene biotype.",
+          "example" : [
+            "biotypeCounts.csv"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "file",
           "name" : "--dimred_tsne",
           "description" : "t-SNE dimensionality reduction coordinates per cell index",
-          "info" : {
-            "template" : "sample_assay_tSNE_coordinates.csv"
-          },
           "example" : [
             "tSNE_coordinates.csv"
           ],
@@ -3392,9 +3374,6 @@ meta = [
           "type" : "file",
           "name" : "--dimred_umap",
           "description" : "UMAP dimensionality reduction coordinates per cell index",
-          "info" : {
-            "template" : "sample_assay_UMAP_coordinates.csv"
-          },
           "example" : [
             "UMAP_coordinates.csv"
           ],
@@ -3409,9 +3388,6 @@ meta = [
           "type" : "file",
           "name" : "--immune_cell_classification",
           "description" : "Immune Cell Classification. Cell type classification based on the expression of immune cell markers.",
-          "info" : {
-            "template" : "sample_assay_cell_type_experimental.csv"
-          },
           "example" : [
             "Immune_Cell_Classification.csv"
           ],
@@ -3432,9 +3408,6 @@ meta = [
           "type" : "file",
           "name" : "--sample_tag_metrics",
           "description" : "Sample Tag Metrics. Metrics from the sample determination algorithm.",
-          "info" : {
-            "template" : "sample_Sample_Tag_Metrics.csv"
-          },
           "example" : [
             "Sample_Tag_Metrics.csv"
           ],
@@ -3449,9 +3422,6 @@ meta = [
           "type" : "file",
           "name" : "--sample_tag_calls",
           "description" : "Sample Tag Calls. Assigned Sample Tag for each putative cell",
-          "info" : {
-            "template" : "sample_Sample_Tag_Calls.csv"
-          },
           "example" : [
             "Sample_Tag_Calls.csv"
           ],
@@ -3466,9 +3436,6 @@ meta = [
           "type" : "file",
           "name" : "--sample_tag_counts",
           "description" : "Sample Tag Counts. Separate data tables and metric summary for cells assigned to each sample tag. Note: For putative cells that could not be assigned a specific Sample Tag, a Multiplet_and_Undetermined.zip file is also output.",
-          "info" : {
-            "template" : "sample_Sample_Tag.zip"
-          },
           "example" : [
             "Sample_Tag1.zip"
           ],
@@ -3483,9 +3450,6 @@ meta = [
           "type" : "file",
           "name" : "--sample_tag_counts_unassigned",
           "description" : "Sample Tag Counts Unassigned. Data table and metric summary for cells that could not be assigned a specific Sample Tag.",
-          "info" : {
-            "template" : "sample_Multiplet_and_Undetermined.zip"
-          },
           "example" : [
             "Multiplet_and_Undetermined.zip"
           ],
@@ -3506,11 +3470,8 @@ meta = [
           "type" : "file",
           "name" : "--vdj_metrics",
           "description" : "VDJ Metrics. Overall metrics from the VDJ analysis.",
-          "info" : {
-            "template" : "sample_VDJ_Metrics.csv"
-          },
           "example" : [
-            "VDJ_Metrics.csv"
+            "VDJ_metrics.csv"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3523,9 +3484,6 @@ meta = [
           "type" : "file",
           "name" : "--vdj_per_cell",
           "description" : "VDJ Per Cell. Cell specific read and molecule counts, VDJ gene segments, CDR3 sequences, paired chains, and cell type.",
-          "info" : {
-            "template" : "sample_VDJ_perCell.csv"
-          },
           "example" : [
             "VDJ_perCell.csv"
           ],
@@ -3540,11 +3498,8 @@ meta = [
           "type" : "file",
           "name" : "--vdj_per_cell_uncorrected",
           "description" : "VDJ Per Cell Uncorrected. Cell specific read and molecule counts, VDJ gene segments, CDR3 sequences, paired chains, and cell type.",
-          "info" : {
-            "template" : "sample_VDJ_perCell_uncorrected.csv"
-          },
           "example" : [
-            "VDJ_perCell_uncorrected.csv"
+            "VDJ_perCell_uncorrected.csv.gz"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3557,11 +3512,8 @@ meta = [
           "type" : "file",
           "name" : "--vdj_dominant_contigs",
           "description" : "VDJ Dominant Contigs. Dominant contig for each cell label chain type combination (putative cells only).",
-          "info" : {
-            "template" : "sample_VDJ_Dominant_Contigs_AIRR.csv"
-          },
           "example" : [
-            "VDJ_Dominant_Contigs_AIRR.csv"
+            "VDJ_Dominant_Contigs_AIRR.tsv"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3574,11 +3526,8 @@ meta = [
           "type" : "file",
           "name" : "--vdj_unfiltered_contigs",
           "description" : "VDJ Unfiltered Contigs. All contigs that were assembled and annotated successfully (all cells).",
-          "info" : {
-            "template" : "sample_VDJ_Unfiltered_Contigs_AIRR.csv"
-          },
           "example" : [
-            "VDJ_Unfiltered_Contigs_AIRR.csv"
+            "VDJ_Unfiltered_Contigs_AIRR.tsv.gz"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3597,9 +3546,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_metrics",
           "description" : "ATAC Metrics. Overall metrics from the ATAC-Seq analysis.",
-          "info" : {
-            "template" : "sample_ATAC_Metrics.csv"
-          },
           "example" : [
             "ATAC_Metrics.csv"
           ],
@@ -3614,9 +3560,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_metrics_json",
           "description" : "ATAC Metrics JSON. Overall metrics from the ATAC-Seq analysis in JSON format.",
-          "info" : {
-            "template" : "sample_ATAC_Metrics.json"
-          },
           "example" : [
             "ATAC_Metrics.json"
           ],
@@ -3631,9 +3574,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_fragments",
           "description" : "ATAC Fragments. Chromosomal location, cell index, and read support for each fragment detected",
-          "info" : {
-            "template" : "sample_ATAC_Fragments.bed.gz"
-          },
           "example" : [
             "ATAC_Fragments.bed.gz"
           ],
@@ -3648,9 +3588,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_fragments_index",
           "description" : "Index of ATAC Fragments.",
-          "info" : {
-            "template" : "sample_ATAC_Fragments.bed.gz.tbi"
-          },
           "example" : [
             "ATAC_Fragments.bed.gz.tbi"
           ],
@@ -3665,9 +3602,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_transposase_sites",
           "description" : "ATAC Transposase Sites. Chromosomal location, cell index, and read support for each transposase site detected",
-          "info" : {
-            "template" : "sample_ATAC_Transposase_Sites.bed.gz"
-          },
           "example" : [
             "ATAC_Transposase_Sites.bed.gz"
           ],
@@ -3682,9 +3616,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_transposase_sites_index",
           "description" : "Index of ATAC Transposase Sites.",
-          "info" : {
-            "template" : "sample_ATAC_Transposase_Sites.bed.gz.tbi"
-          },
           "example" : [
             "ATAC_Transposase_Sites.bed.gz.tbi"
           ],
@@ -3699,9 +3630,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_peaks",
           "description" : "ATAC Peaks. Peak regions of transposase activity",
-          "info" : {
-            "template" : "sample_ATAC_Peaks.bed.gz"
-          },
           "example" : [
             "ATAC_Peaks.bed.gz"
           ],
@@ -3716,9 +3644,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_peaks_index",
           "description" : "Index of ATAC Peaks.",
-          "info" : {
-            "template" : "sample_ATAC_Peaks.bed.gz.tbi"
-          },
           "example" : [
             "ATAC_Peaks.bed.gz.tbi"
           ],
@@ -3733,9 +3658,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_peak_annotation",
           "description" : "ATAC Peak Annotation. Estimated annotation of peak-to-gene connections",
-          "info" : {
-            "template" : "sample_peak_annotation.tsv.gz"
-          },
           "example" : [
             "peak_annotation.tsv.gz"
           ],
@@ -3750,9 +3672,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_cell_by_peak",
           "description" : "ATAC Cell by Peak. Peak regions of transposase activity per cell",
-          "info" : {
-            "template" : "sample_ATAC_Cell_by_Peak_MEX.zip"
-          },
           "example" : [
             "ATAC_Cell_by_Peak_MEX.zip"
           ],
@@ -3767,9 +3686,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_cell_by_peak_unfiltered",
           "description" : "ATAC Cell by Peak Unfiltered. Unfiltered file containing all cell labels with >=1 transposase sites in peaks.",
-          "info" : {
-            "template" : "sample_ATAC_Cell_by_Peak_Unfiltered_MEX.zip"
-          },
           "example" : [
             "ATAC_Cell_by_Peak_Unfiltered_MEX.zip"
           ],
@@ -3784,9 +3700,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_bam",
           "description" : "ATAC BAM. Alignment file for R1 and R2 with associated I2 annotations for ATAC-Seq. Only output if the BAM generation flag is set to true.",
-          "info" : {
-            "template" : "sample_ATAC.bam"
-          },
           "example" : [
             "ATAC.bam"
           ],
@@ -3801,9 +3714,6 @@ meta = [
           "type" : "file",
           "name" : "--atac_bam_index",
           "description" : "Index of ATAC BAM.",
-          "info" : {
-            "template" : "sample_ATAC.bam.bai"
-          },
           "example" : [
             "ATAC.bam.bai"
           ],
@@ -3824,9 +3734,6 @@ meta = [
           "type" : "file",
           "name" : "--protein_aggregates_experimental",
           "description" : "Protein Aggregates Experimental",
-          "info" : {
-            "template" : "sample_Protein_Aggregates_Experimental.csv"
-          },
           "example" : [
             "Protein_Aggregates_Experimental.csv"
           ],
@@ -3845,7 +3752,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--cell_calling_data",
-          "description" : "Specify the dataset to be used for putative cell calling: mRNA, AbSeq, ATAC, mRNA_and_ATAC\n  \nFor putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.\n  \nFor putative cell calling using an ATAC dataset, please provide a WTA+ATAC-Seq Reference_Archive file above.\n  \nThe default data for putative cell calling, will be determined the following way:\n  \n- If mRNA Reads and ATAC Reads exist: mRNA_and_ATAC\n- If only ATAC Reads exist: ATAC\n- Otherwise: mRNA\n",
+          "description" : "Specify the dataset to be used for putative cell calling: mRNA, AbSeq, ATAC, mRNA_and_ATAC, VDJ\n  \nFor putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.\n  \nFor putative cell calling using an ATAC dataset, please provide a WTA+ATAC-Seq Reference_Archive file above.\n\nFor putative cell calling using a VDJ dataset (VDJ only runs), please specify --vdj_version.\n  \nThe default data for putative cell calling, will be determined the following way:\n  \n- If mRNA Reads and ATAC Reads exist: mRNA_and_ATAC\n- If only ATAC Reads exist: ATAC\n- Otherwise: mRNA\n",
           "info" : {
             "config_key" : "Cell_Calling_Data"
           },
@@ -3857,7 +3764,8 @@ meta = [
             "mRNA",
             "AbSeq",
             "ATAC",
-            "mRNA_and_ATAC"
+            "mRNA_and_ATAC",
+            "VDJ"
           ],
           "direction" : "input",
           "multiple" : false,
@@ -3949,6 +3857,49 @@ meta = [
             false
           ],
           "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Multiple Alignment Settings",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--multiple_alignment_handling",
+          "description" : "Specify how to handle reads that align equally well to more than one gene:\n\n* Discard (default): reads with multiple alignments are discarded.\n* Uniform Random: the read is assigned to one of the candidate genes at random.\n",
+          "info" : {
+            "config_key" : "Multiple_Alignment_Handling"
+          },
+          "example" : [
+            "Discard"
+          ],
+          "required" : false,
+          "choices" : [
+            "Discard",
+            "Uniform Random"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--multiple_alignment_gene_selection",
+          "description" : "Specify the gene selection strategy for reads that map to multiple genes, either through multiple genomic\nalignments or through a single alignment that falls within overlapping genes: Any Overlap (default) or Most Base Overlap.\n",
+          "info" : {
+            "config_key" : "Multiple_Alignment_Gene_Selection"
+          },
+          "example" : [
+            "Any Overlap"
+          ],
+          "required" : false,
+          "choices" : [
+            "Any Overlap",
+            "Most Base Overlap"
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -4103,7 +4054,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--custom_star_params",
-          "description" : "Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline.\nFor reference this is the default that is used:\n\n  Short Reads: `--outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000`\n  Long Reads: Same as Short Reads + `--seedPerReadNmax 10000`\n\nThis applies to fastqs provided in the Reads user input \nDo NOT set any non-mapping related params like `--genomeDir`, `--outSAMtype`, `--outSAMunmapped`, `--readFilesIn`, `--runThreadN`, etc.\nWe use STAR version 2.7.10b\n",
+          "description" : "Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline.\nFor reference this is the default that is used:\n\n  Short Reads: `--outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000`\n  Long Reads: Same as Short Reads + `--seedPerReadNmax 10000`\n\nThis applies to fastqs provided in the Reads user input \nDo NOT set any non-mapping related params like `--genomeDir`, `--outSAMtype`, `--outSAMunmapped`, `--readFilesIn`, `--runThreadN`, etc.\nWe use STAR version 2.7.10b\n",
           "info" : {
             "config_key" : "Custom_STAR_Params"
           },
@@ -4123,7 +4074,7 @@ meta = [
             "config_key" : "Custom_bwa_mem2_Params"
           },
           "example" : [
-            "-k 16 -w 200 -r"
+            "-k 16 -w 200 -r 1.5"
           ],
           "required" : false,
           "direction" : "input",
@@ -4183,7 +4134,7 @@ meta = [
         {
           "type" : "double",
           "name" : "--vdj_jgene_evalue",
-          "description" : "e-value threshold for J gene. The e-value threshold for J gene call by IgBlast/PyIR, default is set as 0.001\n",
+          "description" : "e-value threshold for J gene. The e-value threshold for J gene call by IgBlast, default is set as 0.001\n",
           "info" : {
             "config_key" : "VDJ_JGene_Evalue"
           },
@@ -4195,7 +4146,7 @@ meta = [
         {
           "type" : "double",
           "name" : "--vdj_vgene_evalue",
-          "description" : "e-value threshold for V gene. The e-value threshold for V gene call by IgBlast/PyIR, default is set as 0.001\n",
+          "description" : "e-value threshold for V gene. The e-value threshold for V gene call by IgBlast, default is set as 0.001\n",
           "info" : {
             "config_key" : "VDJ_VGene_Evalue"
           },
@@ -4227,7 +4178,15 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "rhapsody_pipeline_2.2.1_nodocker.cwl"
+      "path" : "rhapsody_pipeline_4.0.cwl"
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/setup_logger.py"
+    },
+    {
+      "type" : "file",
+      "path" : "run_cwltool.py"
     },
     {
       "type" : "file",
@@ -4235,7 +4194,7 @@ meta = [
       "dest" : "nextflow_labels.config"
     }
   ],
-  "description" : "BD Rhapsody Sequence Analysis CWL pipeline v2.2.1\n  \nThis pipeline performs analysis of single-cell multiomic sequence read (FASTQ) data. The supported\nsequencing libraries are those generated by the BD Rhapsody assay kits, including: Whole Transcriptome\nmRNA, Targeted mRNA, AbSeq Antibody-Oligonucleotides, Single-Cell Multiplexing, TCR/BCR, and\nATAC-Seq\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl' and removing all objects with class 'DockerRequirement' from the YAML.\n",
+  "description" : "BD Rhapsody Sequence Analysis CWL pipeline v4.0\n  \nThis pipeline performs analysis of single-cell multiomic sequence read (FASTQ) data. The supported\nsequencing libraries are those generated by the BD Rhapsody assay kits, including: Whole Transcriptome\nmRNA, Targeted mRNA, AbSeq Antibody-Oligonucleotides, Single-Cell Multiplexing, TCR/BCR, and\nATAC-Seq\n\nThe CWL pipeline file is copied unmodified from 'https://bitbucket.org/CRSwDev/cwl'. All of its\n'DockerRequirement' entries are hints, so the pipeline runs inside this component's container by\npassing '--no-container' to cwl-runner.\n",
   "test_resources" : [
     {
       "type" : "python_script",
@@ -4275,7 +4234,7 @@ meta = [
       "bcr"
     ],
     "links" : {
-      "repository" : "https://bitbucket.org/CRSwDev/cwl/src/master/v2.2.1",
+      "repository" : "https://bitbucket.org/CRSwDev/cwl/src/master/v4.0",
       "documentation" : "https://bd-rhapsody-bioinfo-docs.genomics.bd.com"
     },
     "license" : "Unknown"
@@ -4376,7 +4335,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "bdgenomics/rhapsody:2.2.1",
+      "image" : "bdgenomics/rhapsody:4.0",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -4399,6 +4358,16 @@ meta = [
           ],
           "upgrade" : true
         }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy==0.10.0"
+          ],
+          "upgrade" : true
+        }
       ]
     }
   ],
@@ -4408,7 +4377,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody",
     "viash_version" : "0.9.7",
-    "git_commit" : "94e6311e5473c84733dce712457c4a78807e248b",
+    "git_commit" : "7fdb57b0124d196dd50c43c752f6b3dd9825e55f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -4464,7 +4433,9 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
+import json
 import os
+import sys
 import re
 import subprocess
 import tempfile
@@ -4493,6 +4464,7 @@ par = {
   'bam': $( if [ ! -z ${VIASH_PAR_BAM+x} ]; then echo "r'${VIASH_PAR_BAM//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'bam_index': $( if [ ! -z ${VIASH_PAR_BAM_INDEX+x} ]; then echo "r'${VIASH_PAR_BAM_INDEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'bioproduct_stats': $( if [ ! -z ${VIASH_PAR_BIOPRODUCT_STATS+x} ]; then echo "r'${VIASH_PAR_BIOPRODUCT_STATS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'biotype_counts': $( if [ ! -z ${VIASH_PAR_BIOTYPE_COUNTS+x} ]; then echo "r'${VIASH_PAR_BIOTYPE_COUNTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dimred_tsne': $( if [ ! -z ${VIASH_PAR_DIMRED_TSNE+x} ]; then echo "r'${VIASH_PAR_DIMRED_TSNE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dimred_umap': $( if [ ! -z ${VIASH_PAR_DIMRED_UMAP+x} ]; then echo "r'${VIASH_PAR_DIMRED_UMAP//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'immune_cell_classification': $( if [ ! -z ${VIASH_PAR_IMMUNE_CELL_CLASSIFICATION+x} ]; then echo "r'${VIASH_PAR_IMMUNE_CELL_CLASSIFICATION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -4525,6 +4497,8 @@ par = {
   'exact_cell_count': $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "int(r'${VIASH_PAR_EXACT_CELL_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'expected_cell_count': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELL_COUNT+x} ]; then echo "int(r'${VIASH_PAR_EXPECTED_CELL_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'exclude_intronic_reads': $( if [ ! -z ${VIASH_PAR_EXCLUDE_INTRONIC_READS+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_INTRONIC_READS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'multiple_alignment_handling': $( if [ ! -z ${VIASH_PAR_MULTIPLE_ALIGNMENT_HANDLING+x} ]; then echo "r'${VIASH_PAR_MULTIPLE_ALIGNMENT_HANDLING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'multiple_alignment_gene_selection': $( if [ ! -z ${VIASH_PAR_MULTIPLE_ALIGNMENT_GENE_SELECTION+x} ]; then echo "r'${VIASH_PAR_MULTIPLE_ALIGNMENT_GENE_SELECTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'sample_tags_version': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAGS_VERSION+x} ]; then echo "r'${VIASH_PAR_SAMPLE_TAGS_VERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "r'${VIASH_PAR_TAG_NAMES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'vdj_version': $( if [ ! -z ${VIASH_PAR_VDJ_VERSION+x} ]; then echo "r'${VIASH_PAR_VDJ_VERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -4568,6 +4542,11 @@ dep = {
 
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+
+logger = setup_logger()
+
 
 def clean_arg(argument):
     argument["clean_name"] = re.sub("^-*", "", argument["name"])
@@ -4585,10 +4564,6 @@ def read_config(path: str) -> dict[str, Any]:
     return config
 
 
-def strip_margin(text: str) -> str:
-    return re.sub("(\\\\n?)[ \\\\t]*\\\\|", "\\\\\\\\1", text)
-
-
 def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     # check input parameters
     assert par["reads"] or par["reads_atac"], (
@@ -4601,9 +4576,8 @@ def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
 
     # checking sample prefix
     if par["run_name"] and re.match("[^A-Za-z0-9]", par["run_name"]):
-        print(
-            "--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.",
-            flush=True,
+        logger.warning(
+            "--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'."
         )
         par["run_name"] = re.sub("[^A-Za-z0-9\\\\\\\\-]", "-", par["run_name"])
 
@@ -4622,124 +4596,166 @@ def process_params(par: dict[str, Any], config, temp_dir: str) -> str:
     return par
 
 
-def generate_config(par: dict[str, Any], config) -> str:
-    content_list = [
-        strip_margin("""\\\\
-#!/usr/bin/env cwl-runner
-
-cwl:tool: rhapsody
-""")
-    ]
-
+def generate_config(par: dict[str, Any], config, meta: dict[str, Any]) -> str:
+    job_inputs = {}
     for argument in config["arguments"]:
-        arg_info = argument.get("info") or {}
-        config_key = arg_info.get("config_key")
-        if par[argument["clean_name"]] and config_key:
-            if argument["type"] == "file":
-                str = strip_margin(f"""\\\\
-{config_key}:
-""")
-                if isinstance(par[argument["clean_name"]], list):
-                    for file in par[argument["clean_name"]]:
-                        str += strip_margin(f"""\\\\
- - class: File
-   location: "{file}"
-""")
-                else:
-                    str += strip_margin(f"""\\\\
-   class: File
-   location: "{par[argument["clean_name"]]}"
-""")
-                content_list.append(str)
+        config_key = (argument.get("info") or {}).get("config_key")
+        value = par[argument["clean_name"]]
+        if not (value and config_key):
+            continue
+        if argument["type"] == "file":
+            if isinstance(value, list):
+                value = [{"class": "File", "location": file} for file in value]
             else:
-                content_list.append(
-                    strip_margin(f"""\\\\
-{config_key}: {par[argument["clean_name"]]}
-""")
-                )
+                value = {"class": "File", "location": value}
+        job_inputs[config_key] = value
 
-    ## Write config to file
-    return "".join(content_list)
+    # Limit the number of threads used within each pipeline step
+    if meta["cpus"]:
+        job_inputs["Maximum_Threads"] = int(meta["cpus"])
+
+    return yaml.safe_dump(job_inputs, sort_keys=False)
 
 
 def generate_config_file(
-    par: dict[str, Any], config: dict[str, Any], temp_dir: str
+    par: dict[str, Any], config: dict[str, Any], meta: dict[str, Any], temp_dir: str
 ) -> str:
     config_file = os.path.join(temp_dir, "config.yml")
-    config_content = generate_config(par, config)
+    config_content = generate_config(par, config, meta)
     with open(config_file, "w") as f:
         f.write(config_content)
     return config_file
 
 
+def cap_resource(value: float | str, budget: int) -> float | str:
+    """Cap a ResourceRequirement value, which is either a number or a CWL expression."""
+    if isinstance(value, (int, float)):
+        return min(value, budget)
+    expression = value.strip() if isinstance(value, str) else ""
+    if expression.startswith("\\${") and expression.endswith("}"):
+        body = expression[2:-1]
+        return f"\\${{ return Math.min((function() {{ {body} }})(), {budget}); }}"
+    return budget
+
+
+def cap_resource_requirements(node: Any, memory: int | None, cpus: int | None):
+    """Recursively cap all ResourceRequirements in a CWL document."""
+    if isinstance(node, dict):
+        if node.get("class") == "ResourceRequirement":
+            if memory and "ramMin" in node:
+                node["ramMin"] = cap_resource(node["ramMin"], memory)
+            if cpus and "coresMin" in node:
+                node["coresMin"] = cap_resource(node["coresMin"], cpus)
+        for child in node.values():
+            cap_resource_requirements(child, memory, cpus)
+    elif isinstance(node, list):
+        for child in node:
+            cap_resource_requirements(child, memory, cpus)
+
+
+def get_resource_budget(meta: dict[str, Any]) -> tuple[int | None, int | None]:
+    """The memory (in MB) and cpus available to the pipeline."""
+    memory = (
+        int(meta["memory_mb"]) - 2000 if meta["memory_mb"] else None
+    )  # keep 2gb for OS
+    cpus = int(meta["cpus"]) if meta["cpus"] else None
+    return memory, cpus
+
+
 def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
     # create cwl file (if need be)
-    orig_cwl_file = os.path.join(
-        meta["resources_dir"], "rhapsody_pipeline_2.2.1_nodocker.cwl"
+    orig_cwl_file = os.path.abspath(
+        os.path.join(meta["resources_dir"], "rhapsody_pipeline_4.0.cwl")
     )
 
-    # Inject computational requirements into pipeline
-    if meta["memory_mb"] or meta["cpus"]:
-        cwl_file = os.path.join(dir, "pipeline.cwl")
+    if not (meta["memory_mb"] or meta["cpus"]):
+        return orig_cwl_file
 
-        # Read in the file
-        with open(orig_cwl_file, "r") as file:
-            cwl_data = file.read()
+    # Steps requesting more resources than available are never started by cwltool.
+    # Cap the requirements of each step to the resources available to this component.
+    with open(orig_cwl_file, "r") as file:
+        cwl_text = file.read()
+    cwl_data = json.loads(cwl_text.removeprefix("#!/usr/bin/env cwl-runner\\\\n"))
 
-        # Inject computational requirements into pipeline
-        if meta["memory_mb"]:
-            memory = int(meta["memory_mb"]) - 2000  # keep 2gb for OS
-            cwl_data = re.sub(
-                '"ramMin": [^\\\\n]*[^,](,?)\\\\n', f'"ramMin": {memory}\\\\\\\\1\\\\n', cwl_data
-            )
-        if meta["cpus"]:
-            cwl_data = re.sub(
-                '"coresMin": [^\\\\n]*[^,](,?)\\\\n',
-                f'"coresMin": {meta["cpus"]}\\\\\\\\1\\\\n',
-                cwl_data,
-            )
+    memory, cpus = get_resource_budget(meta)
+    cap_resource_requirements(cwl_data, memory, cpus)
 
-        # Write the file out again
-        with open(cwl_file, "w") as file:
-            file.write(cwl_data)
-    else:
-        cwl_file = orig_cwl_file
+    cwl_file = os.path.join(dir, "pipeline.cwl")
+    with open(cwl_file, "w") as file:
+        json.dump(cwl_data, file, indent=4)
 
     return cwl_file
 
 
-def copy_outputs(par: dict[str, Any], config: dict[str, Any]):
-    for arg in config["arguments"]:
-        par_value = par[arg["clean_name"]]
-        if par_value and arg["type"] == "file" and arg["direction"] == "output":
-            # example template: '[sample_name]_(assay)_cell_type_experimental.csv'
-            template = (arg.get("info") or {}).get("template")
-            if template:
-                template_glob = (
-                    template.replace("sample", par["run_name"])
-                    .replace("assay", "*")
-                    .replace("number", "*")
-                )
-                files = glob.glob(os.path.join(par["output_dir"], template_glob))
-                if len(files) == 0 and arg["required"]:
-                    raise ValueError(
-                        f"Expected output file '{template_glob}' not found."
-                    )
-                elif len(files) > 1 and not arg["multiple"]:
-                    raise ValueError(
-                        f"Expected single output file '{template_glob}', but found multiple."
-                    )
+# Output files of the BD Rhapsody pipeline, as glob patterns relative to the output directory
+OUTPUT_FILES = {
+    "output_seurat": "{run_name}_Seurat.rds",
+    "output_mudata": "{run_name}.cellismo",
+    "metrics_summary": "{run_name}_Metrics_Summary.csv",
+    "pipeline_report": "{run_name}_Pipeline_Report.html",
+    "rsec_mols_per_cell": "{run_name}_RSEC_MolsPerCell_MEX.zip",
+    "dbec_mols_per_cell": "{run_name}_DBEC_MolsPerCell_MEX.zip",
+    "rsec_mols_per_cell_unfiltered": "{run_name}_RSEC_MolsPerCell_Unfiltered_MEX.zip",
+    # the BAM files can be prefixed, e.g. 'Combined_sample_Bioproduct.bam'
+    "bam": "*{run_name}_Bioproduct.bam",
+    "bam_index": "*{run_name}_Bioproduct.bam.*",
+    "bioproduct_stats": "{run_name}_Bioproduct_Stats.csv",
+    "biotype_counts": "{run_name}_biotypeCounts.csv",
+    "dimred_tsne": "{run_name}_tSNE_coordinates.csv",
+    "dimred_umap": "{run_name}_UMAP_coordinates.csv",
+    "immune_cell_classification": "{run_name}_cell_type_experimental.csv",
+    "sample_tag_metrics": "{run_name}_Sample_Tag_Metrics.csv",
+    "sample_tag_calls": "{run_name}_Sample_Tag_Calls.csv",
+    "sample_tag_counts": "{run_name}_Sample*Tag*.zip",
+    "sample_tag_counts_unassigned": "{run_name}_Multiplet_and_Undetermined.zip",
+    "vdj_metrics": "{run_name}_VDJ_metrics.csv",
+    "vdj_per_cell": "{run_name}_VDJ_perCell.csv",
+    "vdj_per_cell_uncorrected": "{run_name}_VDJ_perCell_uncorrected.csv.gz",
+    "vdj_dominant_contigs": "{run_name}_VDJ_Dominant_Contigs_AIRR.tsv",
+    "vdj_unfiltered_contigs": "{run_name}_VDJ_Unfiltered_Contigs_AIRR.tsv.gz",
+    "atac_metrics": "{run_name}_ATAC_Metrics.csv",
+    "atac_metrics_json": "{run_name}_ATAC_Metrics.json",
+    "atac_fragments": "{run_name}_ATAC_Fragments.bed.gz",
+    "atac_fragments_index": "{run_name}_ATAC_Fragments.bed.gz.tbi",
+    "atac_transposase_sites": "{run_name}_ATAC_Transposase_Sites.bed.gz",
+    "atac_transposase_sites_index": "{run_name}_ATAC_Transposase_Sites.bed.gz.tbi",
+    "atac_peaks": "{run_name}_ATAC_Peaks.bed.gz",
+    "atac_peaks_index": "{run_name}_ATAC_Peaks.bed.gz.tbi",
+    "atac_peak_annotation": "{run_name}_peak_annotation.tsv.gz",
+    "atac_cell_by_peak": "{run_name}_ATAC_Cell_by_Peak_MEX.zip",
+    "atac_cell_by_peak_unfiltered": "{run_name}_ATAC_Cell_by_Peak_Unfiltered_MEX.zip",
+    "atac_bam": "*{run_name}_ATAC.bam",
+    "atac_bam_index": "*{run_name}_ATAC.bam.*",
+    "protein_aggregates_experimental": "{run_name}_Protein_Aggregates_Experimental.csv",
+}
 
-                if not arg["multiple"]:
-                    try:
-                        shutil.copy(files[0], par_value)
-                        print(f"Copied {files[0]} to {par_value}")
-                    except IndexError:
-                        print(f"Unable to copy {template_glob} to {par_value}")
-                else:
-                    # replace '*' in par_value with index
-                    for i, file in enumerate(files):
-                        shutil.copy(file, par_value.replace("*", str(i)))
+
+def copy_outputs(par: dict[str, Any]):
+    for argument, pattern in OUTPUT_FILES.items():
+        destination = par[argument]
+        if not destination:
+            continue
+        pattern = pattern.format(run_name=par["run_name"])
+        files = sorted(glob.glob(os.path.join(par["output_dir"], pattern)))
+        if isinstance(destination, list):  # multiple: true
+            # replace the '*' with the file name without run name and extension
+            # e.g. 'sample_SampleTag01_hs.zip' -> 'SampleTag01_hs'
+            suffix = pattern.rsplit("*", 1)[1]
+            for file in files:
+                name = (
+                    os.path.basename(file)
+                    .removeprefix(f"{par['run_name']}_")
+                    .removesuffix(suffix)
+                )
+                shutil.copy(file, destination[0].replace("*", name))
+                logger.info("Copied %s to --%s", file, argument)
+        elif len(files) == 1:
+            shutil.copy(files[0], destination)
+            logger.info("Copied %s to --%s", files[0], argument)
+        elif not files:
+            logger.warning("No output file found for --%s ('%s')", argument, pattern)
+        else:
+            raise ValueError(f"Multiple output files found for --{argument}: {files}")
 
 
 def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
@@ -4749,12 +4765,25 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     par = process_params(par, config, temp_dir)
 
     ## Process parameters
+    # Run cwltool through a wrapper which limits the resources used by the parallel
+    # executor to the resources available to this component instead of the host.
+    memory, cpus = get_resource_budget(meta)
     cmd = [
-        "cwl-runner",
+        sys.executable,
+        os.path.abspath(os.path.join(meta["resources_dir"], "run_cwltool.py")),
+    ]
+    if memory:
+        cmd += ["--max_ram_mb", str(memory)]
+    if cpus:
+        cmd += ["--max_cores", str(cpus)]
+    cmd += [
         "--no-container",
         "--preserve-entire-environment",
         "--outdir",
         par["output_dir"],
+        # temporary directories and intermediate outputs of the pipeline steps
+        "--tmpdir-prefix",
+        os.path.join(temp_dir, ""),
     ]
 
     if par["parallel"]:
@@ -4768,23 +4797,36 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     cmd.append(cwl_file)
 
     # Create params file
-    config_file = generate_config_file(par, config, temp_dir)
+    config_file = generate_config_file(par, config, meta, temp_dir)
     cmd.append(config_file)
-
-    # keep environment variables but set TMPDIR to temp_dir
-    env = dict(os.environ)
-    env["TMPDIR"] = temp_dir
 
     # Create output dir if not exists
     if not os.path.exists(par["output_dir"]):
         os.makedirs(par["output_dir"])
 
     # Run command
-    print("> " + " ".join(cmd), flush=True)
-    _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file), env=env)
+    logger.info("> %s", " ".join(cmd))
+    with (
+        subprocess.Popen(
+            cmd,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            bufsize=1,
+            cwd=os.path.dirname(config_file),
+        ) as process,
+        open(os.path.join(par["output_dir"], "bd_rhapsody.log"), "w") as open_log,
+    ):
+        for line in process.stdout:
+            print(line.strip(), flush=True)
+            open_log.write(line)
+    logger.info("Checking exit code.")
+    # Popen objects do not have a check_exitcode method.
+    if process.returncode != 0:
+        raise RuntimeError("BD Rhapsody pipeline returned a nonzero exitcode!")
 
     # Copy outputs
-    copy_outputs(par, config)
+    copy_outputs(par)
 
 
 if __name__ == "__main__":

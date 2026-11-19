@@ -458,9 +458,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component dimred densmap"
-LABEL org.opencontainers.image.created="2026-11-18T10:48:55Z"
+LABEL org.opencontainers.image.created="2026-11-19T10:57:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="94e6311e5473c84733dce712457c4a78807e248b"
+LABEL org.opencontainers.image.revision="7fdb57b0124d196dd50c43c752f6b3dd9825e55f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -602,8 +602,12 @@ function ViashHelp {
   echo "        The \`.uns\` neighbors slot as output by the \`find_neighbors\` component."
   echo ""
   echo "    --obsm_pca"
-  echo "        type: string, required parameter"
-  echo "        The slot in \`.obsm\` where the PCA results are stored."
+  echo "        type: string"
+  echo "        The slot in \`.obsm\` to compute the densMAP on, for example the PCA"
+  echo "        results or"
+  echo "        an integrated embedding. If not provided, the representation used to"
+  echo "        compute"
+  echo "        the neighbors (\`.uns[uns_neighbors][\"params\"][\"use_rep\"]\`) is used."
   echo ""
   echo "Outputs:"
   echo "    -o, --output"
@@ -660,8 +664,8 @@ function ViashHelp {
   echo "        min: 0"
   echo "        max: 1000"
   echo "        The number of iterations (epochs) of the optimization. Called \`n_epochs\`"
-  echo "        in the original UMAP. Default is set to 500 if"
-  echo "        neighbors['connectivities'].shape[0] <= 10000, else 200."
+  echo "        in the original UMAP. When set to 0, the number of epochs is chosen"
+  echo "        based on the size of the dataset."
   echo ""
   echo "    --alpha"
   echo "        type: double"
@@ -1155,10 +1159,6 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_OBSM_PCA+x} ]; then
-  ViashError '--obsm_pca' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -1646,30 +1646,49 @@ if neigh_key not in data.uns:
         f"'{neigh_key}' was not found in .mod['{par['modality']}'].uns. Set the correct key or run 'find_neighbors' first."
     )
 
-temp_uns = {neigh_key: data.uns[neigh_key]}
-
-if "use_rep" not in temp_uns[neigh_key]["params"]:
+# the parameters used to compute the neighbors, as stored by 'find_neighbors' or scanpy
+neigh_params = data.uns[neigh_key].get("params")
+if not neigh_params or "metric" not in neigh_params:
     raise ValueError(
-        f"'use_rep' was not found in .mod['{par['modality']}'].uns['{neigh_key}'].params. Set the correct key or run PCA first."
+        f"'params' with a 'metric' was not found in .mod['{par['modality']}'].uns['{neigh_key}']. "
+        "Run 'find_neighbors' first."
     )
 
+obsm_input = par["obsm_pca"]
+if obsm_input is None:
+    if "use_rep" not in neigh_params:
+        raise ValueError(
+            f"'use_rep' was not found in .mod['{par['modality']}'].uns['{neigh_key}'].params. "
+            "Set --obsm_pca or run 'find_neighbors' first."
+        )
+    obsm_input = neigh_params["use_rep"]
+
+if obsm_input not in data.obsm:
+    raise ValueError(f"'{obsm_input}' was not found in .mod['{par['modality']}'].obsm.")
+
+# use the same metric as the neighbors
+metric = neigh_params["metric"]
+metric_kwds = dict(neigh_params.get("metric_kwds", {}))
+
+# umap-learn only picks the number of epochs itself when n_epochs is None
+n_epochs = par["max_iter"] if par["max_iter"] else None
 
 X_densmap = UMAP(
     min_dist=par["min_dist"],
     spread=par["spread"],
     n_components=par["num_components"],
-    n_epochs=par["max_iter"],
+    n_epochs=n_epochs,
     learning_rate=par["alpha"],
     repulsion_strength=par["gamma"],
     negative_sample_rate=par["negative_sample_rate"],
     init=par["init_pos"],
-    metric=data.uns["neighbors"].get("metric", "euclidean"),
-    metric_kwds=data.uns["neighbors"].get("metric_kwds", {}),
+    metric=metric,
+    metric_kwds=metric_kwds,
     densmap=True,
     dens_lambda=par["lambda"],
     dens_frac=par["fraction"],
     dens_var_shift=par["var_shift"],
-).fit_transform(data.obsm[par["obsm_pca"]])
+).fit_transform(data.obsm[obsm_input])
 
 logger.info(
     f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]"
@@ -1683,12 +1702,13 @@ data.uns["densmap"] = {
         "spread": par["spread"],
         "n_components": par["num_components"],
         "n_epochs": par["max_iter"],
+        "use_rep": obsm_input,
         "learning_rate": par["alpha"],
         "repulsion_strength": par["gamma"],
         "negative_sample_rate": par["negative_sample_rate"],
         "init": par["init_pos"],
-        "metric": data.uns["neighbors"].get("metric", "euclidean"),
-        "metric_kwds": data.uns["neighbors"].get("metric_kwds", {}),
+        "metric": metric,
+        "metric_kwds": metric_kwds,
         "dens_lambda": par["lambda"],
         "dens_frac": par["fraction"],
         "dens_var_shift": par["var_shift"],

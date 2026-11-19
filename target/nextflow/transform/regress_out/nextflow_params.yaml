@@ -4,6 +4,7 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # obs_keys: ["foo"]
 # input_layer: "X_normalized"
+# var_input: "filter_with_hvg"
 # output_layer: "X_regressed"
 # output_compression: "gzip"
 

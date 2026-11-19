@@ -3105,8 +3105,8 @@ meta = [
         {
           "type" : "string",
           "name" : "--obsm_pca",
-          "description" : "The slot in `.obsm` where the PCA results are stored.\n",
-          "required" : true,
+          "description" : "The slot in `.obsm` to compute the densMAP on, for example the PCA results or\nan integrated embedding. If not provided, the representation used to compute\nthe neighbors (`.uns[uns_neighbors][\\"params\\"][\\"use_rep\\"]`) is used.\n",
+          "required" : false,
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3210,7 +3210,7 @@ meta = [
         {
           "type" : "integer",
           "name" : "--max_iter",
-          "description" : "The number of iterations (epochs) of the optimization. Called `n_epochs` \nin the original UMAP. Default is set to 500 if \nneighbors['connectivities'].shape[0] <= 10000, else 200.\n",
+          "description" : "The number of iterations (epochs) of the optimization. Called `n_epochs` \nin the original UMAP. When set to 0, the number of epochs is chosen \nbased on the size of the dataset.\n",
           "default" : [
             0
           ],
@@ -3504,7 +3504,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/densmap",
     "viash_version" : "0.9.7",
-    "git_commit" : "94e6311e5473c84733dce712457c4a78807e248b",
+    "git_commit" : "7fdb57b0124d196dd50c43c752f6b3dd9825e55f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3635,30 +3635,49 @@ if neigh_key not in data.uns:
         f"'{neigh_key}' was not found in .mod['{par['modality']}'].uns. Set the correct key or run 'find_neighbors' first."
     )
 
-temp_uns = {neigh_key: data.uns[neigh_key]}
-
-if "use_rep" not in temp_uns[neigh_key]["params"]:
+# the parameters used to compute the neighbors, as stored by 'find_neighbors' or scanpy
+neigh_params = data.uns[neigh_key].get("params")
+if not neigh_params or "metric" not in neigh_params:
     raise ValueError(
-        f"'use_rep' was not found in .mod['{par['modality']}'].uns['{neigh_key}'].params. Set the correct key or run PCA first."
+        f"'params' with a 'metric' was not found in .mod['{par['modality']}'].uns['{neigh_key}']. "
+        "Run 'find_neighbors' first."
     )
 
+obsm_input = par["obsm_pca"]
+if obsm_input is None:
+    if "use_rep" not in neigh_params:
+        raise ValueError(
+            f"'use_rep' was not found in .mod['{par['modality']}'].uns['{neigh_key}'].params. "
+            "Set --obsm_pca or run 'find_neighbors' first."
+        )
+    obsm_input = neigh_params["use_rep"]
+
+if obsm_input not in data.obsm:
+    raise ValueError(f"'{obsm_input}' was not found in .mod['{par['modality']}'].obsm.")
+
+# use the same metric as the neighbors
+metric = neigh_params["metric"]
+metric_kwds = dict(neigh_params.get("metric_kwds", {}))
+
+# umap-learn only picks the number of epochs itself when n_epochs is None
+n_epochs = par["max_iter"] if par["max_iter"] else None
 
 X_densmap = UMAP(
     min_dist=par["min_dist"],
     spread=par["spread"],
     n_components=par["num_components"],
-    n_epochs=par["max_iter"],
+    n_epochs=n_epochs,
     learning_rate=par["alpha"],
     repulsion_strength=par["gamma"],
     negative_sample_rate=par["negative_sample_rate"],
     init=par["init_pos"],
-    metric=data.uns["neighbors"].get("metric", "euclidean"),
-    metric_kwds=data.uns["neighbors"].get("metric_kwds", {}),
+    metric=metric,
+    metric_kwds=metric_kwds,
     densmap=True,
     dens_lambda=par["lambda"],
     dens_frac=par["fraction"],
     dens_var_shift=par["var_shift"],
-).fit_transform(data.obsm[par["obsm_pca"]])
+).fit_transform(data.obsm[obsm_input])
 
 logger.info(
     f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]"
@@ -3672,12 +3691,13 @@ data.uns["densmap"] = {
         "spread": par["spread"],
         "n_components": par["num_components"],
         "n_epochs": par["max_iter"],
+        "use_rep": obsm_input,
         "learning_rate": par["alpha"],
         "repulsion_strength": par["gamma"],
         "negative_sample_rate": par["negative_sample_rate"],
         "init": par["init_pos"],
-        "metric": data.uns["neighbors"].get("metric", "euclidean"),
-        "metric_kwds": data.uns["neighbors"].get("metric_kwds", {}),
+        "metric": metric,
+        "metric_kwds": metric_kwds,
         "dens_lambda": par["lambda"],
         "dens_frac": par["fraction"],
         "dens_var_shift": par["var_shift"],

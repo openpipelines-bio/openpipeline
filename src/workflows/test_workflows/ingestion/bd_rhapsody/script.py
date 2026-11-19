@@ -1,49 +1,55 @@
-from mudata import read_h5mu
-import numpy as np
 import sys
+
+import numpy as np
 import pytest
+from mudata import read_h5mu
 
 ##VIASH START
-par = {"input": "input.h5mu"}
+par = {"input": "input.h5mu", "expected_modalities": ["rna", "prot"]}
 
 meta = {"resources_dir": "resources_test"}
 ##VIASH END
 
+EXPECTED_FEATURE_TYPES = {"rna": "Gene Expression", "prot": "Antibody Capture"}
+VDJ_MODALITIES = ["vdj_t", "vdj_t_gd", "vdj_b"]
+
 
 def test_run():
     input_mudata = read_h5mu(par["input"])
-    expected_var = ["gene_name", "feature_type", "reference_file", "gene_ids"]
+    expected_var = ["gene_symbol", "feature_types", "reference_file"]
     expected_obs = ["run_id", "library_id", "cell_id"]
 
-    assert "rna" in list(input_mudata.mod.keys()), "Input should contain rna modality."
-    assert "prot" in list(input_mudata.mod.keys()), "Input should contain rna modality."
-    # assert list(input_mudata.var.columns) == expected_var, f"Input var columns should be: {expected_var}."
-    assert all(
-        key in list(input_mudata.mod["rna"].var.columns) for key in expected_var
-    ), (
-        f"Input mod['rna'] var columns should be: {expected_var}, found: {input_mudata.mod['rna'].var.keys()}."
+    assert set(input_mudata.mod.keys()) == set(par["expected_modalities"]), (
+        f"Input should contain modalities {par['expected_modalities']}, "
+        f"found: {list(input_mudata.mod.keys())}."
     )
-    assert all(
-        key in list(input_mudata.mod["rna"].obs.columns) for key in expected_obs
-    ), (
-        f"Input mod['rna'] obs columns should be: {expected_obs}, found: {input_mudata.mod['rna'].obs.keys()}."
-    )
-    assert all(
-        key in list(input_mudata.mod["prot"].var.columns) for key in expected_var
-    ), (
-        f"Input mod['prot'] var columns should be: {expected_var}, found: {input_mudata.mod['prot'].var.keys()}."
-    )
-    assert all(
-        key in list(input_mudata.mod["prot"].obs.columns) for key in expected_obs
-    ), (
-        f"Input mod ['prot'] obs columns should be: {expected_obs}, found: {input_mudata.mod['prot'].obs.keys()}."
-    )
-    assert np.array_equal(
-        input_mudata.mod["rna"].var["feature_type"].unique(), ["Gene Expression"]
-    ), "Output X should only contain Gene Expression vars."
-    assert np.array_equal(
-        input_mudata.mod["prot"].var["feature_type"].unique(), ["Antibody Capture"]
-    ), "Output X should only contain Gene Expression vars."
+
+    for modality, feature_type in EXPECTED_FEATURE_TYPES.items():
+        if modality not in input_mudata.mod:
+            continue
+        adata = input_mudata.mod[modality]
+        assert all(key in list(adata.var.columns) for key in expected_var), (
+            f"Input mod['{modality}'] var columns should be: {expected_var}, found: {adata.var.keys()}."
+        )
+        assert all(key in list(adata.obs.columns) for key in expected_obs), (
+            f"Input mod['{modality}'] obs columns should be: {expected_obs}, found: {adata.obs.keys()}."
+        )
+        assert np.array_equal(adata.var["feature_types"].unique(), [feature_type]), (
+            f"Input mod['{modality}'] should only contain {feature_type} vars."
+        )
+
+    for modality in VDJ_MODALITIES:
+        if modality not in input_mudata.mod:
+            continue
+        adata = input_mudata.mod[modality]
+        assert "airr" in adata.obsm, (
+            f"Input mod['{modality}'] should contain .obsm['airr']."
+        )
+        assert all(
+            key in list(adata.obs.columns) for key in expected_obs + ["putative_cell"]
+        ), (
+            f"Input mod['{modality}'] obs columns should contain: {expected_obs + ['putative_cell']}, found: {adata.obs.keys()}."
+        )
 
 
 if __name__ == "__main__":

@@ -17,18 +17,29 @@ workflow test_wf {
         reference_archive: resources_test.resolve("reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz"),
         abseq_reference: resources_test.resolve("bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"),
         cell_calling_data: "mRNA",
-        exact_cell_count: 4900
-      ] 
+        exact_cell_count: 4900,
+        expected_modalities: ["rna", "prot"]
+      ],
+      [
+        id: "vdj",
+        reads: file("${params.resources_test}/bdrhap_vdj/raw/RhapVDJDemo-*.fastq.gz"),
+        targeted_reference: resources_test.resolve("bdrhap_vdj/raw/BD_Rhapsody_Immune_Response_Panel_Hs.fasta"),
+        vdj_version: "human",
+        expected_modalities: ["rna", "vdj_t", "vdj_t_gd", "vdj_b"]
+      ]
     ])
     | map{ state -> [state.id, state] }
-    | bd_rhapsody
+    | bd_rhapsody.run(
+      fromState: { id, state -> state.findAll { key, value -> key != "expected_modalities" } },
+      toState: { id, output, state -> output + [expected_modalities: state.expected_modalities] }
+    )
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
 
       def id = output[0]
       def data = output[1]
 
-      assert id == "foo" : "Output ID should be same as input ID"
+      assert id in ["foo", "vdj"] : "Output ID should be same as input ID"
       assert "output_raw" in data : "Output should contain output_raw"
       assert "output" in data : "Output should contain output_h5mu"
       assert data.output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
@@ -36,12 +47,12 @@ workflow test_wf {
     }
 
     | bd_rhapsody_test.run(
-      fromState: ["input": "output"]
+      fromState: ["input": "output", "expected_modalities": "expected_modalities"]
     )
 
     | toList()
     | view { output_list ->
-      assert output_list.size() == 1 : "output channel should contain one event"
+      assert output_list.size() == 2 : "output channel should contain two events"
     }
 
     // | view { output -> output[1]}

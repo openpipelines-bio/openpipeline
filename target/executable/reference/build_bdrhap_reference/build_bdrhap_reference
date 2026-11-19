@@ -446,7 +446,7 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM bdgenomics/rhapsody:2.2.1
+FROM bdgenomics/rhapsody:4.0
 ENTRYPOINT []
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps seqkit && \
@@ -457,9 +457,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-LABEL org.opencontainers.image.created="2026-11-18T10:48:52Z"
+LABEL org.opencontainers.image.created="2026-11-19T10:57:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="94e6311e5473c84733dce712457c4a78807e248b"
+LABEL org.opencontainers.image.revision="7fdb57b0124d196dd50c43c752f6b3dd9825e55f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -591,8 +591,8 @@ function ViashHelp {
   echo "    --genome_fasta"
   echo "        type: file, required parameter, multiple values allowed, file must exist"
   echo "        example: genome_sequence.fa.gz"
-  echo "        Reference genome file in FASTA or FASTA.GZ format. The BD Rhapsody"
-  echo "        Sequencing Analysis Pipeline uses GRCh38 for Human and GRCm39 for Mouse."
+  echo "        Reference genome file in FASTA or FASTA.GZ format. The pre-built BD"
+  echo "        reference archive files use GRCh38 for Human and GRCm39 for Mouse."
   echo ""
   echo "    --gtf"
   echo "        type: file, required parameter, multiple values allowed, file must exist"
@@ -610,9 +610,21 @@ function ViashHelp {
   echo "        type: file, multiple values allowed, file must exist"
   echo "        example: extra_sequence_1.fa.gz;extra_sequence_2.fa.gz"
   echo "        File path to additional sequences in FASTA format to use when building"
-  echo "        the STAR index. (e.g. transgenes or CRISPR guide barcodes)."
+  echo "        the STAR and bwa-mem2 indices. (e.g. transgenes or CRISPR guide"
+  echo "        barcodes)."
   echo "        GTF lines for these sequences will be automatically generated and"
   echo "        combined with the main GTF."
+  echo ""
+  echo "    --transcription_factor_motif_pfm"
+  echo "        type: file, multiple values allowed, file must exist"
+  echo "        example: JASPAR2024_CORE_vertebrates_non-redundant_pfms_jaspar.txt"
+  echo "        Text file of Transcription Factor Motif position frequency matrices in"
+  echo "        JASPAR format. Used to compute a"
+  echo "        TF motif-by-cell matrix in the ATAC-Seq analysis pipeline."
+  echo "        The pre-built BD reference archive files use the"
+  echo "        JASPAR2024_CORE_vertebrates_non-redundant_pfms_jaspar.txt file"
+  echo "        for both Human and Mouse. See"
+  echo "        https://jaspar.elixir.no/download/data/2024/CORE/."
   echo ""
   echo "Outputs:"
   echo "    --reference_archive"
@@ -632,15 +644,22 @@ function ViashHelp {
   echo ""
   echo "    --filtering_off"
   echo "        type: boolean_true"
-  echo "        By default the input Transcript Annotation files are filtered based on"
-  echo "        the gene_type/gene_biotype attribute. Only features"
-  echo "        having the following attribute values are kept:"
+  echo "        By default, the input GTF files are filtered based on the gene_type,"
+  echo "        gene_biotype, or transcript_type attributes."
+  echo "        Only genes with a gene_type or gene_biotype matching one of the accepted"
+  echo "        values are retained, and each gene must"
+  echo "        have at least one transcript with a valid transcript_type. An exception"
+  echo "        is made to the transcript requirement if"
+  echo "        the gene does not overlap with any other gene that has a valid biotype."
+  echo "        Accepted biotypes include:"
   echo "          - protein_coding"
-  echo "          - lncRNA"
+  echo "          - protein_coding_LOF"
+  echo "          - lncRNA (lincRNA and antisense for Gencode < v31/M22/Ensembl97)"
   echo "          - IG_LV_gene"
   echo "          - IG_V_gene"
   echo "          - IG_V_pseudogene"
   echo "          - IG_D_gene"
+  echo "          - IG_D_pseudogene"
   echo "          - IG_J_gene"
   echo "          - IG_J_pseudogene"
   echo "          - IG_C_gene"
@@ -654,13 +673,48 @@ function ViashHelp {
   echo "          If you have already pre-filtered the input Annotation files and/or"
   echo "        wish to turn-off the filtering, please set this option to True."
   echo ""
+  echo "    --disable_readthrough_filtering"
+  echo "        type: boolean_true"
+  echo "        By default genes with only readthrough transcripts are removed. Any"
+  echo "        readthrough_transcript feature is also removed"
+  echo "        if its parent gene overlaps with another gene that meets the biotype"
+  echo "        requirement. Set this option to disable this behaviour."
+  echo ""
+  echo "    --filter_pars"
+  echo "        type: boolean_true"
+  echo "        Remove features in the 2 Pseudo-Autosomal Regions (PARs) on the Y"
+  echo "        chromosome. This applies only to a Human build 38 reference."
+  echo ""
+  echo "    --combine_same_gene_names"
+  echo "        type: boolean_true"
+  echo "        Combine genes with the same gene name, even when gene ids are different."
+  echo "        If not enabled (default), chromosome, start,"
+  echo "        and strand information will be appended to the duplicated gene names."
+  echo ""
   echo "    --wta_only_index"
   echo "        type: boolean_true"
   echo "        Build a WTA only index, otherwise builds a WTA + ATAC index."
   echo ""
+  echo "    --disable_fasta_validation"
+  echo "        type: boolean_true"
+  echo "        Skip validation that the FASTA files contain the contigs referenced in"
+  echo "        the GTF files. Only use this in rare cases"
+  echo "        where you deliberately want to bypass the contig compatibility check."
+  echo ""
+  echo "    --repair_gtf"
+  echo "        type: boolean_true"
+  echo "        Attempt to repair invalid GTF files using the built-in repair"
+  echo "        functionality. The validator will try to fix common"
+  echo "        GTF format issues and use the repaired files for downstream processing."
+  echo ""
+  echo "    --gtf_validation_complete_mode"
+  echo "        type: boolean_true"
+  echo "        Generate a full report about errors and warnings in the GTF, instead of"
+  echo "        failing when the first fatal error is encountered."
+  echo ""
   echo "    --extra_star_params"
   echo "        type: string"
-  echo "        example: --limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11"
+  echo "        example: --limitGenomeGenerateRAM 48000000000 --genomeSAindexNbases 11"
   echo "        Additional parameters to pass to STAR when building the genome index."
   echo "        Specify exactly like how you would on the command line."
   echo ""
@@ -765,6 +819,23 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
+        --transcription_factor_motif_pfm)
+            if [ -z "$VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM" ]; then
+              VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM="$2"
+            else
+              VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM="$VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --transcription_factor_motif_pfm. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --transcription_factor_motif_pfm=*)
+            if [ -z "$VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM" ]; then
+              VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM="$VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM;"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
         --reference_archive)
             [ -n "$VIASH_PAR_REFERENCE_ARCHIVE" ] && ViashError Bad arguments for option \'--reference_archive\': \'$VIASH_PAR_REFERENCE_ARCHIVE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE_ARCHIVE="$2"
@@ -798,9 +869,39 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_FILTERING_OFF=true
             shift 1
             ;;
+        --disable_readthrough_filtering)
+            [ -n "$VIASH_PAR_DISABLE_READTHROUGH_FILTERING" ] && ViashError Bad arguments for option \'--disable_readthrough_filtering\': \'$VIASH_PAR_DISABLE_READTHROUGH_FILTERING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DISABLE_READTHROUGH_FILTERING=true
+            shift 1
+            ;;
+        --filter_pars)
+            [ -n "$VIASH_PAR_FILTER_PARS" ] && ViashError Bad arguments for option \'--filter_pars\': \'$VIASH_PAR_FILTER_PARS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_FILTER_PARS=true
+            shift 1
+            ;;
+        --combine_same_gene_names)
+            [ -n "$VIASH_PAR_COMBINE_SAME_GENE_NAMES" ] && ViashError Bad arguments for option \'--combine_same_gene_names\': \'$VIASH_PAR_COMBINE_SAME_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_COMBINE_SAME_GENE_NAMES=true
+            shift 1
+            ;;
         --wta_only_index)
             [ -n "$VIASH_PAR_WTA_ONLY_INDEX" ] && ViashError Bad arguments for option \'--wta_only_index\': \'$VIASH_PAR_WTA_ONLY_INDEX\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_WTA_ONLY_INDEX=true
+            shift 1
+            ;;
+        --disable_fasta_validation)
+            [ -n "$VIASH_PAR_DISABLE_FASTA_VALIDATION" ] && ViashError Bad arguments for option \'--disable_fasta_validation\': \'$VIASH_PAR_DISABLE_FASTA_VALIDATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DISABLE_FASTA_VALIDATION=true
+            shift 1
+            ;;
+        --repair_gtf)
+            [ -n "$VIASH_PAR_REPAIR_GTF" ] && ViashError Bad arguments for option \'--repair_gtf\': \'$VIASH_PAR_REPAIR_GTF\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REPAIR_GTF=true
+            shift 1
+            ;;
+        --gtf_validation_complete_mode)
+            [ -n "$VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE" ] && ViashError Bad arguments for option \'--gtf_validation_complete_mode\': \'$VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE=true
             shift 1
             ;;
         --extra_star_params)
@@ -1028,8 +1129,26 @@ fi
 if [ -z ${VIASH_PAR_FILTERING_OFF+x} ]; then
   VIASH_PAR_FILTERING_OFF="false"
 fi
+if [ -z ${VIASH_PAR_DISABLE_READTHROUGH_FILTERING+x} ]; then
+  VIASH_PAR_DISABLE_READTHROUGH_FILTERING="false"
+fi
+if [ -z ${VIASH_PAR_FILTER_PARS+x} ]; then
+  VIASH_PAR_FILTER_PARS="false"
+fi
+if [ -z ${VIASH_PAR_COMBINE_SAME_GENE_NAMES+x} ]; then
+  VIASH_PAR_COMBINE_SAME_GENE_NAMES="false"
+fi
 if [ -z ${VIASH_PAR_WTA_ONLY_INDEX+x} ]; then
   VIASH_PAR_WTA_ONLY_INDEX="false"
+fi
+if [ -z ${VIASH_PAR_DISABLE_FASTA_VALIDATION+x} ]; then
+  VIASH_PAR_DISABLE_FASTA_VALIDATION="false"
+fi
+if [ -z ${VIASH_PAR_REPAIR_GTF+x} ]; then
+  VIASH_PAR_REPAIR_GTF="false"
+fi
+if [ -z ${VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE+x} ]; then
+  VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE="false"
 fi
 
 # check whether required files exist
@@ -1069,6 +1188,18 @@ if [ ! -z "$VIASH_PAR_EXTRA_SEQUENCES" ]; then
   done
   set +f
 fi
+if [ ! -z "$VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM" ]; then
+  IFS=';'
+  set -f
+  for file in $VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM; do
+    unset IFS
+    if [ ! -e "$file" ]; then
+      ViashError "Input file '$file' does not exist."
+      exit 1
+    fi
+  done
+  set +f
+fi
 
 # check whether parameters values are of the right type
 if [[ -n "$VIASH_PAR_FILTERING_OFF" ]]; then
@@ -1077,9 +1208,45 @@ if [[ -n "$VIASH_PAR_FILTERING_OFF" ]]; then
     exit 1
   fi
 fi
+if [[ -n "$VIASH_PAR_DISABLE_READTHROUGH_FILTERING" ]]; then
+  if ! [[ "$VIASH_PAR_DISABLE_READTHROUGH_FILTERING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--disable_readthrough_filtering' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_FILTER_PARS" ]]; then
+  if ! [[ "$VIASH_PAR_FILTER_PARS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--filter_pars' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_COMBINE_SAME_GENE_NAMES" ]]; then
+  if ! [[ "$VIASH_PAR_COMBINE_SAME_GENE_NAMES" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--combine_same_gene_names' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_WTA_ONLY_INDEX" ]]; then
   if ! [[ "$VIASH_PAR_WTA_ONLY_INDEX" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--wta_only_index' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_DISABLE_FASTA_VALIDATION" ]]; then
+  if ! [[ "$VIASH_PAR_DISABLE_FASTA_VALIDATION" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--disable_fasta_validation' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_REPAIR_GTF" ]]; then
+  if ! [[ "$VIASH_PAR_REPAIR_GTF" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--repair_gtf' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE" ]]; then
+  if ! [[ "$VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--gtf_validation_complete_mode' has to be a boolean_true. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1197,6 +1364,17 @@ if [ ! -z "$VIASH_PAR_EXTRA_SEQUENCES" ]; then
   done
   VIASH_PAR_EXTRA_SEQUENCES=$(IFS=';' ; echo "${VIASH_TEST_EXTRA_SEQUENCES[*]}")
 fi
+if [ ! -z "$VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM" ]; then
+  VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM=()
+  IFS=';'
+  for var in $VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM; do
+    unset IFS
+    VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$var")" )
+    var=$(ViashDockerAutodetectMount "$var")
+    VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM+=( "$var" )
+  done
+  VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM=$(IFS=';' ; echo "${VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM[*]}")
+fi
 if [ ! -z "$VIASH_PAR_REFERENCE_ARCHIVE" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_REFERENCE_ARCHIVE")" )
   VIASH_PAR_REFERENCE_ARCHIVE=$(ViashDockerAutodetectMount "$VIASH_PAR_REFERENCE_ARCHIVE")
@@ -1276,6 +1454,7 @@ import tempfile
 from typing import Any
 import yaml
 import shutil
+import glob
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -1283,10 +1462,17 @@ par = {
   'genome_fasta': $( if [ ! -z ${VIASH_PAR_GENOME_FASTA+x} ]; then echo "r'${VIASH_PAR_GENOME_FASTA//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'gtf': $( if [ ! -z ${VIASH_PAR_GTF+x} ]; then echo "r'${VIASH_PAR_GTF//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'extra_sequences': $( if [ ! -z ${VIASH_PAR_EXTRA_SEQUENCES+x} ]; then echo "r'${VIASH_PAR_EXTRA_SEQUENCES//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'transcription_factor_motif_pfm': $( if [ ! -z ${VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM+x} ]; then echo "r'${VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'reference_archive': $( if [ ! -z ${VIASH_PAR_REFERENCE_ARCHIVE+x} ]; then echo "r'${VIASH_PAR_REFERENCE_ARCHIVE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'mitochondrial_contigs': $( if [ ! -z ${VIASH_PAR_MITOCHONDRIAL_CONTIGS+x} ]; then echo "r'${VIASH_PAR_MITOCHONDRIAL_CONTIGS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'filtering_off': $( if [ ! -z ${VIASH_PAR_FILTERING_OFF+x} ]; then echo "r'${VIASH_PAR_FILTERING_OFF//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'disable_readthrough_filtering': $( if [ ! -z ${VIASH_PAR_DISABLE_READTHROUGH_FILTERING+x} ]; then echo "r'${VIASH_PAR_DISABLE_READTHROUGH_FILTERING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'filter_pars': $( if [ ! -z ${VIASH_PAR_FILTER_PARS+x} ]; then echo "r'${VIASH_PAR_FILTER_PARS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'combine_same_gene_names': $( if [ ! -z ${VIASH_PAR_COMBINE_SAME_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_COMBINE_SAME_GENE_NAMES//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'wta_only_index': $( if [ ! -z ${VIASH_PAR_WTA_ONLY_INDEX+x} ]; then echo "r'${VIASH_PAR_WTA_ONLY_INDEX//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'disable_fasta_validation': $( if [ ! -z ${VIASH_PAR_DISABLE_FASTA_VALIDATION+x} ]; then echo "r'${VIASH_PAR_DISABLE_FASTA_VALIDATION//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'repair_gtf': $( if [ ! -z ${VIASH_PAR_REPAIR_GTF+x} ]; then echo "r'${VIASH_PAR_REPAIR_GTF//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'gtf_validation_complete_mode': $( if [ ! -z ${VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE+x} ]; then echo "r'${VIASH_PAR_GTF_VALIDATION_COMPLETE_MODE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'extra_star_params': $( if [ ! -z ${VIASH_PAR_EXTRA_STAR_PARAMS+x} ]; then echo "r'${VIASH_PAR_EXTRA_STAR_PARAMS//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
@@ -1332,10 +1518,6 @@ def read_config(path: str) -> dict[str, Any]:
     return config
 
 
-def strip_margin(text: str) -> str:
-    return re.sub("(\\n?)[ \\t]*\\|", "\\\\1", text)
-
-
 def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["genome_fasta"], "Pass at least one set of inputs to --genome_fasta."
@@ -1360,59 +1542,28 @@ def process_params(par: dict[str, Any], config) -> str:
 
 
 def generate_config(par: dict[str, Any], meta, config) -> str:
-    content_list = [
-        strip_margin("""\\
-        |#!/usr/bin/env cwl-runner
-        |
-        |""")
-    ]
-
-    config_key_value_pairs = []
+    job_inputs = {}
     for argument in config["arguments"]:
         config_key = (argument.get("info") or {}).get("config_key")
-        arg_type = argument["type"]
-        par_value = par[argument["clean_name"]]
-        if par_value and config_key:
-            config_key_value_pairs.append((config_key, arg_type, par_value))
+        value = par[argument["clean_name"]]
+        if not (value and config_key):
+            continue
+        if argument["type"] == "file":
+            if isinstance(value, list):
+                value = [{"class": "File", "location": file} for file in value]
+            else:
+                value = {"class": "File", "location": value}
+        job_inputs[config_key] = value
 
     if meta["cpus"]:
-        config_key_value_pairs.append(("Maximum_threads", "integer", meta["cpus"]))
+        job_inputs["Maximum_threads"] = int(meta["cpus"])
 
-    # print(config_key_value_pairs)
-
-    for config_key, arg_type, par_value in config_key_value_pairs:
-        if arg_type == "file":
-            str = strip_margin(f"""\\
-                |{config_key}:
-                |""")
-            if isinstance(par_value, list):
-                for file in par_value:
-                    str += strip_margin(f"""\\
-                        | - class: File
-                        |   location: "{file}"
-                        |""")
-            else:
-                str += strip_margin(f"""\\
-                    |   class: File
-                    |   location: "{par_value}"
-                    |""")
-            content_list.append(str)
-        else:
-            content_list.append(
-                strip_margin(f"""\\
-                |{config_key}: {par_value}
-                |""")
-            )
-
-    ## Write config to file
-    return "".join(content_list)
+    return yaml.safe_dump(job_inputs, sort_keys=False)
 
 
 def get_cwl_file(meta: dict[str, Any]) -> str:
     # create cwl file (if need be)
-    cwl_file = os.path.join(
-        meta["resources_dir"], "make_rhap_reference_2.2.1_nodocker.cwl"
-    )
+    cwl_file = os.path.join(meta["resources_dir"], "make_rhap_reference_4.0.cwl")
 
     return os.path.abspath(cwl_file)
 
@@ -1447,19 +1598,21 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             "--preserve-entire-environment",
             "--outdir",
             temp_dir,
+            # temporary directories and intermediate outputs of the pipeline steps
+            "--tmpdir-prefix",
+            os.path.join(temp_dir, ""),
             cwl_file,
             config_file,
         ]
 
-        env = dict(os.environ)
-        env["TMPDIR"] = temp_dir
-
         print("> " + " ".join(cmd), flush=True)
-        _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file), env=env)
+        _ = subprocess.check_call(cmd, cwd=os.path.dirname(config_file))
 
-        shutil.move(
-            os.path.join(temp_dir, "Rhap_reference.tar.gz"), par["reference_archive"]
+        archives = glob.glob(os.path.join(temp_dir, "*.tar.gz"))
+        assert len(archives) == 1, (
+            f"Expected exactly one reference archive, found: {archives}"
         )
+        shutil.move(archives[0], par["reference_archive"])
 
 
 if __name__ == "__main__":
@@ -1512,6 +1665,19 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
     fi
     done
     VIASH_PAR_EXTRA_SEQUENCES="$VIASH_TEST_EXTRA_SEQUENCES"
+  fi
+  if [ ! -z "$VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM" ]; then
+    unset VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM
+    IFS=';'
+    for var in $VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM; do
+      unset IFS
+      if [ -z "$VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM" ]; then
+      VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM="$(ViashDockerStripAutomount "$var")"
+    else
+      VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM="$VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM;""$(ViashDockerStripAutomount "$var")"
+    fi
+    done
+    VIASH_PAR_TRANSCRIPTION_FACTOR_MOTIF_PFM="$VIASH_TEST_TRANSCRIPTION_FACTOR_MOTIF_PFM"
   fi
   if [ ! -z "$VIASH_PAR_REFERENCE_ARCHIVE" ]; then
     VIASH_PAR_REFERENCE_ARCHIVE=$(ViashDockerStripAutomount "$VIASH_PAR_REFERENCE_ARCHIVE")

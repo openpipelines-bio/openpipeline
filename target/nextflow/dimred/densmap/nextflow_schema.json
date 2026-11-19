@@ -44,8 +44,8 @@
         },
         "obsm_pca": {
           "type": "string",
-          "description": "The slot in `.obsm` where the PCA results are stored.\n",
-          "help_text": "Type: `string`, multiple: `False`, required. "
+          "description": "The slot in `.obsm` to compute the densMAP on, for example the PCA results or\nan integrated embedding",
+          "help_text": "Type: `string`, multiple: `False`. "
         }
       }
     },

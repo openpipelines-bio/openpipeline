@@ -18,8 +18,8 @@
         }
       }
     },
-    "arguments": {
-      "title": "Arguments",
+    "inputs": {
+      "title": "Inputs",
       "type": "object",
       "description": "No description",
       "properties": {
@@ -29,13 +29,6 @@
           "exists": true,
           "description": "Input h5mu file",
           "help_text": "Type: `file`, multiple: `False`, required, direction: `input`, example: `\"input.h5mu\"`. "
-        },
-        "output": {
-          "type": "string",
-          "format": "path",
-          "description": "Output h5mu file.",
-          "help_text": "Type: `file`, multiple: `False`, required, default: `\"$id.$key.output.h5mu\"`, direction: `output`, example: `\"output.h5mu\"`. ",
-          "default": "$id.$key.output.h5mu"
         },
         "modality": {
           "type": "string",
@@ -49,26 +42,83 @@
             "type": "string"
           },
           "description": "The .obs keys to regress on.",
-          "help_text": "Type: `string`, multiple: `True`. "
+          "help_text": "Type: `string`, multiple: `True`, required. "
         },
         "input_layer": {
           "type": "string",
           "description": "The layer of the adata object to regress on.\nIf not provided, the X attribute of the adata object will be used.\n",
           "help_text": "Type: `string`, multiple: `False`, example: `\"X_normalized\"`. "
         },
+        "var_input": {
+          "type": "string",
+          "description": "Boolean column in .var used to select which genes to regress out (e.g",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"filter_with_hvg\"`. "
+        }
+      }
+    },
+    "outputs": {
+      "title": "Outputs",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "output": {
+          "type": "string",
+          "format": "path",
+          "description": "Output h5mu file.",
+          "help_text": "Type: `file`, multiple: `False`, required, default: `\"output.h5mu\"`, direction: `output`. ",
+          "default": "output.h5mu"
+        },
         "output_layer": {
           "type": "string",
-          "description": "The layer of the adata object containing the regressed count data.\nIf not provided, the X attribute of the adata object will be used.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"X_regressed\"`. "
+          "description": "The new layer of the adata object in which the regressed data is stored.\nPass an empty value (or null from Nextflow) to not store the regressed data, e.g",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"regressed\"`. ",
+          "default": "regressed"
         },
-        "output_compression": {
+        "output_layer_compression": {
+          "type": "integer",
+          "description": "GZIP compression level to use for the regressed output layer.\nBy default no compression is applied.\n",
+          "help_text": "Type: `integer`, multiple: `False`. "
+        },
+        "obsm_pca_output": {
           "type": "string",
-          "description": "Compression format to use for the output AnnData and/or Mudata H5 files.\nBy default no compression is applied.\n",
-          "help_text": "Type: `string`, multiple: `False`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
-          "enum": [
-            "gzip",
-            "lzf"
-          ]
+          "description": "If provided, the regressed data is scaled and a PCA is computed with BPCells,\nwithout loading the regressed data into memory",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"regressed_pca\"`. "
+        },
+        "varm_pca_output": {
+          "type": "string",
+          "description": "In which .varm slot to store the PCA loadings",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"regressed_pca_loadings\"`. ",
+          "default": "regressed_pca_loadings"
+        },
+        "uns_pca_output": {
+          "type": "string",
+          "description": "In which .uns slot to store the PCA variance and variance ratio.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"regressed_pca_variance\"`. ",
+          "default": "regressed_pca_variance"
+        }
+      }
+    },
+    "pca arguments": {
+      "title": "PCA arguments",
+      "type": "object",
+      "description": "No description",
+      "properties": {
+        "num_components": {
+          "type": "integer",
+          "description": "Number of principal components to compute.",
+          "help_text": "Type: `integer`, multiple: `False`, default: `50`. ",
+          "default": 50
+        },
+        "scale_max_value": {
+          "type": "number",
+          "description": "Clip the scaled data to the interval [-scale_max_value, scale_max_value] before running the PCA",
+          "help_text": "Type: `double`, multiple: `False`. "
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "Allow overwriting the .obsm, .varm and .uns PCA slots.",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
         }
       }
     },
@@ -87,7 +137,13 @@
   },
   "allOf": [
     {
-      "$ref": "#/$defs/arguments"
+      "$ref": "#/$defs/inputs"
+    },
+    {
+      "$ref": "#/$defs/outputs"
+    },
+    {
+      "$ref": "#/$defs/pca arguments"
     },
     {
       "$ref": "#/$defs/nextflow input-output arguments"
