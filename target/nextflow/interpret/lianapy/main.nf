@@ -3424,8 +3424,7 @@ meta = [
         {
           "type" : "apt",
           "packages" : [
-            "procps",
-            "git"
+            "procps"
           ],
           "interactive" : false
         },
@@ -3438,7 +3437,7 @@ meta = [
             "pandas>3",
             "scipy~=1.18.1",
             "mudata~=0.4.1",
-            "git+https://github.com/scverse/liana.git@v2.0.0"
+            "liana~=2.1.1"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3464,7 +3463,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.9.7",
-    "git_commit" : "bd233728404a51b1d07551c87ff4774152c479e9",
+    "git_commit" : "526a3855dc388b160594b8a17e2a62463eb66e0a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3584,7 +3583,7 @@ def main():
     # Add dummy grouping labels when they do not exist
     if par["groupby"] not in mod.obs:
         raise ValueError(
-            f"Column {par['groupy']} does not exist in "
+            f"Column {par['groupby']} does not exist in "
             f".obs for modality {par['modality']}."
         )
     mod_col = mod.obs[par["groupby"]]

@@ -450,18 +450,18 @@ function ViashDockerfile {
 FROM python:3.12-slim
 ENTRYPOINT []
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y procps git && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "git+https://github.com/scverse/liana.git@v2.0.0" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "liana~=2.1.1" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2026-11-19T09:25:16Z"
+LABEL org.opencontainers.image.created="2026-11-19T19:26:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bd233728404a51b1d07551c87ff4774152c479e9"
+LABEL org.opencontainers.image.revision="526a3855dc388b160594b8a17e2a62463eb66e0a"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1447,7 +1447,7 @@ def main():
     # Add dummy grouping labels when they do not exist
     if par["groupby"] not in mod.obs:
         raise ValueError(
-            f"Column {par['groupy']} does not exist in "
+            f"Column {par['groupby']} does not exist in "
             f".obs for modality {par['modality']}."
         )
     mod_col = mod.obs[par["groupby"]]

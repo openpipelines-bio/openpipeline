@@ -457,9 +457,9 @@ RUN apt-get update && \
 RUN cellranger telemetry disable
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-LABEL org.opencontainers.image.created="2026-11-19T09:25:12Z"
+LABEL org.opencontainers.image.created="2026-11-19T19:26:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bd233728404a51b1d07551c87ff4774152c479e9"
+LABEL org.opencontainers.image.revision="526a3855dc388b160594b8a17e2a62463eb66e0a"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

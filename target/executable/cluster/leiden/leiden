@@ -453,14 +453,14 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "scanpy~=1.12.5" "umap-learn==0.5.12" "leidenalg~=0.11.0" && \
+  pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "scanpy~=1.12.5" "umap-learn==0.5.12" "leidenalg~=0.12.0" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2026-11-19T09:25:21Z"
+LABEL org.opencontainers.image.created="2026-11-19T19:26:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bd233728404a51b1d07551c87ff4774152c479e9"
+LABEL org.opencontainers.image.revision="526a3855dc388b160594b8a17e2a62463eb66e0a"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

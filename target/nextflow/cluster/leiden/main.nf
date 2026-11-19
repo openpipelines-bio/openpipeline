@@ -3351,7 +3351,7 @@ meta = [
             "mudata~=0.4.1",
             "scanpy~=1.12.5",
             "umap-learn==0.5.12",
-            "leidenalg~=0.11.0"
+            "leidenalg~=0.12.0"
           ],
           "script" : [
             "exec(\\"try:\\\\n  import zarr; from importlib.metadata import version\\\\nexcept ModuleNotFoundError:\\\\n  exit(0)\\\\nelse:  assert int(version(\\\\\\"zarr\\\\\\").partition(\\\\\\".\\\\\\")[0]) > 2\\")"
@@ -3387,7 +3387,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.9.7",
-    "git_commit" : "bd233728404a51b1d07551c87ff4774152c479e9",
+    "git_commit" : "526a3855dc388b160594b8a17e2a62463eb66e0a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
