@@ -39,25 +39,19 @@ test_resources:
 
 engines:
 - type: docker
-  image: ghcr.io/data-intuitive/cellranger:9.0
+  image: quay.io/nf-core/cellranger:10.1.0
   setup:
     - type: docker
       run: |
         DEBIAN_FRONTEND=noninteractive apt update && \
         apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
+    - type: docker
+      run:
+        - cellranger telemetry disable
   test_setup:
     - type: apt
-      packages: [ git, wget ]
-    - type: docker
-      run: |
-        TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
-        TARGETOS="${TARGETOS:-linux}" && \
-        PATH="${PATH}:/usr/local/go/bin" && \
-        wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-        rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-        git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
-        cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
-  
+      packages: [ seqkit ]
+
 runners:
 - type: executable
 - type: nextflow

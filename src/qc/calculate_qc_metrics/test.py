@@ -40,7 +40,11 @@ def input_path(tmp_path, file_format):
     if file_format == "h5":
         return orig_path
     output_path = tmp_path / f"{str(uuid.uuid4())}.zarr"
-    md.read_h5mu(orig_path).write_zarr(output_path)
+    mdata = md.read_h5mu(orig_path)
+    # mudata 0.4.1 reads the 'axis' attribute from h5 as np.int64,
+    # which write_zarr can not serialize to JSON.
+    mdata._axis = int(mdata.axis)
+    mdata.write_zarr(output_path)
     return output_path
 
 
@@ -166,14 +170,8 @@ def test_add_qc(run_component, input_path, random_path, file_format):
     data_with_qc.mod["rna"].var = data_with_qc.mod["rna"].var.drop(
         columns=expected_var_columns, errors="raise"
     )
-    data_with_qc.var = data_with_qc.var.drop(
-        columns=list(map("rna:{}".format, expected_var_columns)), errors="errors"
-    )
     data_with_qc.mod["rna"].obs = data_with_qc.mod["rna"].obs.drop(
         columns=expected_obs_columns, errors="raise"
-    )
-    data_with_qc.obs = data_with_qc.obs.drop(
-        columns=list(map("rna:{}".format, expected_obs_columns)), errors="errors"
     )
     assert_annotation_objects_equal(input_data, data_with_qc)
 
@@ -245,14 +243,6 @@ def test_qc_metrics_set_output_column(
             attribute_name,
             getattr(data_with_qc.mod["rna"], attribute_name).drop(
                 columns=columns_to_drop, errors="raise"
-            ),
-        )
-        setattr(
-            data_with_qc,
-            attribute_name,
-            getattr(data_with_qc, attribute_name).drop(
-                columns=list(map("rna:{}".format, columns_to_drop)),
-                errors="raise",
             ),
         )
     assert_annotation_objects_equal(input_mudata_path, data_with_qc)
@@ -495,8 +485,8 @@ def test_global_slot_items(run_component, input_mudata_random, random_h5mu_path)
     )
     output_data = md.read_h5mu(output_path)
     assert "foo" in output_data.obs.columns
-    assert output_data.obs["foo"].unique().to_list() == ["a"]
-    assert output_data.var["bar"].unique().to_list() == ["b"]
+    assert output_data.obs["foo"].unique().tolist() == ["a"]
+    assert output_data.var["bar"].unique().tolist() == ["b"]
 
 
 @pytest.mark.parametrize(

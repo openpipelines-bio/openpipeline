@@ -30,4 +30,8 @@ exit_code=$?
 echo ">> Checking whether output can be found"
 [[ ! -f "$tmpdir/myreference.tar.gz" ]] && echo "Output tar file could not be found!" && exit 1
 
+echo ">> Checking whether the archive contains a STAR index"
+archive_contents=$(tar -tzf "$tmpdir/myreference.tar.gz")
+grep -q "star_index/" <<< "$archive_contents" || { echo "Archive does not contain a STAR index!"; exit 1; }
+
 echo "> Test succeeded!"

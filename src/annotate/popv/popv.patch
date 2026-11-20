@@ -1,0 +1,40 @@
+diff --git a/popv/algorithms/_harmony.py b/popv/algorithms/_harmony.py
+index 9c5a982..9f731a2 100644
+--- a/popv/algorithms/_harmony.py
++++ b/popv/algorithms/_harmony.py
+@@ -106,9 +106,11 @@ class KNN_HARMONY(BaseAlgorithm):
+                     correction_method="fast",
+                 )
+             else:
+-                sc.external.pp.harmony_integrate(
+-                    adata, key=self.batch_key, basis="X_pca", adjusted_basis=self.embedding_key
+-                )
++                import harmonypy
++
++                # harmonypy>=0.1.0 returns Z_corr as cells x PCs, scanpy still transposes it
++                harmony_out = harmonypy.run_harmony(adata.obsm["X_pca"].astype(np.float64), adata.obs, self.batch_key)
++                adata.obsm[self.embedding_key] = np.asarray(harmony_out.Z_corr)
+         else:
+             raise ValueError(f"Prediction mode {adata.uns['_prediction_mode']} not supported for HARMONY")
+ 
+diff --git a/pyproject.toml b/pyproject.toml
+index 619a10d..5de6196 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -40,14 +40,14 @@ dependencies = [
+     "anndata",
+     "bbknn",
+     "celltypist",
+-    "harmonypy<0.1.0",
++    "harmonypy>=2.0.0",
+     "huggingface-hub",
+     "onclass",
+     "scanorama",
+     "scanpy",
+     "scikit-misc",
+     "scvi-tools",
+-    "tensorflow<2.18",
++    "tensorflow>=2.20",
+     "huggingface",
+     "xgboost",
+     "scikit-learn<1.8.0",

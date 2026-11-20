@@ -12,6 +12,12 @@ argument_groups:
         required: true
         description: Path to h5mu output.
         example: foo.final.h5mu
+      - name: "--expected_modalities"
+        type: string
+        multiple: true
+        required: true
+        description: The modalities that should be present in the output.
+        example: [rna, prot]
 resources:
   - type: python_script
     path: script.py

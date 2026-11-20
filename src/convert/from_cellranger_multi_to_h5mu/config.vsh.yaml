@@ -50,9 +50,14 @@ arguments:
     type: boolean_true
     description: |
       If enabled, read the per-sample filtered count matrices
-      (per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5)
-      instead of the aggregated raw count matrix
-      (multi/count/raw_feature_bc_matrix.h5).
+      (sample_filtered_feature_bc_matrix.h5)
+      instead of the aggregated or per-sample raw count matrices
+      (raw_feature_bc_matrix.h5 or sample_raw_feature_bc_matrix.h5).
+      Note that Cell Ranger does not create per-sample raw count matrices when
+      multiplexing with CMOs, because barcodes that do not contain a cell cannot
+      be assigned to a sample. Requesting the raw count matrices of such an
+      experiment is not supported and raises an error; use this flag to read the
+      per-sample filtered count matrices instead.
 __merge__: [., /src/base/h5_compression_argument.yaml]
 
 resources:

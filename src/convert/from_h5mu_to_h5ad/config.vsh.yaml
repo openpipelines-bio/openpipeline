@@ -11,7 +11,7 @@ arguments:
     alternatives: ["-i"]
     type: file
     description: Input MuData file
-    default: input.h5mu
+    example: input.h5mu
     direction: input
     required: true
   - name: "--modality"
@@ -24,7 +24,7 @@ arguments:
     alternatives: ["-o"]
     type: file
     description: Output AnnData file.
-    default: output.h5ad
+    example: output.h5ad
     direction: output
 __merge__: [., /src/base/h5_compression_argument.yaml]
 

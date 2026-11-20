@@ -103,7 +103,7 @@ engines:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - leidenalg~=0.11.0
+          - leidenalg~=0.12.0
     __merge__: [ /src/base/requirements/python_test_setup.yaml ]
 runners:
   - type: executable

@@ -10,42 +10,24 @@ workflow run_wf {
         "output": "output_raw",
         "expect_cells": "expect_cells",
         "chemistry": "chemistry",
+        "disable_cell_annotation": "disable_cell_annotation",
         "secondary_analysis": "secondary_analysis",
         "generate_bam": "generate_bam",
         "include_introns": "include_introns",
         "reference": "reference"
       ],
-      toState: [
-        "input": "output",
-        "output_raw": "output"
-      ]
-    )
-    // split output dir into map
-    | cellranger_count_split.run(
-      fromState: {id, state -> 
-        def stateMapping = [
-          "input": state.input,
-        ]
-        outputType = state.output_type == "raw" ? "raw_h5" : "filtered_h5"
-        stateMapping += [outputType: "\$id.\$key.${outputType}.h5"]
-        stateMapping += ["metrics_summary": "\$id.\$key.metrics_summary.csv"]
-        return stateMapping
-      },
-      toState: {id, output, state -> 
-        def outputFile = state.output_type == "raw" ? output.raw_h5 : output.filtered_h5
-        def newState = state + [ "input": outputFile ] 
-        return newState
-      }
+      toState: ["output_raw": "output"]
     )
     // convert to h5mu
     | from_10xh5_to_h5mu.run(
       fromState: {id, state ->
+        def h5File = state.output_type == "raw" ? "raw_feature_bc_matrix.h5" : "filtered_feature_bc_matrix.h5"
         [
-          "input": state.input,
+          "input": state.output_raw.resolve(h5File),
           "output_compression": "gzip",
           "output": state.output_h5mu,
           "uns_metrics": state.uns_metrics,
-          "input_metrics_summary": state.metrics_summary
+          "input_metrics_summary": state.output_raw.resolve("metrics_summary.csv")
         ]
       },
       toState: ["output_h5mu": "output"]

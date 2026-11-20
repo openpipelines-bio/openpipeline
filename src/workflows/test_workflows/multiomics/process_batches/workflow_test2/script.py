@@ -37,14 +37,6 @@ output_prot = output.mod["prot"]
 del output_prot.varm["pca_loadings"]
 del output_prot.obsm["X_pca"]
 del output_prot.obsm["X_umap"]
-# QC metrics are recomputed during processing and now include log1p-transformed
-# variants that are not part of the reference input.
-del output_prot.obs["log1p_num_nonzero_vars"]
-del output_prot.obs["log1p_total_counts"]
-del output_prot.var["log1p_obs_mean"]
-del output_prot.var["log1p_total_counts"]
-# Added after #1196
-del output_prot.var["pct_dropout"]
 assert_annotation_objects_equal(input_prot, output_prot, promote_precision=True)
 
 
@@ -62,12 +54,6 @@ del output_rna.obsm["X_pca"]
 del output_rna.varm["pca_loadings"]
 del output_rna.obsm["X_umap"]
 del output_rna.layers["log_normalized"]
-# QC metrics are recomputed during processing and now include log1p-transformed
-# variants that are not part of the reference input.
-del output_rna.obs["log1p_num_nonzero_vars"]
-del output_rna.obs["log1p_total_counts"]
-del output_rna.var["log1p_obs_mean"]
-del output_rna.var["log1p_total_counts"]
 assert_annotation_objects_equal(input_rna, output_rna, promote_precision=True)
 
 
