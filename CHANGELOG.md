@@ -151,7 +151,7 @@
 
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
-* `annotate/svm_annotation`, `annotate/random_forest_annotation`: bump `scikit-learn` to `~=1.9` (from `==1.5.2` and `==1.4.2` respectively). Models passed with `--model` that were pickled with an older `scikit-learn` version can still be loaded, but `scikit-learn` will emit an `InconsistentVersionWarning`; retraining the model is recommended (PR #XXXX).
+* `annotate/svm_annotation`, `annotate/random_forest_annotation`: bump `scikit-learn` to `~=1.9` (from `==1.5.2` and `==1.4.2` respectively). Models passed with `--model` that were pickled with an older `scikit-learn` version can still be loaded, but `scikit-learn` will emit an `InconsistentVersionWarning`; retraining the model is recommended (PR #1307).
 
 ## BUG FIXES
 
