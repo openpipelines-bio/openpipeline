@@ -75,11 +75,15 @@ workflow test_gpu_wf {
 
   resources_test = file(params.resources_test)
 
+  // rapids-singlecell PCA rejects genes with zero total expression, so the PCA is
+  // run on the highly variable genes, as workflows/multiomics/process_batches does.
   input_ch = Channel.fromList([
       [
         id: "gpu_execution_test",
-        input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
-        layer: "",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        layer: "log_normalized",
+        var_pca_feature_selection: "filter_with_hvg",
+        pca_overwrite: true,
         device_type: "gpu",
         output: "foo.final.h5mu"
       ],

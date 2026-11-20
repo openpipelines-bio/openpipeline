@@ -8,21 +8,6 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    // The GPU (rapids-singlecell) PCA errors out on genes with zero expression,
-    // which upstream cell filtering can leave behind. The CPU PCA tolerates them,
-    // so only the GPU path needs this.
-    | filter_genes_gpu.run(
-      runIf: {id, state -> state.device_type == "gpu"},
-      fromState: {id, state ->
-        [
-          "input": state.input,
-          "modality": state.modality,
-          "layer": state.layer,
-        ]
-      },
-      args: ["min_counts": 1],
-      toState: ["input": "output"]
-    )
     | pca_cpu_or_gpu.run(
       fromState: [
         "input": "input", 

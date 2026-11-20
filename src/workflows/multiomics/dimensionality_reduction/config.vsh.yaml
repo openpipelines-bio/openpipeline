@@ -90,9 +90,6 @@ argument_groups:
 dependencies:
   - name: cpu_gpu_wrappers/preprocessing/pca
     alias: pca_cpu_or_gpu
-  - name: preprocessing/filter_genes
-    repository: openpipeline_rapids
-    alias: filter_genes_gpu
   - name: workflows/multiomics/neighbors_leiden_umap
 resources:
   - type: nextflow_script
@@ -108,5 +105,6 @@ test_resources:
     path: test.nf
     entrypoint: test_gpu_wf
   - path: /resources_test/concat_test_data
+  - path: /resources_test/pbmc_1k_protein_v3
 runners:
   - type: nextflow

@@ -179,9 +179,6 @@ dependencies:
   - name: dataflow/concatenate_h5mu
   - name: cpu_gpu_wrappers/preprocessing/pca
     alias: pca_cpu_or_gpu
-  - name: preprocessing/filter_genes
-    repository: openpipeline_rapids
-    alias: filter_genes_gpu
   - name: feature_annotation/align_query_reference
   - name: cpu_gpu_wrappers/preprocessing/highly_variable_genes
     alias: highly_variable_features_cpu_or_gpu
