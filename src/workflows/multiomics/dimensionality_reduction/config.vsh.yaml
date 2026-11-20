@@ -9,6 +9,9 @@ info:
   test_dependencies:
     - name: dimensionality_reduction_test
       namespace: test_workflows/multiomics
+  gpu_tests:
+    # Entrypoints that require a CUDA-capable NVIDIA GPU; skipped on GitHub Actions.
+    - test_gpu_wf
 argument_groups:
   - name: "Inputs"
     arguments:

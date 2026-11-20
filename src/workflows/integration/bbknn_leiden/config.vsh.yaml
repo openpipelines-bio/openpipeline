@@ -4,6 +4,9 @@ scope: "public"
 description: "Run bbknn followed by leiden clustering and run umap on the result."
 info:
   test_dependencies:
+  gpu_tests:
+    # Entrypoints that require a CUDA-capable NVIDIA GPU; skipped on GitHub Actions.
+    - test_gpu_wf
 authors:
   - __merge__: /src/authors/mauro_saporita.yaml
     roles: [ author ]

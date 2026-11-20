@@ -133,7 +133,7 @@
 
 * `workflows/utils/gpu.config`: added a Nextflow config that passes the host's NVIDIA devices into GPU-labelled containers, for use with `--device_type gpu` (PR #1225).
 
-* `workflows/rna/log_normalize`, `workflows/rna/rna_multisample`, `workflows/multiomics/dimensionality_reduction`, `workflows/integration/bbknn_leiden`, `workflows/integration/harmony_leiden`, `cpu_gpu_wrappers/*`: added a `test_gpu_wf` integration test that exercises the GPU implementations (PR #1225).
+* `workflows/rna/log_normalize`, `workflows/rna/rna_multisample`, `workflows/multiomics/dimensionality_reduction`, `workflows/integration/bbknn_leiden`, `workflows/integration/harmony_leiden`, `cpu_gpu_wrappers/*`: added a `test_gpu_wf` integration test that exercises the GPU implementations. Test entrypoints listed under `info.gpu_tests` in a component's config require a GPU and are skipped by the GitHub Actions integration tests (PR #1225).
 
 * `mapping/cellranger_multi`: raise a descriptive error when no FASTQ files are found for a `--library_id`, when the same FASTQ file is passed to more than one input argument (e.g. `--input` and `--gex_input`), or when the number of values for `--library_subsample` or `--library_lanes` does not match the number of libraries (PR #1172).
 

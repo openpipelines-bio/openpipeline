@@ -42,7 +42,7 @@ workflow test_wf {
 
 // Exercises the GPU (rapids-singlecell) implementations selected with
 // '--device_type gpu'. Requires a CUDA-capable NVIDIA GPU, so this entrypoint is
-// listed under 'gpu_tests' in _viash.yaml and skipped by the GitHub Actions CI.
+// listed under 'info.gpu_tests' in config.vsh.yaml and skipped by the GitHub Actions CI.
 // Scaling is enabled explicitly so the GPU 'scale' variant is covered as well.
 workflow test_gpu_wf {
 

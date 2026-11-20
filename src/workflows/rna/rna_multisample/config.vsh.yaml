@@ -5,6 +5,9 @@ description: "Processing unimodal multi-sample RNA transcriptomics data."
 info:
   image: /images/concepts/fig_workflow_multiomics_rna_multisample.svg
   test_dependencies:
+  gpu_tests:
+    # Entrypoints that require a CUDA-capable NVIDIA GPU; skipped on GitHub Actions.
+    - test_gpu_wf
 authors:
   - __merge__: /src/authors/dries_de_maeyer.yaml
     roles: [ author ]

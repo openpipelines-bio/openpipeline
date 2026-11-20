@@ -7,6 +7,9 @@ authors:
     roles: [ author ]
 info:
   test_dependencies:
+  gpu_tests:
+    # Entrypoints that require a CUDA-capable NVIDIA GPU; skipped on GitHub Actions.
+    - test_gpu_wf
 argument_groups:
   - name: "Inputs"
     arguments:
