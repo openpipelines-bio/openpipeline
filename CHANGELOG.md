@@ -151,6 +151,8 @@
 
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
+* `integrate/harmonypy`: bump the base image from `pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime` to `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` (PR #XXXX).
+
 ## BUG FIXES
 
 * `interpret/lianapy`: fix the error message raised when the `--groupby` column does not exist, which itself failed with a `KeyError` (PR #1301).
