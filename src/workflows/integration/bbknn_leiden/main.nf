@@ -11,18 +11,19 @@ workflow run_wf {
       [id, new_state]
     }
     // compute bbknn graph
-    | bbknn.run(
+    | bbknn_cpu_or_gpu.run(
       fromState: [
         "input": "input",
         "modality": "modality",
         "obsm_input": "obsm_input",
-        "obs_batch": "obs_batch",
+        "batch_key": "obs_batch",
         "uns_output": "uns_output",
         "obsp_distances": "obsp_distances",
         "obsp_connectivities": "obsp_connectivities",
-        "n_neighbors_within_batch": "n_neighbors_within_batch",
+        "neighbors_within_batch": "n_neighbors_within_batch",
         "n_pcs": "n_pcs",
-        "n_trim": "n_trim",
+        "trim": "n_trim",
+        "device_type": "device_type",
       ],
       toState: [
         "input": "output"
@@ -31,13 +32,14 @@ workflow run_wf {
   with_leiden_ch = bbknn_ch
     | filter{id, state -> state.leiden_resolution}
     // run leiden on the bbknn graph
-    | leiden.run(
+    | leiden_cpu_or_gpu.run(
       fromState: [
         "input": "input",
         "obsp_connectivities": "obsp_connectivities",
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
-        "modality": "modality"
+        "modality": "modality",
+        "device_type": "device_type"
       ],
       toState: [
         "input": "output"
@@ -59,7 +61,7 @@ workflow run_wf {
   
   output_ch = with_leiden_ch.mix(without_leiden_ch)
     // run umap on the bbknn graph
-    | umap.run(
+    | umap_cpu_or_gpu.run(
       fromState: { id, state ->
        [
           "input": state.input,
@@ -67,7 +69,8 @@ workflow run_wf {
           "obsm_output": state.obsm_umap,
           "modality": state.modality,
           "output": state.workflow_output,
-          "output_compression": "gzip"
+          "output_compression": "gzip",
+          "device_type": state.device_type
        ]
       },
       toState: ["output": "output"]

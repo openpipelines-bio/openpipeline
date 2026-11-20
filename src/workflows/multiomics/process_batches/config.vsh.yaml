@@ -170,6 +170,8 @@ argument_groups:
         default: true
         description: If true, center the data to zero mean before scaling. Set to false to omit zero-centering, which allows sparse input to be handled efficiently.
          
+  - __merge__: /src/base/device_type_argument.yaml
+
 dependencies:
   - name: dataflow/merge
   - name: filter/intersect_obs

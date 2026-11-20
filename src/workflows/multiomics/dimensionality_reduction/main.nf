@@ -8,7 +8,7 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    | pca.run(
+    | pca_cpu_or_gpu.run(
       fromState: [
         "input": "input", 
         "obsm_output": "obsm_pca",
@@ -18,6 +18,7 @@ workflow run_wf {
         "layer": "layer",
         "varm_output": "pca_loadings_varm_output",
         "uns_output": "pca_variance_uns_output",
+        "device_type": "device_type",
       ],
       toState: ["input": "output"]
     )
@@ -31,6 +32,7 @@ workflow run_wf {
         "obsp_neighbor_connectivities": "obsp_neighbor_connectivities",
         "output": "workflow_output",
         "obsm_umap": "obsm_umap",
+        "device_type": "device_type",
       ],
       toState: ["output": "output"],
       args: [

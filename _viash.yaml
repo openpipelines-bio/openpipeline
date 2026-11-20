@@ -31,6 +31,12 @@ links:
   documentation: https://openpipelines.bio/fundamentals
   issue_tracker: https://github.com/openpipelines-bio/openpipeline/issues
 
+repositories:
+  - name: openpipeline_rapids
+    repo: openpipeline_rapids
+    type: vsh
+    tag: v0.2.0
+
 info:
   test_resources:
     - type: s3
@@ -39,6 +45,8 @@ info:
   nextflow_labels_ci:
     - path: src/workflows/utils/labels_ci.config
       description: Adds the correct memory and CPU labels when running on the Viash Hub CI.
+    - path: src/workflows/utils/gpu.config
+      description: Passes the host's NVIDIA devices into GPU-labelled processes. The Viash Hub CI has a GPU available; the GitHub Actions runners do not and omit this file.
 
 config_mods: |
   .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}
