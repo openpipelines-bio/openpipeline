@@ -63,7 +63,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime
+  image: pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime
   setup:
     - type: docker
       env:
