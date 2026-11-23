@@ -3411,7 +3411,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime",
+      "image" : "pytorch/pytorch:2.15.0-cuda13.2-cudnn9-runtime",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3479,7 +3479,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.9.7",
-    "git_commit" : "ac99e664f197ea978035f14378de94e6588db76e",
+    "git_commit" : "abc7c67ce842cc4fc2c30e60d1a0ac6ffe85f561",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
