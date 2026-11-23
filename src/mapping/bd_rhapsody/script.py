@@ -8,6 +8,7 @@ from typing import Any
 import yaml
 import shutil
 import glob
+import psutil
 
 ## VIASH START
 par = {
@@ -210,13 +211,68 @@ def cap_resource_requirements(node: Any, memory: int | None, cpus: int | None):
             cap_resource_requirements(child, memory, cpus)
 
 
-def get_resource_budget(meta: dict[str, Any]) -> tuple[int | None, int | None]:
-    """The memory (in MB) and cpus available to the pipeline."""
-    memory = (
-        int(meta["memory_mb"]) - 2000 if meta["memory_mb"] else None
-    )  # keep 2gb for OS
-    cpus = int(meta["cpus"]) if meta["cpus"] else None
+def get_resource_budget(meta: dict[str, Any]) -> tuple[int, int]:
+    """The memory (in MB) and cpus available to the pipeline.
+
+    When no memory or cpus are specified, fall back to the resources of the host,
+    which is also what cwltool uses to decide whether a step can be started.
+    """
+    if meta["memory_mb"]:
+        memory = int(meta["memory_mb"]) - 2000  # keep 2gb for OS
+    else:
+        memory = get_host_memory_mb()
+    cpus = int(meta["cpus"]) if meta["cpus"] else get_host_cpus()
     return memory, cpus
+
+
+def read_cgroup_file(*paths: str) -> list[str] | None:
+    """The whitespace-separated fields of the first existing cgroup file."""
+    for path in paths:
+        try:
+            with open(path) as file:
+                return file.read().split()
+        except OSError:
+            continue
+    return None
+
+
+def get_host_memory_mb() -> int:
+    """Available memory (in MB), taking the memory limit of the container into account.
+
+    psutil reads /proc/meminfo, which shows the memory of the host inside a container.
+    """
+    available = psutil.virtual_memory().available
+    limit = read_cgroup_file(
+        "/sys/fs/cgroup/memory.max",  # cgroup v2
+        "/sys/fs/cgroup/memory/memory.limit_in_bytes",  # cgroup v1
+    )
+    usage = read_cgroup_file(
+        "/sys/fs/cgroup/memory.current",
+        "/sys/fs/cgroup/memory/memory.usage_in_bytes",
+    )
+    # 'max' (v2) or a huge number (v1) means no limit
+    if limit and limit[0].isdigit() and int(limit[0]) < available:
+        used = int(usage[0]) if usage and usage[0].isdigit() else 0
+        available = int(limit[0]) - used
+    return int(available / 2**20)
+
+
+def get_host_cpus() -> int:
+    """Available cpus, taking the cpu quota of the container into account.
+
+    psutil.cpu_count() returns the number of cpus of the host inside a container.
+    """
+    cpus = len(os.sched_getaffinity(0))
+    quota = read_cgroup_file("/sys/fs/cgroup/cpu.max")  # cgroup v2: '<quota> <period>'
+    if not quota:
+        v1_quota = read_cgroup_file("/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
+        v1_period = read_cgroup_file("/sys/fs/cgroup/cpu/cpu.cfs_period_us")
+        if v1_quota and v1_period:
+            quota = v1_quota + v1_period
+    # 'max' (v2) or -1 (v1) means no quota
+    if quota and len(quota) == 2 and quota[0].isdigit() and quota[1].isdigit():
+        cpus = min(cpus, max(1, int(quota[0]) // int(quota[1])))
+    return cpus
 
 
 def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
@@ -224,9 +280,6 @@ def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
     orig_cwl_file = os.path.abspath(
         os.path.join(meta["resources_dir"], "rhapsody_pipeline_4.0.cwl")
     )
-
-    if not (meta["memory_mb"] or meta["cpus"]):
-        return orig_cwl_file
 
     # Steps requesting more resources than available are never started by cwltool.
     # Cap the requirements of each step to the resources available to this component.
@@ -329,10 +382,7 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
         sys.executable,
         os.path.abspath(os.path.join(meta["resources_dir"], "run_cwltool.py")),
     ]
-    if memory:
-        cmd += ["--max_ram_mb", str(memory)]
-    if cpus:
-        cmd += ["--max_cores", str(cpus)]
+    cmd += ["--max_ram_mb", str(memory), "--max_cores", str(cpus)]
     cmd += [
         "--no-container",
         "--preserve-entire-environment",
