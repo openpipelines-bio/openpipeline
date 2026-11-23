@@ -121,7 +121,7 @@
 
 ## MINOR CHANGES
 
-* `genetic_demux/souporcell`: update souporcell to `3.0` by switching the base image from `cumulusprod/souporcell:2022.12` to `quay.io/biocontainers/souporcell:3.0--hfa8f182_0` (PR #XXXX):
+* `genetic_demux/souporcell`: update souporcell to `3.0` by switching the base image from `cumulusprod/souporcell:2022.12` to `quay.io/biocontainers/souporcell:3.0--hfa8f182_0` (PR #1305):
   - Added the `--clustering_method` (`em` or `khm`), `--souporcell3`, `--max_base_mem`, `--no_umi` and `--umi_tag` arguments.
   - `--known_genotypes_sample_names` now accepts multiple values.
   - `--ploidy` is restricted to `1` or `2`.
