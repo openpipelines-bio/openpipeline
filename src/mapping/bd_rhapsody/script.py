@@ -196,13 +196,13 @@ def cap_resource(value: float | str, budget: int) -> float | str:
     return budget
 
 
-def cap_resource_requirements(node: Any, memory: int | None, cpus: int | None):
+def cap_resource_requirements(node: Any, memory: int, cpus: int):
     """Recursively cap all ResourceRequirements in a CWL document."""
     if isinstance(node, dict):
         if node.get("class") == "ResourceRequirement":
-            if memory and "ramMin" in node:
+            if "ramMin" in node:
                 node["ramMin"] = cap_resource(node["ramMin"], memory)
-            if cpus and "coresMin" in node:
+            if "coresMin" in node:
                 node["coresMin"] = cap_resource(node["coresMin"], cpus)
         for child in node.values():
             cap_resource_requirements(child, memory, cpus)
@@ -275,8 +275,8 @@ def get_host_cpus() -> int:
     return cpus
 
 
-def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
-    # create cwl file (if need be)
+def generate_cwl_file(meta: dict[str, Any], dir: str, memory: int, cpus: int) -> str:
+    # create a cwl file with capped resource requirements
     orig_cwl_file = os.path.abspath(
         os.path.join(meta["resources_dir"], "rhapsody_pipeline_4.0.cwl")
     )
@@ -287,7 +287,6 @@ def generate_cwl_file(meta: dict[str, Any], dir: str) -> str:
         cwl_text = file.read()
     cwl_data = json.loads(cwl_text.removeprefix("#!/usr/bin/env cwl-runner\n"))
 
-    memory, cpus = get_resource_budget(meta)
     cap_resource_requirements(cwl_data, memory, cpus)
 
     cwl_file = os.path.join(dir, "pipeline.cwl")
@@ -377,6 +376,8 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     ## Process parameters
     # Run cwltool through a wrapper which limits the resources used by the parallel
     # executor to the resources available to this component instead of the host.
+    # Determine the budget once: the steps must be capped to the same values that
+    # cwltool uses, and the available memory of the host changes over time.
     memory, cpus = get_resource_budget(meta)
     cmd = [
         sys.executable,
@@ -399,8 +400,8 @@ def main(par: dict[str, Any], meta: dict[str, Any], temp_dir: str):
     if par["timestamps"]:
         cmd.append("--timestamps")
 
-    # Create cwl file (if need be)
-    cwl_file = generate_cwl_file(meta, temp_dir)
+    # Create cwl file with the resource requirements capped to the budget
+    cwl_file = generate_cwl_file(meta, temp_dir, memory, cpus)
     cmd.append(cwl_file)
 
     # Create params file
