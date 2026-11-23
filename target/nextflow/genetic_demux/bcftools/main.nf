@@ -3240,35 +3240,16 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ubuntu:latest",
+      "image" : "debian:latest",
       "target_tag" : "main_build",
       "namespace_separator" : "/",
       "setup" : [
         {
           "type" : "apt",
           "packages" : [
-            "wget",
-            "bzip2",
-            "gcc",
-            "make",
-            "libbz2-dev",
-            "zlib1g-dev",
-            "libncurses5-dev",
-            "libncursesw5-dev",
-            "liblzma-dev",
-            "autoconf",
-            "automake",
-            "perl",
-            "libcurl4-gnutls-dev",
-            "libssl-dev"
+            "bcftools"
           ],
           "interactive" : false
-        },
-        {
-          "type" : "docker",
-          "run" : [
-            "wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install"
-          ]
         }
       ]
     }
@@ -3279,7 +3260,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/bcftools",
     "viash_version" : "0.9.7",
-    "git_commit" : "5819f942a8968cc469393aa992ec325dafedc1ae",
+    "git_commit" : "ac99e664f197ea978035f14378de94e6588db76e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
