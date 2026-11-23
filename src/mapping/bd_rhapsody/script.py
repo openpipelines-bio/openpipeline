@@ -211,16 +211,23 @@ def cap_resource_requirements(node: Any, memory: int, cpus: int):
             cap_resource_requirements(child, memory, cpus)
 
 
-def get_resource_budget(meta: dict[str, Any]) -> tuple[int, int]:
-    """The memory (in MB) and cpus available to the pipeline.
+# Memory (in MB) kept for cwltool, the expressions it evaluates and the OS
+MEMORY_RESERVE_MB = 2000
 
-    When no memory or cpus are specified, fall back to the resources of the host,
-    which is also what cwltool uses to decide whether a step can be started.
+
+def get_resource_budget(meta: dict[str, Any]) -> tuple[int, int]:
+    """The memory (in MB) and cpus available to the pipeline steps.
+
+    When no memory or cpus are specified, fall back to the resources available
+    to this process (see get_host_memory_mb and get_host_cpus).
     """
-    if meta["memory_mb"]:
-        memory = int(meta["memory_mb"]) - 2000  # keep 2gb for OS
-    else:
-        memory = get_host_memory_mb()
+    total_memory = int(meta["memory_mb"]) if meta["memory_mb"] else get_host_memory_mb()
+    memory = total_memory - MEMORY_RESERVE_MB
+    if memory <= 0:
+        raise ValueError(
+            f"Only {total_memory} MB of memory is available, while {MEMORY_RESERVE_MB} MB "
+            "is kept for cwltool and the OS. Please provide more memory."
+        )
     cpus = int(meta["cpus"]) if meta["cpus"] else get_host_cpus()
     return memory, cpus
 
@@ -236,33 +243,39 @@ def read_cgroup_file(*paths: str) -> list[str] | None:
     return None
 
 
-def get_host_memory_mb() -> int:
-    """Available memory (in MB), taking the memory limit of the container into account.
+# cgroup v1 reports 'no limit' as a huge number (e.g. 9223372036854771712)
+CGROUP_V1_NO_LIMIT = 2**62
 
+
+def get_host_memory_mb() -> int:
+    """Available memory (in MB).
+
+    When the process has a memory limit (e.g. inside a container), only the headroom
+    within that limit is used. The memory of the host is only used without a limit:
     psutil reads /proc/meminfo, which shows the memory of the host inside a container.
     """
-    available = psutil.virtual_memory().available
     limit = read_cgroup_file(
-        "/sys/fs/cgroup/memory.max",  # cgroup v2
+        "/sys/fs/cgroup/memory.max",  # cgroup v2, 'max' means no limit
         "/sys/fs/cgroup/memory/memory.limit_in_bytes",  # cgroup v1
     )
-    usage = read_cgroup_file(
-        "/sys/fs/cgroup/memory.current",
-        "/sys/fs/cgroup/memory/memory.usage_in_bytes",
-    )
-    # 'max' (v2) or a huge number (v1) means no limit
-    if limit and limit[0].isdigit() and int(limit[0]) < available:
+    if limit and limit[0].isdigit() and int(limit[0]) < CGROUP_V1_NO_LIMIT:
+        usage = read_cgroup_file(
+            "/sys/fs/cgroup/memory.current",
+            "/sys/fs/cgroup/memory/memory.usage_in_bytes",
+        )
         used = int(usage[0]) if usage and usage[0].isdigit() else 0
         available = int(limit[0]) - used
+    else:
+        available = psutil.virtual_memory().available
     return int(available / 2**20)
 
 
 def get_host_cpus() -> int:
-    """Available cpus, taking the cpu quota of the container into account.
+    """Available cpus.
 
-    psutil.cpu_count() returns the number of cpus of the host inside a container.
+    When the process has a cpu quota (e.g. inside a container), only that quota is
+    used. Without a quota, the number of cpus the process is allowed to run on is used.
     """
-    cpus = len(os.sched_getaffinity(0))
     quota = read_cgroup_file("/sys/fs/cgroup/cpu.max")  # cgroup v2: '<quota> <period>'
     if not quota:
         v1_quota = read_cgroup_file("/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
@@ -271,8 +284,9 @@ def get_host_cpus() -> int:
             quota = v1_quota + v1_period
     # 'max' (v2) or -1 (v1) means no quota
     if quota and len(quota) == 2 and quota[0].isdigit() and quota[1].isdigit():
-        cpus = min(cpus, max(1, int(quota[0]) // int(quota[1])))
-    return cpus
+        return max(1, int(quota[0]) // int(quota[1]))
+    # the cpus this process is allowed to run on
+    return len(os.sched_getaffinity(0))
 
 
 def generate_cwl_file(meta: dict[str, Any], dir: str, memory: int, cpus: int) -> str:
