@@ -446,18 +446,17 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ubuntu:latest
+FROM debian:latest
 ENTRYPOINT []
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y wget bzip2 gcc make libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev autoconf automake perl libcurl4-gnutls-dev libssl-dev && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y bcftools && \
   rm -rf /var/lib/apt/lists/*
 
-RUN wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux bcftools"
-LABEL org.opencontainers.image.created="2026-11-22T10:05:50Z"
+LABEL org.opencontainers.image.created="2026-11-23T11:02:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="dee4b8730116d42059165e7b232a83780b509cae"
+LABEL org.opencontainers.image.revision="415bcbaed40fcaada8718d70fb01abc321722cdb"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

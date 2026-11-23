@@ -3445,41 +3445,27 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ubuntu:latest",
+      "image" : "debian:latest",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
         {
           "type" : "apt",
           "packages" : [
-            "wget",
+            "git",
+            "ca-certificates",
             "gcc",
-            "zlib1g",
             "make",
-            "libbz2-dev",
-            "zlib1g-dev",
-            "libncurses5-dev",
-            "liblzma-dev",
             "autoconf",
             "automake",
-            "perl",
-            "libcurl4-gnutls-dev",
-            "libssl-dev",
-            "git",
-            "bzip2"
+            "libhts-dev"
           ],
           "interactive" : false
         },
         {
           "type" : "docker",
           "run" : [
-            "wget https://github.com/samtools/htslib/releases/download/1.16/htslib-1.16.tar.bz2 -O htslib.tar.bz2 && tar -xjvf htslib.tar.bz2 && cd htslib-1.16 && make && make install"
-          ]
-        },
-        {
-          "type" : "docker",
-          "run" : [
-            "git clone https://github.com/single-cell-genetics/cellsnp-lite.git && cd cellsnp-lite && autoreconf -iv && ./configure --with-htslib=/htslib-1.16 && make && make install"
+            "git clone https://github.com/single-cell-genetics/cellsnp-lite.git && cd cellsnp-lite && autoreconf -iv && ./configure && make && make install"
           ]
         }
       ]
@@ -3491,7 +3477,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/cellsnp",
     "viash_version" : "0.9.7",
-    "git_commit" : "dee4b8730116d42059165e7b232a83780b509cae",
+    "git_commit" : "415bcbaed40fcaada8718d70fb01abc321722cdb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
