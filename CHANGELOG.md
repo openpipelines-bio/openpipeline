@@ -153,6 +153,8 @@
 
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
+* `genetic_demux/bcftools` and `genetic_demux/cellsnp`: Bump `bcftools` to `1.21`. The base image changed from `ubuntu:latest` to `debian:latest` (PR #1300).
+
 ## BUG FIXES
 
 * `interpret/lianapy`: fix the error message raised when the `--groupby` column does not exist, which itself failed with a `KeyError` (PR #1301).
