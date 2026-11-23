@@ -149,9 +149,7 @@
 
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
-* `genetic_demux/bcftools`: install `bcftools` from the Debian `apt` repository instead of building version `1.16` from source, which bumps `bcftools` to `1.21`. The base image changed from `ubuntu:latest` to `debian:latest` (PR #1300).
-
-* `genetic_demux/cellsnp`: build `cellsnp-lite` against `htslib` from the Debian `apt` repository (`libhts-dev`) instead of building `htslib` version `1.16` from source, which bumps `htslib` to `1.21`. The unused build dependencies were removed and the base image changed from `ubuntu:latest` to `debian:latest` (PR #1300).
+* `genetic_demux/bcftools` and `genetic_demux/cellsnp`: Bump `bcftools` to `1.21`. The base image changed from `ubuntu:latest` to `debian:latest` (PR #1300).
 
 ## BUG FIXES
 
