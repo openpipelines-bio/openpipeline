@@ -162,6 +162,8 @@
 
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
+* `annotate/svm_annotation`, `annotate/random_forest_annotation`: bump `scikit-learn` to `~=1.9` (from `==1.5.2` and `==1.4.2` respectively). Models passed with `--model` that were pickled with an older `scikit-learn` version can still be loaded, but `scikit-learn` will emit an `InconsistentVersionWarning`; retraining the model is recommended (PR #1307).
+
 * `integrate/harmonypy`: bump the base image from `pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime` to `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` (PR #1308).
 
 * `genetic_demux/bcftools` and `genetic_demux/cellsnp`: Bump `bcftools` to `1.21`. The base image changed from `ubuntu:latest` to `debian:latest` (PR #1300).
