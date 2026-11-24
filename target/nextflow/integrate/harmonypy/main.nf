@@ -3321,7 +3321,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime",
+      "image" : "pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3385,7 +3385,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy",
     "viash_version" : "0.9.7",
-    "git_commit" : "415bcbaed40fcaada8718d70fb01abc321722cdb",
+    "git_commit" : "e7dc822cc7fce023a311ab5195bb9735b220a72b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

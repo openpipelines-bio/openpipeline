@@ -76,9 +76,31 @@ argument_groups:
     default:
     - 2
     required: false
+    choices:
+    - 1
+    - 2
     direction: "input"
     multiple: false
     multiple_sep: ";"
+  - type: "string"
+    name: "--clustering_method"
+    description: "Clustering method: expectation maximization (em) or k harmonic means\
+      \ (khm).\nWhen not specified, souporcell uses its default (em). For datasets\
+      \ with more than 16 donors,\nkhm in combination with --souporcell3 is recommended.\n"
+    info: null
+    required: false
+    choices:
+    - "em"
+    - "khm"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--souporcell3"
+    description: "Use souporcell3, which iterates multiple times to refine the results.\n\
+      Suitable for datasets with a high number of donors (>16).\n"
+    info: null
+    direction: "input"
   - type: "integer"
     name: "--min_alt"
     description: "min alt to use locus"
@@ -111,8 +133,9 @@ argument_groups:
     multiple_sep: ";"
   - type: "integer"
     name: "--restarts"
-    description: "number of restarts in clustering, when there are > 12 clusters we\
-      \ recommend increasing this to avoid local minima"
+    description: "Number of restarts in clustering, when there are > 12 clusters we\
+      \ recommend increasing this to avoid local minima.\nWhen not specified, souporcell\
+      \ uses its default (100).\n"
     info: null
     required: false
     direction: "input"
@@ -145,22 +168,50 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--known_genotypes_sample_names"
-    description: "which samples in population vcf from known genotypes option represent\
-      \ the donors in your sample"
+    description: "Which samples in the population vcf from the known genotypes option\
+      \ represent the donors in your sample.\nThe number of sample names must be equal\
+      \ to the number of clusters.\n"
     info: null
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "boolean_true"
+    name: "--skip_remap"
+    description: "dont remap with minimap2 (not recommended unless in conjunction\
+      \ with --common_variants)"
+    info: null
+    direction: "input"
+  - type: "string"
+    name: "--max_base_mem"
+    description: "Maximum number of target bases loaded into RAM by minimap2 for indexing\
+      \ (minimap2 -I).\nIncrease this when minimap2 splits the index, which interferes\
+      \ with the retagging step.\n"
+    info: null
+    example:
+    - "4G"
     required: false
     direction: "input"
     multiple: false
     multiple_sep: ";"
   - type: "boolean_true"
-    name: "--skip_remap"
-    description: "dont remap with minimap2 (not recommended unless in conjunction\
-      \ with --common_variants"
+    name: "--no_umi"
+    description: "Set if your BAM file has no UMI tag. Overrides --umi_tag."
     info: null
     direction: "input"
+  - type: "string"
+    name: "--umi_tag"
+    description: "The BAM tag containing the UMI."
+    info: null
+    default:
+    - "UB"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
   - type: "boolean_true"
     name: "--ignore"
-    description: "set to True to ignore data error assertions"
+    description: "ignore data error assertions"
     info: null
     direction: "input"
 - name: "Output"
@@ -276,9 +327,13 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "cumulusprod/souporcell:2022.12"
+  image: "quay.io/biocontainers/souporcell:3.0--hfa8f182_0"
   target_tag: "integration_build"
   namespace_separator: "/"
+  setup:
+  - type: "docker"
+    env:
+    - "BASH_ENV=/usr/local/env-activate.sh"
   entrypoint: []
   cmd: null
 build_info:
@@ -288,7 +343,7 @@ build_info:
   output: "target/executable/genetic_demux/souporcell"
   executable: "target/executable/genetic_demux/souporcell/souporcell"
   viash_version: "0.9.7"
-  git_commit: "415bcbaed40fcaada8718d70fb01abc321722cdb"
+  git_commit: "e7dc822cc7fce023a311ab5195bb9735b220a72b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
 package_config:
   name: "openpipeline"

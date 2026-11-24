@@ -3138,9 +3138,32 @@ meta = [
             2
           ],
           "required" : false,
+          "choices" : [
+            1,
+            2
+          ],
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--clustering_method",
+          "description" : "Clustering method: expectation maximization (em) or k harmonic means (khm).\nWhen not specified, souporcell uses its default (em). For datasets with more than 16 donors,\nkhm in combination with --souporcell3 is recommended.\n",
+          "required" : false,
+          "choices" : [
+            "em",
+            "khm"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--souporcell3",
+          "description" : "Use souporcell3, which iterates multiple times to refine the results.\nSuitable for datasets with a high number of donors (>16).\n",
+          "direction" : "input"
         },
         {
           "type" : "integer",
@@ -3181,7 +3204,7 @@ meta = [
         {
           "type" : "integer",
           "name" : "--restarts",
-          "description" : "number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima",
+          "description" : "Number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima.\nWhen not specified, souporcell uses its default (100).\n",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3218,7 +3241,25 @@ meta = [
         {
           "type" : "string",
           "name" : "--known_genotypes_sample_names",
-          "description" : "which samples in population vcf from known genotypes option represent the donors in your sample",
+          "description" : "Which samples in the population vcf from the known genotypes option represent the donors in your sample.\nThe number of sample names must be equal to the number of clusters.\n",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--skip_remap",
+          "description" : "dont remap with minimap2 (not recommended unless in conjunction with --common_variants)",
+          "direction" : "input"
+        },
+        {
+          "type" : "string",
+          "name" : "--max_base_mem",
+          "description" : "Maximum number of target bases loaded into RAM by minimap2 for indexing (minimap2 -I).\nIncrease this when minimap2 splits the index, which interferes with the retagging step.\n",
+          "example" : [
+            "4G"
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -3226,14 +3267,26 @@ meta = [
         },
         {
           "type" : "boolean_true",
-          "name" : "--skip_remap",
-          "description" : "dont remap with minimap2 (not recommended unless in conjunction with --common_variants",
+          "name" : "--no_umi",
+          "description" : "Set if your BAM file has no UMI tag. Overrides --umi_tag.",
           "direction" : "input"
+        },
+        {
+          "type" : "string",
+          "name" : "--umi_tag",
+          "description" : "The BAM tag containing the UMI.",
+          "default" : [
+            "UB"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         },
         {
           "type" : "boolean_true",
           "name" : "--ignore",
-          "description" : "set to True to ignore data error assertions",
+          "description" : "ignore data error assertions",
           "direction" : "input"
         }
       ]
@@ -3380,9 +3433,17 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "cumulusprod/souporcell:2022.12",
+      "image" : "quay.io/biocontainers/souporcell:3.0--hfa8f182_0",
       "target_tag" : "integration_build",
-      "namespace_separator" : "/"
+      "namespace_separator" : "/",
+      "setup" : [
+        {
+          "type" : "docker",
+          "env" : [
+            "BASH_ENV=/usr/local/env-activate.sh"
+          ]
+        }
+      ]
     }
   ],
   "build_info" : {
@@ -3391,7 +3452,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/souporcell",
     "viash_version" : "0.9.7",
-    "git_commit" : "415bcbaed40fcaada8718d70fb01abc321722cdb",
+    "git_commit" : "e7dc822cc7fce023a311ab5195bb9735b220a72b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3455,6 +3516,8 @@ $( if [ ! -z ${VIASH_PAR_BAM_INDEX+x} ]; then echo "${VIASH_PAR_BAM_INDEX}" | se
 $( if [ ! -z ${VIASH_PAR_BARCODES+x} ]; then echo "${VIASH_PAR_BARCODES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_barcodes='&'#" ; else echo "# par_barcodes="; fi )
 $( if [ ! -z ${VIASH_PAR_CLUSTERS+x} ]; then echo "${VIASH_PAR_CLUSTERS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_clusters='&'#" ; else echo "# par_clusters="; fi )
 $( if [ ! -z ${VIASH_PAR_PLOIDY+x} ]; then echo "${VIASH_PAR_PLOIDY}" | sed "s#'#'\\"'\\"'#g;s#.*#par_ploidy='&'#" ; else echo "# par_ploidy="; fi )
+$( if [ ! -z ${VIASH_PAR_CLUSTERING_METHOD+x} ]; then echo "${VIASH_PAR_CLUSTERING_METHOD}" | sed "s#'#'\\"'\\"'#g;s#.*#par_clustering_method='&'#" ; else echo "# par_clustering_method="; fi )
+$( if [ ! -z ${VIASH_PAR_SOUPORCELL3+x} ]; then echo "${VIASH_PAR_SOUPORCELL3}" | sed "s#'#'\\"'\\"'#g;s#.*#par_souporcell3='&'#" ; else echo "# par_souporcell3="; fi )
 $( if [ ! -z ${VIASH_PAR_MIN_ALT+x} ]; then echo "${VIASH_PAR_MIN_ALT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_min_alt='&'#" ; else echo "# par_min_alt="; fi )
 $( if [ ! -z ${VIASH_PAR_MIN_REF+x} ]; then echo "${VIASH_PAR_MIN_REF}" | sed "s#'#'\\"'\\"'#g;s#.*#par_min_ref='&'#" ; else echo "# par_min_ref="; fi )
 $( if [ ! -z ${VIASH_PAR_MAX_LOCI+x} ]; then echo "${VIASH_PAR_MAX_LOCI}" | sed "s#'#'\\"'\\"'#g;s#.*#par_max_loci='&'#" ; else echo "# par_max_loci="; fi )
@@ -3463,6 +3526,9 @@ $( if [ ! -z ${VIASH_PAR_COMMON_VARIANTS+x} ]; then echo "${VIASH_PAR_COMMON_VAR
 $( if [ ! -z ${VIASH_PAR_KNOWN_GENOTYPES+x} ]; then echo "${VIASH_PAR_KNOWN_GENOTYPES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_known_genotypes='&'#" ; else echo "# par_known_genotypes="; fi )
 $( if [ ! -z ${VIASH_PAR_KNOWN_GENOTYPES_SAMPLE_NAMES+x} ]; then echo "${VIASH_PAR_KNOWN_GENOTYPES_SAMPLE_NAMES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_known_genotypes_sample_names='&'#" ; else echo "# par_known_genotypes_sample_names="; fi )
 $( if [ ! -z ${VIASH_PAR_SKIP_REMAP+x} ]; then echo "${VIASH_PAR_SKIP_REMAP}" | sed "s#'#'\\"'\\"'#g;s#.*#par_skip_remap='&'#" ; else echo "# par_skip_remap="; fi )
+$( if [ ! -z ${VIASH_PAR_MAX_BASE_MEM+x} ]; then echo "${VIASH_PAR_MAX_BASE_MEM}" | sed "s#'#'\\"'\\"'#g;s#.*#par_max_base_mem='&'#" ; else echo "# par_max_base_mem="; fi )
+$( if [ ! -z ${VIASH_PAR_NO_UMI+x} ]; then echo "${VIASH_PAR_NO_UMI}" | sed "s#'#'\\"'\\"'#g;s#.*#par_no_umi='&'#" ; else echo "# par_no_umi="; fi )
+$( if [ ! -z ${VIASH_PAR_UMI_TAG+x} ]; then echo "${VIASH_PAR_UMI_TAG}" | sed "s#'#'\\"'\\"'#g;s#.*#par_umi_tag='&'#" ; else echo "# par_umi_tag="; fi )
 $( if [ ! -z ${VIASH_PAR_IGNORE+x} ]; then echo "${VIASH_PAR_IGNORE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_ignore='&'#" ; else echo "# par_ignore="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "${VIASH_META_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_name='&'#" ; else echo "# meta_name="; fi )
@@ -3492,32 +3558,46 @@ set -eo pipefail
 # Unset flags if they equal 'false'
 [[ "\\$par_skip_remap" == "false" ]] && unset par_skip_remap
 [[ "\\$par_ignore" == "false" ]] && unset par_ignore
+[[ "\\$par_souporcell3" == "false" ]] && unset par_souporcell3
+[[ "\\$par_no_umi" == "false" ]] && unset par_no_umi
 
-if [ ! -d "\\$par_output" ]; then
-  mkdir -p "\\$par_output"
+# souporcell only creates the logs directory when the output directory
+# does not exist yet, so make sure it is present.
+mkdir -p "\\$par_output/logs"
+
+known_genotypes_sample_names=()
+if [ -n "\\$par_known_genotypes_sample_names" ]; then
+  IFS=';' read -r -a known_genotypes_sample_names <<< "\\$par_known_genotypes_sample_names"
 fi
 
-/opt/souporcell/souporcell_pipeline.py \\\\
-  --bam \\$par_bam \\\\
-  --fasta \\$par_fasta \\\\
-  --barcodes \\$par_barcodes \\\\
-  --clusters \\$par_clusters \\\\
-  --ploidy \\$par_ploidy \\\\
-  --min_alt \\$par_min_alt \\\\
-  --min_ref \\$par_min_ref \\\\
-  --max_loci \\$par_max_loci \\\\
-  --out_dir \\$par_output \\\\
-  --threads \\${par_threads:=1} \\\\
-  \\${par_restarts:+--restarts \\$par_restarts} \\\\
-  \\${par_common_variants:+--common_variants \\$par_common_variants} \\\\
-  \\${par_known_genotypes:+--known_genotypes \\$par_known_genotypes} \\\\
-  \\${par_known_genotypes_sample_names:+--known_genotypes_sample_names \\$par_known_genotypes_sample_names} \\\\
+# Note: souporcell parses boolean options with python's bool(), so any
+# non-empty value (including 'False') enables them. Only pass them when set.
+souporcell_pipeline.py \\\\
+  --bam "\\$par_bam" \\\\
+  --fasta "\\$par_fasta" \\\\
+  --barcodes "\\$par_barcodes" \\\\
+  --clusters "\\$par_clusters" \\\\
+  --ploidy "\\$par_ploidy" \\\\
+  --min_alt "\\$par_min_alt" \\\\
+  --min_ref "\\$par_min_ref" \\\\
+  --max_loci "\\$par_max_loci" \\\\
+  --umi_tag "\\$par_umi_tag" \\\\
+  --out_dir "\\$par_output" \\\\
+  --threads "\\${meta_cpus:-1}" \\\\
+  \\${par_clustering_method:+--clustering_method "\\$par_clustering_method"} \\\\
+  \\${par_souporcell3:+--souporcell3 True} \\\\
+  \\${par_restarts:+--restarts "\\$par_restarts"} \\\\
+  \\${par_common_variants:+--common_variants "\\$par_common_variants"} \\\\
+  \\${par_known_genotypes:+--known_genotypes "\\$par_known_genotypes"} \\\\
+  \\${par_known_genotypes_sample_names:+--known_genotypes_sample_names "\\${known_genotypes_sample_names[@]}"} \\\\
+  \\${par_max_base_mem:+--max_base_mem "\\$par_max_base_mem"} \\\\
+  \\${par_no_umi:+--no_umi True} \\\\
   \\${par_skip_remap:+--skip_remap True} \\\\
   \\${par_ignore:+--ignore True}
 
-cut -d\\$'\\\\t' -f 1-3 "\\$par_output/clusters.tsv" | 
-sed 's/\\\\t/,/g' | 
-awk 'BEGIN{FS=OFS=","} {\\$2=(\\$2=="singlet")?\\$3:\\$2; NF=NF-1; print}' | 
+cut -d\\$'\\\\t' -f 1-3 "\\$par_output/clusters.tsv" |
+sed 's/\\\\t/,/g' |
+awk 'BEGIN{FS=OFS=","} {\\$2=(\\$2=="singlet")?\\$3:\\$2; NF=NF-1; print}' |
 sed '1s/barcode,status/cell,donor_id/' > "\\$par_output/cell_annotation.csv"
 VIASHMAIN
 bash "$tempscript"

@@ -5,14 +5,19 @@
 # barcodes: "barcodes.tsv"
 # clusters: 123
 ploidy: 2
+# clustering_method: "foo"
+souporcell3: false
 min_alt: 10
 min_ref: 10
 max_loci: 2048
 # restarts: 123
 # common_variants: "common_variants.vcf"
 # known_genotypes: "known_variants.vcf"
-# known_genotypes_sample_names: "foo"
+# known_genotypes_sample_names: ["foo"]
 skip_remap: false
+# max_base_mem: "4G"
+no_umi: false
+umi_tag: "UB"
 ignore: false
 
 # Output

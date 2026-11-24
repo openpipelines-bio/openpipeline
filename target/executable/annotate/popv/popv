@@ -447,7 +447,7 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime
+FROM pytorch/pytorch:2.15.0-cuda13.2-cudnn9-runtime
 ENTRYPOINT []
 COPY popv.patch /opt/popv.patch
 ENV CFLAGS="-mno-avx512f -mno-avx2"
@@ -468,9 +468,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2026-11-23T11:02:35Z"
+LABEL org.opencontainers.image.created="2026-11-24T13:13:58Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="415bcbaed40fcaada8718d70fb01abc321722cdb"
+LABEL org.opencontainers.image.revision="e7dc822cc7fce023a311ab5195bb9735b220a72b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
