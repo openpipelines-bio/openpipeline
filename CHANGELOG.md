@@ -45,6 +45,8 @@
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
+* `mapping/star_align` and `mapping/star_align_v273a`: these components have been deprecated and will be removed in a future release. Use [vsh://biobox/star/star_align_reads](https://www.viash-hub.com/packages/biobox/latest/components/star/star_align_reads) instead.
+
 * `demux/bclconvert`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/bcl_convert](https://www.viash-hub.com/packages/biobox/latest/components/bcl_convert) instead (PR #1303).
 
 * `mapping/bd_rhapsody`, `reference/build_bdrhap_reference`, `workflows/ingestion/bd_rhapsody`: update the BD Rhapsody Sequence Analysis pipeline from v2.2.1 to v4.0. The upstream CWL files are now used unmodified; their `DockerRequirement` entries are hints and are ignored through `cwl-runner --no-container`. Notable changes (PR #1283):
