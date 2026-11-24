@@ -162,6 +162,8 @@
 
 * `sync_test_resources`: update base image to `amazon/aws-cli:latest` (PR #1287)
 
+* `integrate/harmonypy`: bump the base image from `pytorch/pytorch:2.11.0-cuda12.8-cudnn9-runtime` to `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` (PR #1308).
+
 * `genetic_demux/bcftools` and `genetic_demux/cellsnp`: Bump `bcftools` to `1.21`. The base image changed from `ubuntu:latest` to `debian:latest` (PR #1300).
 
 ## BUG FIXES
