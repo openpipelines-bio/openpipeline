@@ -3483,7 +3483,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scikit-learn==1.5.2"
+            "scikit-learn~=1.9"
           ],
           "upgrade" : true
         },
@@ -3531,7 +3531,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/svm_annotation",
     "viash_version" : "0.9.7",
-    "git_commit" : "6aa85e8a124eb10786aa6c4a627a45d431813acf",
+    "git_commit" : "242d2375133358a56d0d4641edd3b893aace11c6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

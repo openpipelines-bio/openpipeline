@@ -3505,7 +3505,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/celltypist",
     "viash_version" : "0.9.7",
-    "git_commit" : "6aa85e8a124eb10786aa6c4a627a45d431813acf",
+    "git_commit" : "242d2375133358a56d0d4641edd3b893aace11c6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {

@@ -148,7 +148,7 @@ engines:
           - procps
       - type: python
         packages:
-          - scikit-learn==1.5.2
+          - scikit-learn~=1.9
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
