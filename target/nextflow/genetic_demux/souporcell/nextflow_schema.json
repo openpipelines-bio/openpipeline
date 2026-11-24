@@ -55,8 +55,27 @@
         "ploidy": {
           "type": "integer",
           "description": "ploidy, must be 1 or 2",
-          "help_text": "Type: `integer`, multiple: `False`, default: `2`. ",
+          "help_text": "Type: `integer`, multiple: `False`, default: `2`, choices: ``1`, `2``. ",
+          "enum": [
+            1,
+            2
+          ],
           "default": 2
+        },
+        "clustering_method": {
+          "type": "string",
+          "description": "Clustering method: expectation maximization (em) or k harmonic means (khm).\nWhen not specified, souporcell uses its default (em)",
+          "help_text": "Type: `string`, multiple: `False`, choices: ``em`, `khm``. ",
+          "enum": [
+            "em",
+            "khm"
+          ]
+        },
+        "souporcell3": {
+          "type": "boolean",
+          "description": "Use souporcell3, which iterates multiple times to refine the results.\nSuitable for datasets with a high number of donors (>16).\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
         },
         "min_alt": {
           "type": "integer",
@@ -78,7 +97,7 @@
         },
         "restarts": {
           "type": "integer",
-          "description": "number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima",
+          "description": "Number of restarts in clustering, when there are > 12 clusters we recommend increasing this to avoid local minima.\nWhen not specified, souporcell uses its default (100).\n",
           "help_text": "Type: `integer`, multiple: `False`. "
         },
         "common_variants": {
@@ -94,19 +113,39 @@
           "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"known_variants.vcf\"`. "
         },
         "known_genotypes_sample_names": {
-          "type": "string",
-          "description": "which samples in population vcf from known genotypes option represent the donors in your sample",
-          "help_text": "Type: `string`, multiple: `False`. "
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Which samples in the population vcf from the known genotypes option represent the donors in your sample.\nThe number of sample names must be equal to the number of clusters.\n",
+          "help_text": "Type: `string`, multiple: `True`. "
         },
         "skip_remap": {
           "type": "boolean",
-          "description": "dont remap with minimap2 (not recommended unless in conjunction with --common_variants",
+          "description": "dont remap with minimap2 (not recommended unless in conjunction with --common_variants)",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         },
+        "max_base_mem": {
+          "type": "string",
+          "description": "Maximum number of target bases loaded into RAM by minimap2 for indexing (minimap2 -I).\nIncrease this when minimap2 splits the index, which interferes with the retagging step.\n",
+          "help_text": "Type: `string`, multiple: `False`, example: `\"4G\"`. "
+        },
+        "no_umi": {
+          "type": "boolean",
+          "description": "Set if your BAM file has no UMI tag",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
+        "umi_tag": {
+          "type": "string",
+          "description": "The BAM tag containing the UMI.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"UB\"`. ",
+          "default": "UB"
+        },
         "ignore": {
           "type": "boolean",
-          "description": "set to True to ignore data error assertions",
+          "description": "ignore data error assertions",
           "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
           "default": false
         }

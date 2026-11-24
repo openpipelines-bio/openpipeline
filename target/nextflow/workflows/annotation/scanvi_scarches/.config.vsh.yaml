@@ -571,7 +571,7 @@ build_info:
   output: "target/nextflow/workflows/annotation/scanvi_scarches"
   executable: "target/nextflow/workflows/annotation/scanvi_scarches/main.nf"
   viash_version: "0.9.7"
-  git_commit: "abc7c67ce842cc4fc2c30e60d1a0ac6ffe85f561"
+  git_commit: "49a5a81d28b6eb8b428d65b03da851536575de04"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   dependencies:
   - "target/nextflow/workflows/embedding_model/scanvi_model"

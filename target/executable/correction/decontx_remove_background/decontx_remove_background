@@ -453,9 +453,9 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
   Rscript -e 'options(warn = 2); remotes::install_cran(c("hdf5r"), repos = "https://cran.rstudio.com")'
 
 LABEL org.opencontainers.image.description="Companion container for running component correction decontx_remove_background"
-LABEL org.opencontainers.image.created="2026-11-23T14:27:11Z"
+LABEL org.opencontainers.image.created="2026-11-24T09:27:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="abc7c67ce842cc4fc2c30e60d1a0ac6ffe85f561"
+LABEL org.opencontainers.image.revision="49a5a81d28b6eb8b428d65b03da851536575de04"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

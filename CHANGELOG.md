@@ -45,6 +45,8 @@
 
 * `report/mermaid`: this component has been deprecated and will be removed in a future release (PR #1254)
 
+* `mapping/star_align` and `mapping/star_align_v273a`: these components have been deprecated and will be removed in a future release. Use [vsh://biobox/star/star_align_reads](https://www.viash-hub.com/packages/biobox/latest/components/star/star_align_reads) instead.
+
 * `demux/bclconvert`: this component has been deprecated and will be removed in a future release. Use [vsh://biobox/bcl_convert](https://www.viash-hub.com/packages/biobox/latest/components/bcl_convert) instead (PR #1303).
 
 * `mapping/bd_rhapsody`, `reference/build_bdrhap_reference`, `workflows/ingestion/bd_rhapsody`: update the BD Rhapsody Sequence Analysis pipeline from v2.2.1 to v4.0. The upstream CWL files are now used unmodified; their `DockerRequirement` entries are hints and are ignored through `cwl-runner --no-container`. Notable changes (PR #1283):
@@ -123,6 +125,11 @@
 
 ## MINOR CHANGES
 
+* `genetic_demux/souporcell`: update souporcell to `3.0` by switching the base image from `cumulusprod/souporcell:2022.12` to `quay.io/biocontainers/souporcell:3.0--hfa8f182_0` (PR #1305):
+  - Added the `--clustering_method` (`em` or `khm`), `--souporcell3`, `--max_base_mem`, `--no_umi` and `--umi_tag` arguments.
+  - `--known_genotypes_sample_names` now accepts multiple values.
+  - `--ploidy` is restricted to `1` or `2`.
+
 * `annotate/popv`: update the base image from `pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime` to `pytorch/pytorch:2.15.0-cuda13.2-cudnn9-runtime` (PR #1304).
 
 * `process_10xh5/filter_10xh5`: reimplement the component in Python (using `h5py` and `scipy`) instead of R, removing the dependency on `reticulate` (PR #1286).
@@ -158,6 +165,8 @@
 * `genetic_demux/bcftools` and `genetic_demux/cellsnp`: Bump `bcftools` to `1.21`. The base image changed from `ubuntu:latest` to `debian:latest` (PR #1300).
 
 ## BUG FIXES
+
+* `genetic_demux/souporcell`: the number of threads was always set to 1 instead of the number of CPUs allocated to the component (PR #1305).
 
 * `interpret/lianapy`: fix the error message raised when the `--groupby` column does not exist, which itself failed with a `KeyError` (PR #1301).
 
