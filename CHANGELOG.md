@@ -170,7 +170,7 @@
 
 ## BUG FIXES
 
-* `integrate/scanorama`: build `annoy` without `-march=native`, so images built on a CPU with AVX-512 no longer crash with `Illegal instruction` on CPUs without it (PR #xxxx).
+* `integrate/scanorama`: build `annoy` without `-march=native`, so images built on a CPU with AVX-512 no longer crash with `Illegal instruction` on CPUs without it (PR #1310).
 
 * `genetic_demux/souporcell`: the number of threads was always set to 1 instead of the number of CPUs allocated to the component (PR #1305).
 
