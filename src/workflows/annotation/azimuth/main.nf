@@ -5,23 +5,26 @@ workflow run_wf {
   main:
     prep_ch = input_ch
       | map {id, state ->
-        assert state.input || state.input_seurat :
-          "Either --input (h5mu) or --input_seurat (rds) must be provided."
-        assert !(state.input && state.input_seurat) :
-          "Provide only one of --input or --input_seurat."
-        assert state.reference != "custom" || state.custom_reference :
-          "--custom_reference must be provided when --reference is 'custom'."
-        assert state.reference == "custom" || !state.custom_reference :
-          "--custom_reference can only be used with --reference 'custom'."
-        // The output names have to line up with the annotation levels, which are
-        // only known when --annotation_levels is provided.
-        ["output_obs_predictions", "output_obs_probability"].each { arg ->
-          if (state[arg]) {
-            assert state.annotation_levels :
-              "--${arg} can only be used together with --annotation_levels."
-            def n_levels = state.annotation_levels.size()
-            assert state[arg].size() == n_levels :
-              "--${arg} should have the same length as --annotation_levels (${n_levels})."
+        // Stub runs are started without any arguments
+        if (!workflow.stubRun) {
+          assert state.input || state.input_seurat :
+            "Either --input (h5mu) or --input_seurat (rds) must be provided."
+          assert !(state.input && state.input_seurat) :
+            "Provide only one of --input or --input_seurat."
+          assert state.reference != "custom" || state.custom_reference :
+            "--custom_reference must be provided when --reference is 'custom'."
+          assert state.reference == "custom" || !state.custom_reference :
+            "--custom_reference can only be used with --reference 'custom'."
+          // The output names have to line up with the annotation levels, which are
+          // only known when --annotation_levels is provided.
+          ["output_obs_predictions", "output_obs_probability"].each { arg ->
+            if (state[arg]) {
+              assert state.annotation_levels :
+                "--${arg} can only be used together with --annotation_levels."
+              def n_levels = state.annotation_levels.size()
+              assert state[arg].size() == n_levels :
+                "--${arg} should have the same length as --annotation_levels (${n_levels})."
+            }
           }
         }
         [id, state]
