@@ -170,6 +170,8 @@
 
 ## BUG FIXES
 
+* `integrate/scanorama`: build `annoy` without `-march=native`, so images built on a CPU with AVX-512 no longer crash with `Illegal instruction` on CPUs without it (PR #xxxx).
+
 * `genetic_demux/souporcell`: the number of threads was always set to 1 instead of the number of CPUs allocated to the component (PR #1305).
 
 * `interpret/lianapy`: fix the error message raised when the `--groupby` column does not exist, which itself failed with a `KeyError` (PR #1301).
