@@ -96,9 +96,9 @@ assert "CD279:EH12-1|PDCD1|AHS0014|pAbO" in data.var_names, (
 )
 
 print(">> Run with VDJ data", flush=True)
-vdj_input = meta["resources_dir"] + "/bdrhap_vdj/sample.cellismo"
+vdj_input = meta["resources_dir"] + "/bdrhap_vdj_sample.cellismo"
 vdj_contigs = (
-    meta["resources_dir"] + "/bdrhap_vdj/sample_VDJ_Unfiltered_Contigs_AIRR.tsv.gz"
+    meta["resources_dir"] + "/bdrhap_vdj_sample_VDJ_Unfiltered_Contigs_AIRR.tsv.gz"
 )
 vdj_output = "output_vdj.h5mu"
 
