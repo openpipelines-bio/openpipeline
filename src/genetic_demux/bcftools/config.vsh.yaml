@@ -37,12 +37,11 @@ test_resources:
 
 engines:
 - type: docker
-  image: ubuntu:latest
+  image: debian:latest
   setup:
   - type: apt
-    packages: [ wget, bzip2, gcc, make, libbz2-dev, zlib1g-dev, libncurses5-dev, libncursesw5-dev, liblzma-dev, autoconf, automake, perl, libcurl4-gnutls-dev, libssl-dev]
-  - type: docker
-    run: wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
+    packages:
+      - bcftools
 
 runners:
 - type: executable
