@@ -84,6 +84,30 @@
 
 ## NEW FEATURES
 
+* BEYOND methodology, part 3 of 5 (PR #TBD):
+
+  - `dimred/phate`: computes a PHATE embedding of any `.obsm` matrix (e.g. `X_pca` for
+    cells, or `X_proportions` of a group-level object, as BEYOND uses it), result in
+    `.obsm["X_phate"]`. Supports configurable `knn`, `decay`, `t`, `gamma`, and
+    `n_components`.
+
+  - `trajectory/palantir`: computes pseudotime and fate probabilities using Palantir
+    (1.4 API). Two input modes: `--input` (h5mu; results in
+    `obs["palantir_pseudotime"]`, `obs["palantir_entropy"]`,
+    `obsm["palantir_fate_probabilities"]` and `uns["palantir_waypoints"]`) on cells or on
+    a group-level object (e.g. one observation per donor). Supports automatic start selection
+    from a label (`--start_cluster` + `--start_cluster_column`) or an explicit
+    identifier (`--start_id`). `--knn` sets the diffusion-map neighbourhood and
+    `--waypoint_knn` the waypoint graph that pseudotime is computed on; the latter has to
+    be reduced for the small cohorts of a group-level run.
+
+  - `trajectory/fit_proportion_dynamics`: fits a cubic spline
+    (scipy.interpolate.UnivariateSpline) of group proportion versus pseudotime per label,
+    on a group-level h5mu (proportions in `.X`, pseudotime in `.obs[--obs_pseudotime]`).
+    Writes the fitted curves to `.varm["proportion_dynamics"]` (labels x pseudotime bins,
+    bin values in `.uns`) and the per-label peak pseudotime, R^2, p-value and number of
+    groups to `.var` (`dynamics_*`).
+
 * BEYOND methodology, part 2 of 5 (PR #TBD):
 
   - `metadata/calculate_obs_label_proportions`: computes a group x label cell
