@@ -80,6 +80,7 @@ engines:
       packages: 
         - procps
         - build-essential
+    - __merge__: /src/base/requirements/annoy_compiler_args.yaml
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:
