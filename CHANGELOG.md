@@ -84,6 +84,33 @@
 
 ## NEW FEATURES
 
+* BEYOND methodology, part 4 of 5 (PR #TBD):
+
+  - `cluster/subpopulation_communities`: groups labels into communities by combining
+    co-occurrence similarity (correlation of group proportion vectors, Spearman by
+    default as in the reference implementation, `--correlation_method`) and dynamics
+    similarity (Pearson correlation of the fitted proportion curves); applies
+    hierarchical (`--linkage`, Ward by default) or spectral clustering. Reads the
+    proportions from `.X` and the fitted curves from `.varm` of a group-level h5mu;
+    writes the community of every label to `.var["community_id"]` and the three
+    similarity matrices to `.varp` (`community_*`).
+
+  - `stats/test_associations` *(new namespace)*: tests the association between any set of
+    variables of a modality (responses, from `.X`) and any set of `.obs` columns
+    (predictors), writing one long-format CSV, using statsmodels MixedLM when
+    `--random_effect_column` is given and OLS otherwise. Supports covariates, a `--formula` escape hatch, `logit` /
+    `clr` / `sqrt` transforms for compositional responses, and BH/Bonferroni correction
+    over a configurable `--fdr_scope` (global, per predictor or per response). One
+    `--transform` applies to all responses; responses that need different transforms
+    are transformed upstream or tested in separate runs.
+
+  - `interpret/gseapy`: performs pre-ranked GSEA or ORA on DESeq2 results using GSEApy.
+    CSV in, CSV out: takes a DE table, Enrichr library names via `--gene_sets` and local
+    GMT files via `--gene_sets_file`, and writes one long-format table of all libraries
+    with a `gene_set_library` column. No `MuData` involved. ORA with no significant
+    genes warns and writes an empty table instead of failing, so a workflow survives
+    a DE run without hits.
+
 * BEYOND methodology, part 3 of 5 (PR #TBD):
 
   - `dimred/phate`: computes a PHATE embedding of any `.obsm` matrix (e.g. `X_pca` for
