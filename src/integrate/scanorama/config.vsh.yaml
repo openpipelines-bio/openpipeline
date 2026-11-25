@@ -80,12 +80,7 @@ engines:
       packages: 
         - procps
         - build-essential
-    - type: docker
-      env:
-        # scanorama depends on annoy, which is only published as source and compiles with -march=native by default.
-        # Built on an AVX-512 machine, the image then crashes with "Illegal instruction" on CPUs without AVX-512.
-        # These are annoy's default Linux x86_64 flags without -march=native.
-        - ANNOY_COMPILER_ARGS=-D_CRT_SECURE_NO_WARNINGS,-fpermissive,-O3,-ffast-math,-fno-associative-math,-DANNOYLIB_MULTITHREADED_BUILD,-std=c++14
+    - __merge__: /src/base/requirements/annoy_compiler_args.yaml
     - type: python
       __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       packages:
