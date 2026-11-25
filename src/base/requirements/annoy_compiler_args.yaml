@@ -1,0 +1,7 @@
+type: docker
+env:
+  # annoy is only published as source and compiles with -march=native by default.
+  # An image built on a CPU with AVX-512 then crashes with "Illegal instruction" on CPUs without it.
+  # These are annoy's default Linux x86_64 flags without -march=native.
+  # Merge this setup step before any python step that installs annoy (directly or as a dependency).
+  - ANNOY_COMPILER_ARGS=-D_CRT_SECURE_NO_WARNINGS,-fpermissive,-O3,-ffast-math,-fno-associative-math,-DANNOYLIB_MULTITHREADED_BUILD,-std=c++14

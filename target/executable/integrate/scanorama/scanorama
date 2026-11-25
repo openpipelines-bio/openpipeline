@@ -453,15 +453,16 @@ RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps build-essential && \
   rm -rf /var/lib/apt/lists/*
 
+ENV ANNOY_COMPILER_ARGS=-D_CRT_SECURE_NO_WARNINGS,-fpermissive,-O3,-ffast-math,-fno-associative-math,-DANNOYLIB_MULTITHREADED_BUILD,-std=c++14
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.13.4" "awkward" "pandas>3" "scipy~=1.18.1" "mudata~=0.4.1" "scanpy~=1.12.5" "umap-learn==0.5.12" "scanorama" && \
   python -c 'exec("try:\n  import zarr; from importlib.metadata import version\nexcept ModuleNotFoundError:\n  exit(0)\nelse:  assert int(version(\"zarr\").partition(\".\")[0]) > 2")'
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scanorama"
-LABEL org.opencontainers.image.created="2026-11-25T13:02:28Z"
+LABEL org.opencontainers.image.created="2026-11-25T13:18:15Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b751bdff5b993fd8197b388d461ec92e4d070fda"
+LABEL org.opencontainers.image.revision="c8aad5d21e7910152329be48ddaa7945a119f3cf"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

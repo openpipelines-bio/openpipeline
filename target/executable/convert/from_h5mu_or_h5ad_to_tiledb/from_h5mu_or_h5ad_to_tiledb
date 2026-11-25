@@ -460,9 +460,9 @@ RUN pip install --no-cache-dir tiledbsoma==2.2.0 && \
 patch -p1 -d "$(python -c 'import site; print(site.getsitepackages()[0])')" < /opt/tiledbsoma.patch
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_or_h5ad_to_tiledb"
-LABEL org.opencontainers.image.created="2026-11-25T13:02:32Z"
+LABEL org.opencontainers.image.created="2026-11-25T13:18:18Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b751bdff5b993fd8197b388d461ec92e4d070fda"
+LABEL org.opencontainers.image.revision="c8aad5d21e7910152329be48ddaa7945a119f3cf"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
