@@ -3194,12 +3194,12 @@ meta = [
     {
       "type" : "file",
       "path" : "/resources_test/bdrhap_vdj/processed/output_raw/sample.cellismo",
-      "dest" : "bdrhap_vdj/sample.cellismo"
+      "dest" : "bdrhap_vdj_sample.cellismo"
     },
     {
       "type" : "file",
       "path" : "/resources_test/bdrhap_vdj/processed/output_raw/sample_VDJ_Unfiltered_Contigs_AIRR.tsv.gz",
-      "dest" : "bdrhap_vdj/sample_VDJ_Unfiltered_Contigs_AIRR.tsv.gz"
+      "dest" : "bdrhap_vdj_sample_VDJ_Unfiltered_Contigs_AIRR.tsv.gz"
     }
   ],
   "status" : "enabled",
@@ -3333,7 +3333,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu",
     "viash_version" : "0.9.7",
-    "git_commit" : "d30717b8c75f47cba83097d7af2d41c737f86a90",
+    "git_commit" : "980eef0d85329aa78a77a14e793103031b48a842",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
