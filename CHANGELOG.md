@@ -170,6 +170,8 @@
 
 ## BUG FIXES
 
+* `reference/make_reference`, `workflows/ingestion/make_reference`: add `gene` and `transcript` features and `gene_name`/`gene_type` attributes to the ERCC annotation, which BD Rhapsody 4.0 requires to build a reference (PR #XXXX).
+
 * `integrate/scanorama`: build `annoy` without `-march=native`, so images built on a CPU with AVX-512 no longer crash with `Illegal instruction` on CPUs without it (PR #1310).
 
 * `genetic_demux/souporcell`: the number of threads was always set to 1 instead of the number of CPUs allocated to the component (PR #1305).

@@ -57,7 +57,7 @@ engines:
     image: python:3.12-slim
     setup:
       - type: apt
-        packages: [ pigz, seqkit, curl, wget, unzip, file]
+        packages: [ pigz, seqkit, curl, wget, unzip, file, procps ]
       - type: python
         packages: [ gtfparse==3.3.0 ]
 runners:
