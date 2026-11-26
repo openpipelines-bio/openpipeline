@@ -47,7 +47,9 @@ if [[ ! -z $par_ercc ]]; then
   # unzip "$tmpdir/ercc.zip" -d "$tmpdir"
   unzip "$par_ercc" -d "$tmpdir"
   cat "$tmpdir/ERCC92.fa" >> "$genome_fasta"
-  cat "$tmpdir/ERCC92.gtf" >> "$transcriptome_gtf"
+  # The ERCC annotation only lists exons; add gene and transcript features and attributes
+  python3 "$meta_resources_dir/fix_ercc.py" "$tmpdir/ERCC92.gtf" "$tmpdir/ercc_complete.gtf"
+  cat "$tmpdir/ercc_complete.gtf" >> "$transcriptome_gtf"
 fi
 
 # create output & filter reference if so desired

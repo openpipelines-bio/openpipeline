@@ -48,15 +48,18 @@ arguments:
 resources:
   - type: bash_script
     path: script.sh
+  - path: fix_ercc.py
 test_resources:
   - type: bash_script
     path: test.sh
 engines:
   - type: docker
-    image: ubuntu:24.04
+    image: python:3.12-slim
     setup:
       - type: apt
         packages: [ pigz, seqkit, curl, wget, unzip, file]
+      - type: python
+        packages: [ gtfparse==3.3.0 ]
 runners:
   - type: executable
   - type: nextflow
