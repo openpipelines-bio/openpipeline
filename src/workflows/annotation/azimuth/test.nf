@@ -7,7 +7,7 @@ params.resources_test = params.rootDir + "/resources_test"
 
 workflow test_wf {
   // allow changing the resources_test dir
-  def resources_test = file(params.resources_test)
+  resources_test = file(params.resources_test)
 
   // What the output of each test is checked for by azimuth_test
   def expected = [
