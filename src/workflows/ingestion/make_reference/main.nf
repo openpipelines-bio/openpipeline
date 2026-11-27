@@ -17,6 +17,9 @@ workflow run_wf {
         "genome_fasta": "genome_fasta", 
         "transcriptome_gtf": "transcriptome_gtf",
         "ercc": "ercc",
+        "ercc_gene_type": "ercc_gene_type",
+        "ercc_transcript_type": "ercc_transcript_type",
+        "ercc_overwrite_types": "ercc_overwrite_types",
         "output_fasta": "output_fasta",
         "output_gtf": "output_gtf",
         "subset_regex": "subset_regex"

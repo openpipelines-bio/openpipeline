@@ -30,6 +30,19 @@ arguments:
     description: ERCC sequence and annotation file.
     example: ercc.zip
   - type: string
+    name: --ercc_gene_type
+    description: Value for the `gene_type` attribute of ERCC features that do not have one.
+    default: spike_in_sequence
+  - type: string
+    name: --ercc_transcript_type
+    description: Value for the `transcript_type` attribute of ERCC transcripts and exons that do not have one.
+    default: spike_in_sequence
+  - type: boolean_true
+    name: --ercc_overwrite_types
+    description: |
+      Also replace existing `gene_type` and `transcript_type` attributes of ERCC features
+      with `--ercc_gene_type` and `--ercc_transcript_type`.
+  - type: string
     name: --subset_regex
     description: Will subset the reference chromosomes using the given regex.
     example: (ERCC-00002|chr1)
