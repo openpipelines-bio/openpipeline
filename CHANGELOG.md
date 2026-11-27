@@ -84,6 +84,10 @@
 
 ## NEW FEATURES
 
+* `workflows/rna/log_normalize`, `workflows/rna/rna_multisample`, `workflows/multiomics/neighbors_leiden_umap`, `workflows/multiomics/dimensionality_reduction`, `workflows/multiomics/process_batches`, `workflows/multiomics/process_samples`, `workflows/integration/harmony_leiden`, `workflows/integration/bbknn_leiden`, `workflows/integration/scvi_leiden`, `workflows/integration/scanorama_leiden`, `workflows/integration/totalvi_leiden`, `workflows/integration/totalvi_scarches_leiden`, `workflows/annotation/harmony_knn`, `workflows/annotation/scvi_knn`, `workflows/annotation/scanvi_scarches`, `workflows/annotation/celltypist`: added a `--device_type` argument to select between the CPU (scanpy) and GPU (rapids-singlecell) implementation of normalization, log1p, scaling, highly variable feature detection, PCA, neighbor calculation, BBKNN, Harmony, Leiden clustering and UMAP. Steps with both implementations now depend on `cpu_gpu_wrappers/*` workflows, which dispatch to either the CPU component from this package or the GPU component from the `openpipeline_rapids` package (`v0.2.0`). The default is `cpu`, so existing runs are unchanged. Setting `gpu` requires an x86_64 host with a CUDA-capable NVIDIA GPU (PR #1225).
+
+* `cpu_gpu_wrappers/preprocessing/normalize_total`, `cpu_gpu_wrappers/preprocessing/log1p`, `cpu_gpu_wrappers/preprocessing/scale`, `cpu_gpu_wrappers/preprocessing/highly_variable_genes`, `cpu_gpu_wrappers/preprocessing/pca`, `cpu_gpu_wrappers/preprocessing/neighbors`, `cpu_gpu_wrappers/preprocessing/harmony_integrate`, `cpu_gpu_wrappers/preprocessing/bbknn`, `cpu_gpu_wrappers/tools/leiden`, `cpu_gpu_wrappers/tools/umap`: added private workflows, moved from `openpipeline_rapids` (which removed them in `v0.2.0`), that run either the CPU (scanpy) or the GPU (rapids-singlecell) implementation of a step, selected with `--device_type`. Keeping them in this package avoids a circular dependency between `openpipeline` and `openpipeline_rapids` (PR #1225).
+
 * `mapping/bd_rhapsody`, `workflows/ingestion/bd_rhapsody`: add `--multiple_alignment_handling` and `--multiple_alignment_gene_selection` arguments, add the `--biotype_counts` output and allow `VDJ` as `--cell_calling_data` (PR #1283).
 
 * `mapping/bd_rhapsody`: when `---memory` or `---cpus` is set, cwltool now schedules the pipeline steps within these limits instead of the resources of the host, and each step's resource requirements are capped to them instead of all being overwritten with them, so steps can run in parallel. `---cpus` is also passed to the pipeline as `Maximum_Threads` (PR #1283).
@@ -137,6 +141,10 @@
 * `transform/tfidf`, `report/mermaid`: replace the end-of-life Debian bullseye base images, whose package pool has been purged, causing the Docker image builds to fail. `report/mermaid` also moves off Node 20, which is end-of-life (PR #1230).
 
 * `transform/clr`, `transform/tfidf`, `dimred/lsi`, `qc/calculate_atac_qc_metrics`: pin `muon` to `~=0.1.9`, since `0.1.8` reimplemented several of the functions used by these components (PR #1232).
+
+* `workflows/utils/gpu.config`: added a Nextflow config that passes the host's NVIDIA devices into GPU-labelled containers, for use with `--device_type gpu` (PR #1225).
+
+* `workflows/rna/log_normalize`, `workflows/rna/rna_multisample`, `workflows/multiomics/dimensionality_reduction`, `workflows/integration/bbknn_leiden`, `workflows/integration/harmony_leiden`, `cpu_gpu_wrappers/*`: added a `test_gpu_wf` integration test that exercises the GPU implementations. Test entrypoints listed under `info.gpu_tests` in a component's config require a GPU and are skipped by the GitHub Actions integration tests (PR #1225).
 
 * `mapping/cellranger_multi`: raise a descriptive error when no FASTQ files are found for a `--library_id`, when the same FASTQ file is passed to more than one input argument (e.g. `--input` and `--gex_input`), or when the number of values for `--library_subsample` or `--library_lanes` does not match the number of libraries (PR #1172).
 

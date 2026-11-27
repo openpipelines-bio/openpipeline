@@ -131,6 +131,7 @@ argument_groups:
         description: |
           In which `.obs` slots to store the probability of the predictions.
     __merge__: [., /src/base/h5_compression_argument.yaml]
+  - __merge__: /src/base/device_type_argument.yaml
 
 dependencies:
   - name: workflows/rna/log_normalize

@@ -68,10 +68,14 @@ argument_groups:
         description: |
           In which .obsm slot to store the resulting UMAP embedding.
           When not specified, UMAP will not be executed.
+  - __merge__: /src/base/device_type_argument.yaml
 dependencies:
-  - name: cluster/leiden
-  - name: dimred/umap
-  - name: neighbors/find_neighbors
+  - name: cpu_gpu_wrappers/tools/leiden
+    alias: leiden_cpu_or_gpu
+  - name: cpu_gpu_wrappers/tools/umap
+    alias: umap_cpu_or_gpu
+  - name: cpu_gpu_wrappers/preprocessing/neighbors
+    alias: find_neighbors_cpu_or_gpu
   - name: metadata/move_obsm_to_obs
 resources:
   - type: nextflow_script
