@@ -114,10 +114,8 @@ engines:
       - type: apt
         packages: [ libhdf5-dev ]
       - type: r
-        bioc: [ rhdf5 ]
-        # anndataR is pinned because the script uses its internal element
-        # readers and writers, which can change between releases
-        github: [ bnprks/BPCells/r, scverse/anndataR@v1.2.2 ]
+        bioc: [ rhdf5, anndataR ]
+        github: [ bnprks/BPCells/r ]
     test_setup:
       - type: docker
         env:
