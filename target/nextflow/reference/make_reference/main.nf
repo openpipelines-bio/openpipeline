@@ -3123,6 +3123,36 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--ercc_gene_type",
+          "description" : "Value for the `gene_type` attribute of ERCC features that do not have one.",
+          "default" : [
+            "spike_in_sequence"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--ercc_transcript_type",
+          "description" : "Value for the `transcript_type` attribute of ERCC transcripts and exons that do not have one.",
+          "default" : [
+            "spike_in_sequence"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--ercc_overwrite_types",
+          "description" : "Also replace existing `gene_type` and `transcript_type` attributes of ERCC features\nwith `--ercc_gene_type` and `--ercc_transcript_type`.\n",
+          "direction" : "input"
+        },
+        {
+          "type" : "string",
           "name" : "--subset_regex",
           "description" : "Will subset the reference chromosomes using the given regex.",
           "example" : [
@@ -3169,6 +3199,10 @@ meta = [
       "type" : "bash_script",
       "path" : "script.sh",
       "is_executable" : true
+    },
+    {
+      "type" : "file",
+      "path" : "fix_ercc.py"
     },
     {
       "type" : "file",
@@ -3279,7 +3313,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ubuntu:24.04",
+      "image" : "python:3.12-slim",
       "target_tag" : "integration_build",
       "namespace_separator" : "/",
       "setup" : [
@@ -3291,9 +3325,18 @@ meta = [
             "curl",
             "wget",
             "unzip",
-            "file"
+            "file",
+            "procps"
           ],
           "interactive" : false
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "gtfparse==3.3.0"
+          ],
+          "upgrade" : true
         }
       ]
     }
@@ -3304,7 +3347,7 @@ meta = [
     "engine" : "docker",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference",
     "viash_version" : "0.9.7",
-    "git_commit" : "980eef0d85329aa78a77a14e793103031b48a842",
+    "git_commit" : "a7c40608a36d1c2cbcc7ba597bb4a7b262b4e322",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3369,6 +3412,9 @@ set -eo pipefail
 $( if [ ! -z ${VIASH_PAR_GENOME_FASTA+x} ]; then echo "${VIASH_PAR_GENOME_FASTA}" | sed "s#'#'\\"'\\"'#g;s#.*#par_genome_fasta='&'#" ; else echo "# par_genome_fasta="; fi )
 $( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_GTF+x} ]; then echo "${VIASH_PAR_TRANSCRIPTOME_GTF}" | sed "s#'#'\\"'\\"'#g;s#.*#par_transcriptome_gtf='&'#" ; else echo "# par_transcriptome_gtf="; fi )
 $( if [ ! -z ${VIASH_PAR_ERCC+x} ]; then echo "${VIASH_PAR_ERCC}" | sed "s#'#'\\"'\\"'#g;s#.*#par_ercc='&'#" ; else echo "# par_ercc="; fi )
+$( if [ ! -z ${VIASH_PAR_ERCC_GENE_TYPE+x} ]; then echo "${VIASH_PAR_ERCC_GENE_TYPE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_ercc_gene_type='&'#" ; else echo "# par_ercc_gene_type="; fi )
+$( if [ ! -z ${VIASH_PAR_ERCC_TRANSCRIPT_TYPE+x} ]; then echo "${VIASH_PAR_ERCC_TRANSCRIPT_TYPE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_ercc_transcript_type='&'#" ; else echo "# par_ercc_transcript_type="; fi )
+$( if [ ! -z ${VIASH_PAR_ERCC_OVERWRITE_TYPES+x} ]; then echo "${VIASH_PAR_ERCC_OVERWRITE_TYPES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_ercc_overwrite_types='&'#" ; else echo "# par_ercc_overwrite_types="; fi )
 $( if [ ! -z ${VIASH_PAR_SUBSET_REGEX+x} ]; then echo "${VIASH_PAR_SUBSET_REGEX}" | sed "s#'#'\\"'\\"'#g;s#.*#par_subset_regex='&'#" ; else echo "# par_subset_regex="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT_FASTA+x} ]; then echo "${VIASH_PAR_OUTPUT_FASTA}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output_fasta='&'#" ; else echo "# par_output_fasta="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT_GTF+x} ]; then echo "${VIASH_PAR_OUTPUT_GTF}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output_gtf='&'#" ; else echo "# par_output_gtf="; fi )
@@ -3429,7 +3475,18 @@ if [[ ! -z \\$par_ercc ]]; then
   # unzip "\\$tmpdir/ercc.zip" -d "\\$tmpdir"
   unzip "\\$par_ercc" -d "\\$tmpdir"
   cat "\\$tmpdir/ERCC92.fa" >> "\\$genome_fasta"
-  cat "\\$tmpdir/ERCC92.gtf" >> "\\$transcriptome_gtf"
+  # The ERCC annotation only lists exons; add gene and transcript features and attributes
+  fix_ercc_args=(
+    --input "\\$tmpdir/ERCC92.gtf"
+    --output "\\$tmpdir/ercc_complete.gtf"
+    --gene_type "\\$par_ercc_gene_type"
+    --transcript_type "\\$par_ercc_transcript_type"
+  )
+  if [[ "\\$par_ercc_overwrite_types" == "true" ]]; then
+    fix_ercc_args+=(--overwrite_types)
+  fi
+  python3 "\\$meta_resources_dir/fix_ercc.py" "\\${fix_ercc_args[@]}"
+  cat "\\$tmpdir/ercc_complete.gtf" >> "\\$transcriptome_gtf"
 fi
 
 # create output & filter reference if so desired

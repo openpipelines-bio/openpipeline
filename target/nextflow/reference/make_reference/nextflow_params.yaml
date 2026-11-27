@@ -2,6 +2,9 @@
 genome_fasta: # please fill in - example: "genome_fasta.fa.gz"
 transcriptome_gtf: # please fill in - example: "transcriptome.gtf.gz"
 # ercc: "ercc.zip"
+ercc_gene_type: "spike_in_sequence"
+ercc_transcript_type: "spike_in_sequence"
+ercc_overwrite_types: false
 # subset_regex: "(ERCC-00002|chr1)"
 # output_fasta: "$id.$key.output_fasta.gz"
 # output_gtf: "$id.$key.output_gtf.gz"

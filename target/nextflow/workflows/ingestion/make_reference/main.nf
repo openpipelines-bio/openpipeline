@@ -3132,6 +3132,36 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--ercc_gene_type",
+          "description" : "Value for the `gene_type` attribute of ERCC features that do not have one.",
+          "default" : [
+            "spike_in_sequence"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--ercc_transcript_type",
+          "description" : "Value for the `transcript_type` attribute of ERCC transcripts and exons that do not have one.",
+          "default" : [
+            "spike_in_sequence"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--ercc_overwrite_types",
+          "description" : "Also replace existing `gene_type` and `transcript_type` attributes of ERCC features\nwith `--ercc_gene_type` and `--ercc_transcript_type`.\n",
+          "direction" : "input"
         }
       ]
     },
@@ -3506,7 +3536,7 @@ meta = [
     "engine" : "native",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference",
     "viash_version" : "0.9.7",
-    "git_commit" : "980eef0d85329aa78a77a14e793103031b48a842",
+    "git_commit" : "a7c40608a36d1c2cbcc7ba597bb4a7b262b4e322",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   },
   "package_config" : {
@@ -3582,6 +3612,9 @@ workflow run_wf {
         "genome_fasta": "genome_fasta", 
         "transcriptome_gtf": "transcriptome_gtf",
         "ercc": "ercc",
+        "ercc_gene_type": "ercc_gene_type",
+        "ercc_transcript_type": "ercc_transcript_type",
+        "ercc_overwrite_types": "ercc_overwrite_types",
         "output_fasta": "output_fasta",
         "output_gtf": "output_gtf",
         "subset_regex": "subset_regex"

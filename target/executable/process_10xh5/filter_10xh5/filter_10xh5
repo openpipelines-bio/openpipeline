@@ -457,9 +457,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-LABEL org.opencontainers.image.created="2026-11-26T11:18:36Z"
+LABEL org.opencontainers.image.created="2026-11-27T11:12:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="980eef0d85329aa78a77a14e793103031b48a842"
+LABEL org.opencontainers.image.revision="a7c40608a36d1c2cbcc7ba597bb4a7b262b4e322"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
