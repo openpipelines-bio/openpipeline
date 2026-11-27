@@ -211,6 +211,8 @@
 
 * `annotate/azimuth`: added a component for reference-based cell type annotation using Seurat's Azimuth (`RunAzimuth()`) on a Seurat object (`.rds`), letting users pick from Azimuth's curated reference datasets (e.g. `pbmcref`, `bonemarrowref`, `lungref`) or supply a custom reference directory (PR #1235).
 
+* `transform/bpcells_regress_out`: use the `group` argument and the `write_elem()` function of `anndataR` >= 1.4.0 instead of its internal functions, and install `anndataR` from Bioconductor instead of pinning a GitHub release (PR #1319).
+
 # openpipelines 4.2.0
 
 ## NEW FEATURES

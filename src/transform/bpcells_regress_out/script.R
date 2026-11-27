@@ -3,22 +3,9 @@ library(glue)
 library(BPCells)
 requireNamespace("anndataR", quietly = TRUE)
 
-# These anndataR functions are not exported
-open_h5 <- function(path, readonly) {
-  flags <- if (readonly) "H5F_ACC_RDONLY" else "H5F_ACC_RDWR"
-  # anndataR expects a handle in the non-native (row-major) orientation
-  rhdf5::H5Fopen(path, flags = flags, native = FALSE)
-}
-h5_exists <- function(h5, name) {
-  # Also FALSE when a parent group is missing
-  anndataR:::hdf5_path_exists(h5, name)
-}
-read_elem <- function(h5, name) {
-  anndataR:::read_h5ad_element(h5, name, stop_on_error = TRUE)
-}
-write_elem <- function(h5, name, value) {
-  anndataR:::write_h5ad_element(value, h5, name, stop_on_error = TRUE)
-}
+# Reading a single modality from a MuData file via `group` and write_elem()
+# require anndataR >= 1.4.0
+stopifnot(packageVersion("anndataR") >= "1.4.0")
 
 ## VIASH START
 par <- list(
@@ -87,23 +74,37 @@ cat("Input matrix: ", ncol(imat), " cells x ", nrow(imat), " genes\n",
   sep = ""
 )
 
-h5 <- open_h5(par$input, readonly = TRUE)
-# Only read obs and var from the modality
-obs <- read_elem(h5, file.path(mod_path, "obs"))
-var <- read_elem(h5, file.path(mod_path, "var"))
-# Make sure output layer does not exist in the data yet
-output_exists <- !is.null(output_layer) && h5_exists(h5, output_layer)
+# Elements of the modality are only read from disk when they are accessed,
+# so only obs and var are loaded
+adata <- anndataR::read_h5ad(par$input, as = "HDF5AnnData", group = mod_path)
+obs <- adata$obs
+var <- adata$var
+# Make sure output layer does not exist in the data yet. Listing the keys of
+# a slot does not read its contents, and gives NULL when the slot is missing.
+output_exists <- !is.null(par$output_layer) &&
+  par$output_layer %in% adata$layers_keys()
 # PCA slots can only be replaced when --overwrite is set
-pca_slots <- character(0)
+existing_pca_slots <- character(0)
 if (run_pca) {
   pca_slots <- c(
-    file.path(mod_path, "obsm", par$obsm_pca_output),
-    file.path(mod_path, "varm", par$varm_pca_output),
-    file.path(mod_path, "uns", par$uns_pca_output)
+    obsm = par$obsm_pca_output,
+    varm = par$varm_pca_output,
+    uns = par$uns_pca_output
   )
+  slot_keys <- list(
+    obsm = adata$obsm_keys(),
+    varm = adata$varm_keys(),
+    uns = adata$uns_keys()
+  )
+  pca_slot_exists <- vapply(
+    names(pca_slots),
+    function(slot) pca_slots[[slot]] %in% slot_keys[[slot]],
+    logical(1)
+  )
+  existing_pca_slots <- file.path(
+    mod_path, names(pca_slots), pca_slots
+  )[pca_slot_exists]
 }
-existing_pca_slots <- Filter(function(slot) h5_exists(h5, slot), pca_slots)
-rhdf5::H5Fclose(h5)
 if (output_exists) {
   stop("Output layer ", par$output_layer, " already exists in modality ",
     par$modality, ", please choose a new layer name.",
@@ -238,17 +239,13 @@ if (run_pca) {
     ", .varm ", par$varm_pca_output, " and .uns ", par$uns_pca_output, "\n",
     sep = ""
   )
-  h5 <- open_h5(par$output, readonly = FALSE)
-  for (slot in existing_pca_slots) {
-    rhdf5::h5delete(h5, slot)
-  }
   write_mod_elem <- function(slot, key, value) {
-    # The writer does not create missing parent groups
-    group_path <- file.path(mod_path, slot)
-    if (!h5_exists(h5, group_path)) {
-      rhdf5::h5createGroup(h5, group_path)
-    }
-    write_elem(h5, file.path(group_path, key), value)
+    # Existing slots were checked against --overwrite before the computation.
+    # write_elem() creates missing parent groups.
+    anndataR::write_elem(
+      par$output, file.path(mod_path, slot, key), value,
+      overwrite = TRUE
+    )
   }
   write_mod_elem("obsm", par$obsm_pca_output, embedding)
   write_mod_elem("varm", par$varm_pca_output, loadings)
@@ -256,5 +253,4 @@ if (run_pca) {
     variance = variance,
     variance_ratio = variance / total_variance
   ))
-  rhdf5::H5Fclose(h5)
 }
