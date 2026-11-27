@@ -119,7 +119,6 @@ engines:
     - type: apt
       packages: [ libhdf5-dev, libgeos-dev, hdf5-tools ]
     - type: r
-      cran: [ hdf5r ]
       bioc: [ DESeq2, anndataR, rhdf5 ]
   test_setup:
     - type: docker

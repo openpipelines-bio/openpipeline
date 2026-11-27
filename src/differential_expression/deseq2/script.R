@@ -1,6 +1,9 @@
 library(DESeq2)
 library(anndataR)
-library(hdf5r)
+
+# Reading a single modality from a MuData file via `group` requires
+# anndataR >= 1.4.0
+stopifnot(packageVersion("anndataR") >= "1.4.0")
 
 rhdf5::h5disableFileLocking()
 
@@ -26,40 +29,6 @@ meta <- list(resources_dir = "src/utils")
 ## VIASH END
 
 cat("Starting DESeq2 analysis...\n")
-
-h5mu_to_h5ad <- function(h5mu_path, modality_name) {
-  tmp_path <- tempfile(fileext = ".h5ad")
-  mod_location <- paste("mod", modality_name, sep = "/")
-  h5src <- hdf5r::H5File$new(h5mu_path, "r")
-  h5dest <- hdf5r::H5File$new(tmp_path, "w")
-  children <- hdf5r::list.objects(h5src,
-    path = mod_location,
-    full.names = FALSE, recursive = FALSE
-  )
-  for (child in children) {
-    h5dest$obj_copy_from(
-      h5src, paste(mod_location, child, sep = "/"),
-      paste0("/", child)
-    )
-  }
-  # Also copy the root attributes
-  root_attrs <- hdf5r::h5attr_names(x = h5src)
-  for (attr in root_attrs) {
-    h5a <- h5src$attr_open(attr_name = attr)
-    robj <- h5a$read()
-    h5dest$create_attr_by_name(
-      attr_name = attr,
-      obj_name = ".",
-      robj = robj,
-      space = h5a$get_space(),
-      dtype = h5a$get_type()
-    )
-  }
-  h5src$close()
-  h5dest$close()
-
-  tmp_path
-}
 
 # Extract design factors from formula
 parse_design_formula <- function(design_formula) {
@@ -275,8 +244,11 @@ main <- function() {
   cat("Loading pseudobulk data from", par$input, "\n")
 
   # Load and prepare data
-  h5ad_path <- h5mu_to_h5ad(par$input, par$modality)
-  mod <- anndataR::read_h5ad(h5ad_path, as = "InMemoryAnnData")
+  mod <- anndataR::read_h5ad(
+    par$input,
+    as = "InMemoryAnnData",
+    group = paste0("mod/", par$modality)
+  )
   metadata <- as.data.frame(mod$obs)
 
   # Get expression matrix
