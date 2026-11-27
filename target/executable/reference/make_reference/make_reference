@@ -447,17 +447,20 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM ubuntu:24.04
+FROM python:3.12-slim
 ENTRYPOINT []
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y pigz seqkit curl wget unzip file && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y pigz seqkit curl wget unzip file procps && \
   rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip && \
+  pip install --upgrade --no-cache-dir "gtfparse==3.3.0"
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference make_reference"
-LABEL org.opencontainers.image.created="2026-11-25T13:18:11Z"
+LABEL org.opencontainers.image.created="2026-11-27T08:53:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c8aad5d21e7910152329be48ddaa7945a119f3cf"
+LABEL org.opencontainers.image.revision="e66b75ef9c46e0e1017b17a910ca0998af9330de"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -602,6 +605,24 @@ function ViashHelp {
   echo "        example: ercc.zip"
   echo "        ERCC sequence and annotation file."
   echo ""
+  echo "    --ercc_gene_type"
+  echo "        type: string"
+  echo "        default: spike_in_sequence"
+  echo "        Value for the \`gene_type\` attribute of ERCC features that do not have"
+  echo "        one."
+  echo ""
+  echo "    --ercc_transcript_type"
+  echo "        type: string"
+  echo "        default: spike_in_sequence"
+  echo "        Value for the \`transcript_type\` attribute of ERCC transcripts and exons"
+  echo "        that do not have one."
+  echo ""
+  echo "    --ercc_overwrite_types"
+  echo "        type: boolean_true"
+  echo "        Also replace existing \`gene_type\` and \`transcript_type\` attributes of"
+  echo "        ERCC features"
+  echo "        with \`--ercc_gene_type\` and \`--ercc_transcript_type\`."
+  echo ""
   echo "    --subset_regex"
   echo "        type: string"
   echo "        example: (ERCC-00002|chr1)"
@@ -698,6 +719,33 @@ while [[ $# -gt 0 ]]; do
         --ercc=*)
             [ -n "$VIASH_PAR_ERCC" ] && ViashError Bad arguments for option \'--ercc=*\': \'$VIASH_PAR_ERCC\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_ERCC=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --ercc_gene_type)
+            [ -n "$VIASH_PAR_ERCC_GENE_TYPE" ] && ViashError Bad arguments for option \'--ercc_gene_type\': \'$VIASH_PAR_ERCC_GENE_TYPE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ERCC_GENE_TYPE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --ercc_gene_type. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --ercc_gene_type=*)
+            [ -n "$VIASH_PAR_ERCC_GENE_TYPE" ] && ViashError Bad arguments for option \'--ercc_gene_type=*\': \'$VIASH_PAR_ERCC_GENE_TYPE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ERCC_GENE_TYPE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --ercc_transcript_type)
+            [ -n "$VIASH_PAR_ERCC_TRANSCRIPT_TYPE" ] && ViashError Bad arguments for option \'--ercc_transcript_type\': \'$VIASH_PAR_ERCC_TRANSCRIPT_TYPE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ERCC_TRANSCRIPT_TYPE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --ercc_transcript_type. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --ercc_transcript_type=*)
+            [ -n "$VIASH_PAR_ERCC_TRANSCRIPT_TYPE" ] && ViashError Bad arguments for option \'--ercc_transcript_type=*\': \'$VIASH_PAR_ERCC_TRANSCRIPT_TYPE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ERCC_TRANSCRIPT_TYPE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --ercc_overwrite_types)
+            [ -n "$VIASH_PAR_ERCC_OVERWRITE_TYPES" ] && ViashError Bad arguments for option \'--ercc_overwrite_types\': \'$VIASH_PAR_ERCC_OVERWRITE_TYPES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ERCC_OVERWRITE_TYPES=true
             shift 1
             ;;
         --subset_regex)
@@ -944,6 +992,17 @@ if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
   exit 1
 fi
 
+# filling in defaults
+if [ -z ${VIASH_PAR_ERCC_GENE_TYPE+x} ]; then
+  VIASH_PAR_ERCC_GENE_TYPE="spike_in_sequence"
+fi
+if [ -z ${VIASH_PAR_ERCC_TRANSCRIPT_TYPE+x} ]; then
+  VIASH_PAR_ERCC_TRANSCRIPT_TYPE="spike_in_sequence"
+fi
+if [ -z ${VIASH_PAR_ERCC_OVERWRITE_TYPES+x} ]; then
+  VIASH_PAR_ERCC_OVERWRITE_TYPES="false"
+fi
+
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_GENOME_FASTA" ] && [ ! -e "$VIASH_PAR_GENOME_FASTA" ]; then
   ViashError "Input file '$VIASH_PAR_GENOME_FASTA' does not exist."
@@ -959,6 +1018,12 @@ if [ ! -z "$VIASH_PAR_ERCC" ] && [ ! -e "$VIASH_PAR_ERCC" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_ERCC_OVERWRITE_TYPES" ]]; then
+  if ! [[ "$VIASH_PAR_ERCC_OVERWRITE_TYPES" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--ercc_overwrite_types' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1141,6 +1206,9 @@ set -eo pipefail
 $( if [ ! -z ${VIASH_PAR_GENOME_FASTA+x} ]; then echo "${VIASH_PAR_GENOME_FASTA}" | sed "s#'#'\"'\"'#g;s#.*#par_genome_fasta='&'#" ; else echo "# par_genome_fasta="; fi )
 $( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_GTF+x} ]; then echo "${VIASH_PAR_TRANSCRIPTOME_GTF}" | sed "s#'#'\"'\"'#g;s#.*#par_transcriptome_gtf='&'#" ; else echo "# par_transcriptome_gtf="; fi )
 $( if [ ! -z ${VIASH_PAR_ERCC+x} ]; then echo "${VIASH_PAR_ERCC}" | sed "s#'#'\"'\"'#g;s#.*#par_ercc='&'#" ; else echo "# par_ercc="; fi )
+$( if [ ! -z ${VIASH_PAR_ERCC_GENE_TYPE+x} ]; then echo "${VIASH_PAR_ERCC_GENE_TYPE}" | sed "s#'#'\"'\"'#g;s#.*#par_ercc_gene_type='&'#" ; else echo "# par_ercc_gene_type="; fi )
+$( if [ ! -z ${VIASH_PAR_ERCC_TRANSCRIPT_TYPE+x} ]; then echo "${VIASH_PAR_ERCC_TRANSCRIPT_TYPE}" | sed "s#'#'\"'\"'#g;s#.*#par_ercc_transcript_type='&'#" ; else echo "# par_ercc_transcript_type="; fi )
+$( if [ ! -z ${VIASH_PAR_ERCC_OVERWRITE_TYPES+x} ]; then echo "${VIASH_PAR_ERCC_OVERWRITE_TYPES}" | sed "s#'#'\"'\"'#g;s#.*#par_ercc_overwrite_types='&'#" ; else echo "# par_ercc_overwrite_types="; fi )
 $( if [ ! -z ${VIASH_PAR_SUBSET_REGEX+x} ]; then echo "${VIASH_PAR_SUBSET_REGEX}" | sed "s#'#'\"'\"'#g;s#.*#par_subset_regex='&'#" ; else echo "# par_subset_regex="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT_FASTA+x} ]; then echo "${VIASH_PAR_OUTPUT_FASTA}" | sed "s#'#'\"'\"'#g;s#.*#par_output_fasta='&'#" ; else echo "# par_output_fasta="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT_GTF+x} ]; then echo "${VIASH_PAR_OUTPUT_GTF}" | sed "s#'#'\"'\"'#g;s#.*#par_output_gtf='&'#" ; else echo "# par_output_gtf="; fi )
@@ -1201,7 +1269,18 @@ if [[ ! -z \$par_ercc ]]; then
   # unzip "\$tmpdir/ercc.zip" -d "\$tmpdir"
   unzip "\$par_ercc" -d "\$tmpdir"
   cat "\$tmpdir/ERCC92.fa" >> "\$genome_fasta"
-  cat "\$tmpdir/ERCC92.gtf" >> "\$transcriptome_gtf"
+  # The ERCC annotation only lists exons; add gene and transcript features and attributes
+  fix_ercc_args=(
+    --input "\$tmpdir/ERCC92.gtf"
+    --output "\$tmpdir/ercc_complete.gtf"
+    --gene_type "\$par_ercc_gene_type"
+    --transcript_type "\$par_ercc_transcript_type"
+  )
+  if [[ "\$par_ercc_overwrite_types" == "true" ]]; then
+    fix_ercc_args+=(--overwrite_types)
+  fi
+  python3 "\$meta_resources_dir/fix_ercc.py" "\${fix_ercc_args[@]}"
+  cat "\$tmpdir/ercc_complete.gtf" >> "\$transcriptome_gtf"
 fi
 
 # create output & filter reference if so desired

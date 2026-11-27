@@ -43,6 +43,24 @@
           "description": "ERCC sequence and annotation file.",
           "help_text": "Type: `file`, multiple: `False`, direction: `input`, example: `\"ercc.zip\"`. "
         },
+        "ercc_gene_type": {
+          "type": "string",
+          "description": "Value for the `gene_type` attribute of ERCC features that do not have one.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"spike_in_sequence\"`. ",
+          "default": "spike_in_sequence"
+        },
+        "ercc_transcript_type": {
+          "type": "string",
+          "description": "Value for the `transcript_type` attribute of ERCC transcripts and exons that do not have one.",
+          "help_text": "Type: `string`, multiple: `False`, default: `\"spike_in_sequence\"`. ",
+          "default": "spike_in_sequence"
+        },
+        "ercc_overwrite_types": {
+          "type": "boolean",
+          "description": "Also replace existing `gene_type` and `transcript_type` attributes of ERCC features\nwith `--ercc_gene_type` and `--ercc_transcript_type`.\n",
+          "help_text": "Type: `boolean_true`, multiple: `False`, default: `false`. ",
+          "default": false
+        },
         "subset_regex": {
           "type": "string",
           "description": "Will subset the reference chromosomes using the given regex.",

@@ -455,9 +455,9 @@ RUN apt-get update && \
 RUN git clone https://github.com/single-cell-genetics/cellsnp-lite.git && cd cellsnp-lite && autoreconf -iv && ./configure && make && make install
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux cellsnp"
-LABEL org.opencontainers.image.created="2026-11-25T13:18:13Z"
+LABEL org.opencontainers.image.created="2026-11-27T08:53:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c8aad5d21e7910152329be48ddaa7945a119f3cf"
+LABEL org.opencontainers.image.revision="e66b75ef9c46e0e1017b17a910ca0998af9330de"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

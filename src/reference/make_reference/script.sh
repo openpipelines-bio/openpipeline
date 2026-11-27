@@ -6,6 +6,9 @@ set -eo pipefail
 par_genome_fasta="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz"
 par_transcriptome_gtf="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz"
 par_ercc="https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip"
+par_ercc_gene_type="spike_in_sequence"
+par_ercc_transcript_type="spike_in_sequence"
+par_ercc_overwrite_types="false"
 # par_subset_regex='(ERCC-00002|chr1)'
 par_output_fasta="temp/reference.fa.gz"
 par_output_gtf="temp/reference.gtf.gz"
@@ -47,7 +50,18 @@ if [[ ! -z $par_ercc ]]; then
   # unzip "$tmpdir/ercc.zip" -d "$tmpdir"
   unzip "$par_ercc" -d "$tmpdir"
   cat "$tmpdir/ERCC92.fa" >> "$genome_fasta"
-  cat "$tmpdir/ERCC92.gtf" >> "$transcriptome_gtf"
+  # The ERCC annotation only lists exons; add gene and transcript features and attributes
+  fix_ercc_args=(
+    --input "$tmpdir/ERCC92.gtf"
+    --output "$tmpdir/ercc_complete.gtf"
+    --gene_type "$par_ercc_gene_type"
+    --transcript_type "$par_ercc_transcript_type"
+  )
+  if [[ "$par_ercc_overwrite_types" == "true" ]]; then
+    fix_ercc_args+=(--overwrite_types)
+  fi
+  python3 "$meta_resources_dir/fix_ercc.py" "${fix_ercc_args[@]}"
+  cat "$tmpdir/ercc_complete.gtf" >> "$transcriptome_gtf"
 fi
 
 # create output & filter reference if so desired
